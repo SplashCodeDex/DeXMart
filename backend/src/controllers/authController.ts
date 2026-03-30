@@ -725,6 +725,7 @@ export const updateProfile = async (req: RequestWithUser, res: Response): Promis
         const { userId, tenantId } = req.user;
         const { name } = req.body as { name?: unknown };
 
+        const MAX_NAME_LENGTH = 100;
         if (!name || typeof name !== 'string' || name.trim().length === 0) {
             res.status(400).json({
                 success: false,
@@ -734,6 +735,14 @@ export const updateProfile = async (req: RequestWithUser, res: Response): Promis
         }
 
         const trimmedName = name.trim();
+
+        if (trimmedName.length > MAX_NAME_LENGTH) {
+            res.status(400).json({
+                success: false,
+                error: { code: 'validation_error', message: `Name must not exceed ${MAX_NAME_LENGTH} characters.` }
+            });
+            return;
+        }
 
         await db.collection('tenants').doc(tenantId).collection('users').doc(userId).update({
             displayName: trimmedName,

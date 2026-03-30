@@ -15,12 +15,15 @@ This file tracks all major tracks for the project. Each track has its own detail
 ### [x] Track: Agentic Performance & Intelligence Optimization (Phase 5)
 *Link: [./conductor/tracks/agentic_optimization_20260310/](./tracks/agentic_optimization_20260310/)*
 
-- [~] **Track: WhatsApp Resilience & 50+ Defeating Scenarios**
+### [x] Track: WhatsApp Resilience & 50+ Defeating Scenarios
 *Link: [./tracks/whatsapp_resilience_20260310/](./tracks/whatsapp_resilience_20260310/)*
 
 ---
 
 ## Archived Tracks
+
+### [x] Track: System Health & Technical Debt Remediation
+*Link: [./archive/system_health_20260312/](./archive/system_health_20260312/)*
 
 ### [x] Track: Mastermind Event Stream
 *Link: [./archive/mastermind_stream_20260312/](./archive/mastermind_stream_20260312/)*
@@ -34,7 +37,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 ### [x] Track: Connection Management Gaps (Audit Fix Phase 1)
 *Link: [./conductor/archive/conn_mgmt_gaps_20260308/](./conn_mgmt_gaps_20260308/)*
 
-### [~] Track: Integrating Critical Upstream Patching (Telegram Proxy, Discord IDs, Anthropic Haiku)
+### [x] Track: Integrating Critical Upstream Patching (Telegram Proxy, Discord IDs, Anthropic Haiku)
 *Link: [./conductor/archive/openclaw_channel_fixes_20260305/](./openclaw_channel_fixes_20260305/)*
 
 ### [x] Track: OpenClaw Engine Hardening - Log Rotation & SSRF Protection

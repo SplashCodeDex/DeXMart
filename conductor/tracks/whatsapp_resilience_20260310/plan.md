@@ -11,24 +11,24 @@
     - [x] Implement tests for socket timeouts, credential corruption, and network jitters.
     - [x] **Fixes:** Implement self-healing logic for detected corruption.
     - [x] Mark Scenarios 1-15 as Resolved in `scenarios.md`.
-- [ ] **Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)**
+- [x] **Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)**
 
 ## Phase 2: Concurrency & Gating
 
-- [ ] **Task: Concurrency Stress Tests (16-30)**
-    - [ ] Implement tests for message bursts and race conditions in `ChannelService`.
-    - [ ] **Fixes:** Add mutex locks or queuing for critical channel operations.
-    - [ ] Mark Scenarios 16-30 as Resolved in `scenarios.md`.
-- [ ] **Task: Gating & Security Tests (31-40)**
-    - [ ] Verify `UsageGuard` and `FirebaseService` path integrity under high load.
-    - [ ] Mark Scenarios 31-40 as Resolved in `scenarios.md`.
-- [ ] **Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)**
+- [x] **Task: Concurrency Stress Tests (16-30)**
+    - [x] Implement tests for message bursts and race conditions in `ChannelService`.
+    - [x] **Fixes:** Add mutex locks or queuing for critical channel operations.
+    - [x] Mark Scenarios 16-30 as Resolved in `scenarios.md`.
+- [x] **Task: Gating & Security Tests (31-40)**
+    - [x] Verify `UsageGuard` and `FirebaseService` path integrity under high load.
+    - [x] Mark Scenarios 31-40 as Resolved in `scenarios.md`.
+- [x] **Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)**
 
 ## Phase 3: Workflow & Recovery
 
-- [ ] **Task: Workflow & Logic Tests (41-50+)**
-    - [ ] Test agent reassignments and skill failures during active streams.
-    - [ ] Mark Scenarios 41-50+ as Resolved in `scenarios.md`.
-- [ ] **Task: User-In-Loop Notification System**
-    - [ ] Ensure every "Unrecoverable" state sends a real-time socket alert to the frontend.
-- [ ] **Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)**
+- [x] **Task: Workflow & Logic Tests (41-50+)**
+    - [x] Test agent reassignments and skill failures during active streams.
+    - [x] Mark Scenarios 41-50+ as Resolved in `scenarios.md`.
+- [x] **Task: User-In-Loop Notification System**
+    - [x] Ensure every "Unrecoverable" state sends a real-time socket alert to the frontend.
+- [x] **Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)**

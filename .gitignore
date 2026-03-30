@@ -101,6 +101,14 @@ temp_*
 ehthumbs.db
 Thumbs.db
 
+# Windows NTFS alternate data stream metadata (Zone.Identifier, etc.)
+*:Zone.Identifier
+*.Zone.Identifier
+
+# Stray scratch files
+image copy.png
+image*.png
+
 # Docker
 docker-compose.override.yml
 
@@ -147,3 +155,5 @@ backend/backend_typecheck_log.txt
 *.txt
 !frontend/src/features/auth/
 openclaw_backup/
+backend/{,+
+backend/MAX_NAME_LENGTH)

@@ -14,7 +14,7 @@ import { OpenClawGateway } from './openClawGateway.js';
  *
  * States: CLOSED (normal) → OPEN (tripped, fast-fail) → HALF_OPEN (probe after cooldown)
  */
-class WebhookCircuitBreaker {
+export class WebhookCircuitBreaker {
     private readonly FAILURE_THRESHOLD = 5;
     private readonly COOLDOWN_MS = 60_000; // 1 minute open before probe
     private readonly HALF_OPEN_PROBE_LIMIT = 1;

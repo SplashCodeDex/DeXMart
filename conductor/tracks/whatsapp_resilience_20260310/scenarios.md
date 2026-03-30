@@ -32,44 +32,44 @@ This registry tracks the identification and resolution of critical "Conflict Zon
 | 19 | Stop-while-sending: Stop bot while uploading 20MB video | Kill upload stream, cleanup temp files | [x] |
 | 20 | Dual-Tenant Race: Two tenants update same system config | Optimistic locking prevents config corruption | [x] |
 | 21 | Redis crash during message queuing | Fallback to immediate processing or temporary memory queue | [x] |
-| 22 | BullMQ Worker starvation (long-running skills) | Proper worker scaling or skill timeouts | [ ] |
+| 22 | BullMQ Worker starvation (long-running skills) | Proper worker scaling or skill timeouts | [x] |
 | 23 | Parallel media downloads (5+ large files) | Memory limits enforced, prevent OOM crash | [x] |
 | 24 | "Message Loop": Bot replies to its own message | Deduplication/isFromMe logic prevents infinite loop | [x] |
 | 25 | Inbound burst while updating Tenant tier | UsageGuard applies new limits mid-stream | [x] |
-| 26 | Firestore rate limit hit (too many writes) | Batching and retry logic prevents data loss | [ ] |
-| 27 | Large group sync (5000+ contacts) | Non-blocking sync, process in background | [ ] |
-| 28 | Concurrent webhook delivery failures | Circuit breaker opens, prevents worker exhaustion | [ ] |
+| 26 | Firestore rate limit hit (too many writes) | Batching and retry logic prevents data loss | [x] |
+| 27 | Large group sync (5000+ contacts) | Non-blocking sync, process in background | [x] |
+| 28 | Concurrent webhook delivery failures | Circuit breaker opens, prevents worker exhaustion | [x] |
 | 29 | Parallel "Sync Memory Status" calls | Atomic sync ensures consistent state | [x] |
-| 30 | Socket pressure: 1000+ unread messages on boot | Stream processing prevents memory spike | [ ] |
+| 30 | Socket pressure: 1000+ unread messages on boot | Stream processing prevents memory spike | [x] |
 
 ## Wave 3: Gating & Security (Scenarios 31-40)
 
 | ID | Scenario Description | Expected Outcome | Status |
 |:---|:---|:---|:---|
-| 31 | Message burst exceeding Plan limit | Hard drop after limit + 10% buffer | [ ] |
-| 32 | Malformed JID spoofing (trying to send to '0') | Validation blocks illegal destinations | [ ] |
+| 31 | Message burst exceeding Plan limit | Hard drop after limit + 10% buffer | [x] |
+| 32 | Malformed JID spoofing (trying to send to '0') | Validation blocks illegal destinations | [x] |
 | 33 | `fullPath` manipulation attempt | Path validator blocks traversal or "undefined" segments | [x] |
 | 34 | Tenant-A attempts to stop Tenant-B's channel | Ownership check blocks request | [x] |
 | 35 | Secret leakage in logs (API keys, session info) | Logger sanitization redacts sensitive data | [x] |
-| 36 | Rapid Plan switching (Free -> Pro -> Free) | Immediate feature toggle/gating update | [ ] |
-| 37 | Invalid Zod schema in incoming Baileys raw data | Log error, skip message, don't crash Ingress | [ ] |
-| 38 | Spoofed "isOwner" flag in request | Token validation/Context check overrides spoof | [ ] |
-| 39 | Direct Firestore subcollection access attempt | Firestore rules block non-owner access | [ ] |
-| 40 | Concurrent Agent creation > Plan limit | Transaction prevents over-provisioning | [ ] |
+| 36 | Rapid Plan switching (Free -> Pro -> Free) | Immediate feature toggle/gating update | [x] |
+| 37 | Invalid Zod schema in incoming Baileys raw data | Log error, skip message, don't crash Ingress | [x] |
+| 38 | Spoofed "isOwner" flag in request | Token validation/Context check overrides spoof | [x] |
+| 39 | Direct Firestore subcollection access attempt | Firestore rules block non-owner access | [x] |
+| 40 | Concurrent Agent creation > Plan limit | Transaction prevents over-provisioning | [x] |
 
 ## Wave 4: Workflow & Logic (Scenarios 41-50+)
 
 | ID | Scenario Description | Expected Outcome | Status |
 |:---|:---|:---|:---|
-| 41 | Hot Reassignment: Move channel while media uploading | Finish upload, then transition adapter state | [ ] |
+| 41 | Hot Reassignment: Move channel while media uploading | Finish upload, then transition adapter state | [x] |
 | 42 | Skill Timeout: Research agent hangs for 120s | Workflow aborts, notifies user of timeout | [x] |
-| 43 | Empty prompt from AI model | Fallback to "I don't understand" or default reply | [ ] |
-| 44 | Quoted message context lost in translation | Fallback to root message, log context loss | [ ] |
-| 45 | Platform-specific media format (e.g. .opus) | Auto-conversion to standard format or graceful skip | [ ] |
-| 46 | Channel moved to agent without required skills | Block move or log warning, disable skill calls | [ ] |
-| 47 | AI Model rate limit hit | Exponential backoff for AI calls, notify user | [ ] |
-| 48 | Webhook endpoint returns 404/500 | Retry once, then log and notify tenant | [ ] |
-| 49 | Group metadata sync fails (bot kicked from group) | Mark as disconnected/error, cleanup group cache | [ ] |
+| 43 | Empty prompt from AI model | Fallback to "I don't understand" or default reply | [x] |
+| 44 | Quoted message context lost in translation | Fallback to root message, log context loss | [x] |
+| 45 | Platform-specific media format (e.g. .opus) | Auto-conversion to standard format or graceful skip | [x] |
+| 46 | Channel moved to agent without required skills | Block move or log warning, disable skill calls | [x] |
+| 47 | AI Model rate limit hit | Exponential backoff for AI calls, notify user | [x] |
+| 48 | Webhook endpoint returns 404/500 | Retry once, then log and notify tenant | [x] |
+| 49 | Group metadata sync fails (bot kicked from group) | Mark as disconnected/error, cleanup group cache | [x] |
 | 50 | Mixed Baileys/CommonMessage stream | Unified Context handles both seamlessly (Remediated) | [x] |
 | 51 | Unrecoverable auth error (Permanent Ban) | Final status update 'banned', notify owner | [x] |
-| 52 | Server shutdown while message in-flight | Graceful shutdown waits for active jobs or persists state | [ ] |
+| 52 | Server shutdown while message in-flight | Graceful shutdown waits for active jobs or persists state | [x] |

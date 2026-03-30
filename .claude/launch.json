@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "frontend",
+      "runtimeExecutable": "wsl",
+      "runtimeArgs": ["-d", "Ubuntu", "--", "bash", "-c", "source ~/.nvm/nvm.sh && cd /home/codedex/projects/DeXMart && pnpm --filter frontend dev"],
+      "port": 3000
+    },
+    {
+      "name": "backend",
+      "runtimeExecutable": "wsl",
+      "runtimeArgs": ["-d", "Ubuntu", "--", "bash", "-c", "source ~/.nvm/nvm.sh && cd /home/codedex/projects/DeXMart && pnpm --filter backend dev"],
+      "port": 3001
+    }
+  ]
+}

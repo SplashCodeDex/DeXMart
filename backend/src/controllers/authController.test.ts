@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { loginWithGoogle } from './authController.js';
+import { loginWithGoogle, updateProfile } from './authController.js';
 import { firebaseService } from '@/services/FirebaseService.js';
 import { multiTenantService } from '@/services/multiTenantService.js';
 import { db, admin } from '@/lib/firebase.js';
@@ -25,6 +25,8 @@ const createMockDoc = (exists: boolean, data?: any) => ({
   update: vi.fn().mockResolvedValue({}),
 });
 
+const mockUpdate = vi.fn().mockResolvedValue({});
+
 vi.mock('@/lib/firebase.js', () => {
   const mockGet = vi.fn();
 
@@ -33,7 +35,7 @@ vi.mock('@/lib/firebase.js', () => {
     doc: vi.fn(() => ({
       get: mockGet,
       set: vi.fn().mockResolvedValue({}),
-      update: vi.fn().mockResolvedValue({}),
+      update: mockUpdate,
       delete: vi.fn().mockResolvedValue({}),
       collection: mockCollection, // Allow nested collections
     })),
@@ -52,6 +54,7 @@ vi.mock('@/lib/firebase.js', () => {
       auth: () => ({
         setCustomUserClaims: vi.fn().mockResolvedValue({}),
         createCustomToken: vi.fn().mockResolvedValue('custom-token'),
+        updateUser: vi.fn().mockResolvedValue({}),
       }),
     },
   };
@@ -167,5 +170,97 @@ describe('authController - loginWithGoogle', () => {
     await loginWithGoogle(req as Request, res as Response);
 
     expect(res.status).toHaveBeenCalledWith(409);
+  });
+});
+
+describe('authController - updateProfile', () => {
+  let req: any;
+  let res: Partial<Response>;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    req = {
+      user: { userId: 'uid-123', tenantId: 'tenant-abc' },
+      body: {},
+    };
+    res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn().mockReturnThis(),
+    };
+  });
+
+  it('should update display name and return 200', async () => {
+    req.body = { name: 'Alice Smith' };
+
+    await updateProfile(req, res as Response);
+
+    expect(res.json).toHaveBeenCalledWith({ success: true, data: { name: 'Alice Smith' } });
+  });
+
+  it('should trim whitespace from name', async () => {
+    req.body = { name: '  Bob   ' };
+
+    await updateProfile(req, res as Response);
+
+    expect(res.json).toHaveBeenCalledWith({ success: true, data: { name: 'Bob' } });
+  });
+
+  it('should return 400 when name is empty string', async () => {
+    req.body = { name: '   ' };
+
+    await updateProfile(req, res as Response);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ success: false }));
+  });
+
+  it('should return 400 when name is missing', async () => {
+    req.body = {};
+
+    await updateProfile(req, res as Response);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+  });
+
+  it('should return 400 when name exceeds 100 characters', async () => {
+    req.body = { name: 'A'.repeat(101) };
+
+    await updateProfile(req, res as Response);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        error: expect.objectContaining({ code: 'validation_error' }),
+      })
+    );
+  });
+
+  it('should accept name at exactly 100 characters', async () => {
+    req.body = { name: 'A'.repeat(100) };
+
+    await updateProfile(req, res as Response);
+
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ success: true, data: { name: 'A'.repeat(100) } })
+    );
+  });
+
+  it('should return 401 when user context is missing', async () => {
+    req.user = undefined;
+
+    await updateProfile(req, res as Response);
+
+    expect(res.status).toHaveBeenCalledWith(401);
+  });
+
+  it('should return 500 when Firestore write fails', async () => {
+    req.body = { name: 'Charlie' };
+    mockUpdate.mockRejectedValueOnce(new Error('Firestore unavailable'));
+
+    await updateProfile(req, res as Response);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ success: false }));
   });
 });

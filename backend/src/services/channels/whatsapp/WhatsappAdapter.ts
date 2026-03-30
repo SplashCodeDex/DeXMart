@@ -1,3 +1,4 @@
+
 import { CommonMessage } from '../../../types/omnichannel.js';
 import { ChannelAdapter, InboundMessageEvent } from '../ChannelAdapter.js';
 import AuthSystem from '@/services/authSystem.js';
@@ -204,7 +205,7 @@ export class WhatsappAdapter implements ChannelAdapter, Partial<ActiveChannel> {
     });
 
     const connectResult = await this.authSystem.connect(forceNewSession);
-    
+
     // MASTERMIND Resilience: If disconnect() was called while we were waiting
     if (this.isDisconnecting) {
       logger.warn(`[WhatsappAdapter] Connection aborted for ${this.channelId} due to concurrent disconnect`);
@@ -418,17 +419,17 @@ export class WhatsappAdapter implements ChannelAdapter, Partial<ActiveChannel> {
       clearTimeout(this.qrTimeoutHandle);
       this.qrTimeoutHandle = null;
     }
-    
+
     // Remove socket event listeners to prevent memory leaks
     if (this.socket && this.socket.ev) {
       try { this.socket.ev.removeAllListeners('connection.update'); } catch (e) {}
       try { this.socket.ev.removeAllListeners('messages.upsert'); } catch (e) {}
     }
-    
+
     // Remove AuthSystem event listeners to prevent memory leaks
     try { this.authSystem.removeAllListeners('qr'); } catch (e) {}
     try { this.authSystem.removeAllListeners('status'); } catch (e) {}
-    
+
     const listenerModule = await getWebActiveListener();
     if (listenerModule?.setActiveWebListener) {
       listenerModule.setActiveWebListener(this.channelId, null);
