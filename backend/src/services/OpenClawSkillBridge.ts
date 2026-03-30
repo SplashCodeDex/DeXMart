@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs';
 import { toolRegistry, ToolDefinition } from './toolRegistry.js';
-import { getOpenClawRoot, getWorkspaceSkills } from '@/utils/openclawImports.js';
+import { getCreateOpenClawTools, getHandleWhatsAppAction, getHandleTelegramAction, getWorkspaceSkills } from '@/utils/openclawImports.js';
 import logger from '../utils/logger.js';
 import configManager from '../config/ConfigManager.js';
 
@@ -29,8 +29,8 @@ export class OpenClawSkillBridge {
 
       // Create tools with full project configuration
       logger.info('🔧 Creating OpenClaw tools with deep configuration...');
-      const oc = await getOpenClawRoot();
-      const ocTools = oc.createOpenClawTools({
+      const createOpenClawTools = await getCreateOpenClawTools();
+      const ocTools = createOpenClawTools({
         // --- Static options (set once at boot) ---
         allowHostBrowserControl: true,
         sandboxed: false,
@@ -150,8 +150,8 @@ export class OpenClawSkillBridge {
       },
       source: 'openclaw-channel',
       execute: async (args) => {
-        const oc = await getOpenClawRoot();
-        return await oc.handleWhatsAppAction(args as Record<string, unknown>, config);
+        const handleWhatsAppAction = await getHandleWhatsAppAction();
+        return await handleWhatsAppAction(args as Record<string, unknown>, config);
       },
     };
     toolRegistry.registerTool(whatsappActionTool);
@@ -208,8 +208,8 @@ export class OpenClawSkillBridge {
       },
       source: 'openclaw-channel',
       execute: async (args) => {
-        const oc = await getOpenClawRoot();
-        return await oc.handleTelegramAction(args as Record<string, unknown>, config);
+        const handleTelegramAction = await getHandleTelegramAction();
+        return await handleTelegramAction(args as Record<string, unknown>, config);
       },
     };
     toolRegistry.registerTool(telegramActionTool);

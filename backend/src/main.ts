@@ -1,3 +1,6 @@
+// MUST be first — populates process.env before any other module evaluates
+import './initEnv.js';
+
 import logger from './utils/logger.js';
 logger.info('>>> [MASTERMIND] ABSOLUTE START OF MAIN.TS');
 import { ConfigService } from './services/ConfigService.js';
@@ -16,15 +19,7 @@ import { channelWatchdog } from './services/channels/ChannelWatchdog.js';
 async function main() {
     logger.info('>>> [MASTERMIND] Starting main()');
     try {
-        // Load shared developer keys first (~/codedex/env/), then let dotenv override
-        // with project-specific .env. Both are optional — CI relies on process.env directly.
-        try {
-            const { loadCentralEnv } = await import('@splashcodex/api-key-manager/env');
-            loadCentralEnv();
-        } catch {
-            // Not available in CI or prod environments — proceed without it
-        }
-        await import('dotenv/config');
+
 
         logger.info('🚀 Starting DeXMart...');
 

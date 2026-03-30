@@ -22,30 +22,30 @@ See [frontend/ARCHITECTURE.md](file:///w:/CodeDeX/DeXMart/frontend/ARCHITECTURE.
 3. **Shared seams, not shared code** — Integrate through well-defined interfaces (`ChannelAdapter`, gateway API), not by merging internal code.
 4. **Respect ownership** — Frontend, multi-tenancy, and AI live in DeXMart. Channel engines, gateway, and tooling live in OpenClaw.
 
-### OpenClaw `dist/` — Must Be Built Locally (Never Committed)
+### OpenClaw Source Integration (Direct Imports)
 
-`openclaw/dist/` is not committed to git. You **must build it** before starting the backend.
+`openclaw/dist/` is **NOT required for development**. The backend imports OpenClaw
+modules directly from their TypeScript source files via relative paths
+(`../../../openclaw/src/...`), using the centralized `backend/src/utils/openclawImports.ts` utility.
 
-**⚠️ DO NOT run `pnpm build` or `pnpm build:strict-smoke` in `openclaw/`.** Building all entries at once OOMs on machines with ≤8GB RAM (crashes at ~4GB heap). Always build **entry by entry**:
+**⚠️ NEVER import from the `openclaw` package name or its barrel `index.ts`.**
+The barrel has side effects (loadDotEnv, normalizeEnv, buildProgram) that conflict
+with DeXMart's own initialization, and it pulls in CJS-only transitive dependencies
+that crash tsx's ESM interop.
 
-```bash
-cd openclaw
+**Import pattern:**
+```typescript
+// ✅ CORRECT — use openclawImports.ts utility (resolves to source)
+import { getTelegramSend, getCreateOpenClawTools } from '@/utils/openclawImports.js';
 
-# Core entry (required for backend startup)
-NODE_OPTIONS='--max-old-space-size=3072' npx tsdown src/index.ts --platform node --out-dir dist --no-dts
+// ✅ CORRECT — direct source import for gateway-level modules
+await import('../../../openclaw/src/config/config.js');
 
-# Channel entries (required by backend/src/utils/openclawImports.ts)
-NODE_OPTIONS='--max-old-space-size=3072' npx tsdown src/telegram/send.ts         --platform node --out-dir dist/telegram        --no-dts
-NODE_OPTIONS='--max-old-space-size=3072' npx tsdown src/signal/send.ts           --platform node --out-dir dist/signal          --no-dts
-NODE_OPTIONS='--max-old-space-size=3072' npx tsdown src/slack/send.ts            --platform node --out-dir dist/slack           --no-dts
-NODE_OPTIONS='--max-old-space-size=3072' npx tsdown src/discord/send.ts          --platform node --out-dir dist/discord         --no-dts
-NODE_OPTIONS='--max-old-space-size=3072' npx tsdown src/facebook/webhook.ts      --platform node --out-dir dist/facebook        --no-dts
-NODE_OPTIONS='--max-old-space-size=3072' npx tsdown src/web/outbound.ts          --platform node --out-dir dist/web             --no-dts
-NODE_OPTIONS='--max-old-space-size=3072' npx tsdown src/web/active-listener.ts   --platform node --out-dir dist/web             --no-dts
-NODE_OPTIONS='--max-old-space-size=3072' npx tsdown src/agents/skills/workspace.ts --platform node --out-dir dist/agents/skills --no-dts
+// ❌ WRONG — triggers side effects + CJS crash
+import { createOpenClawTools } from 'openclaw';
 ```
 
-Each entry builds in under 30s and uses well under 1GB. Increase `--max-old-space-size` if you have >16GB available.
+Building `dist/` is only needed when publishing openclaw as a standalone npm package.
 
 ---
 

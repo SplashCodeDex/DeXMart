@@ -1,99 +1,97 @@
 /**
- * OpenClaw Import Utility
+ * OpenClaw Import Utility — Direct Source Resolution
  *
- * tsx resolves workspace packages through TypeScript source files via the
- * "types"/"development" conditions in openclaw's exports map. This causes
- * ERR_PACKAGE_PATH_NOT_EXPORTED when a transitive dependency
- * (@mariozechner/pi-coding-agent) cannot be resolved by tsx's CJS interop.
+ * Imports OpenClaw modules directly from their TypeScript source files
+ * via relative paths. This avoids:
+ *   1. The barrel index.ts (which has unwanted side effects + pulls CJS transitive deps)
+ *   2. The need to build openclaw/dist/ for development
+ *   3. tsx's exports map resolution issues with the "types" condition
  *
- * This utility bypasses tsx's module resolution entirely by importing directly
- * from openclaw's pre-built dist/ directory via file:// URLs — the same
- * pattern used by WhatsappAdapter.
+ * This follows the same proven pattern used by openClawGateway.ts,
+ * which successfully imports 15+ OpenClaw source modules this way.
  */
 
-import { pathToFileURL, fileURLToPath } from 'node:url';
-import path from 'node:path';
-import fs from 'node:fs';
 import logger from './logger.js';
 
-function findPackageRoot(startDir: string, packageName: string): string | null {
-  let dir = startDir;
-  while (true) {
-    const candidate = path.join(dir, 'node_modules', packageName, 'package.json');
-    if (fs.existsSync(candidate)) return path.dirname(candidate);
-    const parent = path.dirname(dir);
-    if (parent === dir) return null;
-    dir = parent;
-  }
-}
+// ── Resolve base path ────────────────────────────────────────────
+// backend/src/utils/ → ../../../openclaw/src/
+const OC_SRC = '../../../openclaw/src';
 
-const _thisDir = path.dirname(fileURLToPath(import.meta.url));
-const _openclawRoot = findPackageRoot(_thisDir, 'openclaw');
-
-function distUrl(subpath: string): string | null {
-  if (!_openclawRoot) return null;
-  return pathToFileURL(path.join(_openclawRoot, 'dist', subpath)).href;
-}
-
-// ── Module Cache ──────────────────────────────────────────────────────
-
+// ── Module Cache ─────────────────────────────────────────────────
 const _cache: Record<string, any> = {};
 
-async function loadDist(subpath: string): Promise<any> {
+async function loadSource(subpath: string): Promise<any> {
   if (_cache[subpath]) return _cache[subpath];
-  const url = distUrl(subpath);
-  if (!url) {
-    logger.error(`[openclawImports] openclaw package root not found — cannot load ${subpath}`);
-    throw new Error(`openclaw not found for subpath: ${subpath}`);
-  }
+  const importPath = `${OC_SRC}/${subpath}`;
   try {
-    const mod = await import(/* @vite-ignore */ url);
+    const mod = await import(/* @vite-ignore */ importPath);
     _cache[subpath] = mod;
     return mod;
   } catch (e) {
-    logger.error(`[openclawImports] Failed to load openclaw dist module: ${subpath}`, e);
+    logger.error(`[openclawImports] Failed to load openclaw source module: ${subpath}`, e);
     throw e;
   }
 }
 
-// ── Public API ────────────────────────────────────────────────────────
+// ── Public API ───────────────────────────────────────────────────
 
 export async function getTelegramSend() {
-  return await loadDist('telegram/send.js');
+  return await loadSource('telegram/send.js');
 }
 
 export async function getSignalSend() {
-  return await loadDist('signal/send.js');
+  return await loadSource('signal/send.js');
 }
 
 export async function getSlackSend() {
-  return await loadDist('slack/send.js');
+  return await loadSource('slack/send.js');
 }
 
 export async function getIMessageSend() {
-  return await loadDist('imessage/send.js');
+  return await loadSource('imessage/send.js');
 }
 
 export async function getDiscordSend() {
-  return await loadDist('discord/send.js');
-}
-
-export async function getOpenClawRoot() {
-  return await loadDist('index.js');
+  return await loadSource('discord/send.js');
 }
 
 export async function getWorkspaceSkills() {
-  return await loadDist('agents/skills/workspace.js');
+  return await loadSource('agents/skills/workspace.js');
 }
 
 export async function getWebOutbound() {
-  return await loadDist('web/outbound.js');
+  return await loadSource('web/outbound.js');
 }
 
 export async function getWebActiveListener() {
-  return await loadDist('web/active-listener.js');
+  return await loadSource('web/active-listener.js');
 }
 
 export async function getFacebookWebhook() {
-  return await loadDist('facebook/webhook.js');
+  return await loadSource('facebook/webhook.js');
+}
+
+// ── Granular imports (replaces getOpenClawRoot barrel) ───────────
+// These replace the old getOpenClawRoot() which loaded ALL of index.ts
+// (with unwanted side effects). Each function is now imported from
+// its actual source module directly.
+
+export async function getCreateOpenClawTools() {
+  const mod = await loadSource('agents/openclaw-tools.js');
+  return mod.createOpenClawTools;
+}
+
+export async function getStartGatewayServer() {
+  const mod = await loadSource('gateway/server.js');
+  return mod.startGatewayServer;
+}
+
+export async function getHandleWhatsAppAction() {
+  const mod = await loadSource('agents/tools/whatsapp-actions.js');
+  return mod.handleWhatsAppAction;
+}
+
+export async function getHandleTelegramAction() {
+  const mod = await loadSource('agents/tools/telegram-actions.js');
+  return mod.handleTelegramAction;
 }

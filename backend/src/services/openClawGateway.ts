@@ -1,4 +1,4 @@
-import { getOpenClawRoot } from '@/utils/openclawImports.js';
+import { getStartGatewayServer } from '@/utils/openclawImports.js';
 import AuditService from './auditService.js';
 import MultiTenantService from './multiTenantService.js';
 import { getPlanLimits } from '../utils/featureGating.js';
@@ -65,8 +65,8 @@ export class OpenClawGateway {
 
     try {
       // Default port for OpenClaw Gateway is 18789
-      const oc = await getOpenClawRoot();
-      this.server = await (oc.startGatewayServer as any)(18789);
+      const startGatewayServer = await getStartGatewayServer();
+      this.server = await (startGatewayServer as any)(18789);
       this.initialized = true;
       this.startTime = Date.now();
       console.log('OpenClaw Gateway initialized successfully.');
