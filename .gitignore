@@ -157,3 +157,8 @@ backend/backend_typecheck_log.txt
 openclaw_backup/
 backend/{,+
 backend/MAX_NAME_LENGTH)
+
+# Claude settings & Windows Artifacts
+.claude/
+*\357\200\272Zone.Identifier
+*.Identifier
