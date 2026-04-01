@@ -2,71 +2,85 @@
 
 ## Initial Concept
 
-DeXMart is an enterprise-grade, omnichannel AI automation platform. Built upon the OpenClaw engine and Baileys Web API, it enables users to manage AI-powered interactions across WhatsApp, Telegram, Discord, and Slack through a unified system of **Channels** and **Agents**.
+DeXMart is an enterprise-grade, omnichannel AI automation platform built on the OpenClaw engine. OpenClaw IS the engine — untouched. DeXMart adds two things on top: **user-level multi-tenancy** (B2C model, like Spotify/CapCut) and **billing gating** (Stripe subscriptions controlling feature access per plan).
 
-The platform operates on a multi-tenant architecture where each customer's data, channels, and agents are isolated within their own workspace. It offers a tiered subscription model (Free vs. Premium), unlocking advanced features such as multiple connectivity slots (supporting WhatsApp, Telegram, Discord, Slack, Signal, iMessage, IRC, and Google Chat), marketing campaign tools, Google Drive backups, and agentic AI reasoning.
+The platform follows the B2C multi-tenant pattern: every user is isolated via their `userId`, all data is tagged per-user in Firestore, and the authorization layer ensures User A cannot access User B's data. There are no teams, orgs, or admin roles — the user IS the tenant.
 
 ## Target Audience
 
 - **Small to Medium Businesses (SMBs):** Needing automated customer support and engagement tools.
-- **Marketing Agencies:** Managing multiple client WhatsApp accounts for campaigns.
+- **Marketing Agencies:** Managing multiple client messaging accounts for campaigns.
 - **Individual Power Users:** Developers or entrepreneurs automating personal or business workflows.
-- **Enterprises:** Requiring a robust, scalable solution for high-volume messaging and team collaboration.
+- **Enterprises:** Requiring a robust, scalable solution for high-volume messaging across channels.
 
 ## Core Features
 
-### 1. User & Workspace Management
+### 1. User & Account Management
 
-- **Self-Service Onboarding:** Fast, "one-click" onboarding via Google OAuth or Email/Password, featuring automated workspace provisioning for immediate platform access.
-- **Multi-Tenancy:** Data isolation per customer using a subcollection pattern in Firestore.
+- **Self-Service Onboarding:** Fast, "one-click" onboarding via Google OAuth or Email/Password with automated account provisioning.
+- **B2C Isolation:** Every resource (channels, agents, sessions, messages) is scoped to the user's `userId` in Firestore. Shared infrastructure, authorization-enforced walls.
 - **Dashboard:** Centralized hub for metrics, bot status, and account settings.
 
 ### 2. Channel Management
 
-- **Connectivity Slots:** Users can easily link their WhatsApp account via QR code, or connect Telegram, Discord, and Slack channels using API tokens.
-- **Expanded Reach:** Native support for Signal, iMessage, IRC, and Google Chat, ensuring true omnichannel coverage.
-- **Webhook Mode:** Support for connectivity-only use cases where incoming messages are forwarded to external webhooks without AI intervention (standard for Free Tier).
-- **Unified Agent Orchestration:** A consolidated "Brain + Phone" architecture where independent AI personas (Agents) act as the parent for one or more Channels (Connectivity Slots).
-- **Dynamic Binding:** Ability to hot-swap Agents across Channels instantly without disconnecting the underlying platform session.
-- **Advanced Lifecycle:** Fine-grained control over channel states with options to stop, delete, or archive (preserve history) connectivity slots.
-- **Autonomous Multi-Agent Orchestration:** High-intelligence orchestration supporting recursive reasoning loops and dynamic sub-agent spawning.
-- **Real-time AI Transparency:** Live streaming of AI thought processes, tool invocations, and reasoning stages via WebSockets, eliminating simulated delays.
-- **Active Knowledge Matrix (RAG):** Secure, tenant-specific semantic search and long-term memory for agents using integrated vector stores.
-- **Media Fidelity:** Support for **Opus-encoded WhatsApp voice notes** for superior audio quality and compatibility.
+Powered by **OpenClaw's channel plugin system** (40+ extensions) — DeXMart does not rebuild channel adapters.
+
+- **Connectivity Slots:** Link WhatsApp via QR code, connect Telegram, Discord, Slack, Signal, and 35+ other platforms via OpenClaw's native channel plugins.
+- **Webhook Mode:** Support for connectivity-only use cases where incoming messages are forwarded to external webhooks without AI intervention.
+- **Unified Agent Orchestration:** AI Agents (managed per-user) act as the parent for one or more Channels.
+- **Dynamic Binding:** Hot-swap Agents across Channels instantly without disconnecting the underlying platform session.
+- **Channel Health Monitor:** OpenClaw's native health monitoring with stale socket detection, restart cooldowns, and max-restarts-per-hour caps — enhanced with user-scoping.
+
+### 3. AI Agent System
+
+Powered by **OpenClaw's pi-embedded-runner** — DeXMart does not maintain a separate AI brain.
+
+- **13+ Model Providers:** Anthropic, OpenAI, Google Gemini, AWS Bedrock, Ollama, HuggingFace, and more — all via OpenClaw's model selection system.
+- **Model Fallback Chains:** If one model fails, the engine automatically tries the next in the chain.
+- **Billing-Gated Model Access:** The `UserContext` capabilities filter determines which models each subscription tier can use.
+- **Autonomous Multi-Agent Orchestration:** Recursive reasoning loops and dynamic sub-agent spawning via OpenClaw's subagent registry.
+- **Real-time AI Transparency:** Live streaming of AI thought processes, tool invocations, and reasoning stages via WebSockets (Mastermind Stream).
+- **Tool System:** OpenClaw's native tool/skill system. DeXMart-exclusive tools (campaigns, anti-ban) register as first-class tools alongside OpenClaw's built-in tools.
 
 ### Core Pillars
 
-1. **Omnichannel Mastery:** Unified management of all messaging platforms within a single, coherent dashboard.
-2. **Mastermind Intelligence:** Leveraging Gemini 2.0/OpenClaw for adaptive reasoning, autonomous orchestration, and real-time execution.
-3. **Fact-Based Transparency:** Providing live, granular monitoring of AI reasoning to build user trust and ensure system integrity.
-4. **Active Knowledge Matrix:** Powering agents with real-world context and tenant-specific data via RAG.
-5. **Enterprise-Grade Infrastructure:** Built for high volume, multi-tenancy, and strict security compliance.
+1. **Omnichannel Mastery:** Unified management of all messaging platforms within a single dashboard.
+2. **OpenClaw Engine:** Battle-tested agent runtime with 13+ model providers, 40+ channel extensions, and full tool orchestration.
+3. **Fact-Based Transparency:** Live, granular monitoring of AI reasoning to build user trust.
+4. **B2C Isolation:** Every user's data is private, enforced by the authorization layer.
+5. **Billing-Gated Access:** Subscription tiers control which models, channels, features, and tools are available.
 
-### 3. Messaging & Automation
+### 4. Messaging & Automation
 
-- **Omnichannel Unified Inbox:** A single, filtered interface for viewing and managing conversation history across all connected platforms (WhatsApp, Telegram, Discord, Slack, Signal, Google Chat, iMessage, and IRC), tracked by channel type and assigned agent.
-- **Broadcast/Marketing:** High-performance engine using **BullMQ** for reliable background processing. Supports **Hybrid Distribution** (Single Bot vs Multi-Bot Pooling) and **Intelligent Throttling** with randomized delays to maximize deliverability.
-- **Visual Automation (FlowBuilder 2.0):** No-code visual orchestrator for designing complex, multi-step conversation logic. Supports **Skill Nodes** for triggering agentic AI tools (Web Search, Image Gen) with dynamic parameter configuration directly on the canvas.
-- **Rich Templates:** Manage media-heavy templates with dynamic variable injection (`{{name}}`, `{{phone}}`) and **AI Message Spinning** (Enterprise only) to prevent account bans.
-- **Auto-Replies:** Set up automated responses based on keywords or triggers.
+- **Omnichannel Unified Inbox:** A single interface for viewing and managing conversations across all connected platforms, tracked by channel type and assigned agent.
+- **Broadcast/Marketing:** High-performance campaign engine using BullMQ for reliable background processing with intelligent throttling and randomized delays.
+- **Visual Automation (FlowBuilder 2.0):** No-code visual orchestrator for designing complex, multi-step conversation logic with skill nodes for triggering agentic AI tools.
+- **Rich Templates:** Manage media-heavy templates with dynamic variable injection and AI Message Spinning (Pro+ tier) to prevent account bans.
+- **Auto-Replies:** OpenClaw's native auto-reply system, configured per-user.
 
-### 4. Advanced Features (Premium)
+### 5. DeXMart-Exclusive Features (Not in OpenClaw)
 
-- **AI Integration:** Leverage Google Gemini as a platform-agnostic "Mastermind" capable of autonomous reasoning and tool usage across all channels.
-- **Skills Platform:** Integrated OpenClaw skills (Web Search, Code Analysis, etc.) gated by subscription tiers.
-- **Unified Tool Registry:** A seamless merge of legacy DeXMart utility commands and OpenClaw agentic skills, enabling the AI to pick the best tool for the task.
-- **Contextual Memory:** Platform-scoped conversation history ensuring that AI interactions remain private and relevant to each specific chat (e.g., WhatsApp vs Telegram).
-- **AI Persistent Learning:** Agents autonomously learn and recall user-specific facts and preferences across sessions, enabling a personalized "Mastermind" experience.
-- **Backups:** Automated system backups to Google Drive, ensuring user data and configuration safety.
-- **Contact Management:** Import and organize contacts across all channels for targeted campaigns.
-- **Analytics:** Detailed tracking of message delivery, response rates, and channel performance.
+| Feature | Module | Purpose |
+|---|---|---|
+| Firebase/Firestore | `src/persistence/` | Cloud persistence, user data isolation |
+| Stripe Billing | `src/billing/` | Subscriptions, plan gating |
+| UserContext + AuthGuard | `src/tenancy/` | B2C isolation, feature permission checks |
+| Campaign Engine | `src/campaigns/` | Bulk messaging with anti-ban throttling |
+| Anti-Ban System | `src/safety/anti-ban.ts` | Rate limiting, message spinning |
+| Content Moderation | `src/safety/content-moderation.ts` | Safety filters |
+| AI Analytics | `src/analytics/` | Usage tracking, audit trail |
+| Mastermind Stream | `src/analytics/mastermind-stream.ts` | Real-time reasoning visibility |
+| Ingress Routing | `src/ingress/` | Omnichannel message routing |
+| Agent CRUD | `src/agents-management/` | Multi-agent management per user |
+| Dashboard | `frontend/` | Next.js management UI |
 
-### 5. Infrastructure & Monetization
+### 6. Infrastructure & Monetization
 
-- **Payments:** Integrated Stripe subscription management for tier upgrades.
-- **Scalability:** Built on a decoupled frontend/backend architecture with Redis caching and efficient worker queues.
-- **Security:** Zero-trust data layer with Zod validation and strict Firestore security rules.
+- **Payments:** Integrated Stripe subscription management with four tiers (Free, Starter, Pro, Enterprise).
+- **Scalability:** Single unified codebase (OpenClaw engine + DeXMart platform) with Redis caching and BullMQ worker queues.
+- **Security:** Zero-trust data layer with Zod validation, AuthGuard for user isolation, and Firestore security rules.
+- **Managed Fork:** OpenClaw upstream tracked as git remote. Security patches cherry-picked, new features manually adapted.
 
 ## Vision
 
-To build a "Pixel Perfect", scalable, and reliable SaaS platform that democratizes access to powerful omnichannel AI automation tools, adhering to modern engineering standards (Next.js 16, FSD, Strict TypeScript) and providing a seamless user experience from onboarding to advanced automation.
+To build a scalable and reliable B2C SaaS platform that democratizes access to powerful omnichannel AI automation tools, powered by the OpenClaw engine with DeXMart's user-level isolation and subscription billing on top.

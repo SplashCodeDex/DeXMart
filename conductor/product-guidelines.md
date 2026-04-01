@@ -24,8 +24,8 @@
 
 ## 4. Product Logic & Tiers
 
-- **Workspace-Centric:** All UI and logic must reflect the tenant's workspace. Users should feel their environment is dedicated and secure.
-- **Tier-Aware UI:** Feature availability must be clearly communicated. Provide clear "Upgrade" paths for premium features (e.g., secondary channel slots, advanced AI features) without being intrusive.
+- **User-Centric:** All UI and logic is scoped to the individual user (B2C model). Users should feel their environment is personal, private, and secure — like Spotify or CapCut.
+- **Tier-Aware UI:** Feature availability must be clearly communicated via the `UserContext.capabilities`. Provide clear "Upgrade" paths for premium features (e.g., additional channel slots, advanced AI models) without being intrusive.
 - **Initialization Clarity:** The process of linking a WhatsApp Channel (QR Scan/Pairing Code) must be the most polished and guided experience in the app.
 
 ## 5. Animation & Motion
