@@ -6,3 +6,4 @@ packages:
   - openclaw/ui
   - openclaw/packages/*
   - openclaw/extensions/*
+  - extensions/*
