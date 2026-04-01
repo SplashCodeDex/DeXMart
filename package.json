@@ -15,14 +15,18 @@
     "test:all": "pnpm --filter backend test && pnpm --filter frontend test",
     "typecheck": "pnpm --filter backend typecheck",
     "test:run": "pnpm --filter backend test:run",
+    "test": "vitest",
     "sync:report": "tsx scripts/automation/upstream-watcher.ts"
   },
   "devDependencies": {
     "@claude-flow/aidefence": "^3.0.2",
     "@claude-flow/memory": "3.0.0-alpha.12",
     "@types/node": "^25.3.5",
+    "@vitest/coverage-v8": "^4.0.18",
     "lightningcss": "^1.30.2",
-    "tsx": "^4.21.0"
+    "tsx": "^4.21.0",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^4.1.2"
   },
   "pnpm": {
     "minimumReleaseAge": 2880,
