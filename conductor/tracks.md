@@ -18,6 +18,9 @@ This file tracks all major tracks for the project. Each track has its own detail
 ### [x] Track: WhatsApp Resilience & 50+ Defeating Scenarios
 *Link: [./tracks/whatsapp_resilience_20260310/](./tracks/whatsapp_resilience_20260310/)*
 
+### [ ] Track: TRUE Fusion Phase 2: Inject UserContext into OpenClaw engine for B2C multi-tenancy and billing gating
+*Link: [./tracks/fusion_phase_2_20260401/](./tracks/fusion_phase_2_20260401/)*
+
 ---
 
 ## Archived Tracks
