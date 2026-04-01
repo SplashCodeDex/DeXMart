@@ -1,24 +1,25 @@
 /**
- * TenantContext — The Core Abstraction for DeXMart's Multi-Tenant Architecture
+ * UserContext — The Core Authorization Abstraction for DeXMart
  * 
- * This flows through EVERY tenant-scoped request. It replaces OpenClaw's
- * global loadConfig() with per-tenant resolution from Firestore.
+ * DeXMart follows the B2C multi-tenant model (like Spotify, CapCut, Notion):
+ * - The User IS the Tenant — no teams, no orgs, no admin/editor roles
+ * - Every piece of data (channels, agents, sessions, messages) is tagged with userId
+ * - Shared infrastructure — same app, same database for everyone
+ * - Logical isolation — the authorization layer ensures User A can't touch User B's data
  * 
- * This is NOT a plugin. This is NOT optional. This is the foundation
- * that makes OpenClaw's single-tenant engine work for multiple tenants.
- * 
- * Think of it like: OpenClaw is the engine, TenantContext is the key
- * that tells the engine WHO it's running for.
+ * This context flows through EVERY request. OpenClaw's engine functions receive
+ * it to know WHO they're operating for, and the billing gate checks WHAT
+ * the user's plan allows.
  */
 
 export type PlanTier = 'free' | 'starter' | 'pro' | 'enterprise';
 
-export interface TenantCapabilities {
-  /** Which AI model providers this tenant can use */
+export interface UserCapabilities {
+  /** Which AI model providers this user can access based on their plan */
   models: string[];
-  /** Maximum simultaneous channels */
+  /** Maximum simultaneous channels this user can have */
   maxChannels: number;
-  /** Maximum agents per tenant */
+  /** Maximum agents per user */
   maxAgents: number;
   /** Monthly message cap (-1 = unlimited) */
   maxMessagesPerMonth: number;
@@ -40,7 +41,7 @@ export interface TenantCapabilities {
   };
 }
 
-export interface TenantUsage {
+export interface UserUsage {
   /** Messages sent this billing period */
   messagesThisPeriod: number;
   /** Currently active channels */
@@ -55,81 +56,164 @@ export interface TenantUsage {
   periodEnd: Date;
 }
 
-export interface TenantBillingState {
+export interface UserSubscription {
   /** Stripe customer ID */
   stripeCustomerId: string | null;
   /** Stripe subscription ID */
   stripeSubscriptionId: string | null;
   /** Whether the subscription is active */
   isActive: boolean;
-  /** Whether the tenant is in a trial period */
+  /** Whether the user is in a trial period */
   isTrial: boolean;
   /** Trial end date if applicable */
   trialEndsAt: Date | null;
-  /** Whether the tenant has exceeded their usage limits */
+  /** Whether the user has exceeded their usage limits */
   isOverLimit: boolean;
 }
 
 /**
- * TenantContext is the single object that flows through every
- * tenant-scoped operation in the DeXMart system.
+ * UserContext is the single object that flows through every
+ * user-scoped operation in DeXMart.
  * 
- * - Gateway receives a request → resolves TenantContext from auth token
- * - Channel receives a message → resolves TenantContext from channel mapping
- * - Agent starts a run → receives TenantContext for model gating
- * - Tool executes → receives TenantContext for feature permission check
+ * How it gets created:
+ * - Gateway receives a request → JWT decoded → userId extracted → UserContext resolved from Firestore
+ * - Channel receives a message → channelId maps to userId → UserContext resolved
+ * - Agent starts a run → UserContext passed for model gating
+ * - Tool executes → UserContext checked for feature permissions
+ * 
+ * How data is isolated:
+ * - Every Firestore document is stored under /users/{userId}/...
+ * - Every query filters by userId
+ * - Every write tags with userId
+ * - If resource.userId !== context.userId → 403 Forbidden
  */
-export interface TenantContext {
-  /** Unique tenant identifier (Firestore document ID) */
-  tenantId: string;
-  
-  /** Human-readable tenant name */
-  name: string;
-  
-  /** Current billing plan tier */
+export interface UserContext {
+  /** 
+   * Unique user identifier (Firestore document ID).
+   * This is the ISOLATION KEY — every piece of data is tagged with this.
+   * Maps to what was previously called "tenantId" in the codebase.
+   */
+  userId: string;
+
+  /** User's display name */
+  displayName: string;
+
+  /** User's email */
+  email: string;
+
+  /** Current subscription plan tier */
   plan: PlanTier;
-  
+
   /** Resolved capabilities based on plan */
-  capabilities: TenantCapabilities;
-  
+  capabilities: UserCapabilities;
+
   /** Current usage counters (cached, refreshed periodically) */
-  usage: TenantUsage;
-  
-  /** Billing state */
-  billing: TenantBillingState;
-  
-  /** Tenant-level metadata */
-  metadata: {
+  usage: UserUsage;
+
+  /** Subscription state */
+  subscription: UserSubscription;
+
+  /** Account metadata */
+  meta: {
     createdAt: Date;
     lastActiveAt: Date;
-    region: string;
     timezone: string;
   };
 }
 
 /**
- * Resolves a TenantContext from various input sources.
- * Used by the gateway, channel adapters, and ingress handlers.
+ * Resolves a UserContext from various input sources.
+ * Used by the gateway, channel handlers, and ingress service.
  */
-export interface TenantContextResolver {
-  /** Resolve from a tenant ID (Firestore lookup) */
-  fromTenantId(tenantId: string): Promise<TenantContext>;
-  
-  /** Resolve from a JWT token (decode → extract tenantId → resolve) */
-  fromToken(token: string): Promise<TenantContext>;
-  
-  /** Resolve from a channel mapping (channelId → tenantId → resolve) */
-  fromChannelId(channelId: string): Promise<TenantContext>;
-  
-  /** Check if a tenant exists and is active */
-  isActive(tenantId: string): Promise<boolean>;
+export interface UserContextResolver {
+  /** Resolve from a user ID (Firestore lookup: /users/{userId}) */
+  fromUserId(userId: string): Promise<UserContext>;
+
+  /** Resolve from a JWT token (decode → extract userId → resolve) */
+  fromToken(token: string): Promise<UserContext>;
+
+  /** 
+   * Resolve from a channel ID.
+   * Channels are stored under /users/{userId}/agents/{agentId}/channels/{channelId}
+   * This reverse-looks up the userId from the channel mapping.
+   */
+  fromChannelId(channelId: string): Promise<UserContext>;
+
+  /** Check if a user account exists and is active */
+  isActive(userId: string): Promise<boolean>;
+}
+
+/**
+ * Authorization guard — the "wall" between users.
+ * Every data access goes through this.
+ * 
+ * Usage:
+ *   const guard = createAuthGuard(currentUser);
+ *   guard.assertOwns(channel); // throws 403 if channel.userId !== currentUser.userId
+ *   guard.canUseModel('claude-sonnet-4-20250514'); // checks plan capabilities
+ *   guard.canStartChannel(); // checks maxChannels vs activeChannels
+ */
+export interface AuthGuard {
+  /** Assert that the current user owns this resource */
+  assertOwns(resource: { userId: string }): void;
+
+  /** Check if the user's plan allows this AI model */
+  canUseModel(modelId: string): boolean;
+
+  /** Check if the user can start another channel */
+  canStartChannel(): boolean;
+
+  /** Check if the user can create another agent */
+  canCreateAgent(): boolean;
+
+  /** Check if the user can send another message (within monthly limit) */
+  canSendMessage(): boolean;
+
+  /** Check if a specific feature is available on the user's plan */
+  hasFeature(feature: keyof UserCapabilities['features']): boolean;
+}
+
+export function createAuthGuard(ctx: UserContext): AuthGuard {
+  return {
+    assertOwns(resource: { userId: string }): void {
+      if (resource.userId !== ctx.userId) {
+        throw Object.assign(
+          new Error(`Forbidden: user ${ctx.userId} does not own this resource`),
+          { statusCode: 403 },
+        );
+      }
+    },
+
+    canUseModel(modelId: string): boolean {
+      return ctx.capabilities.models.includes(modelId);
+    },
+
+    canStartChannel(): boolean {
+      if (ctx.capabilities.maxChannels === -1) return true; // unlimited
+      return ctx.usage.activeChannels < ctx.capabilities.maxChannels;
+    },
+
+    canCreateAgent(): boolean {
+      if (ctx.capabilities.maxAgents === -1) return true;
+      return ctx.usage.activeAgents < ctx.capabilities.maxAgents;
+    },
+
+    canSendMessage(): boolean {
+      if (ctx.capabilities.maxMessagesPerMonth === -1) return true;
+      return ctx.usage.messagesThisPeriod < ctx.capabilities.maxMessagesPerMonth;
+    },
+
+    hasFeature(feature: keyof UserCapabilities['features']): boolean {
+      return ctx.capabilities.features[feature] === true;
+    },
+  };
 }
 
 /**
  * Plan tier definitions with their capability sets.
- * These are the source of truth for what each plan provides.
+ * Source of truth for what each plan provides.
  */
-export const PLAN_CAPABILITIES: Record<PlanTier, TenantCapabilities> = {
+export const PLAN_CAPABILITIES: Record<PlanTier, UserCapabilities> = {
   free: {
     models: ['gemini-2.0-flash'],
     maxChannels: 1,
@@ -171,7 +255,10 @@ export const PLAN_CAPABILITIES: Record<PlanTier, TenantCapabilities> = {
     },
   },
   pro: {
-    models: ['gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-2.5-pro', 'claude-sonnet-4-20250514', 'gpt-4o'],
+    models: [
+      'gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-2.5-pro',
+      'claude-sonnet-4-20250514', 'gpt-4o',
+    ],
     maxChannels: 10,
     maxAgents: 5,
     maxMessagesPerMonth: 50_000,
@@ -191,11 +278,15 @@ export const PLAN_CAPABILITIES: Record<PlanTier, TenantCapabilities> = {
     },
   },
   enterprise: {
-    models: ['gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-2.5-pro', 'claude-sonnet-4-20250514', 'claude-opus-4-20250514', 'gpt-4o', 'gpt-4.1'],
-    maxChannels: -1, // unlimited
-    maxAgents: -1,   // unlimited
-    maxMessagesPerMonth: -1, // unlimited
-    maxSkills: -1,   // unlimited
+    models: [
+      'gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-2.5-pro',
+      'claude-sonnet-4-20250514', 'claude-opus-4-20250514',
+      'gpt-4o', 'gpt-4.1',
+    ],
+    maxChannels: -1,
+    maxAgents: -1,
+    maxMessagesPerMonth: -1,
+    maxSkills: -1,
     features: {
       campaigns: true,
       antiBan: true,
