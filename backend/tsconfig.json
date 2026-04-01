@@ -12,15 +12,17 @@
     "resolveJsonModule": true,
     "noImplicitAny": true,
     "isolatedModules": true,
+    "incremental": true,
+    "tsBuildInfoFile": "./.tsbuildinfo",
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "openclaw": ["../openclaw/dist/index.d.ts"],
-      "openclaw/*": ["../openclaw/dist/*.d.ts", "../openclaw/dist/*"]
+      "openclaw": ["../openclaw/src/index.ts"],
+      "openclaw/*": ["../openclaw/src/*"]
     },
     "allowJs": false,
     "checkJs": false
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "**/*.test.ts"]
+  "exclude": ["node_modules", "dist", "**/*.test.ts"]
 }

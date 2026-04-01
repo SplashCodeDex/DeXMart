@@ -212,7 +212,7 @@ export class PerformanceMonitor extends EventEmitter {
     // Emit metric event
     this.emit('metric', metric);
 
-    logger.performance(name, value, metadata);
+    logger.performance(name, value, { ...metadata, unit });
   }
 
   collectSystemMetrics() {

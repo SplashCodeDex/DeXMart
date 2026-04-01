@@ -1,6 +1,7 @@
 import path from 'node:path';
 import winston from 'winston';
 import fs from 'node:fs';
+import DailyRotateFile from 'winston-daily-rotate-file';
 import { SERVER_CONFIG } from '../config/constants.js';
 
 // Define log levels
@@ -40,8 +41,11 @@ const winstonLogger = winston.createLogger({
       level: process.env.CONSOLE_LOG_LEVEL || 'info',
       format: winston.format.combine(winston.format.colorize(), winston.format.simple()),
     }),
-    new winston.transports.File({
-      filename: path.join(process.cwd(), SERVER_CONFIG.LOG_DIR, 'app.log'),
+    new DailyRotateFile({
+      filename: path.join(process.cwd(), SERVER_CONFIG.LOG_DIR, 'app-%DATE%.log'),
+      datePattern: 'YYYY-MM-DD',
+      maxSize: '20m',
+      maxFiles: '14d',
       level: 'debug',
       format: winston.format.combine(
         winston.format.timestamp(),
@@ -49,8 +53,11 @@ const winstonLogger = winston.createLogger({
         winston.format.json()
       ),
     }),
-    new winston.transports.File({
-      filename: path.join(process.cwd(), SERVER_CONFIG.LOG_DIR, 'error.log'),
+    new DailyRotateFile({
+      filename: path.join(process.cwd(), SERVER_CONFIG.LOG_DIR, 'error-%DATE%.log'),
+      datePattern: 'YYYY-MM-DD',
+      maxSize: '20m',
+      maxFiles: '14d',
       level: 'error',
       format: winston.format.combine(
         winston.format.timestamp(),
@@ -58,8 +65,11 @@ const winstonLogger = winston.createLogger({
         winston.format.json()
       ),
     }),
-    new winston.transports.File({
-      filename: path.join(process.cwd(), SERVER_CONFIG.LOG_DIR, 'http.log'),
+    new DailyRotateFile({
+      filename: path.join(process.cwd(), SERVER_CONFIG.LOG_DIR, 'http-%DATE%.log'),
+      datePattern: 'YYYY-MM-DD',
+      maxSize: '20m',
+      maxFiles: '14d',
       level: 'http',
       format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
     }),
@@ -159,7 +169,9 @@ const enhancedLogger: Logger = {
   },
 
   performance: (operation, duration, metadata) => {
-    winstonLogger.info(`Performance: ${operation} took ${duration}ms`, { operation, duration, ...toMeta(metadata) });
+    const meta: any = toMeta(metadata) || {};
+    const unit = meta.unit || 'ms';
+    winstonLogger.info(`Performance: ${operation} = ${duration} ${unit}`, { operation, duration, ...meta });
   },
 
   security: (event, userId = null, details) => {

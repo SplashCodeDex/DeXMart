@@ -39,6 +39,22 @@ function getDbInstance(): admin.firestore.Firestore {
                 if (projectId) {
                     options.projectId = projectId;
                 }
+                // Defense-in-depth: try reading project_id from service account file directly
+                if (!options.projectId) {
+                    const saPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH;
+                    if (saPath) {
+                        try {
+                            const sa = JSON.parse(readFileSync(saPath, 'utf8'));
+                            if (sa.project_id) {
+                                options.projectId = sa.project_id;
+                                logger.warn(`⚠️ FIREBASE_SERVICE_ACCOUNT_PATH was set in env but not loaded by ConfigService. Read project_id="${sa.project_id}" directly from file as fallback.`);
+                            }
+                        } catch { /* non-fatal — file may not exist */ }
+                    }
+                    if (!options.projectId) {
+                        logger.error('❌ No Firebase Project ID available. Firestore queries will fail. Check FIREBASE_SERVICE_ACCOUNT_PATH or FIREBASE_PROJECT_ID.');
+                    }
+                }
             }
 
             logger.info('Initializing Firebase Admin...');

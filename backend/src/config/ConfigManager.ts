@@ -342,7 +342,14 @@ export class ConfigManager {
 
     if (this.environment !== 'test') {
       if (!this.env.JWT_SECRET || this.env.JWT_SECRET === 'secret') {
-        logger.warn('⚠️ JWT_SECRET is missing or using default value!');
+        const msg = '⚠️ JWT_SECRET is missing or using default value! Tokens will be signed with an insecure key.';
+        if (this.environment === 'production') {
+          logger.error(msg);
+          throw new Error('JWT_SECRET must be set to a secure value in production');
+        }
+        logger.warn(msg);
+      } else {
+        logger.debug(`🔐 JWT_SECRET loaded (${this.env.JWT_SECRET.length} chars)`);
       }
     }
 
