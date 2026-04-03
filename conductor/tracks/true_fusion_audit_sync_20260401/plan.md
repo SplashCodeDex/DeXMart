@@ -3,7 +3,7 @@
 ## Phase 1: Deep Audit, Deduplication & Clean Up
 Goal: Verify 100% code parity, merge overlapping logic, and remove all "bridge" structures.
 
-- [ ] Task: Audit and **Deduplicate** logic in `src/`: ensure DeXMart patterns (multi-tenant, Firestore) are the *default* and not "wrappers". Merge overlapping functions from `openclaw/src/` and `backend/src/` into unified versions in root `src/`.
+- [~] Task: Audit and **Deduplicate** logic in `src/`: ensure DeXMart patterns (multi-tenant, Firestore) are the *default* and not "wrappers". Merge overlapping functions from `openclaw/src/` and `backend/src/` into unified versions in root `src/`.
 - [ ] Task: Resolve and **Eliminate all "Bridge" patterns**: remove any remaining wrapper classes, "imports" shims, or "in-between" logic that was used to connect separate projects. Ensure imports are direct and internal to the single `src/` tree.
 - [ ] Task: Delete redundant legacy directories: `openclaw/` and `backend/`.
 - [ ] Task: Execute the full test suite (`npm test`) to confirm zero regressions after the logic harmonization and cleanup.

@@ -4,62 +4,58 @@ description: Project coding standards and architectural rules for DeXMart
 
 # DeXMart Project Rules (2026 Mastermind Edition)
 
-See [ARCHITECTURE.md](file:///w:/CodeDeX/DeXMart/ARCHITECTURE.md) for system overview.
-See [frontend/ARCHITECTURE.md](file:///w:/CodeDeX/DeXMart/frontend/ARCHITECTURE.md) for detailed frontend documentation.
+## 0. The Fusion Principle — One Project
 
-## 0. The Fusion Principle (DeXMart ⊕ OpenClaw)
+**FOUNDATIONAL RULE** — DeXMart is **one project**. OpenClaw is the upstream heritage (the foundation it was built on), not a separate entity. After fusion, there is no "OpenClaw side" and "DeXMart side" — there is only DeXMart.
 
-**FOUNDATIONAL RULE** — DeXMart and OpenClaw are being woven into a **single unified product**. Neither replaces the other. They merge, each contributing its strongest capabilities.
+### Non-Negotiable Rules
 
-- **DeXMart = face + brain** — SaaS frontend, multi-tenant architecture, AI intelligence (intent detection, RAG, anti-ban), dashboard UI, Firestore persistence.
-- **OpenClaw = engine + muscles** — Multi-channel gateway (WhatsApp, Telegram, Discord, Slack, Signal, iMessage), plugin system, agent framework, CLI/TUI developer tools.
+1. **Zero duplication** — Every function, feature, and service exists exactly once, in one place. No mirrors, no copies.
+2. **No bridges** — No wrappers, adapters, shims, or bridge files. Code calls code directly via `@dexmart/*` or `@/*` imports.
+3. **Frontend dominates** — Every backend capability is accessible through the DeXMart Next.js dashboard. If the engine can do it, the dashboard surfaces it.
+4. **Centralized elevation** — Monetization (Stripe), tenant auth (Firebase), cloud persistence (Firestore), and DeXMart-exclusive features apply to the **entire** project — they are core infrastructure, not plugins.
+5. **One codebase** — Everything lives in `src/`. No `backend/src/` mirrors, no `openclaw/src/` references at runtime.
 
-### Fusion Rules
+### Import Pattern (Post-Fusion)
 
-1. **Never subtract, always weave** — Don't rip out modules to "clean up." Bridge DeXMart services to consume OpenClaw's engine through adapters.
-   - **CRITICAL IMPORT PATTERN (BACKEND)**: Never import directly from the `openclaw` package name in `backend/` files, as `tsx` will try to compile its source and fail on CJS interop for transitive dependencies. Instead, ALWAYS use the centralized `backend/src/utils/openclawImports.ts` utility (e.g., `const { sendMessageTelegram } = await getTelegramSend();`).
-2. **Best-of-both wins** — When both stacks solve the same problem, pick the stronger implementation and adapt the other side to use it.
-3. **Shared seams, not shared code** — Integrate through well-defined interfaces (`ChannelAdapter`, gateway API), not by merging internal code.
-4. **Respect ownership** — Frontend, multi-tenancy, and AI live in DeXMart. Channel engines, gateway, and tooling live in OpenClaw.
+All code lives in the unified `src/` tree. Use path aliases:
 
-### OpenClaw Source Integration (Direct Imports)
-
-`openclaw/dist/` is **NOT required for development**. The backend imports OpenClaw
-modules directly from their TypeScript source files via relative paths
-(`../../../openclaw/src/...`), using the centralized `backend/src/utils/openclawImports.ts` utility.
-
-**⚠️ NEVER import from the `openclaw` package name or its barrel `index.ts`.**
-The barrel has side effects (loadDotEnv, normalizeEnv, buildProgram) that conflict
-with DeXMart's own initialization, and it pulls in CJS-only transitive dependencies
-that crash tsx's ESM interop.
-
-**Import pattern:**
 ```typescript
-// ✅ CORRECT — use openclawImports.ts utility (resolves to source)
-import { getTelegramSend, getCreateOpenClawTools } from '@/utils/openclawImports.js';
+// ✅ CORRECT — unified src/ imports
+import { AgentService } from '@dexmart/services/AgentService.js';
+import { useChannelAuthState } from '@dexmart/persistence/channel-auth-state.js';
+import { filterModelsForUser } from '@dexmart/billing/auth-guard.js';
 
-// ✅ CORRECT — direct source import for gateway-level modules
-await import('../../../openclaw/src/config/config.js');
-
-// ❌ WRONG — triggers side effects + CJS crash
-import { createOpenClawTools } from 'openclaw';
+// ❌ WRONG — these are dead patterns from pre-fusion era
+import { something } from 'openclaw';                    // Package doesn't exist at runtime
+import { something } from '@/utils/openclawImports.js';  // Deleted in Phase 1
+import { something } from '../../../openclaw/src/...';   // Relative paths to openclaw/
 ```
 
-Building `dist/` is only needed when publishing openclaw as a standalone npm package.
+### Upstream Sync (Invisible to the Product)
+
+OpenClaw upstream is tracked as a git remote for cherry-picking security patches. This is an implementation detail — no developer needs to know or care about it during normal work. See `docs/architecture/FUSION_STRATEGY.md` for the sync protocol.
 
 ---
 
 ## Tech Stack
 
-- **Backend**: Node.js 24+, Express, Baileys (WhatsApp)
-- **Runtime**: `tsx` (TypeScript Execute) - **STRICT: DO NOT use ts-node**
-- **Frontend**: Next.js 16+ (App Router), React 19 (Compiler Enabled)
-- **Styling**: Tailwind CSS v4 (Zero Config), Framer Motion (Animations)
-- **State**: Server Actions (Mutations), URL State (Navigation), Zustand (Global)
+- **Runtime**: Node.js 24+ (Strict ESM) — `tsx` for dev — **STRICT: DO NOT use ts-node**
+- **Backend**: Express 5 (DeXMart API) + Hono (Gateway HTTP/WS) — unified in `src/`
+- **AI Runtime**: pi-embedded-runner (13+ model providers: Gemini, Claude, GPT, Ollama, etc.)
+- **Channels**: 40+ plugins (WhatsApp via Baileys 7, Telegram via grammY, Discord, Slack, Signal, etc.)
+- **Frontend**: Next.js 16+ (App Router, Turbopack, PPR), React 19 (Compiler Enabled)
+- **Styling**: Tailwind CSS v4 (Zero Config), Framer Motion 12 (Animations)
+- **State**: Server Actions (Mutations), URL State (Navigation), Zustand 5 (Global)
 - **Architecture**: Hybrid Feature-Sliced Design (FSD)
-- **Database**: Firebase (Firestore) - **Subcollection Multi-Tenancy Pattern**
-- **Validation**: Zod (Mandatory for all IO)
-- **Observability**: OpenTelemetry (Tracing/Metrics)
+- **Database**: Firebase Firestore — **B2C user-scoped: `users/{userId}/...`**
+- **Auth**: Firebase Auth (Gmail/email OAuth) + JWT
+- **Billing**: Stripe (plan-gated features, usage tracking)
+- **Validation**: Zod 4 (Mandatory for all IO)
+- **Caching**: Redis (ioredis) with node-cache fallback
+- **Jobs**: BullMQ (background processing)
+- **Real-time**: Socket.io (Mastermind Stream, channel status, QR codes)
+- **Observability**: OpenTelemetry (Tracing/Metrics), Pino (structured logging)
 
 ---
 
@@ -98,8 +94,9 @@ Building `dist/` is only needed when publishing openclaw as a standalone npm pac
 
 **Mandate**: Use the **Subcollection Pattern** for multi-tenancy.
 
-- **Hierarchy**: `tenants/{tenantId}/{collectionName}/{docId}`
-- **Security**: Rules must enforce `request.auth.uid` matches the tenant ownership.
+- **Hierarchy (B2C)**: `users/{userId}/{collectionName}/{docId}` — user IS the tenant
+- **Legacy paths**: `tenants/{tenantId}/...` still exist (migrating to `users/` in Phase 4)
+- **Security**: Firestore rules enforce `request.auth.uid == userId`. No cross-user access.
 - **Atomic Operations**: Use `writeBatch` for multi-document updates.
 
 ---
@@ -116,7 +113,7 @@ Building `dist/` is only needed when publishing openclaw as a standalone npm pac
 ### ESM Integrity (Rule 16)
 
 - **Mandatory Extensions**: All relative imports MUST include the `.js` extension.
-- **Module Resolution**: Use `@/` alias for all internal source paths.
+- **Module Resolution**: Use `@dexmart/*` or `@/*` aliases for all internal source paths (both resolve to `src/`).
 
 ---
 
@@ -124,7 +121,7 @@ Building `dist/` is only needed when publishing openclaw as a standalone npm pac
 
 - **Memoization**: Cache AI responses and expensive Firestore reads using the `CacheService` (Redis/Memory).
 - **Traces**: Every bot command must start an OpenTelemetry span.
-- **Automation**: If a task is repeated 3 times (e.g., fixing imports), **write a script** in `backend/scripts/` to automate it.
+- **Automation**: If a task is repeated 3 times (e.g., fixing imports), **write a script** in `scripts/` to automate it.
 
 ---
 
@@ -165,30 +162,7 @@ Building `dist/` is only needed when publishing openclaw as a standalone npm pac
 
 **Mandate**: We follow a **Hybrid Feature-Sliced Design**. Code is organized by **Domain**, not by Technology.
 
-### Directory Structure
 
-```
-src/
-├── app/                  # Route Definitions (Thin Wrappers)
-│   └── (dashboard)/      # Route Group
-│       └── bots/
-│           └── page.tsx  # Exports <BotsPage /> from features/
-├── features/             # Business Domains (The Core)
-│   ├── auth/             # Login, Register, Forgot Password
-│   ├── bots/             # Bot Management, Connections
-│   └── billing/          # Subscriptions, Invoices
-│   │   ├── components/   # Domain-specific UI
-│   │   ├── hooks/        # Domain logic
-│   │   ├── actions.ts    # Server Actions
-│   │   └── types.ts      # Domain schemas
-├── components/           # Shared UI
-│   ├── ui/               # Atomic Design System (Buttons, Inputs) - Pure & Dumb
-│   └── layouts/          # Structural Components (Sidebar, Header)
-├── lib/                  # Infrastructure (API Clients, Utils)
-├── server/               # Shared Server Logic (DAL)
-├── stores/               # Client State (Zustand)
-└── types/                # Shared TypeScript Types
-```
 
 ### Strict Rules
 
@@ -205,6 +179,7 @@ src/
     - Use strict Tailwind spacing tokens (e.g., `gap-4` not `gap-[15px]`).
     - All interactive elements must have: Hover, Active, and Focus-Visible states.
 7.  **No Emojis in UI**: NEVER use emojis in the UI. Always use proper SVG icons from `lucide-react` or custom icons from `components/ui/icons.tsx`. Emojis are only permitted if explicitly requested by the user.
+8. NO ASSUMPTIONS, NO GUESSING, JUST PURE INVESTIGATIONS
 
 ### State Management Hierarchy
 

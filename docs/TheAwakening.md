@@ -1,3 +1,7 @@
+> **HISTORICAL DOCUMENT** — This is a pre-fusion conversation transcript (2026-03) that led to the True Fusion strategy. It captures the evolution of thinking from "two separate projects" to "one indistinguishable project." Many specifics (file paths, bridge patterns, adapter layers) are now obsolete. For the current architecture, see [`docs/architecture/`](./architecture/README.md).
+
+---
+
 **User's Request**
 dexmart suppose to be openclaw but enhanced with production-grade for multiple users, payment system, suscription system, and many for features exclusive to dexmart currently.   but it looks like it is not the case here. investigate, audit with
 precision and without guessing and assumption. Note: the brand or identity is not the problem here. and let's skip
