@@ -87,10 +87,20 @@ async function safeSaveCreds(
  * Create a Baileys socket backed by the multi-file auth store we keep on disk.
  * Consumers can opt into QR printing for interactive login flows.
  */
+// ── DeXMart Fusion: Injectable Auth State (FR-2) ─────────────────────────────
+// authStateFactory allows callers with a userId to inject Firestore-backed auth
+// (useFirestoreChannelAuthState) instead of the default file-based auth.
+// OpenClaw's single-user CLI mode continues to use useMultiFileAuthState unchanged.
+export type WaAuthStateFactory = () => Promise<{
+  state: import("@whiskeysockets/baileys").AuthenticationState;
+  saveCreds: () => Promise<void>;
+}>;
+// ─────────────────────────────────────────────────────────────────────────────
+
 export async function createWaSocket(
   printQr: boolean,
   verbose: boolean,
-  opts: { authDir?: string; onQr?: (qr: string) => void } = {},
+  opts: { authDir?: string; onQr?: (qr: string) => void; authStateFactory?: WaAuthStateFactory } = {},
 ): Promise<ReturnType<typeof makeWASocket>> {
   const baseLogger = getChildLogger(
     { module: "baileys" },
@@ -100,10 +110,19 @@ export async function createWaSocket(
   );
   const logger = toPinoLikeLogger(baseLogger, verbose ? "info" : "silent");
   const authDir = resolveUserPath(opts.authDir ?? resolveDefaultWebAuthDir());
-  await ensureDir(authDir);
+
+  // If an authStateFactory is provided (multi-user/Firestore path), use it directly.
+  // Otherwise fall back to OpenClaw's default file-based auth (single-user CLI path).
+  let state: import("@whiskeysockets/baileys").AuthenticationState;
+  let saveCreds: () => Promise<void>;
+  if (opts.authStateFactory) {
+    ({ state, saveCreds } = await opts.authStateFactory());
+  } else {
+    await ensureDir(authDir);
+    maybeRestoreCredsFromBackup(authDir);
+    ({ state, saveCreds } = await useMultiFileAuthState(authDir));
+  }
   const sessionLogger = getChildLogger({ module: "web-session" });
-  maybeRestoreCredsFromBackup(authDir);
-  const { state, saveCreds } = await useMultiFileAuthState(authDir);
   const { version } = await fetchLatestBaileysVersion();
   const sock = makeWASocket({
     auth: {

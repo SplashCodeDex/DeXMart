@@ -1,15 +1,18 @@
 import type { VerboseLevel } from "../auto-reply/thinking.js";
+import { z } from "zod";
 
-export type AgentEventStream = "lifecycle" | "tool" | "assistant" | "error" | (string & {});
+export const AgentEventStreamSchema = z.enum(["lifecycle", "tool", "assistant", "error"]).or(z.string());
+export type AgentEventStream = z.infer<typeof AgentEventStreamSchema>;
 
-export type AgentEventPayload = {
-  runId: string;
-  seq: number;
-  stream: AgentEventStream;
-  ts: number;
-  data: Record<string, unknown>;
-  sessionKey?: string;
-};
+export const AgentEventPayloadSchema = z.object({
+  runId: z.string(),
+  seq: z.number(),
+  stream: AgentEventStreamSchema,
+  ts: z.number(),
+  data: z.record(z.string(), z.unknown()),
+  sessionKey: z.string().optional(),
+});
+export type AgentEventPayload = z.infer<typeof AgentEventPayloadSchema>;
 
 export type AgentRunContext = {
   sessionKey?: string;

@@ -11,7 +11,9 @@ import JobRegistry from './jobs/index.js';
 import { jobQueueService } from './services/jobQueue.js';
 import { validateEnvironmentOrThrow } from './utils/validateEnv.js';
 
-import { channelWatchdog } from './services/channels/ChannelWatchdog.js';
+import { channelService } from './services/ChannelService.js';
+import { startUsageFlushScheduler } from './billing/usage-tracker.js';
+import { startAgentEventListener, stopAgentEventListener } from './analytics/event-listener.js';
 
 /**
  * Main entry point for DeXMart
@@ -54,11 +56,18 @@ async function main() {
             await app.start();
             logger.info('>>> [MASTERMIND] MultiTenantApp started.');
 
-            // Start Auto-Healing Watchdog
-            channelWatchdog.start(60000); // Check every 60s
+            // Start Auto-Healing Watchdog (ChannelWatchdog dissolved into ChannelService)
+            channelService.startWatchdog(60_000); // Check every 60s
         } else {
             logger.info('🔕 Server disabled in configuration');
         }
+
+        // Start Phase 2 usage flush scheduler (batched Firestore writes every 10s)
+        const { db } = await import('./lib/firebase.js');
+        startUsageFlushScheduler(db as any);
+
+        // Wire agent event listener (infra/agent-events → MastermindStream → Socket.IO)
+        startAgentEventListener();
 
         logger.info('✨ DeXMart is ready!');
     } catch (error: any) {

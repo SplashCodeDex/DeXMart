@@ -1,6 +1,7 @@
 import { createRequire } from "node:module";
 import { resolveEffectiveMessagesConfig, resolveHumanDelayConfig } from "../../agents/identity.js";
 import { createMemoryGetTool, createMemorySearchTool } from "../../agents/tools/memory-tool.js";
+import type { MemorySearchManager } from "../../memory/types.js";
 import { handleSlackAction } from "../../agents/tools/slack-actions.js";
 import {
   chunkByNewline,
@@ -237,14 +238,18 @@ function loadWhatsAppActions() {
   return whatsappActionsPromise;
 }
 
-export function createPluginRuntime(): PluginRuntime {
+export function createPluginRuntime(opts?: {
+  /** Optional per-user memory manager (HybridMemoryAdapter).
+   *  When provided, memory tools use this instead of the default file-based manager. */
+  memoryManager?: MemorySearchManager;
+}): PluginRuntime {
   return {
     version: resolveVersion(),
     config: createRuntimeConfig(),
     system: createRuntimeSystem(),
     media: createRuntimeMedia(),
     tts: { textToSpeechTelephony },
-    tools: createRuntimeTools(),
+    tools: createRuntimeTools(opts?.memoryManager),
     channel: createRuntimeChannel(),
     logging: createRuntimeLogging(),
     state: { resolveStateDir },
@@ -277,7 +282,16 @@ function createRuntimeMedia(): PluginRuntime["media"] {
   };
 }
 
-function createRuntimeTools(): PluginRuntime["tools"] {
+function createRuntimeTools(memoryManager?: MemorySearchManager): PluginRuntime["tools"] {
+  // When a memoryManager is provided (e.g. HybridMemoryAdapter), wrap the tool
+  // factories to inject it automatically — plugins don't need to know it exists.
+  if (memoryManager) {
+    return {
+      createMemoryGetTool: (options) => createMemoryGetTool({ ...options, memoryManager }),
+      createMemorySearchTool: (options) => createMemorySearchTool({ ...options, memoryManager }),
+      registerMemoryCli,
+    };
+  }
   return {
     createMemoryGetTool,
     createMemorySearchTool,

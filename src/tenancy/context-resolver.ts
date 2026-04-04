@@ -4,11 +4,9 @@ import {
   PLAN_CAPABILITIES,
   PlanTier
 } from './tenant-context.js';
-import { db, admin } from '../dexmart-lib/firebase.js';
+import { db, admin } from '../lib/firebase.js';
 import Redis from 'ioredis';
-import { getLogger } from '../logging/logger.js';
-
-const logger = getLogger();
+import logger from '../utils/logger.js';
 
 export class UserContextResolverImpl implements UserContextResolver {
   private readonly CACHE_TTL = 300; // 5 minutes

@@ -6,7 +6,12 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
-    "lib": ["DOM", "DOM.Iterable", "ES2023", "ScriptHost"],
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ES2023",
+      "ScriptHost"
+    ],
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "noEmit": true,
@@ -21,12 +26,32 @@
     "tsBuildInfoFile": "./.tsbuildinfo",
     "baseUrl": ".",
     "paths": {
-      "openclaw/plugin-sdk": ["./src/plugin-sdk/index.ts"],
-      "openclaw/plugin-sdk/*": ["./src/plugin-sdk/*.ts"],
-      "openclaw/plugin-sdk/account-id": ["./src/plugin-sdk/account-id.ts"],
-      "@dexmart/*": ["./src/*"]
+      "openclaw/plugin-sdk": [
+        "./src/plugin-sdk/index.ts"
+      ],
+      "openclaw/plugin-sdk/*": [
+        "./src/plugin-sdk/*.ts"
+      ],
+      "openclaw/plugin-sdk/account-id": [
+        "./src/plugin-sdk/account-id.ts"
+      ],
+      "@dexmart/*": [
+        "./src/*"
+      ],
+      "@/*": [
+        "./src/*"
+      ]
     }
   },
-  "include": ["src/**/*", "extensions/**/*"],
-  "exclude": ["node_modules", "dist", "backend", "openclaw", "frontend"]
+  "include": [
+    "src/**/*",
+    "extensions/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "backend",
+    "openclaw",
+    "frontend"
+  ]
 }

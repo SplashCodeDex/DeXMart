@@ -1,10 +1,27 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { UserContextResolver } from '../tenant-context.js';
-import { db, admin } from '../../dexmart-lib/firebase.js';
+import { db, admin } from '../../lib/firebase.js';
 import Redis from 'ioredis';
 
+// Mock ConfigService to avoid env/file-system dependencies in unit tests
+vi.mock('../../services/ConfigService.js', () => ({
+  ConfigService: {
+    getInstance: vi.fn(() => ({ get: vi.fn() })),
+  },
+}));
+
+// Mock logger to avoid winston/tslog dependencies in unit tests
+vi.mock('../../utils/logger.js', () => ({
+  default: {
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn(),
+  },
+}));
+
 // Mock Dependencies
-vi.mock('../../dexmart-lib/firebase.js', () => ({
+vi.mock('../../lib/firebase.js', () => ({
   db: {
     collection: vi.fn(() => ({
       doc: vi.fn(() => ({
@@ -13,18 +30,18 @@ vi.mock('../../dexmart-lib/firebase.js', () => ({
     })),
   },
   admin: {
-    auth: vi.fn(() => ({
+    auth: vi.fn().mockReturnValue({
       verifyIdToken: vi.fn(),
-    })),
+    }),
   },
 }));
 
 vi.mock('ioredis', () => {
-  const MockRedis = vi.fn().mockImplementation(() => ({
-    get: vi.fn(),
-    setex: vi.fn(),
-    del: vi.fn(),
-  }));
+  const MockRedis = vi.fn(function (this: any) {
+    this.get = vi.fn();
+    this.setex = vi.fn();
+    this.del = vi.fn();
+  });
   return { default: MockRedis };
 });
 
@@ -56,21 +73,24 @@ describe('UserContextResolverImpl', () => {
     it('should resolve from Firestore if Redis cache is missing', async () => {
       const mockUserData = { id: 'user-123', email: 'test@example.com', plan: 'pro' };
       const mockUsageData = { messagesThisPeriod: 10 };
-      
+
       redis.get.mockResolvedValue(null);
-      
-      // Mock Firestore lookups for user and usage
-      const docMock = {
-        exists: true,
-        data: vi.fn()
-          .mockReturnValueOnce(mockUserData)  // /users/user-123
-          .mockReturnValueOnce(mockUsageData) // /users/user-123/usage/current
+
+      // Firestore chain: collection('users').doc(userId) -> user doc
+      // Firestore chain: collection('users').doc(userId).collection('usage').doc('current') -> usage doc
+      const userDocGet = vi.fn().mockResolvedValue({ exists: true, data: () => mockUserData });
+      const usageDocGet = vi.fn().mockResolvedValue({ exists: true, data: () => mockUsageData });
+
+      const usageDocRef = { get: usageDocGet };
+      const usageCollectionRef = { doc: vi.fn().mockReturnValue(usageDocRef) };
+
+      const userDocRef = {
+        get: userDocGet,
+        collection: vi.fn().mockReturnValue(usageCollectionRef),
       };
-      
+
       (db.collection as any).mockReturnValue({
-        doc: vi.fn().mockReturnValue({
-          get: vi.fn().mockResolvedValue(docMock)
-        })
+        doc: vi.fn().mockReturnValue(userDocRef),
       });
 
       const result = await resolver.fromUserId('user-123');
@@ -99,8 +119,9 @@ describe('UserContextResolverImpl', () => {
   describe('fromToken', () => {
     it('should verify token and resolve from userId', async () => {
       const mockDecodedToken = { uid: 'user-jwt-123' };
-      (admin.auth as any)().verifyIdToken.mockResolvedValue(mockDecodedToken);
-      
+      const verifyIdToken = vi.fn().mockResolvedValue(mockDecodedToken);
+      (admin.auth as any).mockReturnValue({ verifyIdToken });
+
       const spy = vi.spyOn(resolver, 'fromUserId').mockResolvedValue({ userId: 'user-jwt-123' } as any);
 
       const result = await resolver.fromToken('valid-jwt');

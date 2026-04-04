@@ -680,7 +680,7 @@ Status of each service relative to the Phase 4 migration (backend/ → src/). **
 | FirebaseService | `src/services/FirebaseService.ts` | ✅ Migrated |
 | ConfigService | `src/services/ConfigService.ts` | ✅ Migrated |
 | MultiTenantService | `src/services/MultiTenantService.ts` | ✅ Migrated |
-| MastermindStreamService | `src/services/MastermindStreamService.ts` | ✅ Migrated — Phase 3 wiring pending |
+| MastermindStreamService | `src/services/MastermindStreamService.ts` | ✅ Migrated — Phase 3 wiring complete via `src/analytics/event-listener.ts` |
 | DeXMartToolBridge | `src/services/DeXMartToolBridge.ts` | ✅ Migrated |
 | MastermindSkillBridge | `src/services/MastermindSkillBridge.ts` | ✅ Migrated |
 | SystemAuthorityService | `src/services/SystemAuthorityService.ts` | ✅ Migrated — second-pass dedup with `src/billing/system-authority.ts` pending |
@@ -691,7 +691,7 @@ Status of each service relative to the Phase 4 migration (backend/ → src/). **
 | AuthSystem | `src/services/AuthSystem.ts` | ✅ Migrated |
 | UserService | `src/services/UserService.ts` | ✅ Migrated |
 | WebhookService | `src/services/WebhookService.ts` | ✅ Migrated |
-| SemanticCacheService | `src/services/SemanticCacheService.ts` | ✅ Migrated — Phase 3: merge with OpenClaw sqlite-vec memory pending |
+| SemanticCacheService | `src/services/SemanticCacheService.ts` | ✅ Migrated — Phase 3: merged with OpenClaw via `hybrid-adapter.ts` and `memory-worker.ts` |
 | CronManagerService | `src/services/CronManagerService.ts` | ✅ Migrated — second-pass: merge with OpenClaw `src/cron/` pending |
 | GoogleDriveService | `src/services/GoogleDriveService.ts` | ✅ Migrated |
 | All routes / middleware / lib / jobs / server | `src/routes/`, `src/middleware/`, `src/lib/`, `src/jobs/`, `src/server/` | ✅ Migrated |
@@ -701,8 +701,7 @@ Status of each service relative to the Phase 4 migration (backend/ → src/). **
 **Remaining work (post-Phase 4):**
 1. **Staging smoke test** — verify `src/main.ts` boots cleanly; all channels reconnect; agent processes messages
 2. **Delete `backend/`** — TS source fully migrated; only `dist/` remains
-3. **Second-pass dedup** — consolidate `SystemAuthorityService` ↔ `src/billing/system-authority.ts`; `CronManagerService` ↔ `src/cron/`; `SemanticCacheService` ↔ OpenClaw memory
-4. **Phase 3** — MastermindStreamService → OpenClaw agent events; Firestore memory adapter
+3. **Second-pass dedup** — consolidate `SystemAuthorityService` ↔ `src/billing/system-authority.ts`; `CronManagerService` ↔ `src/cron/`
 
 ---
 

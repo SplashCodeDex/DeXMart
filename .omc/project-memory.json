@@ -1,0 +1,545 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1775167891849,
+  "projectRoot": "/home/codedex/projects/DeXMart",
+  "techStack": {
+    "languages": [
+      {
+        "name": "JavaScript/TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "package.json"
+        ]
+      },
+      {
+        "name": "TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "tsconfig.json"
+        ]
+      }
+    ],
+    "frameworks": [
+      {
+        "name": "vitest",
+        "version": "4.1.2",
+        "category": "testing"
+      }
+    ],
+    "packageManager": "pnpm",
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": "pnpm test",
+    "lintCommand": null,
+    "devCommand": null,
+    "scripts": {
+      "install:all": "pnpm install",
+      "dev:frontend": "pnpm --filter frontend dev",
+      "dev:backend": "pnpm --filter backend dev",
+      "build:frontend": "pnpm --filter frontend build",
+      "build:backend": "pnpm --filter backend build",
+      "lint:frontend": "pnpm --filter frontend lint",
+      "lint:backend": "pnpm --filter backend lint",
+      "test:frontend": "pnpm --filter frontend test",
+      "test:backend": "pnpm --filter backend test",
+      "test:all": "pnpm --filter backend test && pnpm --filter frontend test",
+      "typecheck": "pnpm --filter backend typecheck",
+      "test:run": "pnpm --filter backend test:run",
+      "test": "vitest",
+      "sync:report": "tsx scripts/automation/upstream-watcher.ts"
+    }
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": "*.test.ts",
+    "fileOrganization": "type-based"
+  },
+  "structure": {
+    "isMonorepo": true,
+    "workspaces": [],
+    "mainDirectories": [
+      "docs",
+      "scripts",
+      "src",
+      "tests"
+    ],
+    "gitBranches": {
+      "defaultBranch": "master",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "Expiremental": {
+      "path": "Expiremental",
+      "purpose": null,
+      "fileCount": 3,
+      "lastAccessed": 1775167891818,
+      "keyFiles": [
+        "SwitchToggle.css",
+        "SwitchToggle.html",
+        "SwitchToggle.js"
+      ]
+    },
+    "backend": {
+      "path": "backend",
+      "purpose": null,
+      "fileCount": 11,
+      "lastAccessed": 1775167891822,
+      "keyFiles": [
+        "ARCHITECTURE.md",
+        "MAX_NAME_LENGTH)",
+        "QuickNotice.md",
+        "eslint.config.mjs",
+        "initFirst.ts"
+      ]
+    },
+    "conductor": {
+      "path": "conductor",
+      "purpose": null,
+      "fileCount": 9,
+      "lastAccessed": 1775167891830,
+      "keyFiles": [
+        "final_system_audit_20260122.md",
+        "index.md",
+        "manuscript_phase_2.md",
+        "product-guidelines.md",
+        "product.md"
+      ]
+    },
+    "docs": {
+      "path": "docs",
+      "purpose": "Documentation",
+      "fileCount": 7,
+      "lastAccessed": 1775167891831,
+      "keyFiles": [
+        "FirebasePrompt.md",
+        "NextJS-16.md",
+        "OPENCLAW_UPSTREAM_REPORT.md",
+        "PageIndex.md",
+        "TheAwakening.md"
+      ]
+    },
+    "extensions": {
+      "path": "extensions",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1775167891835,
+      "keyFiles": []
+    },
+    "frontend": {
+      "path": "frontend",
+      "purpose": null,
+      "fileCount": 15,
+      "lastAccessed": 1775167891836,
+      "keyFiles": [
+        "components.json",
+        "eslint.config.mjs",
+        "eslint.config.mjs.backup",
+        "investigation_hanging_promise.md",
+        "next-env.d.ts"
+      ]
+    },
+    "openclaw": {
+      "path": "openclaw",
+      "purpose": null,
+      "fileCount": 51,
+      "lastAccessed": 1775167891840,
+      "keyFiles": [
+        "AGENTS.md",
+        "CHANGELOG.md",
+        "CONTRIBUTING.md",
+        "Dockerfile",
+        "Dockerfile.sandbox"
+      ]
+    },
+    "scripts": {
+      "path": "scripts",
+      "purpose": "Build/utility scripts",
+      "fileCount": 0,
+      "lastAccessed": 1775167891841,
+      "keyFiles": []
+    },
+    "shared": {
+      "path": "shared",
+      "purpose": null,
+      "fileCount": 3,
+      "lastAccessed": 1775167891841,
+      "keyFiles": [
+        "fieldAliases.ts",
+        "package.json",
+        "tsconfig.json"
+      ]
+    },
+    "src": {
+      "path": "src",
+      "purpose": "Source code",
+      "fileCount": 21,
+      "lastAccessed": 1775167891842,
+      "keyFiles": [
+        "channel-web.ts",
+        "docker-image-digests.test.ts",
+        "docker-setup.test.ts",
+        "dockerfile.test.ts",
+        "entry.ts"
+      ]
+    },
+    "tests": {
+      "path": "tests",
+      "purpose": "Test files",
+      "fileCount": 1,
+      "lastAccessed": 1775167891842,
+      "keyFiles": [
+        "ApiKeyManager.test.ts"
+      ]
+    },
+    "backend/dist": {
+      "path": "backend/dist",
+      "purpose": "Distribution/build output",
+      "fileCount": 0,
+      "lastAccessed": 1775167891843,
+      "keyFiles": []
+    },
+    "backend/node_modules": {
+      "path": "backend/node_modules",
+      "purpose": "Dependencies",
+      "fileCount": 0,
+      "lastAccessed": 1775167891843,
+      "keyFiles": []
+    },
+    "shared/dist": {
+      "path": "shared/dist",
+      "purpose": "Distribution/build output",
+      "fileCount": 2,
+      "lastAccessed": 1775167891848,
+      "keyFiles": [
+        "index.d.ts",
+        "index.js"
+      ]
+    },
+    "shared/node_modules": {
+      "path": "shared/node_modules",
+      "purpose": "Dependencies",
+      "fileCount": 0,
+      "lastAccessed": 1775167891848,
+      "keyFiles": []
+    },
+    "shared/src": {
+      "path": "shared/src",
+      "purpose": "Source code",
+      "fileCount": 1,
+      "lastAccessed": 1775167891848,
+      "keyFiles": [
+        "index.ts"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "docs/TrueFusionPlan.md",
+      "accessCount": 7,
+      "lastAccessed": 1775229030624,
+      "type": "file"
+    },
+    {
+      "path": "",
+      "accessCount": 6,
+      "lastAccessed": 1775168681333,
+      "type": "directory"
+    },
+    {
+      "path": "tsconfig.json",
+      "accessCount": 2,
+      "lastAccessed": 1775168655662,
+      "type": "file"
+    },
+    {
+      "path": "pnpm-workspace.yaml",
+      "accessCount": 2,
+      "lastAccessed": 1775168655881,
+      "type": "file"
+    },
+    {
+      "path": "openclaw/AGENTS.md",
+      "accessCount": 2,
+      "lastAccessed": 1775168681071,
+      "type": "file"
+    },
+    {
+      "path": "backend/src/main.ts",
+      "accessCount": 2,
+      "lastAccessed": 1775168689276,
+      "type": "file"
+    },
+    {
+      "path": "package.json",
+      "accessCount": 2,
+      "lastAccessed": 1775168689320,
+      "type": "file"
+    },
+    {
+      "path": "shared/src/index.ts",
+      "accessCount": 2,
+      "lastAccessed": 1775168698076,
+      "type": "file"
+    },
+    {
+      "path": "conductor/product.md",
+      "accessCount": 2,
+      "lastAccessed": 1775168971906,
+      "type": "file"
+    },
+    {
+      "path": "conductor/tech-stack.md",
+      "accessCount": 2,
+      "lastAccessed": 1775168972119,
+      "type": "file"
+    },
+    {
+      "path": "swarm-config.yaml",
+      "accessCount": 1,
+      "lastAccessed": 1775168655431,
+      "type": "file"
+    },
+    {
+      "path": "backend/ARCHITECTURE.md",
+      "accessCount": 1,
+      "lastAccessed": 1775168662585,
+      "type": "file"
+    },
+    {
+      "path": "conductor/index.md",
+      "accessCount": 1,
+      "lastAccessed": 1775168662799,
+      "type": "file"
+    },
+    {
+      "path": "conductor/tracks.md",
+      "accessCount": 1,
+      "lastAccessed": 1775168663004,
+      "type": "file"
+    },
+    {
+      "path": "src/dexmart-server/multiTenantApp.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775168666518,
+      "type": "file"
+    },
+    {
+      "path": "src/dexmart-config/config.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775168666645,
+      "type": "file"
+    },
+    {
+      "path": "src/dexmart-config/ConfigManager.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775168666889,
+      "type": "file"
+    },
+    {
+      "path": "src/dexmart-lib/context.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775168667071,
+      "type": "file"
+    },
+    {
+      "path": "src/dexmart-lib/apiKeyManager.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775168667558,
+      "type": "file"
+    },
+    {
+      "path": "conductor/workflow.md",
+      "accessCount": 1,
+      "lastAccessed": 1775168667689,
+      "type": "file"
+    },
+    {
+      "path": ".agent/README.md",
+      "accessCount": 1,
+      "lastAccessed": 1775168667867,
+      "type": "file"
+    },
+    {
+      "path": "openclaw/VISION.md",
+      "accessCount": 1,
+      "lastAccessed": 1775168667887,
+      "type": "file"
+    },
+    {
+      "path": "backend/package.json",
+      "accessCount": 1,
+      "lastAccessed": 1775168669870,
+      "type": "file"
+    },
+    {
+      "path": "shared/package.json",
+      "accessCount": 1,
+      "lastAccessed": 1775168669918,
+      "type": "file"
+    },
+    {
+      "path": "openclaw/package.json",
+      "accessCount": 1,
+      "lastAccessed": 1775168670221,
+      "type": "file"
+    },
+    {
+      "path": "src/dexmart-lib/firebase.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775168670908,
+      "type": "file"
+    },
+    {
+      "path": "src/dexmart-lib/identity.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775168671083,
+      "type": "file"
+    },
+    {
+      "path": "src/dexmart-lib/simple.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775168671312,
+      "type": "file"
+    },
+    {
+      "path": "src/dexmart-routes/multiTenant.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775168675285,
+      "type": "file"
+    },
+    {
+      "path": "backend/src/config/env.schema.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775168675446,
+      "type": "file"
+    },
+    {
+      "path": "backend/src/services/multiTenantService.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775168675730,
+      "type": "file"
+    },
+    {
+      "path": "backend/src/services/database.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775168676156,
+      "type": "file"
+    },
+    {
+      "path": "backend/src/services/FirebaseService.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775168676517,
+      "type": "file"
+    },
+    {
+      "path": "src/dexmart-middleware/main.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775168676572,
+      "type": "file"
+    },
+    {
+      "path": "src/dexmart-jobs/index.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775168676629,
+      "type": "file"
+    },
+    {
+      "path": "src/dexmart-config/env.schema.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775168676699,
+      "type": "file"
+    },
+    {
+      "path": "openclaw/src/index.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775168676862,
+      "type": "file"
+    },
+    {
+      "path": "src/services/DeXMartToolBridge.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775168682515,
+      "type": "file"
+    },
+    {
+      "path": "src/services/MastermindSkillBridge.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775168682890,
+      "type": "file"
+    },
+    {
+      "path": "conductor/tracks/fusion_phase_2_20260401/spec.md",
+      "accessCount": 1,
+      "lastAccessed": 1775168684459,
+      "type": "file"
+    },
+    {
+      "path": "conductor/tracks/fusion_phase_2_20260401/plan.md",
+      "accessCount": 1,
+      "lastAccessed": 1775168684627,
+      "type": "file"
+    },
+    {
+      "path": "conductor/tracks/true_fusion_audit_sync_20260401/spec.md",
+      "accessCount": 1,
+      "lastAccessed": 1775168684661,
+      "type": "file"
+    },
+    {
+      "path": "shared/src/schemas/omnichannelSchemas.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775168684802,
+      "type": "file"
+    },
+    {
+      "path": "backend/src/server/multiTenantApp.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775168685565,
+      "type": "file"
+    },
+    {
+      "path": "src/agents/openclaw-tools.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775168685797,
+      "type": "file"
+    },
+    {
+      "path": "src/dexmart-utils/openclawImports.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775168685914,
+      "type": "file"
+    },
+    {
+      "path": "src/tenancy/tenant-context.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775168688277,
+      "type": "file"
+    },
+    {
+      "path": "src/tenancy/context-resolver.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775168688493,
+      "type": "file"
+    },
+    {
+      "path": "src/billing/auth-guard.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775168689227,
+      "type": "file"
+    },
+    {
+      "path": "backend/src/services/DeXMartToolBridge.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775168689620,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}

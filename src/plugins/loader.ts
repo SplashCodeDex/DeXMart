@@ -39,6 +39,9 @@ export type PluginLoadOptions = {
   coreGatewayHandlers?: Record<string, GatewayRequestHandler>;
   cache?: boolean;
   mode?: "full" | "validate";
+  /** Optional per-user memory manager (HybridMemoryAdapter).
+   *  When provided, memory tools in plugins use this instead of the file-based default. */
+  memoryManager?: import("../memory/types.js").MemorySearchManager;
 };
 
 const registryCache = new Map<string, PluginRegistry>();
@@ -393,7 +396,7 @@ export function loadOpenClawPlugins(options: PluginLoadOptions = {}): PluginRegi
   // Clear previously registered plugin commands before reloading
   clearPluginCommands();
 
-  const runtime = createPluginRuntime();
+  const runtime = createPluginRuntime({ memoryManager: options.memoryManager });
   const { registry, createApi } = createPluginRegistry({
     logger,
     runtime,

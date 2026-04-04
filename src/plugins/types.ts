@@ -68,6 +68,24 @@ export type OpenClawPluginToolContext = {
   /** Whether the trusted sender is an owner. */
   senderIsOwner?: boolean;
   sandboxed?: boolean;
+  /**
+   * Per-user memory manager (HybridMemoryAdapter).
+   *
+   * When present, plugin tool factories should pass this to createMemorySearchTool
+   * and createMemoryGetTool instead of relying on the default file-based manager.
+   * This ensures per-user Firestore-backed memory isolation.
+   *
+   * The userId is parsed from sessionKey (`${userId}:${agentId}:${channelId}`).
+   * Set by IngressService when routing a user-initiated message to the agent.
+   *
+   * Example usage in a plugin tool factory:
+   *   const tool = runtime.tools.createMemorySearchTool({
+   *     config: ctx.config,
+   *     agentSessionKey: ctx.sessionKey,
+   *     memoryManager: ctx.memoryManager,   // ← per-user hybrid adapter
+   *   });
+   */
+  memoryManager?: import('./memory/types.js').MemorySearchManager;
 };
 
 export type OpenClawPluginToolFactory = (

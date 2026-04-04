@@ -3,7 +3,7 @@ import type { OpenClawConfig } from "../../config/config.js";
 import type { MemoryCitationsMode } from "../../config/types.memory.js";
 import { resolveMemoryBackendConfig } from "../../memory/backend-config.js";
 import { getMemorySearchManager } from "../../memory/index.js";
-import type { MemorySearchResult } from "../../memory/types.js";
+import type { MemorySearchManager, MemorySearchResult } from "../../memory/types.js";
 import { parseAgentSessionKey } from "../../routing/session-key.js";
 import { resolveSessionAgentId } from "../agent-scope.js";
 import { resolveMemorySearchConfig } from "../memory-search.js";
@@ -40,6 +40,9 @@ function resolveMemoryToolContext(options: { config?: OpenClawConfig; agentSessi
 export function createMemorySearchTool(options: {
   config?: OpenClawConfig;
   agentSessionKey?: string;
+  /** Optional injected memory manager — if provided, skips getMemorySearchManager.
+   *  Use HybridMemoryAdapter here for per-user Firestore-backed memory. */
+  memoryManager?: MemorySearchManager;
 }): AnyAgentTool | null {
   const ctx = resolveMemoryToolContext(options);
   if (!ctx) {
@@ -56,10 +59,17 @@ export function createMemorySearchTool(options: {
       const query = readStringParam(params, "query", { required: true });
       const maxResults = readNumberParam(params, "maxResults");
       const minScore = readNumberParam(params, "minScore");
-      const { manager, error } = await getMemorySearchManager({
-        cfg,
-        agentId,
-      });
+      // Fusion (Phase 3.3): use injected HybridMemoryAdapter if provided,
+      // otherwise fall back to the default file-based getMemorySearchManager.
+      let manager: MemorySearchManager | null;
+      let error: string | undefined;
+      if (options.memoryManager) {
+        manager = options.memoryManager;
+      } else {
+        const result = await getMemorySearchManager({ cfg, agentId });
+        manager = result.manager ?? null;
+        error = result.error;
+      }
       if (!manager) {
         return jsonResult(buildMemorySearchUnavailableResult(error));
       }
@@ -101,6 +111,9 @@ export function createMemorySearchTool(options: {
 export function createMemoryGetTool(options: {
   config?: OpenClawConfig;
   agentSessionKey?: string;
+  /** Optional injected memory manager — if provided, skips getMemorySearchManager.
+   *  Use HybridMemoryAdapter here for per-user Firestore-backed memory. */
+  memoryManager?: MemorySearchManager;
 }): AnyAgentTool | null {
   const ctx = resolveMemoryToolContext(options);
   if (!ctx) {
@@ -117,10 +130,16 @@ export function createMemoryGetTool(options: {
       const relPath = readStringParam(params, "path", { required: true });
       const from = readNumberParam(params, "from", { integer: true });
       const lines = readNumberParam(params, "lines", { integer: true });
-      const { manager, error } = await getMemorySearchManager({
-        cfg,
-        agentId,
-      });
+      // Fusion (Phase 3.3): use injected HybridMemoryAdapter if provided.
+      let manager: MemorySearchManager | null;
+      let error: string | undefined;
+      if (options.memoryManager) {
+        manager = options.memoryManager;
+      } else {
+        const result = await getMemorySearchManager({ cfg, agentId });
+        manager = result.manager ?? null;
+        error = result.error;
+      }
       if (!manager) {
         return jsonResult({ path: relPath, text: "", disabled: true, error });
       }

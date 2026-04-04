@@ -31,6 +31,7 @@ import {
     TabsTrigger,
 } from '@/components/ui/tabs';
 import { ChannelLinker } from '@/features/agents/components/ChannelLinker';
+import { MemoryPanel } from '@/features/memory';
 import { LiveStatusBadge } from '@/features/agents/components/LiveStatusBadge';
 import { RecursiveTraceView } from '@/features/agents/components/RecursiveTraceView';
 import { SkillToggle } from '@/features/agents/components/SkillToggle';
@@ -276,11 +277,12 @@ export function AgentsDashboard(): React.JSX.Element {
                             </CardHeader>
                             <CardContent className="px-8">
                                 <Tabs defaultValue="overview" className="w-full">
-                                    <TabsList className="grid w-full grid-cols-4 bg-muted/30 p-1 h-11">
+                                    <TabsList className="grid w-full grid-cols-5 bg-muted/30 p-1 h-11">
                                         <TabsTrigger value="overview" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">Overview</TabsTrigger>
                                         <TabsTrigger value="workspace" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">Workspace</TabsTrigger>
                                         <TabsTrigger value="tools" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">Skills</TabsTrigger>
                                         <TabsTrigger value="infra" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">Infra</TabsTrigger>
+                                        <TabsTrigger value="memory" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">Memory</TabsTrigger>
                                     </TabsList>
 
                                     <TabsContent value="overview" className="space-y-6 pt-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
@@ -460,6 +462,10 @@ export function AgentsDashboard(): React.JSX.Element {
 
                                     <TabsContent value="infra" className="pt-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
                                         <ChannelLinker agentId={selectedAgent.id} />
+                                    </TabsContent>
+
+                                    <TabsContent value="memory" className="pt-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                                        <MemoryPanel className="w-full" />
                                     </TabsContent>
                                 </Tabs>
                             </CardContent>

@@ -10,7 +10,7 @@
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "build": "tsc",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "NODE_OPTIONS='--max-old-space-size=4096' tsc --noEmit",
     "test": "vitest",
     "test:run": "vitest run",
     "seed:stripe": "tsx scripts/seed-stripe.ts",

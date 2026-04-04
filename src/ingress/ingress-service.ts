@@ -3,17 +3,31 @@ import logger from '@/utils/logger.js';
 import { webhookService } from './webhookService.js';
 import { channelService } from './ChannelService.js';
 import { agentService } from './AgentService.js';
-import { createChannelContext } from '../utils/createChannelContext.js';
-import { GlobalContext } from '../types/index.js';
+import { createChannelContext } from '@/utils/createChannelContext.js';
+import { GlobalContext } from '@/types/index.js';
 import { tenantConfigService } from './tenantConfigService.js';
 import analyticsService from './analytics.js';
-import { Agent } from '../types/contracts.js';
+import { Agent } from '@/types/contracts.js';
 import { flowService } from './flowService.js';
 import { flowEngine } from './flowEngine.js';
 import { automationService } from './automationService.js';
-import { CommonMessage } from '../types/omnichannel.js';
+import { CommonMessage } from '@/types/omnichannel.js';
 import { deduplicationService } from './deduplicationService.js';
-import { MessageNormalizer } from '../utils/messageNormalizer.js';
+import { MessageNormalizer } from '@/utils/messageNormalizer.js';
+// DeXMart Fusion (Phase 4): OpenClaw's embedded agent runner replaces GeminiAI
+import { runEmbeddedPiAgent } from '@/agents/pi-embedded-runner/run.js';
+import { loadConfigForUser, UserConfigFirestore } from '@/config/user-config.js';
+import { trackUsage } from '@/billing/usage-tracker.js';
+import type { firestore } from 'firebase-admin';
+import { z } from 'zod';
+
+const ConfigModelGateSchema = z.object({
+  agents: z.object({
+    defaults: z.object({
+      models: z.record(z.string(), z.unknown()).optional()
+    }).optional()
+  }).optional()
+}).passthrough();
 
 /**
  * Ingress Service
@@ -110,13 +124,115 @@ export class IngressService {
       }
 
       // --- AGENT MODE (Priority 2) ---
-      if (activeAgent && activeAgent.id !== 'system_default' && isAiEnabled && context.unifiedAI) {
-        logger.info(`[Ingress] Routing ${message.platform} message to Agent: ${activeAgent.name}`);
+      // DeXMart Fusion (Phase 4): replaced context.unifiedAI.processMessage()
+      // (GeminiAI — deleted in Phase 1) with OpenClaw's runEmbeddedPiAgent().
+      // This is the core fusion wiring: DeXMart's inbound pipeline feeds
+      // directly into OpenClaw's agent runtime.
+      if (activeAgent && activeAgent.id !== 'system_default' && isAiEnabled) {
+        logger.info(`[Ingress] Routing ${message.platform} message to OpenClaw agent: ${activeAgent.name}`);
         // Inject the path into metadata for Agent hierarchy awareness
         if (!message.metadata) message.metadata = {};
         message.metadata.fullPath = fullPath;
 
-        await (context.unifiedAI as any).processMessage(channelInstance, aiCtx);
+        // Resolve per-user config (Phase 2 FR-1: Firestore + Redis cache)
+        // Falls back to base loadConfig() if no user config stored yet.
+        const { db } = await import('@/lib/firebase.js');
+        const { loadConfig } = await import('@/config/io.js');
+        const rawConfig = ConfigModelGateSchema.parse(await loadConfigForUser(tenantId, null, db as unknown as UserConfigFirestore, loadConfig));
+
+        // Phase 3.2: intersect cfg.agents.defaults.models with the user's plan capabilities.
+        const { createAuthGuard } = await import('@/tenancy/tenant-context.js');
+        const { UserContextResolverImpl } = await import('@/tenancy/context-resolver.js');
+        const { admin } = await import('@/lib/firebase.js');
+        // Temporarily, we construct a dummy Redis or mock it since it's not exported easily here without IORedis. 
+        // Wait, Redis is used inside context-resolver.
+        const Redis = (await import('ioredis')).default;
+        const redisClient = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+
+        let userConfig = rawConfig;
+        try {
+          const resolver = new UserContextResolverImpl(db as unknown as firestore.Firestore, admin, redisClient);
+          const ctx = await resolver.fromUserId(tenantId);
+          const guard = createAuthGuard(ctx);
+          const configuredModels = Object.keys(rawConfig.agents?.defaults?.models ?? {});
+          const allowedModels = configuredModels.filter(m => guard.canUseModel(m));
+          if (allowedModels.length < configuredModels.length) {
+            // Build a restricted config with only plan-allowed models
+            const restrictedModels = allowedModels.reduce<Record<string, unknown>>((acc, key) => {
+              acc[key] = (rawConfig.agents!.defaults!.models as Record<string, unknown>)[key];
+              return acc;
+            }, {});
+            userConfig = {
+              ...rawConfig,
+              agents: {
+                ...rawConfig.agents,
+                defaults: {
+                  ...rawConfig.agents?.defaults,
+                  models: restrictedModels,
+                },
+              },
+            };
+          }
+        } catch (err: unknown) {
+          // Context resolution failure is non-fatal — but log it to prevent silent billing bypass
+          logger.warn(`[Ingress] Context resolution failed for tenant ${tenantId}, using full config fallback.`, err);
+          userConfig = rawConfig;
+        }
+
+        // Build session ID: stable per user×agent×channel for conversation continuity
+        const sessionId = `${tenantId}:${activeAgent.id}:${channelId}`;
+        const prompt = message.text ?? message.caption ?? '';
+
+        // Build per-user HybridMemoryAdapter (Phase 3.3)
+        // Lazy import to avoid circular dep at module init
+        const { HybridMemoryAdapter } = await import('@/memory/hybrid-adapter.js');
+        const { getMemorySearchManager } = await import('@/memory/index.js');
+        const baseMemoryResult = await getMemorySearchManager({ cfg: userConfig as any, agentId: activeAgent.id });
+        // embedAndInsert: sync a new text into the inner manager's vector index
+        // pruneToLimit: remove oldest entries beyond the cap (5-10 rule)
+        // The inner MemorySearchManager exposes sync() for batch operations;
+        // individual embed+insert is managed internally by the manager.
+        // We delegate both operations to the manager's sync() as a PoC —
+        // the HybridMemoryAdapter handles Firestore sync on top.
+        const innerManager = baseMemoryResult.manager;
+        const hybridMemory = innerManager
+          ? new HybridMemoryAdapter(
+              tenantId,
+              innerManager,
+              db as unknown as firestore.Firestore,
+              async (_text: string, _metadata?: Record<string, unknown>) => {
+                // embed+insert: the inner manager handles this via its own indexing pipeline
+                // called via sync() after the Firestore write completes
+                await innerManager.sync?.({ reason: 'hybrid-remember' });
+              },
+              async (_limit: number) => {
+                // prune: the inner manager enforces its own retention policy via sync
+                await innerManager.sync?.({ reason: 'hybrid-prune', force: false });
+              },
+            )
+          : undefined;
+
+        await runEmbeddedPiAgent({
+          sessionId,
+          sessionKey: sessionId,
+          agentId: activeAgent.id,
+          messageChannel: message.platform,
+          senderId: message.senderId ?? undefined,
+          senderName: message.senderName ?? undefined,
+          prompt,
+          config: userConfig,
+          memoryManager: hybridMemory,
+          // Reply target: the channel + sender (DeXMart will pick up the reply
+          // via the agent's outbound pipeline → WhatsappAdapter._directSendMessage)
+          messageTo: message.senderId ?? undefined,
+          sessionFile: '', // Defaults or paths can be handled inside pi-embedded-runner
+          workspaceDir: '', 
+          timeoutMs: 30000,
+          runId: `run-${Date.now()}`
+        });
+
+        // Track usage (Phase 2 Phase 3.1: batched Firestore flush)
+        trackUsage(tenantId, 'messages', 1);
       } else {
         logger.info(`[Ingress] Webhook forwarding for ${message.platform} message.`);
         await webhookService.dispatch(tenantId, 'message.received', message);
@@ -145,6 +261,7 @@ export class IngressService {
       logger.info(`Processing message for channel ${channelId} (Tenant: ${tenantId}, Path: ${fullPath || 'flat'})`);
 
       let activeAgent: Agent | null = null;
+      let channelInstance: any = undefined;
 
       // 1. Resolve Agent (Architecture Alignment)
       if (fullPath && fullPath.includes('/agents/')) {
@@ -160,10 +277,14 @@ export class IngressService {
           const agentResult = await agentService.getAgent(tenantId, channelResult.data.assignedAgentId);
           activeAgent = agentResult.success ? agentResult.data : null;
         }
+        if (channelResult.success) {
+          channelInstance = channelResult.data;
+        }
       }
 
       // 2. Prepare AI Context
-      const aiCtx = await createChannelContext({ tenantId, channelId: channelId } as any, message, context);
+      channelInstance = channelInstance || { tenantId, channelId };
+      const aiCtx = await createChannelContext(channelInstance as any, message, context);
 
       // --- AUTOMATION TRIGGER (Priority 0) ---
       // Check for automations that trigger on message_received
@@ -208,7 +329,8 @@ export class IngressService {
         // Enforce Feature Flag: Check if AI is enabled for this tenant
         const isAiEnabled = await tenantConfigService.isFeatureEnabled(tenantId, 'aiEnabled');
         if (isAiEnabled && context.unifiedAI) {
-          await context.unifiedAI.processMessage({ tenantId, channelId: channelId } as any, aiCtx);
+          const channelInstance = typeof channelId === 'string' ? { tenantId, channelId } : undefined;
+          await context.unifiedAI.processMessage(channelInstance as any, aiCtx);
         } else {
           logger.warn(`AI processing skipped for tenant ${tenantId}: AI disabled or service missing.`);
           await this.dispatchWebhook(tenantId, channelId, message, aiCtx);

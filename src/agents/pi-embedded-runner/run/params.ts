@@ -8,6 +8,7 @@ import type { ExecElevatedDefaults, ExecToolDefaults } from "../../bash-tools.js
 import type { BlockReplyPayload } from "../../pi-embedded-payloads.js";
 import type { BlockReplyChunking, ToolResultFormat } from "../../pi-embedded-subscribe.js";
 import type { SkillSnapshot } from "../../skills.js";
+import type { MemorySearchManager } from "../../../memory/types.js";
 
 // Simplified tool definition for client-provided tools (OpenResponses hosted tools)
 export type ClientToolDefinition = {
@@ -62,6 +63,10 @@ export type RunEmbeddedPiAgentParams = {
   workspaceDir: string;
   agentDir?: string;
   config?: OpenClawConfig;
+  /** Optional per-user memory manager (e.g. HybridMemoryAdapter for Firestore-backed memory).
+   *  When provided, memory tools use this instead of the default file-based getMemorySearchManager.
+   *  Set by IngressService when userId is available (Phase 3.3 fusion). */
+  memoryManager?: MemorySearchManager;
   skillsSnapshot?: SkillSnapshot;
   prompt: string;
   images?: ImageContent[];
