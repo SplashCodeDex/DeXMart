@@ -26,6 +26,11 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
+- [ ] **Track: Production Readiness & Security Verification**
+*Link: [./tracks/production_readiness_20260406/](./tracks/production_readiness_20260406/)*
+
+---
+
 ## Archived Tracks
 
 ### [x] Track: System Health & Technical Debt Remediation
