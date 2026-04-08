@@ -31,7 +31,7 @@ Focus: Migrate channel session state from the local filesystem to Firestore, ens
     - [x] OpenClaw's default (useMultiFileAuthState / file-system) fully preserved for single-user CLI.
     - [x] Multi-user path: callers with userId pass `() => useFirestoreChannelAuthState(userId, channelId, db)`.
 
-## Phase 3: Usage Tracking and Billing Gates ✅ COMPLETE
+## Phase 3: Usage Tracking and Billing Gates ✅ COMPLETE [checkpoint: 064f75c]
 Focus: Enforce capabilities and track usage across all primary OpenClaw actions.
 
 - [x] Task: UsageTracker Service
