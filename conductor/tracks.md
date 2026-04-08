@@ -18,15 +18,12 @@ This file tracks all major tracks for the project. Each track has its own detail
 ### [x] Track: WhatsApp Resilience & 50+ Defeating Scenarios
 *Link: [./tracks/whatsapp_resilience_20260310/](./tracks/whatsapp_resilience_20260310/)*
 
-### [~] Track: TRUE Fusion Phase 2: Inject UserContext into OpenClaw engine for B2C multi-tenancy and billing gating
-*Link: [./tracks/fusion_phase_2_20260401/](./tracks/fusion_phase_2_20260401/)*
-
 ### [ ] **Track: Architecture & Documentation Sync (True Fusion)**
 *Link: [./tracks/true_fusion_audit_sync_20260401/](./tracks/true_fusion_audit_sync_20260401/)*
 
 ---
 
-- [ ] **Track: Production Readiness & Security Verification**
+- [~] **Track: Production Readiness & Security Verification**
 *Link: [./tracks/production_readiness_20260406/](./tracks/production_readiness_20260406/)*
 
 ---
