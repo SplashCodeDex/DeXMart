@@ -1,7 +1,7 @@
 import { Queue, Worker, Job, JobsOptions, ConnectionOptions } from 'bullmq';
 import logger from '../utils/logger.js';
 import { Result } from '../types/index.js';
-import configManager from '../config/ConfigManager.js';
+import configManager from '../dexmart-config/ConfigManager.js';
 
 interface QueueConfig {
   concurrency: number;

@@ -171,8 +171,13 @@ export function validateEnvironment(): ValidationResult {
 
   if (!hasFirebasePath && !hasFirebaseVars) {
     const error = 'Missing Firebase credentials. Provide either FIREBASE_SERVICE_ACCOUNT_PATH or (FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY)';
-    errors.push(error);
-    logger.error(`❌ ${error}`);
+    if (process.env.NODE_ENV === 'development') {
+      warnings.push(error);
+      logger.warn(`⚠️ ${error}`);
+    } else {
+      errors.push(error);
+      logger.error(`❌ ${error}`);
+    }
   }
 
   // Log warnings for optional but recommended variables

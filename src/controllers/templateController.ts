@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { TemplateService } from '../services/templateService.js';
-import { GeminiAI } from '../services/geminiAI.js';
+import { AIUtilityService as GeminiAI } from '../services/ai-utility.js';
 import logger from '../utils/logger.js';
 
 export const getTemplatesController = async (req: Request, res: Response) => {

@@ -6,7 +6,6 @@ import { Timestamp } from 'firebase-admin/firestore';
 import logger from '../utils/logger.js';
 
 import { tenantConfigService } from './tenantConfigService.js';
-import { OpenClawGateway } from './openClawGateway.js';
 
 /**
  * Scenario 28: Per-URL circuit breaker to prevent concurrent webhook delivery
@@ -77,29 +76,6 @@ export class WebhookService {
 
             const webhook = WebhookSchema.parse(rawWebhook);
             await firebaseService.setDoc<'tenants/{tenantId}/webhooks'>('webhooks', webhookId, webhook as any, tenantId);
-
-            // FUSION: Sync with OpenClaw engine (tenant-namespaced)
-            try {
-                const gateway = OpenClawGateway.getInstance();
-                if (gateway.isInitialized()) {
-                    // Fetch only this tenant's existing hooks from Firestore (source of truth)
-                    const existingResult = await this.getWebhooks(tenantId);
-                    const existingHooks = existingResult.success ? existingResult.data : [];
-                    
-                    await gateway.patchConfig(tenantId, {
-                        webhooks: existingHooks.map(h => ({
-                            id: h.id,
-                            name: h.name,
-                            url: h.url,
-                            events: h.events,
-                            isActive: h.isActive
-                        }))
-                    }, metadata);
-                }
-            } catch (fusionError) {
-                logger.error(`[WebhookService] Engine sync failed for ${webhookId}:`, fusionError);
-            }
-
             return { success: true, data: webhook };
         } catch (error: unknown) {
             const err = error instanceof Error ? error : new Error(String(error));
@@ -208,29 +184,6 @@ export class WebhookService {
     async deleteWebhook(tenantId: string, webhookId: string, metadata: { actor: string; ip?: string } = { actor: 'system' }): Promise<Result<void>> {
         try {
             await firebaseService.deleteDoc<'tenants/{tenantId}/webhooks'>('webhooks', webhookId, tenantId);
-
-            // FUSION: Sync with OpenClaw engine (tenant-namespaced)
-            try {
-                const gateway = OpenClawGateway.getInstance();
-                if (gateway.isInitialized()) {
-                    // Fetch this tenant's remaining hooks from Firestore (source of truth)
-                    const remainingResult = await this.getWebhooks(tenantId);
-                    const remainingHooks = remainingResult.success ? remainingResult.data : [];
-                    
-                    await gateway.patchConfig(tenantId, {
-                        webhooks: remainingHooks.map(h => ({
-                            id: h.id,
-                            name: h.name,
-                            url: h.url,
-                            events: h.events,
-                            isActive: h.isActive
-                        }))
-                    }, metadata);
-                }
-            } catch (fusionError) {
-                logger.error(`[WebhookService] Engine removal failed for ${webhookId}:`, fusionError);
-            }
-
             return { success: true, data: undefined };
         } catch (error: unknown) {
             return { success: false, error: error instanceof Error ? error : new Error(String(error)) };

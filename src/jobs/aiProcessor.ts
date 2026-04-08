@@ -1,5 +1,5 @@
 import { Job } from 'bullmq';
-import GeminiService from '../services/gemini.js';
+import { AIUtilityService } from '../services/ai-utility.js';
 import logger from '../utils/logger.js';
 
 interface Message {
@@ -51,10 +51,10 @@ interface PerformanceAnalyticsData {
  * AIProcessor handles various AI-related background jobs using Gemini.
  */
 class AIProcessor {
-  private gemini: GeminiService;
+  private gemini: AIUtilityService;
 
   constructor() {
-    this.gemini = new GeminiService();
+    this.gemini = AIUtilityService.getInstance();
   }
 
   /**

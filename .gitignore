@@ -46,7 +46,7 @@ sessions/
 auth_info/
 *.data.json
 backend/service-account.json
-
+service-account.json
 # Coverage directory
 coverage
 .nyc_output

@@ -5,7 +5,7 @@
  * This module provides backward compatibility for imports using the old name.
  */
 
-import { GeminiAI } from './geminiAI.js';
+import { AIUtilityService } from './ai-utility.js';
 import { ActiveChannel, GlobalContext, MessageContext, Result } from '../types/index.js';
 import logger from '../utils/logger.js';
 
@@ -13,13 +13,13 @@ import logger from '../utils/logger.js';
  * DeXMartBrain wraps GeminiAI for backward compatibility
  */
 export class DeXMartBrain {
-    private ai: GeminiAI;
+    private ai: AIUtilityService;
     private channel: ActiveChannel;
 
-    constructor(channel: ActiveChannel, context: GlobalContext) {
+    constructor(channel: ActiveChannel, _context: GlobalContext) {
         this.channel = channel;
-        this.ai = new GeminiAI(context);
-        logger.debug('[DeXMartBrain] Initialized (wrapping GeminiAI)');
+        this.ai = AIUtilityService.getInstance();
+        logger.debug('[DeXMartBrain] Initialized (wrapping AIUtilityService singleton)');
     }
 
     /**

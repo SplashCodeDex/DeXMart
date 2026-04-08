@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Request, Response } from 'express';
 import { createTemplateController, getTemplatesController, spinMessageController } from './templateController.js';
 import { TemplateService } from '../services/templateService.js';
-import { GeminiAI } from '../services/geminiAI.js';
+import { AIUtilityService as GeminiAI } from '../services/ai-utility.js';
 
 // Hoist mocks
 const { mockTemplateService } = vi.hoisted(() => ({

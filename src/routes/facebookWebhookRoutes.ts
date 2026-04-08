@@ -1,7 +1,7 @@
 import express from 'express';
 import { z } from 'zod';
 import { logger } from '../utils/logger.js';
-import { getFacebookWebhook } from '../utils/openclawImports.js';
+import { handleFacebookChallenge, validateFacebookSignature, normalizeFacebookEvents } from '../facebook/webhook.js';
 import { channelService } from '../services/ChannelService.js';
 import { ingressService } from '../services/IngressService.js';
 import contextProvider from '../lib/context.js';
@@ -39,8 +39,7 @@ router.get('/:channelId', async (req, res) => {
       return res.status(403).json({ success: false, error: 'Verification token missing in channel config' });
     }
 
-    const { handleFacebookChallenge } = await getFacebookWebhook();
-    
+
     const challengeResponse = handleFacebookChallenge(
       query['hub.mode'],
       query['hub.verify_token'],
@@ -81,7 +80,6 @@ router.post('/:channelId', async (req, res) => {
     // Body parsing middleware needs to populate rawBody
     const rawBody = (req as any).rawBody?.toString() || JSON.stringify(req.body);
 
-    const { validateFacebookSignature, normalizeFacebookEvents } = await getFacebookWebhook();
 
     if (!appSecret || !validateFacebookSignature(rawBody, signature, appSecret)) {
       logger.warn(`[FacebookWebhook] Signature validation failed for channel: ${channelId}`);

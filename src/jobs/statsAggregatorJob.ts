@@ -3,7 +3,7 @@ import { db } from '../lib/firebase.js';
 import { Timestamp, FieldValue } from 'firebase-admin/firestore';
 import logger from '../utils/logger.js';
 import { multiTenantService } from '../services/multiTenantService.js';
-import configManager from '../config/ConfigManager.js';
+import configManager from '../dexmart-config/ConfigManager.js';
 
 const redisOptions = {
     host: configManager.config.redis.host,

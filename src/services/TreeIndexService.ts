@@ -1,6 +1,6 @@
 import { db } from '../lib/firebase.js';
 import { embeddingService } from './embeddingService.js';
-import { geminiAI } from './geminiAI.js'; // For summarization
+import { aiUtility as geminiAI } from './ai-utility.js'; // For summarization
 import logger from '../utils/logger.js';
 import { Result } from '../types/index.js';
 import { Timestamp } from 'firebase-admin/firestore';

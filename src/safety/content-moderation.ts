@@ -1,4 +1,4 @@
-import GeminiService from './gemini.js';
+import { AIUtilityService } from '../services/ai-utility.js';
 import logger from '../utils/logger.js';
 
 interface ModerationResult {
@@ -17,7 +17,7 @@ class ContentModerationService {
   private categories: string[];
 
   constructor() {
-    this.gemini = new GeminiService();
+    this.gemini = AIUtilityService.getInstance();
     this.moderationEnabled = process.env.CONTENT_MODERATION_ENABLED === 'true';
     this.strictMode = process.env.MODERATION_STRICT_MODE === 'true';
 

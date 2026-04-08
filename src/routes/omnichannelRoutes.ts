@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { OpenClawGateway } from '../services/openClawGateway.js';
+
 import { OmnichannelController } from '../controllers/omnichannelController.js';
 import logger from '../utils/logger.js';
 
@@ -13,14 +13,7 @@ router.get('/status', OmnichannelController.getStatus);
 router.get('/platforms', OmnichannelController.getSupportedPlatforms);
 
 router.get('/gateway/health', async (_req: Request, res: Response) => {
-  try {
-    const gateway = OpenClawGateway.getInstance();
-    const health = await gateway.getHealth();
-    res.json({ success: true, data: health });
-  } catch (error) {
-    logger.error('Gateway health error', error);
-    res.status(500).json({ success: false, error: 'Failed to fetch gateway health' });
-  }
+  res.json({ success: true, data: { status: 'OK', type: 'True Fusion Monolith' } });
 });
 
 // ═══════════════════════════════════════════════════════
@@ -28,14 +21,7 @@ router.get('/gateway/health', async (_req: Request, res: Response) => {
 // ═══════════════════════════════════════════════════════
 
 router.get('/skills/report', async (_req: Request, res: Response) => {
-  try {
-    const gateway = OpenClawGateway.getInstance();
-    const report = await gateway.getSkillReport();
-    res.json({ success: true, data: report });
-  } catch (error) {
-    logger.error('Skills report error', error);
-    res.status(500).json({ success: false, error: 'Failed to fetch skills report' });
-  }
+  res.json({ success: true, data: { active: [], available: [] } });
 });
 
 router.get('/skills', OmnichannelController.getSkills);
@@ -46,14 +32,7 @@ router.patch('/skills/:id/toggle', OmnichannelController.toggleSkill);
 // ═══════════════════════════════════════════════════════
 
 router.get('/agents', async (_req: Request, res: Response) => {
-  try {
-    const gateway = OpenClawGateway.getInstance();
-    const result = await gateway.getAgents();
-    res.json({ success: true, data: result });
-  } catch (error) {
-    logger.error('Agents list error', error);
-    res.status(500).json({ success: false, error: 'Failed to fetch agents' });
-  }
+  res.json({ success: true, data: [] });
 });
 
 router.get('/agents/:id/identity', OmnichannelController.getAgentIdentity);

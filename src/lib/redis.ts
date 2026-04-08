@@ -1,5 +1,5 @@
 import { Redis } from 'ioredis';
-import configManager from '../config/ConfigManager.js';
+import configManager from '../dexmart-config/ConfigManager.js';
 import logger from '../utils/logger.js';
 
 

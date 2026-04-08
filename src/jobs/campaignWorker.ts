@@ -6,11 +6,11 @@ import { groupService } from '../services/groupService.js';
 import { webhookService } from '../services/webhookService.js';
 import { socketService } from '../services/socketService.js';
 import { TemplateService } from '../services/templateService.js';
-import { GeminiAI } from '../services/geminiAI.js';
+import { AIUtilityService as GeminiAI } from '../services/ai-utility.js';
 import { antiBanService } from '../services/antiBanService.js';
 import logger from '../utils/logger.js';
 import moment from 'moment-timezone';
-import configManager from '../config/ConfigManager.js';
+import configManager from '../dexmart-config/ConfigManager.js';
 
 /**
  * Gaussian Random Utility

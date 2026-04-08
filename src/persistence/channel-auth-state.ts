@@ -60,7 +60,7 @@ export async function useChannelAuthState(store: AuthKeyValueStore): Promise<{
   clearAuthState: () => Promise<void>;
 }> {
   // Lazy import baileys — only available in openclaw's package scope at runtime
-  const { BufferJSON, initAuthCreds, proto } = await import('@whiskeysockets/baileys');
+  const { BufferJSON, initAuthCreds, proto } = await import('baileys');
 
   const readData = async (key: string): Promise<unknown | null> => {
     try {

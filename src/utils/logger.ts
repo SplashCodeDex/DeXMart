@@ -2,7 +2,7 @@ import path from 'node:path';
 import winston from 'winston';
 import fs from 'node:fs';
 import DailyRotateFile from 'winston-daily-rotate-file';
-import { SERVER_CONFIG } from '../config/constants.js';
+import { SERVER_CONFIG } from '../dexmart-config/constants.js';
 
 // Define log levels
 const levels = {

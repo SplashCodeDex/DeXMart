@@ -27,7 +27,7 @@
  */
 
 import type { WASocket } from '@whiskeysockets/baileys';
-import logger from '../../utils/logger.js';
+import logger from '../../../utils/logger.js';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -93,6 +93,23 @@ export class WhatsappAdapter {
     this.config = channelData?.config ?? {};
   }
 
+  // ── Message Callback (ChannelService interface) ─────────────────────────
+
+  private messageCallbacks: Array<(event: { sender: string; content: string; raw: unknown; timestamp: Date }) => Promise<void>> = [];
+
+  /**
+   * Register a message handler — called by ChannelService._doStartChannel().
+   * The callback is invoked for each incoming message from the Baileys socket.
+   */
+  public onMessage(callback: (event: { sender: string; content: string; raw: unknown; timestamp: Date }) => Promise<void>): void {
+    this.messageCallbacks.push(callback);
+  }
+
+  /** Alias used by ChannelService.getChannelQR() */
+  public getQR(): string | null {
+    return this.qrCodeUrl;
+  }
+
   // ── Middleware Pipeline ───────────────────────────────────────────────────
 
   public use(middleware: (ctx: unknown, next: () => Promise<void>) => Promise<void>): void {
@@ -154,7 +171,7 @@ export class WhatsappAdapter {
       // Lazy imports — avoid pulling heavy deps at module init time
       const { createWaSocket } = await import('../../../web/session.js');
       const { useFirestoreChannelAuthState } = await import('../../../persistence/channel-auth-state.js');
-      const { db } = await import('../../lib/firebase.js');
+      const { db } = await import('../../../lib/firebase.js');
       const QRCode = await import('qrcode');
 
       // Phase 2 FR-2: inject Firestore auth state factory
@@ -218,6 +235,25 @@ export class WhatsappAdapter {
           }
           if (!this.isDisconnecting) {
             logger.warn(`[WhatsappAdapter:${this.instanceId}] Disconnected (lastDisconnect: ${JSON.stringify(lastDisconnect?.error)}). Auto-reconnect managed by ChannelService watchdog.`);
+          }
+        }
+      });
+
+      // ── Incoming message handler ─────────────────────────────────────────
+      this.socket.ev.on('messages.upsert', async ({ messages }) => {
+        for (const msg of messages) {
+          if (msg.key.fromMe) continue; // Skip own messages
+          const sender = msg.key.remoteJid || '';
+          const content =
+            msg.message?.conversation ||
+            msg.message?.extendedTextMessage?.text ||
+            '';
+          for (const cb of this.messageCallbacks) {
+            try {
+              await cb({ sender, content, raw: msg, timestamp: new Date() });
+            } catch (e) {
+              logger.error(`[WhatsappAdapter:${this.instanceId}] onMessage callback error:`, e);
+            }
           }
         }
       });

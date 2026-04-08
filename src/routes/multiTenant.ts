@@ -355,7 +355,7 @@ router.post(['/agents/:agentId/channels/:id/disconnect', '/channels/:id/disconne
 /**
  * Get QR code for channel connection
  */
-router.get(['/agents/:agentId/channels/:id/qr', '/bots/:botId/qr'], async (req: Request, res: Response) => {
+router.get(['/agents/:agentId/channels/:id/qr', '/bots/:botId/qr', '/channels/:id/qr'], async (req: Request, res: Response) => {
     try {
         const tenantId = req.user?.tenantId as string;
         const channelId = (req.params.id || req.params.botId) as string;

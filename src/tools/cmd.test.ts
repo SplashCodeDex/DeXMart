@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { translate } from './cmd.js';
-import GeminiService from '../services/gemini.js';
+import { AIUtilityService } from '../services/ai-utility.js';
 import logger from '../utils/logger.js';
 
 // Mock the logger

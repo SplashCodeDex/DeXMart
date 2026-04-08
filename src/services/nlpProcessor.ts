@@ -3,7 +3,7 @@
  * Analyzes user input to detect intent and parameters
  */
 
-import GeminiService from './gemini.js';
+import { AIUtilityService } from './ai-utility.js';
 import logger from '../utils/logger.js';
 import { Result } from '../types/contracts.js';
 
@@ -28,7 +28,7 @@ class NLPProcessorService {
     private gemini: GeminiService;
 
     constructor() {
-        this.gemini = new GeminiService();
+        this.gemini = AIUtilityService.getInstance();
     }
 
     /**

@@ -1,4 +1,4 @@
-import configManager, { Config } from '../config/ConfigManager.js';
+import configManager, { Config } from '../dexmart-config/ConfigManager.js';
 import logger from '../utils/logger.js';
 import { Job } from 'bullmq';
 

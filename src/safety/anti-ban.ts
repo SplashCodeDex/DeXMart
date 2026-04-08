@@ -1,6 +1,6 @@
 import { Redis } from 'ioredis';
 import crypto from 'crypto';
-import configManager from '../config/ConfigManager.js';
+import configManager from '../dexmart-config/ConfigManager.js';
 import logger from '../utils/logger.js';
 import { socketService } from './socketService.js';
 import { firebaseService } from './FirebaseService.js';

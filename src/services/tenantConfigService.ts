@@ -14,7 +14,6 @@
 
 import { db } from '../lib/firebase.js';
 import logger from '../utils/logger.js';
-import { OpenClawGateway } from './openClawGateway.js';
 import {
     TenantSettings,
     TenantSettingsSchema,
@@ -117,25 +116,10 @@ export class TenantConfigService {
                 updatedAt: new Date(),
             });
 
-            // 3. FUSION: Patch OpenClaw Engine (Primary Source of Truth)
-            try {
-                const gateway = OpenClawGateway.getInstance();
-                if (gateway.isInitialized()) {
-                    await gateway.patchConfig(tenantId, {
-                        acp: {
-                            tenantSettings: {
-                                [tenantId]: merged
-                            }
-                        }
-                    }, metadata);
-                }
-            } catch (fusionError) {
-                logger.error(`[TenantConfigService] Fusion patch failed for ${tenantId}:`, fusionError);
-                // We continue to Firestore sync even if engine patch fails, 
-                // but we might want to flag this for retry later.
-            }
+            // Config flows through Firestore natively in the unified codebase.
+            // loadConfigForUser() (Phase 2 FR-1) resolves from Firestore on next access.
 
-            // 4. Persistence: Sync to Firestore (Read Replica)
+            // Persist to Firestore (source of truth)
             await docRef.set(merged, { merge: true });
 
             // Invalidate cache
@@ -168,21 +152,7 @@ export class TenantConfigService {
             const docRef = db.collection('tenants').doc(tenantId).collection('settings').doc('general');
             await docRef.set(settings);
 
-            // 3. FUSION: Patch OpenClaw Engine
-            try {
-                const gateway = OpenClawGateway.getInstance();
-                if (gateway.isInitialized()) {
-                    await gateway.patchConfig(tenantId, {
-                        acp: {
-                            tenantSettings: {
-                                [tenantId]: settings
-                            }
-                        }
-                    }, { actor: 'system-init' });
-                }
-            } catch (fusionError) {
-                logger.error(`[TenantConfigService] Fusion initialization failed for ${tenantId}:`, fusionError);
-            }
+            // Config flows through Firestore natively in the unified codebase.
 
             logger.info(`[TenantConfigService] Initialized settings for new tenant ${tenantId}`);
             return { success: true, data: settings };

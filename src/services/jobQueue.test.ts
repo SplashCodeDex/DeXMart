@@ -28,7 +28,7 @@ vi.mock('../utils/logger.js', () => ({
   },
 }));
 
-vi.mock('../config/ConfigManager.js', () => ({
+vi.mock('../dexmart-config/ConfigManager.js', () => ({
   default: {
     config: {
       redis: {

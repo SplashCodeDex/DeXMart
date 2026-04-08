@@ -14,7 +14,7 @@
 
 import { db } from '../lib/firebase.js';
 import logger from '../utils/logger.js';
-import { OpenClawGateway } from './openClawGateway.js';
+import { OpenClawGateway } from '../services/openClawGateway.js';
 import {
     TenantSettings,
     TenantSettingsSchema,

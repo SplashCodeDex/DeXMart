@@ -18,7 +18,7 @@
  * fusion model (B2C: user = tenant, userId scopes every adapter instance).
  */
 
-import logger from '../utils/logger.js';
+import logger from '../../utils/logger.js';
 
 // ── Adapter Interface ─────────────────────────────────────────────────────────
 
