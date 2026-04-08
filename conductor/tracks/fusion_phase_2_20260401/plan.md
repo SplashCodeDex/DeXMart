@@ -48,11 +48,19 @@ Focus: Enforce capabilities and track usage across all primary OpenClaw actions.
     - [x] `filterModelsForUser()` intersects plan capabilities with OpenClaw-configured models.
     - [x] `assertCan()` throws structured HTTP 402 with `PLAN_LIMIT_*` code for API middleware.
     - **20/20 tests passing** — `src/billing/auth-guard.test.ts`
+- [x] Task: Grace Zone + WebSocket Billing Warnings (FR-3 completion) — `b9a120f`
+    - [x] `GraceNotifier` type + `assertCanWithGrace()` in `src/billing/auth-guard.ts`.
+    - [x] 90–99% of limit → allowed, `notify` called with `(userId, capability, usedPercent)`.
+    - [x] ≥100% → hard block, HTTP 402 `PLAN_LIMIT_*`. Unlimited plans (-1) always pass.
+    - [x] `makeBillingWarningNotifier(socket)` factory wires `SocketService` to `GraceNotifier`.
+    - [x] `emitBillingWarning()` added to `SocketService` — emits `billing_warning` event with plan-aware message.
+    - [x] Fixed `channel-auth-state.test.ts` baileys mock specifier (`'baileys'` not `'@whiskeysockets/baileys/lib/index.js'`).
+    - **29/29 tests passing** — `src/billing/auth-guard.test.ts`
 
 ---
 
 ## Summary
-**54 tests, 5 test files, all passing.**
+**63 tests, 5 test files, all passing.**
 
 ### New files created:
 | File | Purpose |
