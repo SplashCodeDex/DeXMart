@@ -18,6 +18,21 @@
 
 import type { UserContext } from '../tenancy/tenant-context.js';
 
+/** Minimal interface for the socket notifier dependency — avoids hard-coupling to SocketService. */
+interface BillingSocketEmitter {
+  emitBillingWarning(userId: string, capability: string, usedPercent: number): unknown;
+}
+
+/**
+ * Callback invoked when a user enters the grace zone (90–99% of a plan limit).
+ * Implementations should push a warning to the user via WebSocket or similar.
+ *
+ * @param userId      - Firebase UID of the user approaching their limit.
+ * @param capability  - Which limit they're approaching ('channel' | 'message' | 'agent').
+ * @param usedPercent - Current usage as a percentage of the limit (90–99).
+ */
+export type GraceNotifier = (userId: string, capability: string, usedPercent: number) => void;
+
 /**
  * Filters a list of configured model IDs to only those allowed by the user's plan.
  *
@@ -84,5 +99,75 @@ export function assertCan(
       new Error(buildGateDeniedMessage(capability, ctx)),
       { statusCode: 402, code: `PLAN_LIMIT_${capability.toUpperCase()}` },
     );
+  }
+}
+
+// ── Grace Zone Gate ───────────────────────────────────────────────────────────
+
+const GRACE_THRESHOLD_PCT = 90;
+
+type GatedCapability = 'channel' | 'message' | 'agent';
+
+function getUsageRatio(ctx: UserContext, capability: GatedCapability): { used: number; limit: number } {
+  switch (capability) {
+    case 'channel': return { used: ctx.usage.activeChannels, limit: ctx.capabilities.maxChannels };
+    case 'message': return { used: ctx.usage.messagesThisPeriod, limit: ctx.capabilities.maxMessagesPerMonth };
+    case 'agent':   return { used: ctx.usage.activeAgents, limit: ctx.capabilities.maxAgents };
+  }
+}
+
+/**
+ * Asserts that a user can perform an action, with a soft grace zone before a hard block.
+ *
+ * Behaviour:
+ *   - **< 90% of limit** → allowed, `notify` not called.
+ *   - **90–99% of limit** → allowed, `notify` called with current usage percent (grace zone).
+ *   - **≥ 100% of limit** → throws HTTP 402 with `PLAN_LIMIT_*` code, `notify` not called.
+ *   - **Unlimited plan** (limit = -1) → always allowed, `notify` never called.
+ *
+ * The `notify` callback is injected so callers can push a WebSocket warning without
+ * this module depending directly on the socket service (keeps it unit-testable).
+ *
+ * @param ctx        - Resolved UserContext for the current user.
+ * @param capability - The resource being checked.
+ * @param notify     - Called when the user is in the grace zone.
+ */
+/**
+ * Creates a GraceNotifier that pushes a WebSocket billing warning to the user.
+ * Inject this at the call site so auth-guard.ts itself stays free of socket deps.
+ *
+ * @example
+ *   const notify = makeBillingWarningNotifier(socketService);
+ *   assertCanWithGrace(ctx, 'message', notify);
+ */
+export function makeBillingWarningNotifier(socket: BillingSocketEmitter): GraceNotifier {
+  return (userId, capability, usedPercent) => {
+    socket.emitBillingWarning(userId, capability, usedPercent);
+  };
+}
+
+export function assertCanWithGrace(
+  ctx: UserContext,
+  capability: GatedCapability,
+  notify: GraceNotifier,
+): void {
+  const { used, limit } = getUsageRatio(ctx, capability);
+
+  // Unlimited plan — skip all checks
+  if (limit === -1) return;
+
+  const usedPercent = (used / limit) * 100;
+
+  if (usedPercent >= 100) {
+    // Hard block: at or over the limit
+    throw Object.assign(
+      new Error(buildGateDeniedMessage(capability, ctx)),
+      { statusCode: 402, code: `PLAN_LIMIT_${capability.toUpperCase()}` },
+    );
+  }
+
+  if (usedPercent >= GRACE_THRESHOLD_PCT) {
+    // Grace zone: allow the action but warn the user
+    notify(ctx.userId, capability, Math.round(usedPercent * 100) / 100);
   }
 }

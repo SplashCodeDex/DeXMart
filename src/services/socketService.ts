@@ -154,6 +154,30 @@ export class SocketService {
     public emitProgress(tenantId: string, campaignId: string, stats: any): Result<void> {
         return this.emitToTenant(tenantId, 'campaign_update', { campaignId, stats });
     }
+
+    /**
+     * Emit a billing warning when a user enters the grace zone (90–99% of a plan limit).
+     * In B2C mode userId === tenantId, so we route to the user's own socket room.
+     *
+     * Frontend event: `billing_warning`
+     * Payload: { capability, usedPercent, message }
+     */
+    public emitBillingWarning(
+        userId: string,
+        capability: string,
+        usedPercent: number,
+    ): Result<void> {
+        const messages: Record<string, string> = {
+            message: `You've used ${Math.round(usedPercent)}% of your monthly message limit. Upgrade soon to avoid interruptions.`,
+            channel: `You've used ${Math.round(usedPercent)}% of your channel limit. Upgrade to add more channels.`,
+            agent: `You've used ${Math.round(usedPercent)}% of your agent limit. Upgrade to create more agents.`,
+        };
+        return this.emitToTenant(userId, 'billing_warning', {
+            capability,
+            usedPercent,
+            message: messages[capability] ?? `You're approaching a plan limit (${Math.round(usedPercent)}% used).`,
+        });
+    }
 }
 
 export const socketService = SocketService.getInstance();

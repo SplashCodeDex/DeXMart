@@ -11,8 +11,11 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { makeFirestoreAuthStore, useChannelAuthState } from './channel-auth-state.js';
 
 // ── Mock baileys ─────────────────────────────────────────────────────────────
-// baileys is not installed at root — mock its lazy import (must match exact subpath used in source)
-vi.mock('@whiskeysockets/baileys/lib/index.js', () => ({
+// baileys is not installed at root — mock its lazy import.
+// Must use the same specifier the source uses: `import('baileys')` (line 63 of channel-auth-state.ts).
+// Using the resolved subpath '@whiskeysockets/baileys/lib/index.js' is unreliable in combined runs
+// because Vitest's module cache normalises it differently across test files.
+vi.mock('baileys', () => ({
   BufferJSON: {
     replacer: (_key: string, value: unknown) => value,
     reviver: (_key: string, value: unknown) => value,

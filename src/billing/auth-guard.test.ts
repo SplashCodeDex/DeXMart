@@ -7,9 +7,9 @@
  *     with the set of models actually configured in OpenClaw config.
  *   - No external deps — pure unit tests.
  */
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { createAuthGuard, PLAN_CAPABILITIES, type UserContext } from '../tenancy/tenant-context.js';
-import { filterModelsForUser } from './auth-guard.js';
+import { filterModelsForUser, assertCanWithGrace, type GraceNotifier } from './auth-guard.js';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function makeCtx(overrides: Partial<UserContext> = {}): UserContext {
@@ -186,5 +186,110 @@ describe('filterModelsForUser', () => {
     const configuredModels = ['gpt-4o', 'gemini-2.5-pro', 'gemini-2.0-flash'];
     const result = filterModelsForUser(ctx, configuredModels);
     expect(result).toEqual(['gpt-4o', 'gemini-2.5-pro', 'gemini-2.0-flash']);
+  });
+});
+
+// ── assertCanWithGrace tests ──────────────────────────────────────────────────
+describe('assertCanWithGrace', () => {
+  // starter: maxChannels=3, maxAgents=2, maxMessagesPerMonth=5000
+
+  describe('message capability', () => {
+    it('does not throw and does not notify when well under limit (<90%)', () => {
+      const notify: GraceNotifier = vi.fn();
+      const ctx = makeCtx({ usage: { messagesThisPeriod: 4000, activeChannels: 0, activeAgents: 0, storageBytes: 0 } });
+      // 4000/5000 = 80% — under grace threshold
+      expect(() => assertCanWithGrace(ctx, 'message', notify)).not.toThrow();
+      expect(notify).not.toHaveBeenCalled();
+    });
+
+    it('does not throw but notifies when in grace zone (90–99%)', () => {
+      const notify: GraceNotifier = vi.fn();
+      const ctx = makeCtx({ usage: { messagesThisPeriod: 4600, activeChannels: 0, activeAgents: 0, storageBytes: 0 } });
+      // 4600/5000 = 92% — in grace zone
+      expect(() => assertCanWithGrace(ctx, 'message', notify)).not.toThrow();
+      expect(notify).toHaveBeenCalledOnce();
+      expect(notify).toHaveBeenCalledWith('user-abc', 'message', expect.closeTo(92, 0));
+    });
+
+    it('throws 402 with PLAN_LIMIT_MESSAGE code at exactly 100%', () => {
+      const notify: GraceNotifier = vi.fn();
+      const ctx = makeCtx({ usage: { messagesThisPeriod: 5000, activeChannels: 0, activeAgents: 0, storageBytes: 0 } });
+      expect(() => assertCanWithGrace(ctx, 'message', notify)).toThrow();
+      try { assertCanWithGrace(ctx, 'message', notify); } catch (err: any) {
+        expect(err.statusCode).toBe(402);
+        expect(err.code).toBe('PLAN_LIMIT_MESSAGE');
+      }
+      expect(notify).not.toHaveBeenCalled();
+    });
+
+    it('throws 402 when over limit (>100%)', () => {
+      const notify: GraceNotifier = vi.fn();
+      const ctx = makeCtx({ usage: { messagesThisPeriod: 6000, activeChannels: 0, activeAgents: 0, storageBytes: 0 } });
+      expect(() => assertCanWithGrace(ctx, 'message', notify)).toThrow();
+      expect(notify).not.toHaveBeenCalled();
+    });
+
+    it('never throws for unlimited plan (enterprise)', () => {
+      const notify: GraceNotifier = vi.fn();
+      const ctx = makeCtx({
+        plan: 'enterprise',
+        capabilities: PLAN_CAPABILITIES.enterprise,
+        usage: { messagesThisPeriod: 999999, activeChannels: 0, activeAgents: 0, storageBytes: 0 },
+      });
+      expect(() => assertCanWithGrace(ctx, 'message', notify)).not.toThrow();
+      expect(notify).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('channel capability', () => {
+    it('notifies when 2 of 3 channels used (≥90% of limit=3 → floor is 2.7)', () => {
+      const notify: GraceNotifier = vi.fn();
+      // starter maxChannels=3; 3/3=100% → hard block. Test 90% boundary:
+      // ceil(3 * 0.9) = 3 → grace at exactly 3 would already be hard block.
+      // So test at 2 channels used (66%) — no notify, then at limit 3 — hard block.
+      const ctx = makeCtx({ usage: { messagesThisPeriod: 0, activeChannels: 2, activeAgents: 0, storageBytes: 0 } });
+      // 2/3 = 66.7% — under grace
+      expect(() => assertCanWithGrace(ctx, 'channel', notify)).not.toThrow();
+      expect(notify).not.toHaveBeenCalled();
+    });
+
+    it('throws 402 at channel limit', () => {
+      const notify: GraceNotifier = vi.fn();
+      const ctx = makeCtx({ usage: { messagesThisPeriod: 0, activeChannels: 3, activeAgents: 0, storageBytes: 0 } });
+      expect(() => assertCanWithGrace(ctx, 'channel', notify)).toThrow();
+      try { assertCanWithGrace(ctx, 'channel', notify); } catch (err: any) {
+        expect(err.statusCode).toBe(402);
+        expect(err.code).toBe('PLAN_LIMIT_CHANNEL');
+      }
+    });
+
+    it('notifies in grace zone for pro plan (maxChannels=10)', () => {
+      const notify: GraceNotifier = vi.fn();
+      const ctx = makeCtx({
+        plan: 'pro',
+        capabilities: PLAN_CAPABILITIES.pro,
+        usage: { messagesThisPeriod: 0, activeChannels: 9, activeAgents: 0, storageBytes: 0 },
+      });
+      // 9/10 = 90% — grace zone
+      expect(() => assertCanWithGrace(ctx, 'channel', notify)).not.toThrow();
+      expect(notify).toHaveBeenCalledOnce();
+      expect(notify).toHaveBeenCalledWith('user-abc', 'channel', 90);
+    });
+  });
+
+  describe('agent capability', () => {
+    it('notifies in grace zone for pro plan (maxAgents=5, used=5 → hard block)', () => {
+      const notify: GraceNotifier = vi.fn();
+      const ctx = makeCtx({
+        plan: 'pro',
+        capabilities: PLAN_CAPABILITIES.pro,
+        usage: { messagesThisPeriod: 0, activeChannels: 0, activeAgents: 5, storageBytes: 0 },
+      });
+      // 5/5 = 100% — hard block
+      expect(() => assertCanWithGrace(ctx, 'agent', notify)).toThrow();
+      try { assertCanWithGrace(ctx, 'agent', notify); } catch (err: any) {
+        expect(err.code).toBe('PLAN_LIMIT_AGENT');
+      }
+    });
   });
 });
