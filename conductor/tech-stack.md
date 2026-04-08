@@ -46,7 +46,7 @@
 
 ### DeXMart Platform (core infrastructure — NOT plugins)
 - **User Context:** `UserContext` + `AuthGuard` for B2C isolation (`src/tenancy/`)
-- **Billing Gate:** `SystemAuthorityService` + Stripe integration (`src/billing/`)
+- **Billing Gate:** `assertCan()` / `assertCanWithGrace()` (grace zone, 90–99%) + `UsageTracker` (batched Firestore flush) + Stripe integration (`src/billing/`) — pure functions on `UserContext`, replaces B2B-era `SystemAuthorityService`
 - **Persistence:** Firebase/Firestore for user data, sessions, config (`src/persistence/`)
 - **Campaigns:** Bulk messaging engine with anti-ban throttling (`src/campaigns/`)
 - **Safety:** Anti-ban system + content moderation (`src/safety/`)
@@ -56,7 +56,7 @@
 
 ### Shared Infrastructure
 - **Job Queues:** BullMQ / BullMQ Pro (Group Isolation for user-scoped jobs)
-- **Real-time:** WebSockets (Socket.io 4.8.3) for Mastermind stream, channel status push, QR codes
+- **Real-time:** WebSockets (Socket.io 4.8.3) for Mastermind stream, channel status push, QR codes, billing warnings (`billing_warning` event)
 - **Observability:** OpenTelemetry (Tracing & Metrics, Low-overhead auto-instrumentation)
 - **Logging:** Pino (High-performance, JSON structured)
 - **Testing:** Node.js Native Test Runner (`node --test`) & Vitest 4.0
