@@ -22,10 +22,11 @@ export const initializeWhatsappWorker = () => {
         logger.info(`Processing outbound WhatsApp message for ${jid} (Job: ${job.id})`);
 
         try {
-            const adapter = channelManager.getAdapter(channelId) as WhatsappAdapter;
-            if (!adapter) {
+            const genericAdapter = channelManager.getAdapter(channelId);
+            if (!genericAdapter) {
                 throw new Error(`Adapter for channel ${channelId} not found in memory`);
             }
+            const adapter = genericAdapter as unknown as WhatsappAdapter;
 
             // ─── ANTI-BAN: VELOCITY RULE GATE (ATOMIC) ───────────────
             // Enforce minimum 5-7s gap between messages per channel (number).

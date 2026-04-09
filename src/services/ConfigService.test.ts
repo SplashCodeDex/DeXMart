@@ -33,7 +33,7 @@ describe('ConfigService', () => {
 
   it('should load environment variables correctly', async () => {
     process.env.REDIS_HOST = 'redis-server';
-    process.env.BOT_COOLDOWN_MS = '2000';
+    process.env.CHANNEL_COOLDOWN_MS = '2000';
 
     const { ConfigService } = await import('./ConfigService.js');
     const config = ConfigService.getInstance();

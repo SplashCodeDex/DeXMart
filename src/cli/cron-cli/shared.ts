@@ -2,7 +2,7 @@ import { listChannelPlugins } from "../../channels/plugins/index.js";
 import { parseAbsoluteTimeMs } from "../../cron/parse.js";
 import { resolveCronStaggerMs } from "../../cron/stagger.js";
 import type { CronJob, CronSchedule } from "../../cron/types.js";
-import { formatDurationHuman } from "../../infra/format-time/format-duration.ts";
+import { formatDurationHuman } from "../../infra/format-time/format-duration.js";
 import { defaultRuntime } from "../../runtime.js";
 import { colorize, isRich, theme } from "../../terminal/theme.js";
 import type { GatewayRpcOpts } from "../gateway-rpc.js";

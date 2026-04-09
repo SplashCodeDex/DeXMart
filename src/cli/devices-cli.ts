@@ -7,7 +7,7 @@ import {
   summarizeDeviceTokens,
   type PairedDevice as InfraPairedDevice,
 } from "../infra/device-pairing.js";
-import { formatTimeAgo } from "../infra/format-time/format-relative.ts";
+import { formatTimeAgo } from "../infra/format-time/format-relative.js";
 import { defaultRuntime } from "../runtime.js";
 import { renderTable } from "../terminal/table.js";
 import { theme } from "../terminal/theme.js";

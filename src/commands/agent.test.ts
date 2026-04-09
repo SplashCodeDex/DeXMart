@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { beforeEach, describe, expect, it, type MockInstance, vi } from "vitest";
-import { withTempHome as withTempHomeBase } from "../../test/helpers/temp-home.js";
+import { withTempHome as withTempHomeBase } from "../../test-utils/temp-home.js";
 import "../cron/isolated-agent.mocks.js";
 import * as cliRunnerModule from "../agents/cli-runner.js";
 import { FailoverError } from "../agents/failover-error.js";

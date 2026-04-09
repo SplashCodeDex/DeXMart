@@ -3,7 +3,7 @@ import { resolveConfiguredModelRef } from "../agents/model-selection.js";
 import type { SessionEntry } from "../config/sessions.js";
 import type { OpenClawConfig } from "../config/types.openclaw.js";
 import { resolveSessionModelRef } from "../gateway/session-utils.js";
-import { formatTimeAgo } from "../infra/format-time/format-relative.ts";
+import { formatTimeAgo } from "../infra/format-time/format-relative.js";
 import { parseAgentSessionKey } from "../routing/session-key.js";
 import { theme } from "../terminal/theme.js";
 

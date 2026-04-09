@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { withTempHome } from "../../test/helpers/temp-home.js";
+import { withTempHome } from "../../test-utils/temp-home.js";
 
 export async function runDoctorConfigWithInput<T>(params: {
   config: Record<string, unknown>;

@@ -7,7 +7,7 @@ import type { ChannelAccountSnapshot, ChannelPlugin } from "../channels/plugins/
 import { type OpenClawConfig, loadConfig } from "../config/config.js";
 import { DEFAULT_ACCOUNT_ID } from "../routing/session-key.js";
 import { theme } from "../terminal/theme.js";
-import { formatTimeAgo } from "./format-time/format-relative.ts";
+import { formatTimeAgo } from "./format-time/format-relative.js";
 
 export type ChannelSummaryOptions = {
   colorize?: boolean;

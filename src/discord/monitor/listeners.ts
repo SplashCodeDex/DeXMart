@@ -8,7 +8,7 @@ import {
   type User,
 } from "@buape/carbon";
 import { danger, logVerbose } from "../../globals.js";
-import { formatDurationSeconds } from "../../infra/format-time/format-duration.ts";
+import { formatDurationSeconds } from "../../infra/format-time/format-duration.js";
 import { enqueueSystemEvent } from "../../infra/system-events.js";
 import { createSubsystemLogger } from "../../logging/subsystem.js";
 import { resolveAgentRoute } from "../../routing/resolve-route.js";

@@ -6,7 +6,7 @@ import {
   resolveResponseUsageMode,
 } from "../auto-reply/thinking.js";
 import type { SessionsPatchResult } from "../gateway/protocol/index.js";
-import { formatRelativeTimestamp } from "../infra/format-time/format-relative.ts";
+import { formatRelativeTimestamp } from "../infra/format-time/format-relative.js";
 import { normalizeAgentId } from "../routing/session-key.js";
 import { helpText, parseCommand } from "./commands.js";
 import type { ChatLog } from "./components/chat-log.js";

@@ -3,14 +3,14 @@
 ## Phase 1: Smoke Test — Runtime Verification [BLOCKING GATE]
 Goal: Prove `src/main.ts` boots and processes a message end-to-end. **Nothing else proceeds until this passes.**
 
-- [ ] Task: Boot Verification — run `pnpm dev` and diagnose all subsystem initialization
-    - [ ] Verify Express server starts on expected port
-    - [ ] Verify WebSocket server initializes (Socket.io)
-    - [ ] Verify channel watchdog starts (`channelService.startWatchdog()`)
-    - [ ] Verify usage flush scheduler starts (`startUsageFlushScheduler()`)
-    - [ ] Verify agent event listener starts (`startAgentEventListener()`)
-    - [ ] Document all boot errors encountered
-    - [ ] Fix each boot error, re-test until clean boot achieved
+- [x] Task: Boot Verification — run `pnpm dev` and diagnose all subsystem initialization
+    - [x] Verify Express server starts on expected port
+    - [x] Verify WebSocket server initializes (Socket.io)
+    - [x] Verify channel watchdog starts (`channelService.startWatchdog()`)
+    - [x] Verify usage flush scheduler starts (`startUsageFlushScheduler()`)
+    - [x] Verify agent event listener starts (`startAgentEventListener()`)
+    - [x] Document all boot errors encountered
+    - [x] Fix each boot error, re-test until clean boot achieved
 - [ ] Task: Channel Connection — connect a WhatsApp channel via QR code
     - [ ] Verify QR code is generated and served to the frontend
     - [ ] Verify Firestore auth state is created at `/users/{userId}/channels/{channelId}/auth`

@@ -1,4 +1,4 @@
-import { formatRuntimeStatusWithDetails } from "../infra/runtime-status.ts";
+import { formatRuntimeStatusWithDetails } from "../infra/runtime-status.js";
 
 export type ServiceRuntimeLike = {
   status?: string;

@@ -14,7 +14,6 @@
 
 import { db } from '../lib/firebase.js';
 import logger from '../utils/logger.js';
-import { OpenClawGateway } from '../services/openClawGateway.js';
 import {
     TenantSettings,
     TenantSettingsSchema,
@@ -117,23 +116,8 @@ export class TenantConfigService {
                 updatedAt: new Date(),
             });
 
-            // 3. FUSION: Patch OpenClaw Engine (Primary Source of Truth)
-            try {
-                const gateway = OpenClawGateway.getInstance();
-                if (gateway.isInitialized()) {
-                    await gateway.patchConfig(tenantId, {
-                        acp: {
-                            tenantSettings: {
-                                [tenantId]: merged
-                            }
-                        }
-                    }, metadata);
-                }
-            } catch (fusionError) {
-                logger.error(`[TenantConfigService] Fusion patch failed for ${tenantId}:`, fusionError);
-                // We continue to Firestore sync even if engine patch fails, 
-                // but we might want to flag this for retry later.
-            }
+            // 3. FUSION: Native Engine reads directly from DB via ACP/Ingress logic
+            // (Synchronous patch removed - no more gateway bridging)
 
             // 4. Persistence: Sync to Firestore (Read Replica)
             await docRef.set(merged, { merge: true });
@@ -168,21 +152,7 @@ export class TenantConfigService {
             const docRef = db.collection('tenants').doc(tenantId).collection('settings').doc('general');
             await docRef.set(settings);
 
-            // 3. FUSION: Patch OpenClaw Engine
-            try {
-                const gateway = OpenClawGateway.getInstance();
-                if (gateway.isInitialized()) {
-                    await gateway.patchConfig(tenantId, {
-                        acp: {
-                            tenantSettings: {
-                                [tenantId]: settings
-                            }
-                        }
-                    }, { actor: 'system-init' });
-                }
-            } catch (fusionError) {
-                logger.error(`[TenantConfigService] Fusion initialization failed for ${tenantId}:`, fusionError);
-            }
+            // 3. FUSION: Native Engine reads from DB Directly
 
             logger.info(`[TenantConfigService] Initialized settings for new tenant ${tenantId}`);
             return { success: true, data: settings };

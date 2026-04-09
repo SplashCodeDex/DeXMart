@@ -10,7 +10,7 @@ interface ModerationResult {
 }
 
 class ContentModerationService {
-  private gemini: GeminiService;
+  private gemini: AIUtilityService;
   private moderationEnabled: boolean;
   private strictMode: boolean;
   private thresholds: Record<string, number>;

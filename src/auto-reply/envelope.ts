@@ -6,8 +6,8 @@ import {
   resolveTimezone,
   formatUtcTimestamp,
   formatZonedTimestamp,
-} from "../infra/format-time/format-datetime.ts";
-import { formatTimeAgo } from "../infra/format-time/format-relative.ts";
+} from "../infra/format-time/format-datetime.js";
+import { formatTimeAgo } from "../infra/format-time/format-relative.js";
 
 export type AgentEnvelopeParams = {
   channel: string;

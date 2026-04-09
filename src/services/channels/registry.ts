@@ -5,19 +5,14 @@
  * This is the single source of truth for which channels DeXMart supports
  * and how the dashboard presents them to users.
  *
- * Fusion note: The original registry referenced GenericOpenClawAdapter (a bridge
- * file deleted in Phase 1) for msteams, matrix, and facebook. Those platforms
- * now delegate to OpenClaw's native channel plugin system via the extensions/
- * directory. The adapterClass field is typed as a constructor or null — null
- * means the channel is managed entirely by OpenClaw's plugin lifecycle
+ * The adapterClass field is typed as a constructor or null — null means the
+ * channel is managed entirely by OpenClaw's native plugin lifecycle
  * (createChannelManager) and does not need a DeXMart adapter instance.
  *
  * Channels with a non-null adapterClass (WhatsApp, Telegram, Discord, Slack,
  * Signal, iMessage, IRC, GoogleChat) have DeXMart adapters that provide
  * DeXMart-specific features: anti-ban, Firestore auth, campaign support,
  * multi-tenant isolation, and the outbound queue worker.
- *
- * Reconstructed from backend/dist — source was deleted in Phase 1 fusion.
  */
 
 // ── Platform Metadata Type ────────────────────────────────────────────────────

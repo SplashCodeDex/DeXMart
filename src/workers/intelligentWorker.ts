@@ -1,4 +1,4 @@
-import { EnhancedAIBrain } from '../services/index.js';
+import { DeXMartBrain } from '../services/index.js';
 import { createChannelContext } from '../utils/createChannelContext.js';
 import logger from '../utils/logger.js';
 import { ActiveChannel, GlobalContext } from '../types/index.js';
@@ -7,7 +7,7 @@ import { ActiveChannel, GlobalContext } from '../types/index.js';
  * Intelligent Worker - Processes messages with AI intelligence
  */
 class IntelligentWorker {
-  private processor: EnhancedAIBrain | null = null;
+  private processor: DeXMartBrain | null = null;
   private channel: ActiveChannel | null = null;
   private context: GlobalContext | null = null;
   private messagesProcessed: number = 0;
@@ -24,7 +24,7 @@ class IntelligentWorker {
   async initialize(channel: ActiveChannel, context: GlobalContext) {
     this.channel = channel;
     this.context = context;
-    this.processor = new EnhancedAIBrain(context);
+    this.processor = new DeXMartBrain(this.channel, context);
     logger.info('Intelligent Worker ready for message processing');
   }
 
@@ -46,7 +46,7 @@ class IntelligentWorker {
       const ctx = await this.createEnhancedContext(messageData, channelContext);
 
       // Process with intelligent system
-      await this.processor.processMessage(this.channel, ctx);
+      await this.processor.processMessage(ctx);
       this.messagesProcessed++;
 
       logger.debug('Message processed intelligently', {

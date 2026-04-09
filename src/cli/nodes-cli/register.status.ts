@@ -1,5 +1,5 @@
 import type { Command } from "commander";
-import { formatTimeAgo } from "../../infra/format-time/format-relative.ts";
+import { formatTimeAgo } from "../../infra/format-time/format-relative.js";
 import { defaultRuntime } from "../../runtime.js";
 import { renderTable } from "../../terminal/table.js";
 import { shortenHomeInString } from "../../utils.js";

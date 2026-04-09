@@ -1,5 +1,5 @@
 import { spinner } from "@clack/prompts";
-import { formatDurationPrecise } from "../../infra/format-time/format-duration.ts";
+import { formatDurationPrecise } from "../../infra/format-time/format-duration.js";
 import type {
   UpdateRunResult,
   UpdateStepInfo,

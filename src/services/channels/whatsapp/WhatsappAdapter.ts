@@ -16,14 +16,11 @@
  *     4. Status → Socket.IO push for the dashboard
  *     5. Middleware pipeline (DeXMart middleware system)
  *
- * Reconstructed from backend/dist/backend/src/services/channels/whatsapp/WhatsappAdapter.js
- * The interface is preserved exactly. Types and fusion wiring are added.
- *
  * Key design decisions:
- *   - authStateFactory uses useFirestoreChannelAuthState (Phase 2, FR-2)
+ *   - authStateFactory uses useFirestoreChannelAuthState for per-user Firestore session persistence
  *   - getSocket() exposes the raw Baileys socket for resilienceHarness and queue worker
  *   - _directSendMessage() is the low-level send used by the anti-ban queue worker
- *   - connect() passes authStateFactory to createWaSocket() (Phase 2 injection point)
+ *   - connect() passes authStateFactory to createWaSocket()
  */
 
 import type { WASocket } from '@whiskeysockets/baileys';
@@ -154,11 +151,7 @@ export class WhatsappAdapter {
   }
 
   /**
-   * Connect to WhatsApp via OpenClaw's createWaSocket() with Firestore auth.
-   *
-   * Fusion wiring (Phase 2, FR-2):
-   *   authStateFactory = () => useFirestoreChannelAuthState(userId, channelId, db)
-   *   This replaces the file-based useMultiFileAuthState for all multi-user sessions.
+   * Connect to WhatsApp via OpenClaw's createWaSocket() with Firestore auth state.
    *
    * @param forceNewSession - If true, clears Firestore auth state before connecting
    */
@@ -174,12 +167,11 @@ export class WhatsappAdapter {
       const { db } = await import('../../../lib/firebase.js');
       const QRCode = await import('qrcode');
 
-      // Phase 2 FR-2: inject Firestore auth state factory
       const authStateFactory = async () => {
         const authState = await useFirestoreChannelAuthState(
           this.userId,
           this.channelId,
-          db as any,
+          db,
         );
         return authState;
       };

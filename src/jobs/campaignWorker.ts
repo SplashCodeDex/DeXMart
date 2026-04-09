@@ -164,9 +164,9 @@ class CampaignWorker {
                     await this.updateCampaignStats(tenantId, id, { sent, failed, pending: total - (sent + failed) });
                     return;
                 }
-                // ─────────────────────────────────────────────────────
-
-                await adapter.sendMessage(contact.phone, { text: content });
+                // TypeScript type assertions since base ChannelAdapter doesn't declare full features
+                const waAdapter = adapter as unknown as import('../adapters/whatsapp.js').WhatsappAdapter;
+                await waAdapter.sendMessage(contact.phone, { text: content });
                 sent++;
 
                 if (i % 5 === 0 || i === endIndex - 1) {

@@ -50,7 +50,7 @@ describe('UsageGuard', () => {
             const result = await guard.checkAndIncrementUsage(tenantId);
 
             expect(result.allowed).toBe(true);
-            expect(mockDoc).toHaveBeenCalledWith(`tenants/${tenantId}`);
+            expect(mockDoc).toHaveBeenCalledWith(`users/${tenantId}`);
         });
 
         it('should return allowed: false if over limit', async () => {
@@ -75,7 +75,7 @@ describe('UsageGuard', () => {
             const result = await guard.checkAndIncrementUsage(tenantId);
 
             expect(result.allowed).toBe(false);
-            expect(result.error).toBe('Tenant not found');
+            expect(result.error).toBe('User not found');
         });
     });
 });

@@ -9,7 +9,7 @@ import {
   resolveTimezone,
   formatUtcTimestamp,
   formatZonedTimestamp,
-} from "../../infra/format-time/format-datetime.ts";
+} from "../../infra/format-time/format-datetime.js";
 import { getRemoteSkillEligibility } from "../../infra/skills-remote.js";
 import { drainSystemEventEntries } from "../../infra/system-events.js";
 

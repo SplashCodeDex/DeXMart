@@ -5,6 +5,9 @@ import { Tenant, TenantSchema, Result, TenantUser, TenantUserSchema } from '@/ty
 import { Timestamp } from 'firebase-admin/firestore';
 import { getPlanLimits } from '@/utils/featureGating.js';
 import { db } from '@/lib/firebase.js';
+import { TenantConfigService } from './tenant-config.js';
+import agentService from '../services/AgentService.js';
+import channelService from '../services/ChannelService.js';
 
 export class MultiTenantService {
   private static instance: MultiTenantService;
@@ -98,7 +101,8 @@ export class MultiTenantService {
       // This runs outside the Firestore transaction so it can use AgentService freely.
       // Non-fatal: if this fails, the agent is created lazily on first channel fetch.
       try {
-        const { agentService } = await import('./AgentService.js');
+        const agentServiceModule = await import('../services/AgentService.js');
+        const agentService = agentServiceModule.default || agentServiceModule.agentService;
         await agentService.ensureSystemAgent(tenantId);
       } catch (agentErr) {
         logger.warn(`[MultiTenantService] Could not pre-create system_default agent for ${tenantId}:`, agentErr);
@@ -230,7 +234,8 @@ export class MultiTenantService {
 
     try {
       // Get all channels for this tenant
-      const { channelService } = await import('./ChannelService.js');
+      const channelServiceModule = await import('../services/ChannelService.js');
+      const channelService = channelServiceModule.default || channelServiceModule.channelService;
       const channelsResult = await channelService.getAllChannelsAcrossAgents(tenantId);
       const currentChannelCount = channelsResult.success ? channelsResult.data.length : 0;
 

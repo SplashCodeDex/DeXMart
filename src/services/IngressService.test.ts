@@ -30,6 +30,50 @@ vi.mock('../utils/createChannelContext.js', () => ({
   })
 }));
 
+vi.mock('./deduplicationService.js', () => ({
+  deduplicationService: {
+    shouldProcess: vi.fn().mockReturnValue(true)
+  }
+}));
+
+vi.mock('./automationService.js', () => ({
+  automationService: {
+    listAutomations: vi.fn().mockResolvedValue({ success: true, data: [] }),
+    executeAutomation: vi.fn().mockResolvedValue(undefined)
+  }
+}));
+
+vi.mock('./flowService.js', () => ({
+  flowService: {
+    listActiveFlows: vi.fn().mockResolvedValue({ success: true, data: [] })
+  }
+}));
+
+vi.mock('./flowEngine.js', () => ({
+  flowEngine: {
+    executeFlow: vi.fn().mockResolvedValue(false)
+  }
+}));
+
+vi.mock('./ChannelService.js', () => ({
+  channelService: {
+    getChannel: vi.fn().mockResolvedValue({ success: false })
+  }
+}));
+
+vi.mock('./analytics.js', () => ({
+  default: {
+    trackMessage: vi.fn()
+  }
+}));
+
+vi.mock('../utils/messageNormalizer.js', () => ({
+  MessageNormalizer: {
+    getId: vi.fn().mockReturnValue('test-msg-id'),
+    getTimestamp: vi.fn().mockReturnValue(Date.now())
+  }
+}));
+
 describe('IngressService', () => {
   let service: IngressService;
   const tenantId = 'tenant-123';

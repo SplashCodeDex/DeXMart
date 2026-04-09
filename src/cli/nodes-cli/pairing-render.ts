@@ -1,4 +1,4 @@
-import { formatTimeAgo } from "../../infra/format-time/format-relative.ts";
+import { formatTimeAgo } from "../../infra/format-time/format-relative.js";
 import { renderTable } from "../../terminal/table.js";
 import type { PendingRequest } from "./types.js";
 

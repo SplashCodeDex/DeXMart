@@ -1,5 +1,5 @@
-import { firebaseService } from './FirebaseService.js';
-import { queueService } from './queueService.js';
+import { firebaseService } from '../services/FirebaseService.js';
+import { queueService } from '../services/queueService.js';
 import { Campaign, CampaignSchema, CampaignStatus, Result } from '../types/contracts.js';
 import logger from '../utils/logger.js';
 import crypto from 'crypto';

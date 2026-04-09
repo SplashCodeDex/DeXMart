@@ -1,14 +1,14 @@
-export { resolveAgentDir, resolveAgentWorkspaceDir } from "./agents/agent-scope.ts";
+export { resolveAgentDir, resolveAgentWorkspaceDir } from "./agents/agent-scope.js";
 
-export { DEFAULT_MODEL, DEFAULT_PROVIDER } from "./agents/defaults.ts";
-export { resolveAgentIdentity } from "./agents/identity.ts";
-export { resolveThinkingDefault } from "./agents/model-selection.ts";
-export { runEmbeddedPiAgent } from "./agents/pi-embedded.ts";
-export { resolveAgentTimeoutMs } from "./agents/timeout.ts";
-export { ensureAgentWorkspace } from "./agents/workspace.ts";
+export { DEFAULT_MODEL, DEFAULT_PROVIDER } from "./agents/defaults.js";
+export { resolveAgentIdentity } from "./agents/identity.js";
+export { resolveThinkingDefault } from "./agents/model-selection.js";
+export { runEmbeddedPiAgent } from "./agents/pi-embedded.js";
+export { resolveAgentTimeoutMs } from "./agents/timeout.js";
+export { ensureAgentWorkspace } from "./agents/workspace.js";
 export {
   resolveStorePath,
   loadSessionStore,
   saveSessionStore,
   resolveSessionFilePath,
-} from "./config/sessions.ts";
+} from "./config/sessions.js";

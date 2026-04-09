@@ -4,10 +4,12 @@
  * Business logic layer using Result pattern for error handling
  */
 
-import stripeService from './stripeService.js';
+import stripeService from '../services/stripeService.js';
 import { db } from '../lib/firebase.js';
 import logger from '../utils/logger.js';
 import { Result, success, failure, AppError } from '../types/result.js';
+import { Timestamp, FieldValue } from 'firebase-admin/firestore';
+import ConfigService from '../services/ConfigService.js';
 import {
   CreateCheckoutSessionRequestSchema,
   SubscriptionInfoResponseSchema,
@@ -18,7 +20,6 @@ import {
   type InvoiceResponse,
   type PaymentMethodResponse,
 } from '@DeXMart/shared';
-import { ConfigService } from './ConfigService.js';
 
 export class BillingService {
   /**

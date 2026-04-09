@@ -6,7 +6,7 @@ import { buildModelAliasIndex } from "../../agents/model-selection.js";
 import type { OpenClawConfig } from "../../config/config.js";
 import type { SessionEntry } from "../../config/sessions.js";
 import { saveSessionStore } from "../../config/sessions.js";
-import { formatZonedTimestamp } from "../../infra/format-time/format-datetime.ts";
+import { formatZonedTimestamp } from "../../infra/format-time/format-datetime.js";
 import { enqueueSystemEvent, resetSystemEventsForTest } from "../../infra/system-events.js";
 import { applyResetModelOverride } from "./session-reset-model.js";
 import { prependSystemEvents } from "./session-updates.js";

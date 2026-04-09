@@ -1,5 +1,5 @@
-import { formatDurationPrecise } from "../infra/format-time/format-duration.ts";
-import { formatRuntimeStatusWithDetails } from "../infra/runtime-status.ts";
+import { formatDurationPrecise } from "../infra/format-time/format-duration.js";
+import { formatRuntimeStatusWithDetails } from "../infra/runtime-status.js";
 import type { SessionStatus } from "./status.types.js";
 export { shortenText } from "./text-format.js";
 

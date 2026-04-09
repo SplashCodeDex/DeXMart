@@ -7,7 +7,7 @@ import {
   type ExecApprovalsAgent,
   type ExecApprovalsFile,
 } from "../infra/exec-approvals.js";
-import { formatTimeAgo } from "../infra/format-time/format-relative.ts";
+import { formatTimeAgo } from "../infra/format-time/format-relative.js";
 import { defaultRuntime } from "../runtime.js";
 import { formatDocsLink } from "../terminal/links.js";
 import { renderTable } from "../terminal/table.js";

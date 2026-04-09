@@ -250,7 +250,7 @@ class AIProcessor {
           jobId: job.id,
           userId,
           categories: moderationResult.categories,
-          score: moderationResult.score,
+          score: (moderationResult as any).score,
         });
       }
 
@@ -262,7 +262,7 @@ class AIProcessor {
         metadata: {
           userId,
           categories: moderationResult.categories,
-          score: moderationResult.score,
+          score: (moderationResult as any).score,
         },
       };
     } catch (error: any) {

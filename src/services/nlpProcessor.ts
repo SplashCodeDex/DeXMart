@@ -25,7 +25,7 @@ interface NLPResult {
 }
 
 class NLPProcessorService {
-    private gemini: GeminiService;
+    private gemini: AIUtilityService;
 
     constructor() {
         this.gemini = AIUtilityService.getInstance();

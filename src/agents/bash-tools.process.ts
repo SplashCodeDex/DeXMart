@@ -1,6 +1,6 @@
 import type { AgentTool, AgentToolResult } from "@mariozechner/pi-agent-core";
 import { Type } from "@sinclair/typebox";
-import { formatDurationCompact } from "../infra/format-time/format-duration.ts";
+import { formatDurationCompact } from "../infra/format-time/format-duration.js";
 import { getDiagnosticSessionState } from "../logging/diagnostic-session-state.js";
 import { killProcessTree } from "../process/kill-tree.js";
 import { getProcessSupervisor } from "../process/supervisor/index.js";

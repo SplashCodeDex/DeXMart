@@ -1,18 +1,18 @@
 import { proto } from 'baileys';
 import logger from '@/utils/logger.js';
-import { webhookService } from './webhookService.js';
-import { channelService } from './ChannelService.js';
-import { agentService } from './AgentService.js';
+import { webhookService } from '../services/webhookService.js';
+import channelService from '../services/ChannelService.js';
+import agentService from '../services/AgentService.js';
 import { createChannelContext } from '@/utils/createChannelContext.js';
 import { GlobalContext } from '@/types/index.js';
-import { tenantConfigService } from './tenantConfigService.js';
-import analyticsService from './analytics.js';
+import { tenantConfigService } from '../services/tenantConfigService.js';
+import analyticsService from '../services/analytics.js';
 import { Agent } from '@/types/contracts.js';
-import { flowService } from './flowService.js';
-import { flowEngine } from './flowEngine.js';
-import { automationService } from './automationService.js';
+import { flowService } from '../services/flowService.js';
+import { flowEngine } from '../services/flowEngine.js';
+import { automationService } from '../services/automationService.js';
 import { CommonMessage } from '@/types/omnichannel.js';
-import { deduplicationService } from './deduplicationService.js';
+import { deduplicationService } from '../services/deduplicationService.js';
 import { MessageNormalizer } from '@/utils/messageNormalizer.js';
 // DeXMart Fusion (Phase 4): OpenClaw's embedded agent runner replaces GeminiAI
 import { runEmbeddedPiAgent } from '@/agents/pi-embedded-runner/run.js';

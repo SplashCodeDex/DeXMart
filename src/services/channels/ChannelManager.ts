@@ -13,9 +13,7 @@
  * The key (instanceId) is a unique string per user×channel, e.g.:
  *   `${userId}:${channelId}` or just `${channelId}` for single-tenant CLI use.
  *
- * Reconstructed from backend/dist — source was deleted in Phase 1 fusion.
- * The compiled JS interface is preserved exactly; types are added per the
- * fusion model (B2C: user = tenant, userId scopes every adapter instance).
+ * B2C model: user = tenant, userId scopes every adapter instance.
  */
 
 import logger from '../../utils/logger.js';
@@ -31,8 +29,16 @@ export interface ChannelAdapter {
   instanceId: string;
   /** The channel type (e.g., 'whatsapp', 'telegram') */
   id?: string;
+  /** Connection or readiness status for tracking */
+  status?: string;
   /** Gracefully shut down the adapter and release resources */
   shutdown(): Promise<void>;
+  /** Send a message natively through the adapter */
+  sendMessage?(to: string, content: any): Promise<any>;
+  /** Handle dynamic inbound webhook data */
+  handleWebhook?(req: any, res: any): Promise<any>;
+  /** Update connection paths or auth paths */
+  updatePath?(metadata: any): Promise<any>;
 }
 
 // ── ChannelManager Singleton ──────────────────────────────────────────────────

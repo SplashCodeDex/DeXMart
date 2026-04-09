@@ -2,8 +2,8 @@ import { firebaseService } from '@/services/FirebaseService.js';
 import { Agent, AgentSchema, Result } from '../types/contracts.js';
 import { Timestamp } from 'firebase-admin/firestore';
 import logger from '@/utils/logger.js';
-import channelService from './ChannelService.js';
-import { systemAuthorityService } from './SystemAuthorityService.js';
+import channelService from '../services/ChannelService.js';
+import { systemAuthorityService } from '../services/SystemAuthorityService.js';
 
 /**
  * Agent Service

@@ -1,6 +1,6 @@
 import path from "node:path";
 import { afterEach, beforeEach, expect, vi } from "vitest";
-import { withTempHome as withTempHomeBase } from "../../test/helpers/temp-home.js";
+import { withTempHome as withTempHomeBase } from "../../test-utils/temp-home.js";
 import { loadModelCatalog } from "../agents/model-catalog.js";
 import { runEmbeddedPiAgent } from "../agents/pi-embedded.js";
 import { loadSessionStore } from "../config/sessions.js";

@@ -31,7 +31,7 @@ import { firebaseService } from './FirebaseService.js';
 describe('FirebaseService Path Validation', () => {
     it('should throw an error for docId with undefined segments', async () => {
         await expect(firebaseService.getDoc('channels', 'undefined', 'tenant-123'))
-            .rejects.toThrow('Invalid Firestore path segment detected');
+            .rejects.toThrow('Illegal Firestore path segment detected');
     });
 
     it('should throw an error for empty tenantId', async () => {
@@ -47,6 +47,6 @@ describe('FirebaseService Path Validation', () => {
 
     it('should throw an error if collection contains "undefined" string', async () => {
         await expect(firebaseService.getDoc('agents/undefined/channels', '123', 'tenant-123'))
-            .rejects.toThrow('Invalid Firestore path segment detected');
+            .rejects.toThrow('Illegal Firestore path segment detected');
     });
 });

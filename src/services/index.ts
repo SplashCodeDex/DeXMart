@@ -1,6 +1,6 @@
 /**
  * @fileoverview Services Barrel Export
- * Centralized exports for all services in backend/src/services
+ * Centralized exports for all services in src/services.
  *
  * Usage: import { AnalyticsService, CacheService } from './services/index.js';
  */
@@ -12,7 +12,7 @@ export { default as CacheService } from './cache.js';
 
 // AI Services
 export { AIUtilityService, aiUtility } from './ai-utility.js';
-export { AIUtilityService as EnhancedAIBrain } from './ai-utility.js'; // Legacy alias
+export { DeXMartBrain } from './DeXMartBrain.js';
 
 // Bot Services (Omnichannel 2026)
 export { default as CommandSystem } from './commandSystem.js';
