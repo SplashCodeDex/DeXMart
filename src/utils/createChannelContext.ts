@@ -268,13 +268,10 @@ const createChannelContext = async (
   // MASTERMIND Intelligence (Phase 5): Pre-fetch relevant context
   let relevantContext: any[] = [];
   try {
-    const { memoryService } = await import('../services/memoryService.js');
-    const memResult = await memoryService.retrieveRelevantContext(senderId, messageBody, {
-      platform: isCommonMessage(messageSource) ? messageSource.platform : 'whatsapp',
-      chatId: remoteJid
-    });
-    if (memResult.success) {
-      relevantContext = memResult.data;
+    const { chatHistoryManager } = await import('./chatHistoryManager.js');
+    const chat = await chatHistoryManager.getChat(channelInstance.tenantId, senderId);
+    if (chat && chat.history) {
+      relevantContext = chat.history.slice(-10);
     }
   } catch (err) {
     originalContext.logger.warn(`[createChannelContext] Failed to pre-fetch context:`, err);

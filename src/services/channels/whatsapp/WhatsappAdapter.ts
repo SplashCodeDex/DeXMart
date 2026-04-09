@@ -330,7 +330,7 @@ export class WhatsappAdapter {
    * This is the correct way to send messages from application code.
    */
   public async sendMessage(jid: string, message: unknown, options?: unknown): Promise<void> {
-    const { jobQueueService } = await import('../../services/jobQueue.js');
+    const { jobQueueService } = await import('../../jobQueue.js');
     await jobQueueService.addJob('whatsapp-outbound', 'send', {
       userId: this.userId,
       channelId: this.channelId,

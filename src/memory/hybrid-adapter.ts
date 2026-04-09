@@ -141,7 +141,7 @@ export class HybridMemoryAdapter implements MemorySearchManager {
       // Re-embed in reverse order (oldest first) so the local DB is in chronological order
       const docs = [...snapshot.docs].reverse();
       for (const doc of docs) {
-        const data = doc.data() as FirestoreMemoryDoc;
+        const data = doc.data() as unknown as FirestoreMemoryDoc;
         if (data.text) {
           await this.embedAndInsert(data.text, { source: data.source, sessionId: data.sessionId }).catch((e) => {
             logger.warn(`[HybridMemory:${this.userId}] Rehydration embed failed for doc ${doc.id}:`, e);

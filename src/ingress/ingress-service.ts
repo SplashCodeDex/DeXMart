@@ -138,15 +138,13 @@ export class IngressService {
         // Falls back to base loadConfig() if no user config stored yet.
         const { db } = await import('@/lib/firebase.js');
         const { loadConfig } = await import('@/config/io.js');
-        const rawConfig = ConfigModelGateSchema.parse(await loadConfigForUser(tenantId, null, db as unknown as UserConfigFirestore, loadConfig));
+        const rawConfig = ConfigModelGateSchema.parse(await loadConfigForUser(tenantId, null, db as unknown as UserConfigFirestore, loadConfig)) as unknown as import('@/config/config.js').OpenClawConfig;
 
         // Phase 3.2: intersect cfg.agents.defaults.models with the user's plan capabilities.
         const { createAuthGuard } = await import('@/tenancy/tenant-context.js');
         const { UserContextResolverImpl } = await import('@/tenancy/context-resolver.js');
         const { admin } = await import('@/lib/firebase.js');
-        // Temporarily, we construct a dummy Redis or mock it since it's not exported easily here without IORedis. 
-        // Wait, Redis is used inside context-resolver.
-        const Redis = (await import('ioredis')).default;
+        const { Redis } = await import('ioredis');
         const redisClient = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
 
         let userConfig = rawConfig;
@@ -162,7 +160,7 @@ export class IngressService {
               acc[key] = (rawConfig.agents!.defaults!.models as Record<string, unknown>)[key];
               return acc;
             }, {});
-            userConfig = {
+            userConfig = ConfigModelGateSchema.parse({
               ...rawConfig,
               agents: {
                 ...rawConfig.agents,
@@ -171,7 +169,7 @@ export class IngressService {
                   models: restrictedModels,
                 },
               },
-            };
+            }) as typeof rawConfig;
           }
         } catch (err: unknown) {
           // Context resolution failure is non-fatal — but log it to prevent silent billing bypass
@@ -181,7 +179,7 @@ export class IngressService {
 
         // Build session ID: stable per user×agent×channel for conversation continuity
         const sessionId = `${tenantId}:${activeAgent.id}:${channelId}`;
-        const prompt = message.text ?? message.caption ?? '';
+        const prompt = message.content?.text ?? '';
 
         // Build per-user HybridMemoryAdapter (Phase 3.3)
         // Lazy import to avoid circular dep at module init
@@ -217,14 +215,13 @@ export class IngressService {
           sessionKey: sessionId,
           agentId: activeAgent.id,
           messageChannel: message.platform,
-          senderId: message.senderId ?? undefined,
-          senderName: message.senderName ?? undefined,
+          senderId: message.from,
           prompt,
           config: userConfig,
           memoryManager: hybridMemory,
           // Reply target: the channel + sender (DeXMart will pick up the reply
           // via the agent's outbound pipeline → WhatsappAdapter._directSendMessage)
-          messageTo: message.senderId ?? undefined,
+          messageTo: message.from,
           sessionFile: '', // Defaults or paths can be handled inside pi-embedded-runner
           workspaceDir: '', 
           timeoutMs: 30000,
@@ -328,13 +325,10 @@ export class IngressService {
 
         // Enforce Feature Flag: Check if AI is enabled for this tenant
         const isAiEnabled = await tenantConfigService.isFeatureEnabled(tenantId, 'aiEnabled');
-        if (isAiEnabled && context.unifiedAI) {
-          const channelInstance = typeof channelId === 'string' ? { tenantId, channelId } : undefined;
-          await context.unifiedAI.processMessage(channelInstance as any, aiCtx);
-        } else {
-          logger.warn(`AI processing skipped for tenant ${tenantId}: AI disabled or service missing.`);
-          await this.dispatchWebhook(tenantId, channelId, message, aiCtx);
+        if (!isAiEnabled) {
+          logger.warn(`AI processing skipped for tenant ${tenantId}: AI disabled.`);
         }
+        await this.dispatchWebhook(tenantId, channelId, message, aiCtx);
       } else {
         // --- WEBHOOK ONLY MODE (Includes system_default) ---
         logger.info(`No AI Agent assigned (or system_default). Forwarding to Webhook.`);

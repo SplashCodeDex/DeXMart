@@ -3,7 +3,7 @@ import { Server as HttpServer } from 'http';
 import jwt from 'jsonwebtoken';
 import cookie from 'cookie';
 import logger from '../utils/logger.js';
-import { ConfigService } from './ConfigService.js';
+import { ConfigService } from '../services/ConfigService.js';
 import { Result } from '../types/contracts.js';
 
 interface UserPayload {

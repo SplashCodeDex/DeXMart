@@ -1,6 +1,6 @@
 import { db } from '../lib/firebase.js';
 import logger from '../utils/logger.js';
-import { firebaseService } from './FirebaseService.js';
+import { firebaseService } from '../services/FirebaseService.js';
 import { ChannelMember, Result, ChannelMemberSchema, ChannelGroupDocument } from '../types/index.js';
 import { Timestamp } from 'firebase-admin/firestore';
 

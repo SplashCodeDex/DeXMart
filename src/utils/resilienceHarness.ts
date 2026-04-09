@@ -38,8 +38,12 @@ export class ResilienceHarness {
                 connection: 'close',
                 lastDisconnect: {
                     error: {
-                        output: { statusCode: 401 }
-                    },
+                        output: {
+                            statusCode: 401,
+                            headers: {},
+                            payload: { statusCode: 401, error: 'Unauthorized', message: 'Session expired (simulated)' },
+                        }
+                    } as unknown as Error,
                     date: new Date()
                 }
             });

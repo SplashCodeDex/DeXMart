@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { withTempHome } from "../../test-utils/temp-home.js";
+import { withTempHome as withTempHomeBase } from "../test-utils/temp-home.js";
 
 export async function runDoctorConfigWithInput<T>(params: {
   config: Record<string, unknown>;
@@ -10,7 +10,7 @@ export async function runDoctorConfigWithInput<T>(params: {
     confirm: () => Promise<boolean>;
   }) => Promise<T>;
 }) {
-  return withTempHome(async (home) => {
+  return withTempHomeBase(async (home) => {
     const configDir = path.join(home, ".openclaw");
     await fs.mkdir(configDir, { recursive: true });
     await fs.writeFile(

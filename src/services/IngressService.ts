@@ -207,12 +207,10 @@ export class IngressService {
 
         // Enforce Feature Flag: Check if AI is enabled for this tenant
         const isAiEnabled = await tenantConfigService.isFeatureEnabled(tenantId, 'aiEnabled');
-        if (isAiEnabled && context.unifiedAI) {
-          await context.unifiedAI.processMessage({ tenantId, channelId: channelId } as any, aiCtx);
-        } else {
-          logger.warn(`AI processing skipped for tenant ${tenantId}: AI disabled or service missing.`);
-          await this.dispatchWebhook(tenantId, channelId, message, aiCtx);
+        if (!isAiEnabled) {
+          logger.warn(`AI processing skipped for tenant ${tenantId}: AI disabled.`);
         }
+        await this.dispatchWebhook(tenantId, channelId, message, aiCtx);
       } else {
         // --- WEBHOOK ONLY MODE (Includes system_default) ---
         logger.info(`No AI Agent assigned (or system_default). Forwarding to Webhook.`);

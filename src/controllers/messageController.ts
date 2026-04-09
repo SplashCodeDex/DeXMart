@@ -76,6 +76,9 @@ export class MessageController {
                 return res.status(400).json({ success: false, error: 'Channel not connected or inactive' });
             }
 
+            if (!adapter.sendMessage) {
+                return res.status(503).json({ success: false, error: 'Channel does not support direct send' });
+            }
             await adapter.sendMessage(originalMessage.remoteJid, { text });
 
             res.json({ success: true, data: { message: 'Reply sent' } });
@@ -106,6 +109,9 @@ export class MessageController {
             }
 
             // 2. Send Message
+            if (!adapter.sendMessage) {
+                return res.status(503).json({ success: false, error: 'Channel does not support direct send' });
+            }
             await adapter.sendMessage(payload.to, {
                 text: payload.message || '',
                 mediaUrl: payload.mediaUrl,

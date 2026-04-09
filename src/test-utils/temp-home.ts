@@ -41,3 +41,23 @@ export async function createTempHomeEnv(prefix: string): Promise<TempHomeEnv> {
     },
   };
 }
+
+export async function withTempHome<T>(
+  fn: (home: string) => Promise<T>,
+  opts?: {
+    prefix?: string;
+    env?: Record<string, ((home: string) => string) | string>;
+  },
+): Promise<T> {
+  const env = await createTempHomeEnv(opts?.prefix ?? 'openclaw-test-');
+  if (opts?.env) {
+    for (const [key, value] of Object.entries(opts.env)) {
+      process.env[key] = typeof value === 'function' ? value(env.home) : value;
+    }
+  }
+  try {
+    return await fn(env.home);
+  } finally {
+    await env.restore();
+  }
+}

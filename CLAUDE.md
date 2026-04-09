@@ -338,6 +338,19 @@ Each entry takes ~0.5–30s and uses well under 1GB. Adjust `--max-old-space-siz
 
 These rules come from `.agent/rules/` and are **mandatory**:
 
+### Utilize Existing Code — Do Not Recreate
+DeXMart already has the vast majority of its logic, features, and files implemented. **Before writing any new code:**
+1. Search the codebase for existing implementations (`Grep`, `Glob`, or `LSP` tools).
+2. Reuse, extend, or wire up what already exists — never duplicate it.
+3. If a service, utility, adapter, or helper already exists, **use it**. Creating a parallel implementation is a bug, not a feature.
+4. When in doubt, read the relevant source files first to understand what's already there.
+
+**Violation examples to avoid:**
+- Writing a new `sendMessage` helper when `WhatsappAdapter` already handles it.
+- Creating a new database utility when `FirebaseService`/`DatabaseService` already exist.
+- Re-implementing anti-ban logic outside of `antiBanService`.
+
+
 ### TDD Mandate
 All feature work follows Red → Green → Refactor:
 1. **Red**: Write a failing test first — before any implementation code.

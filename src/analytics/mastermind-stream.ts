@@ -1,4 +1,4 @@
-import { socketService } from './socketService.js';
+import { socketService } from '../services/socketService.js';
 import logger from '../utils/logger.js';
 
 export type MastermindEventType = 

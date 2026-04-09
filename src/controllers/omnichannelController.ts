@@ -446,6 +446,9 @@ export class OmnichannelController {
                 return res.status(400).json({ success: false, error: 'Channel not active' });
             }
 
+            if (!adapter.sendMessage) {
+                return res.status(503).json({ success: false, error: 'Channel does not support direct send' });
+            }
             await adapter.sendMessage(to, { text });
             res.json({ success: true, data: { status: 'sent' } });
         } catch (error: any) {
@@ -458,26 +461,19 @@ export class OmnichannelController {
     //  SKILLS
     // ═══════════════════════════════════════════════════════
 
-    /** GET /api/omnichannel/skills */
     static async getSkills(req: Request, res: Response) {
         try {
-            const { skillsManager } = await import('../services/skillsManager.js');
-            const { db } = await import('../lib/firebase.js');
-
+            const { buildWorkspaceSkillStatus } = await import('../agents/skills-status.js');
             const tenantId = req.user?.tenantId;
             if (!tenantId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
-            const doc = await db.collection('tenants').doc(tenantId).get();
-            const tier = doc.data()?.plan || 'starter';
-
-            const allSkills = await (await import('../services/skillsManager.js')).skillsManager.listAvailableSkills(tenantId);
-
-            const data = await Promise.all(allSkills.map(async (skill) => {
-                const isEligible = await (await import('../services/skillsManager.js')).skillsManager.isTenantEligible(tenantId, skill.id, tier);
-                return {
-                    ...skill,
-                    isEligible
-                };
+            const status = buildWorkspaceSkillStatus(process.cwd());
+            const data = status.skills.map(skill => ({
+                id: skill.skillKey,
+                name: skill.name,
+                description: skill.description,
+                isEnabled: !skill.disabled,
+                isEligible: skill.eligible
             }));
 
             res.json({ success: true, data });
@@ -534,13 +530,15 @@ export class OmnichannelController {
     static async toggleSkill(req: Request, res: Response) {
         try {
             const { params, body } = toggleSkillSchema.parse({ params: req.params, body: req.body });
-            const { skillsManager } = await import('../services/skillsManager.js');
+            const { db } = await import('../lib/firebase.js');
 
             const tenantId = req.user?.tenantId;
             if (!tenantId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
-            const result = await skillsManager.toggleSkill(tenantId, params.id, body.enabled);
-            res.json({ success: true, data: result });
+            const docRef = db.collection('tenants').doc(tenantId).collection('config').doc('skills');
+            await docRef.set({ [params.id]: body.enabled }, { merge: true });
+
+            res.json({ success: true, data: { enabled: body.enabled } });
         } catch (error: any) {
             logger.error('OmnichannelController.toggleSkill', error);
             if (error.name === 'ZodError') {

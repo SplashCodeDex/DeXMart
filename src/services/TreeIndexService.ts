@@ -70,7 +70,7 @@ export class TreeIndexService {
       // 1. Generate Summary (The "Reasoning Key")
       // We summarize the content to create a dense semantic representation
       const summaryResult = await geminiAI.generateText(`Summarize this context in one dense sentence for retrieval:\n\n"${content}"`);
-      const summary = summaryResult.success ? summaryResult.data : content.substring(0, 200);
+      const summary = summaryResult || content.substring(0, 200);
 
       // 2. Generate Embedding from SUMMARY
       const embeddingResult = await embeddingService.generateEmbedding(summary);

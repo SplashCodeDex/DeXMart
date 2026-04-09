@@ -5,7 +5,7 @@ import { makeWASocket, DisconnectReason, type WASocket, initAuthCreds, Browsers,
 import logger from '../utils/logger.js';
 import { useFirestoreAuthState } from '../lib/baileysFirestoreAuth.js';
 import { Result } from '../types/index.js';
-import { AppError } from './errorHandler.js';
+import { AppError } from '../services/errorHandler.js';
 
 interface AuthConfig {
   channel: {

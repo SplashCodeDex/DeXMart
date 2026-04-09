@@ -9,7 +9,7 @@ import { db } from '../lib/firebase.js';
 import logger from '../utils/logger.js';
 import { Result, success, failure, AppError } from '../types/result.js';
 import { Timestamp, FieldValue } from 'firebase-admin/firestore';
-import ConfigService from '../services/ConfigService.js';
+import { ConfigService } from '../services/ConfigService.js';
 import {
   CreateCheckoutSessionRequestSchema,
   SubscriptionInfoResponseSchema,

@@ -5,7 +5,7 @@ import {
   PlanTier
 } from './tenant-context.js';
 import { db, admin } from '../lib/firebase.js';
-import Redis from 'ioredis';
+import { Redis } from 'ioredis';
 import logger from '../utils/logger.js';
 
 export class UserContextResolverImpl implements UserContextResolver {

@@ -306,6 +306,12 @@
       "type": "file"
     },
     {
+      "path": "src/tenancy/context-resolver.ts",
+      "accessCount": 5,
+      "lastAccessed": 1775700217329,
+      "type": "file"
+    },
+    {
       "path": "pnpm-workspace.yaml",
       "accessCount": 4,
       "lastAccessed": 1775681529386,
@@ -345,12 +351,6 @@
       "path": "conductor/tracks/fusion_phase_2_20260401/spec.md",
       "accessCount": 2,
       "lastAccessed": 1775677882087,
-      "type": "file"
-    },
-    {
-      "path": "src/tenancy/context-resolver.ts",
-      "accessCount": 2,
-      "lastAccessed": 1775678453570,
       "type": "file"
     },
     {

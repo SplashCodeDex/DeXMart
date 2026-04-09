@@ -293,7 +293,7 @@ function createOpenAIResponsesContextManagementWrapper(
     const originalOnPayload = options?.onPayload;
     return underlying(model, context, {
       ...options,
-      onPayload: (payload) => {
+      onPayload: (payload, payloadModel) => {
         if (payload && typeof payload === "object") {
           const payloadObj = payload as Record<string, unknown>;
           if (forceStore) {
@@ -308,7 +308,7 @@ function createOpenAIResponsesContextManagementWrapper(
             ];
           }
         }
-        originalOnPayload?.(payload);
+        originalOnPayload?.(payload, payloadModel || model);
       },
     });
   };

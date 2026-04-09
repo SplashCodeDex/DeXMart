@@ -2,8 +2,8 @@ import { Redis } from 'ioredis';
 import crypto from 'crypto';
 import configManager from '../dexmart-config/ConfigManager.js';
 import logger from '../utils/logger.js';
-import { socketService } from './socketService.js';
-import { firebaseService } from './FirebaseService.js';
+import { socketService } from '../services/socketService.js';
+import { firebaseService } from '../services/FirebaseService.js';
 
 /**
  * AntiBanService

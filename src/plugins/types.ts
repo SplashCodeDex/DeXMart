@@ -85,7 +85,7 @@ export type OpenClawPluginToolContext = {
    *     memoryManager: ctx.memoryManager,   // ← per-user hybrid adapter
    *   });
    */
-  memoryManager?: import('./memory/types.js').MemorySearchManager;
+  memoryManager?: import('../memory/types.js').MemorySearchManager;
 };
 
 export type OpenClawPluginToolFactory = (

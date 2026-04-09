@@ -165,7 +165,7 @@ class CampaignWorker {
                     return;
                 }
                 // TypeScript type assertions since base ChannelAdapter doesn't declare full features
-                const waAdapter = adapter as unknown as import('../adapters/whatsapp.js').WhatsappAdapter;
+                const waAdapter = adapter as unknown as import('../services/channels/whatsapp/WhatsappAdapter.js').WhatsappAdapter;
                 await waAdapter.sendMessage(contact.phone, { text: content });
                 sent++;
 
@@ -283,7 +283,7 @@ class CampaignWorker {
 
         if (spin) {
             const spinResult = await GeminiAI.spinMessage(content, tenantId);
-            if (spinResult.success) content = spinResult.data;
+            if (spinResult.success && spinResult.data) content = spinResult.data;
         }
 
         return content;

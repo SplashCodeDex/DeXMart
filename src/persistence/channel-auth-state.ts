@@ -99,7 +99,7 @@ export async function useChannelAuthState(store: AuthKeyValueStore): Promise<{
               if (type === 'app-state-sync-key' && value) {
                 value = proto.Message.AppStateSyncKeyData.fromObject(
                   value as object,
-                ) as SignalDataTypeMap[T];
+                ) as unknown as SignalDataTypeMap[T];
               }
               result[id] = value as SignalDataTypeMap[T];
             }),

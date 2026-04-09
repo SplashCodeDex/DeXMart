@@ -1,5 +1,5 @@
 import Stripe from 'stripe';
-import { ConfigService } from './ConfigService.js';
+import { ConfigService } from '../services/ConfigService.js';
 import logger from '../utils/logger.js';
 
 export interface CreateCustomerData {

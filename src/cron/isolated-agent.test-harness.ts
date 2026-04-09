@@ -1,10 +1,10 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { withTempHome as withTempHomeBase } from "../../test-utils/temp-home.js";
+import { withTempHome as withTempHomeBase } from "../test-utils/temp-home.js";
 import type { OpenClawConfig } from "../config/config.js";
 import type { CronJob } from "./types.js";
 
-export async function withTempCronHome<T>(fn: (home: string) => Promise<T>): Promise<T> {
+export async function withTempHome<T>(fn: (home: string) => Promise<T>): Promise<T> {
   return withTempHomeBase(fn, { prefix: "openclaw-cron-" });
 }
 

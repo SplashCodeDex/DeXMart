@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, vi } from "vitest";
-import { withTempHome as withTempHomeBase } from "../../test-utils/temp-home.js";
+import { withTempHome as withTempHomeBase } from "../test-utils/temp-home.js";
 import type { OpenClawConfig } from "../config/config.js";
 import type { MockFn } from "../test-utils/vitest-mock-fn.js";
 
-export async function withModelsTempHome<T>(fn: (home: string) => Promise<T>): Promise<T> {
+export async function withTempHome<T>(fn: (home: string) => Promise<T>): Promise<T> {
   return withTempHomeBase(fn, { prefix: "openclaw-models-" });
 }
 
