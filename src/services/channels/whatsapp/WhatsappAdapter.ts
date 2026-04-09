@@ -24,6 +24,8 @@
  */
 
 import type { WASocket } from '@whiskeysockets/baileys';
+import { DisconnectReason } from '@whiskeysockets/baileys';
+import { Boom } from '@hapi/boom';
 import logger from '../../../utils/logger.js';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -50,7 +52,7 @@ export interface ChannelData {
 // ── WhatsappAdapter ───────────────────────────────────────────────────────────
 
 export class WhatsappAdapter {
-  /** Unique key: `${userId}:${channelId}` — used by ChannelManager registry */
+  /** Unique key: `channelId` — used by ChannelManager registry */
   public readonly instanceId: string;
   /** Channel type identifier */
   public readonly id = 'whatsapp';
@@ -85,7 +87,9 @@ export class WhatsappAdapter {
   ) {
     this.userId = userId;
     this.channelId = channelId;
-    this.instanceId = `${userId}:${channelId}`;
+    // channelId is a globally-unique UUID (chan_${uuid}) — no tenant prefix needed.
+    // All ChannelService lookups use bare channelId, so instanceId must match.
+    this.instanceId = channelId;
     this.fullPath = fullPath;
     this.config = channelData?.config ?? {};
   }
@@ -153,9 +157,17 @@ export class WhatsappAdapter {
   /**
    * Connect to WhatsApp via OpenClaw's createWaSocket() with Firestore auth state.
    *
-   * @param forceNewSession - If true, clears Firestore auth state before connecting
+   * @param forceNewSession  - If true, clears Firestore auth state before connecting
+   * @param onStatusChange   - Optional callback invoked whenever the connection status
+   *                           changes. ChannelService uses this to persist the status to
+   *                           Firestore so that resumeActiveChannels() sees the correct
+   *                           state on the next boot (e.g. 'qr_pending' prevents
+   *                           unnecessary auto-restarts for un-scanned channels).
    */
-  public async connect(forceNewSession = false): Promise<void> {
+  public async connect(
+    forceNewSession = false,
+    onStatusChange?: (status: AdapterStatus) => void,
+  ): Promise<void> {
     this.isDisconnecting = false;
     this.status = 'connecting';
     logger.info(`[WhatsappAdapter:${this.instanceId}] Connecting (forceNew=${forceNewSession})...`);
@@ -196,6 +208,7 @@ export class WhatsappAdapter {
             this.qrCodeUrl = await QRCode.default.toDataURL(qr);
             this.status = 'qr_pending';
             logger.info(`[WhatsappAdapter:${this.instanceId}] QR generated (#${this.qrGenerationCount})`);
+            onStatusChange?.('qr_pending');
           } catch (e) {
             logger.error(`[WhatsappAdapter:${this.instanceId}] QR generation error:`, e);
           }
@@ -205,6 +218,7 @@ export class WhatsappAdapter {
           this.status = 'connected';
           this.qrCodeUrl = null;
           logger.info(`[WhatsappAdapter:${this.instanceId}] Connected ✓`);
+          onStatusChange?.('connected');
 
           if (this.config.alwaysOnline) {
             this.presenceInterval = setInterval(async () => {
@@ -226,7 +240,24 @@ export class WhatsappAdapter {
             this.presenceInterval = null;
           }
           if (!this.isDisconnecting) {
-            logger.warn(`[WhatsappAdapter:${this.instanceId}] Disconnected (lastDisconnect: ${JSON.stringify(lastDisconnect?.error)}). Auto-reconnect managed by ChannelService watchdog.`);
+            const statusCode = (lastDisconnect?.error as Boom)?.output?.statusCode;
+            const isBanned = statusCode === 403;
+            const isLoggedOut = statusCode === DisconnectReason.loggedOut; // 401
+
+            if (isBanned || isLoggedOut) {
+              // Terminal states — do NOT write 'error' or watchdog will loop forever.
+              // 'banned'/'logged_out' are not in autoRestartStatuses so the watchdog skips them.
+              const terminalStatus: AdapterStatus = isBanned ? 'banned' : 'logged_out';
+              logger.error(`[WhatsappAdapter:${this.instanceId}] Session ${terminalStatus.toUpperCase()} (code ${statusCode}). Manual re-auth required.`);
+              this.status = terminalStatus;
+              onStatusChange?.(terminalStatus);
+            } else {
+              logger.warn(`[WhatsappAdapter:${this.instanceId}] Disconnected (lastDisconnect: ${JSON.stringify(lastDisconnect?.error)}). Auto-reconnect managed by ChannelService watchdog.`);
+              // Write 'error' (not 'disconnected') so resumeActiveChannels() / watchdog
+              // picks this channel up and attempts reconnection. 'disconnected' is reserved
+              // for intentional stops (stopChannel writes it directly via updateStatus).
+              onStatusChange?.('error');
+            }
           }
         }
       });

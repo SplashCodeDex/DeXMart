@@ -11,7 +11,6 @@ interface ProcessorContext {
     userId: string;
     recentCommands: string[];
     isGroup: boolean;
-    isAdmin: boolean;
     isOwner: boolean;
 }
 
@@ -43,7 +42,6 @@ Input: "${text}"
 Context:
 - User ID: ${context.userId}
 - Is Group: ${context.isGroup}
-- Is Admin: ${context.isAdmin}
 - Is Owner: ${context.isOwner}
 
 Provide a JSON response with:

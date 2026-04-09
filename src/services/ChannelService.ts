@@ -5,6 +5,7 @@ import logger from '@/utils/logger.js';
 import crypto from 'crypto';
 import { channelManager } from './channels/ChannelManager.js';
 import { getPlatformAdapter, getSupportedPlatforms, PlatformMetadata } from './channels/registry.js';
+import type { WhatsappAdapter } from './channels/whatsapp/WhatsappAdapter.js';
 import { systemAuthorityService } from './SystemAuthorityService.js';
 
 /**
@@ -346,10 +347,24 @@ export class ChannelService {
       // during the QR-pending phase (WhatsApp connect() blocks until handshake).
       channelManager.registerAdapter(adapter);
 
-      await adapter.connect(force);
+      // Persist 'connecting' immediately so a crash/restart during handshake
+      // doesn't leave a stale 'connected' status that causes perpetual QR loops.
+      await this.updateStatus(tenantId, channelId, 'connecting', agentId);
 
-      // Only mark as connected if it's not managed by the adapter itself (like WhatsApp)
-      if (channel.type !== 'whatsapp') {
+      if (channel.type === 'whatsapp') {
+        // WhatsApp manages its own status lifecycle asynchronously via Baileys events.
+        // Pass a callback so each status transition is persisted to Firestore.
+        // Critically: 'qr_pending' being written here means resumeActiveChannels()
+        // will NOT auto-restart this channel on the next boot, preventing the
+        // perpetual QR-on-every-restart loop for unauthenticated channels.
+        const whatsappAdapter = adapter as unknown as WhatsappAdapter;
+        await whatsappAdapter.connect(force, async (status) => {
+          await this.updateStatus(tenantId, channelId, status as Channel['status'], agentId).catch(err =>
+            logger.error(`[ChannelService] Failed to persist WhatsApp status '${status}' for ${channelId}:`, err)
+          );
+        });
+      } else {
+        await adapter.connect(force);
         await this.updateStatus(tenantId, channelId, 'connected', agentId);
       }
 

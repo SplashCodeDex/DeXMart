@@ -56,6 +56,17 @@ const nextConfig: NextConfig = {
         ];
     },
 
+    // Route-level redirects (handled before rendering — avoids PPR prerender instrumentation)
+    async redirects() {
+        return [
+            {
+                source: '/dashboard',
+                destination: '/dashboard/home',
+                permanent: false,
+            },
+        ];
+    },
+
     // Proxy API requests to Backend
     async rewrites() {
         return [

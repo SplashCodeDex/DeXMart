@@ -171,7 +171,7 @@ function ChannelCard({ channel }: { channel: Channel }): React.JSX.Element {
     const badge = STATUS_BADGE[channel.status] ?? { variant: 'secondary' as const, label: channel.status };
 
     const effectiveAgentId = channel.assignedAgentId || 'system_default';
-    const agent = agentsResult?.agents.find(a => a.id === effectiveAgentId);
+    const agent = agentsResult?.agents?.find(a => a.id === effectiveAgentId);
     const agentName = agent?.name ?? (effectiveAgentId === 'system_default' ? 'System Default Agent' : 'Unknown Agent');
 
     const handleDirectDisconnect = async (e: React.MouseEvent): Promise<void> => {

@@ -1,180 +1,91 @@
 [Env] ✅ Loaded central env from /home/codedex/codedex/env (common.env, llm.env, stripe.env)
-[dotenv@17.3.1] injecting env (1) from .env -- tip: 🛡️ auth for agents: https://vestauth.com
+[dotenv@17.3.1] injecting env (4) from .env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
 [Env] ✅ Loaded local .env overrides
-info: ✅ Environment variables validated via Zod {"timestamp":"2026-04-09 01:30:13:3013"}
-info: 🔗 Constructed internal REDIS_URL from host and port configuration {"timestamp":"2026-04-09 01:30:13:3013"}
-info: ✅ Configuration validation passed {"timestamp":"2026-04-09 01:30:13:3013"}
-info: ConfigService initialized as wrapper for ConfigManager {"timestamp":"2026-04-09 01:30:13:3013"}
-info: Analytics service initialized {"timestamp":"2026-04-09 01:30:13:3013"}
-info: QueueService initialized: campaigns {"timestamp":"2026-04-09 01:30:14:3014"}
-info: BullMQ Job Queue Service initialized {"timestamp":"2026-04-09 01:30:15:3015"}
-info: >>> [MASTERMIND] ABSOLUTE START OF MAIN.TS {"timestamp":"2026-04-09 01:30:15:3015"}
-info: >>> [MASTERMIND] Starting main() {"timestamp":"2026-04-09 01:30:15:3015"}
-info: 🚀 Starting DeXMart... {"timestamp":"2026-04-09 01:30:15:3015"}
-info: >>> [MASTERMIND] Validating environment variables... {"timestamp":"2026-04-09 01:30:15:3015"}
-info: 🔍 Validating environment variables... {"timestamp":"2026-04-09 01:30:15:3015"}
-info: ✅ FIREBASE_SERVICE_ACCOUNT_PATH: service-account.json {"timestamp":"2026-04-09 01:30:15:3015"}
-info: ✅ FIREBASE_PROJECT_ID: dexmart {"timestamp":"2026-04-09 01:30:15:3015"}
-info: ✅ GOOGLE_GEMINI_API_KEY: ***[REDACTED]*** {"timestamp":"2026-04-09 01:30:15:3015"}
-warn: ⚠️  PORT not set, using default: 3001 {"timestamp":"2026-04-09 01:30:15:3015"}
-info: ✅ NODE_ENV: development {"timestamp":"2026-04-09 01:30:15:3015"}
-info: ✅ JWT_SECRET: ***[REDACTED]*** {"timestamp":"2026-04-09 01:30:15:3015"}
-warn: ⚠️  RATE_LIMIT_AI_REQ not set, using default: 10 {"timestamp":"2026-04-09 01:30:15:3015"}
-warn: ⚠️  USE_BAILEYS_DIRECT not set, using default: false {"timestamp":"2026-04-09 01:30:15:3015"}
-info: ✅ Environment validation passed! {"timestamp":"2026-04-09 01:30:15:3015"}
-warn: Environment validation passed with 3 warning(s) {"timestamp":"2026-04-09 01:30:15:3015"}
-info: >>> [MASTERMIND] Environment validation passed. {"timestamp":"2026-04-09 01:30:15:3015"}
-info: >>> [MASTERMIND] initializeContext() called {"timestamp":"2026-04-09 01:30:15:3015"}
-info: >>> [MASTERMIND] Starting fresh initialization {"timestamp":"2026-04-09 01:30:15:3015"}
-info: >>> [MASTERMIND] Base context object built. {"timestamp":"2026-04-09 01:30:15:3015"}
-info: 🔧 Unified Command System initialized {"timestamp":"2026-04-09 01:30:15:3015"}
-info: Initializing Command System and loading commands... {"timestamp":"2026-04-09 01:30:15:3015"}
-info: 🔄 Parallelizing command loading... {"timestamp":"2026-04-09 01:30:15:3015"}
-info: ✅ Redis connected successfully {"timestamp":"2026-04-09 01:30:15:3015"}
-info: ✅ Redis Connected - Switching to distributed cache {"timestamp":"2026-04-09 01:30:15:3015"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/agent/session.test.ts {"error":"Vitest mocker was not initialized in this environment. vi.queueMock() is forbidden.","timestamp":"2026-04-09 01:30:20:3020"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/agent/session-store.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:20:3020"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/agent/session-store.test.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:20:3020"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/agent/session.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:20:3020"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/agent/delivery.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:20:3020"}
-info: BullMQ Queues initialized with unified Redis connection {"timestamp":"2026-04-09 01:30:20:3020"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/channels/list.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:21:3021"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/channels/remove.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:21:3021"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/channels/resolve.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:21:3021"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/channels/status.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:21:3021"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/channels/shared.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:21:3021"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/channels/add.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:21:3021"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/channels/capabilities.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:21:3021"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/channels/capabilities.test.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:21:3021"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/ai-chat/gemini.ts {"error":"Cannot find module '/home/codedex/projects/DeXMart/src/services/gemini.js' imported from /home/codedex/projects/DeXMart/src/commands/ai-chat/gemini.ts","timestamp":"2026-04-09 01:30:21:3021"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/gateway-status/helpers.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:21:3021"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/models/scan.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:22:3022"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/models/fallbacks-shared.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:22:3022"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/models/list.configured.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:22:3022"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/models/shared.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:22:3022"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/models/auth-order.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:22:3022"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/models/fallbacks.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:22:3022"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/models/image-fallbacks.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:22:3022"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/models/list.list-command.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:22:3022"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/models/list.registry.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:22:3022"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/models/list.table.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:22:3022"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/models/set-image.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:22:3022"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/models/set.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:22:3022"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/models/shared.test.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:22:3022"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/models/list.auth-overview.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:22:3022"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/models/list.list-command.forward-compat.test.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:22:3022"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/models/aliases.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:22:3022"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/models/list.auth-overview.test.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:22:3022"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/models/auth.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:22:3022"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/models/list.probe.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:22:3022"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/models/list.probe.test.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:22:3022"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/models/list.status-command.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:22:3022"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/models/list.status.test.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:22:3022"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/models/list.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:22:3022"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/onboard-non-interactive/api-keys.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:22:3022"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/onboard-non-interactive/local.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:22:3022"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/onboard-non-interactive/remote.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:22:3022"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/onboarding/plugin-install.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:22:3022"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/onboarding/plugin-install.test.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:22:3022"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/onboarding/registry.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:22:3022"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/status-all/report-lines.test.ts {"error":"Vitest mocker was not initialized in this environment. vi.queueMock() is forbidden.","timestamp":"2026-04-09 01:30:22:3022"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/status-all/channels.mattermost-token-summary.test.ts {"error":"Vitest mocker was not initialized in this environment. vi.queueMock() is forbidden.","timestamp":"2026-04-09 01:30:22:3022"}
-error: Failed to load command: /home/codedex/projects/DeXMart/src/commands/status-all/agents.ts {"error":"The requested module '@mariozechner/pi-ai' does not provide an export named 'getOAuthApiKey'","timestamp":"2026-04-09 01:30:22:3022"}
-info: 🎉 High-Speed Load Complete: 93 commands in 6834ms {"timestamp":"2026-04-09 01:30:22:3022"}
-info: >>> [MASTERMIND] Command loading finished. Getting mock bot... {"timestamp":"2026-04-09 01:30:22:3022"}
-info: ✅ Global Context initialized successfully {"timestamp":"2026-04-09 01:30:22:3022"}
-info: >>> [MASTERMIND] Global Context initialized successfully {"timestamp":"2026-04-09 01:30:22:3022"}
-info: >>> [MASTERMIND] Global Context initialized. {"timestamp":"2026-04-09 01:30:22:3022"}
-info: >>> [MASTERMIND] Initializing Job Registry... {"timestamp":"2026-04-09 01:30:22:3022"}
-info: [ApiKeyManager] Initialized Universal Manager with 12 keys (Semantic Cache Enabled) {"timestamp":"2026-04-09 01:30:22:3022"}
-info: AIUtilityService initialized with 12 API keys (12 healthy) {"timestamp":"2026-04-09 01:30:22:3022"}
-info: Initializing job queues... {"timestamp":"2026-04-09 01:30:22:3022"}
-info: Queue 'ai-processing' created successfully {"timestamp":"2026-04-09 01:30:22:3022"}
-info: Queue 'media-processing' created successfully {"timestamp":"2026-04-09 01:30:22:3022"}
-info: Queue 'notification' created successfully {"timestamp":"2026-04-09 01:30:22:3022"}
-info: Queue 'analytics' created successfully {"timestamp":"2026-04-09 01:30:22:3022"}
-info: Queue 'cleanup' created successfully {"timestamp":"2026-04-09 01:30:22:3022"}
-info: Queue 'whatsapp-outbound' created successfully {"timestamp":"2026-04-09 01:30:22:3022"}
-info: Queue 'group-sync' created successfully {"timestamp":"2026-04-09 01:30:22:3022"}
-info: All job queues initialized successfully {"timestamp":"2026-04-09 01:30:22:3022"}
-info: Registering job processors... {"timestamp":"2026-04-09 01:30:22:3022"}
-info: Registered BullMQ worker for queue 'ai-processing' {"timestamp":"2026-04-09 01:30:22:3022"}
-info: Registered BullMQ worker for queue 'media-processing' {"timestamp":"2026-04-09 01:30:22:3022"}
-info: StatsAggregatorJob initialized {"timestamp":"2026-04-09 01:30:22:3022"}
-info: Initializing WhatsApp Outbound Worker (Anti-Ban enabled)... {"timestamp":"2026-04-09 01:30:22:3022"}
-info: Registered BullMQ worker for queue 'whatsapp-outbound' {"timestamp":"2026-04-09 01:30:22:3022"}
-info: [GroupSyncWorker] Initializing Group Sync Worker... {"timestamp":"2026-04-09 01:30:22:3022"}
-info: Registered BullMQ worker for queue 'group-sync' {"timestamp":"2026-04-09 01:30:22:3022"}
-info: [GroupSyncWorker] Group Sync Worker registered and listening {"timestamp":"2026-04-09 01:30:22:3022"}
-info: Initializing Anti-Ban Resume Worker (Interval: 20000ms)... {"timestamp":"2026-04-09 01:30:22:3022"}
-info: All job processors registered successfully {"timestamp":"2026-04-09 01:30:22:3022"}
-info: >>> [MASTERMIND] Initializing Campaign Worker... {"timestamp":"2026-04-09 01:30:22:3022"}
-info: CampaignWorker initialized with Omnichannel Adapter + Anti-Ban Engine {"timestamp":"2026-04-09 01:30:22:3022"}
-info: >>> [MASTERMIND] Campaign Worker call finished. {"timestamp":"2026-04-09 01:30:22:3022"}
-info: >>> [MASTERMIND] USE_SERVER is true. Initializing MultiTenantApp... {"timestamp":"2026-04-09 01:30:22:3022"}
-info: Initializing Multi-tenant DeXMart SaaS Platform... {"timestamp":"2026-04-09 01:30:22:3022"}
-info: >>> [MASTERMIND] Setting up server middleware... {"timestamp":"2026-04-09 01:30:22:3022"}
-info: >>> [MASTERMIND] Setting up server routes... {"timestamp":"2026-04-09 01:30:22:3022"}
-info: >>> [MASTERMIND] Initializing Analytics Service... {"timestamp":"2026-04-09 01:30:22:3022"}
-info: WebSocket server started on port 3002 {"timestamp":"2026-04-09 01:30:22:3022"}
-info: >>> [MASTERMIND] Enterprise Analytics Gateway online at port 3002 {"timestamp":"2026-04-09 01:30:22:3022"}
-info: >>> [MASTERMIND] Initializing Unified WebSockets... {"timestamp":"2026-04-09 01:30:22:3022"}
-info: Unified Socket Service initialized {"timestamp":"2026-04-09 01:30:22:3022"}
-info: >>> [MASTERMIND] Initializing additional services... {"timestamp":"2026-04-09 01:30:22:3022"}
-info: >>> [MASTERMIND] Starting active tenant bots... {"timestamp":"2026-04-09 01:30:22:3022"}
-info: Starting active tenant channels... {"timestamp":"2026-04-09 01:30:22:3022"}
-info: >>> [MASTERMIND] Resuming all active channels... {"timestamp":"2026-04-09 01:30:22:3022"}
-info: Loading service account from: service-account.json {"timestamp":"2026-04-09 01:30:22:3022"}
-info: Using service account for project: dexmart {"timestamp":"2026-04-09 01:30:22:3022"}
-info: Initializing Firebase Admin... {"timestamp":"2026-04-09 01:30:22:3022"}
-info: 🔥 Firebase Admin Initialized (Project: dexmart) {"timestamp":"2026-04-09 01:30:22:3022"}
-info: [ChannelService] Auto-starting channel chan_17833556-c0ec-4df3-b3ff-d34cd753dd8e (API Test Channel) for tenant system_default {"timestamp":"2026-04-09 01:30:25:3025"}
-info: [ChannelService] Auto-starting channel chan_73446b31-3490-43d3-b3a3-48d7298d6e14 (API Test Channel) for tenant system_default {"timestamp":"2026-04-09 01:30:25:3025"}
-info: [ChannelService] Auto-starting channel chan_8a857fe8-36e8-470d-a0d6-35b2590a02ed (API Test Channel) for tenant system_default {"timestamp":"2026-04-09 01:30:25:3025"}
-info: [ChannelService] Auto-starting channel chan_edd64d80-3b02-4cd8-8cd8-cf017fb9a170 (API Test Channel) for tenant system_default {"timestamp":"2026-04-09 01:30:25:3025"}
-info: >>> [MASTERMIND] initializeContext() called {"timestamp":"2026-04-09 01:30:26:3026"}
-info: >>> [MASTERMIND] initializeContext() returning existing promise {"timestamp":"2026-04-09 01:30:26:3026"}
-info: [WhatsappAdapter:system_default:chan_17833556-c0ec-4df3-b3ff-d34cd753dd8e] Initializing... {"timestamp":"2026-04-09 01:30:26:3026"}
-info: [WhatsappAdapter:system_default:chan_17833556-c0ec-4df3-b3ff-d34cd753dd8e] Initialization complete {"timestamp":"2026-04-09 01:30:26:3026"}
-info: [ChannelManager] Registered adapter for key: system_default:chan_17833556-c0ec-4df3-b3ff-d34cd753dd8e {"timestamp":"2026-04-09 01:30:26:3026"}
-info: [WhatsappAdapter:system_default:chan_17833556-c0ec-4df3-b3ff-d34cd753dd8e] Connecting (forceNew=false)... {"timestamp":"2026-04-09 01:30:26:3026"}
-info: >>> [MASTERMIND] initializeContext() called {"timestamp":"2026-04-09 01:30:26:3026"}
-info: >>> [MASTERMIND] initializeContext() returning existing promise {"timestamp":"2026-04-09 01:30:26:3026"}
-info: [WhatsappAdapter:system_default:chan_8a857fe8-36e8-470d-a0d6-35b2590a02ed] Initializing... {"timestamp":"2026-04-09 01:30:26:3026"}
-info: [WhatsappAdapter:system_default:chan_8a857fe8-36e8-470d-a0d6-35b2590a02ed] Initialization complete {"timestamp":"2026-04-09 01:30:26:3026"}
-info: [ChannelManager] Registered adapter for key: system_default:chan_8a857fe8-36e8-470d-a0d6-35b2590a02ed {"timestamp":"2026-04-09 01:30:26:3026"}
-info: [WhatsappAdapter:system_default:chan_8a857fe8-36e8-470d-a0d6-35b2590a02ed] Connecting (forceNew=false)... {"timestamp":"2026-04-09 01:30:26:3026"}
-info: >>> [MASTERMIND] initializeContext() called {"timestamp":"2026-04-09 01:30:26:3026"}
-info: >>> [MASTERMIND] initializeContext() returning existing promise {"timestamp":"2026-04-09 01:30:26:3026"}
-info: [WhatsappAdapter:system_default:chan_73446b31-3490-43d3-b3a3-48d7298d6e14] Initializing... {"timestamp":"2026-04-09 01:30:26:3026"}
-info: [WhatsappAdapter:system_default:chan_73446b31-3490-43d3-b3a3-48d7298d6e14] Initialization complete {"timestamp":"2026-04-09 01:30:26:3026"}
-info: [ChannelManager] Registered adapter for key: system_default:chan_73446b31-3490-43d3-b3a3-48d7298d6e14 {"timestamp":"2026-04-09 01:30:26:3026"}
-info: [WhatsappAdapter:system_default:chan_73446b31-3490-43d3-b3a3-48d7298d6e14] Connecting (forceNew=false)... {"timestamp":"2026-04-09 01:30:26:3026"}
-info: >>> [MASTERMIND] initializeContext() called {"timestamp":"2026-04-09 01:30:26:3026"}
-info: >>> [MASTERMIND] initializeContext() returning existing promise {"timestamp":"2026-04-09 01:30:26:3026"}
-info: [WhatsappAdapter:system_default:chan_edd64d80-3b02-4cd8-8cd8-cf017fb9a170] Initializing... {"timestamp":"2026-04-09 01:30:26:3026"}
-info: [WhatsappAdapter:system_default:chan_edd64d80-3b02-4cd8-8cd8-cf017fb9a170] Initialization complete {"timestamp":"2026-04-09 01:30:26:3026"}
-info: [ChannelManager] Registered adapter for key: system_default:chan_edd64d80-3b02-4cd8-8cd8-cf017fb9a170 {"timestamp":"2026-04-09 01:30:26:3026"}
-info: [WhatsappAdapter:system_default:chan_edd64d80-3b02-4cd8-8cd8-cf017fb9a170] Connecting (forceNew=false)... {"timestamp":"2026-04-09 01:30:26:3026"}
-info: Rate limiter connected to Redis {"timestamp":"2026-04-09 01:30:26:3026"}
-warn: [WhatsappAdapter:system_default:chan_17833556-c0ec-4df3-b3ff-d34cd753dd8e] Disconnected (lastDisconnect: {"data":{"code":"ETIMEDOUT"},"isBoom":true,"isServer":false,"output":{"statusCode":408,"payload":{"statusCode":408,"error":"Request Time-out","message":"WebSocket Error ()"},"headers":{}}}). Auto-reconnect managed by ChannelService watchdog. {"timestamp":"2026-04-09 01:30:27:3027"}
-warn: [WhatsappAdapter:system_default:chan_8a857fe8-36e8-470d-a0d6-35b2590a02ed] Disconnected (lastDisconnect: {"data":{"code":"ETIMEDOUT"},"isBoom":true,"isServer":false,"output":{"statusCode":408,"payload":{"statusCode":408,"error":"Request Time-out","message":"WebSocket Error ()"},"headers":{}}}). Auto-reconnect managed by ChannelService watchdog. {"timestamp":"2026-04-09 01:30:27:3027"}
-info: [WhatsappAdapter:system_default:chan_edd64d80-3b02-4cd8-8cd8-cf017fb9a170] QR generated (#1) {"timestamp":"2026-04-09 01:30:28:3028"}
-info: [ChannelService] Successfully queued 4 channels for resumption. {"timestamp":"2026-04-09 01:30:28:3028"}
-info: Multi-tenant app initialized successfully {"timestamp":"2026-04-09 01:30:28:3028"}
-info: >>> [MASTERMIND] MultiTenantApp initialized. {"timestamp":"2026-04-09 01:30:28:3028"}
-info: >>> [MASTERMIND] Attempting to listen on port 3001... {"timestamp":"2026-04-09 01:30:28:3028"}
-info: >>> [MASTERMIND] MultiTenantApp started. {"timestamp":"2026-04-09 01:30:28:3028"}
-info: >>> [MASTERMIND] Starting ChannelService watchdog (interval: 60000ms) {"timestamp":"2026-04-09 01:30:28:3028"}
-info: [EventListener] Starting agent event listener {"timestamp":"2026-04-09 01:30:28:3028"}
-info: ✨ DeXMart is ready! {"timestamp":"2026-04-09 01:30:28:3028"}
-info: >>> [MASTERMIND] Multi-tenant DeXMart server running on port 3001 {"timestamp":"2026-04-09 01:30:28:3028"}
-info: [WhatsappAdapter:system_default:chan_73446b31-3490-43d3-b3a3-48d7298d6e14] QR generated (#1) {"timestamp":"2026-04-09 01:30:28:3028"}
-info: Performance: memory_heap_used = 275462312 bytes {"duration":275462312,"operation":"memory_heap_used","timestamp":"2026-04-09 01:30:46:3046","unit":"bytes"}
-info: Performance: memory_heap_total = 392593408 bytes {"duration":392593408,"operation":"memory_heap_total","timestamp":"2026-04-09 01:30:46:3046","unit":"bytes"}
-info: Performance: memory_rss = 646144000 bytes {"duration":646144000,"operation":"memory_rss","timestamp":"2026-04-09 01:30:46:3046","unit":"bytes"}
-info: Performance: memory_external = 25231327 bytes {"duration":25231327,"operation":"memory_external","timestamp":"2026-04-09 01:30:46:3046","unit":"bytes"}
-info: Performance: cpu_user_time = 8575525 microseconds {"duration":8575525,"operation":"cpu_user_time","timestamp":"2026-04-09 01:30:46:3046","unit":"microseconds"}
-info: Performance: cpu_system_time = 2794384 microseconds {"duration":2794384,"operation":"cpu_system_time","timestamp":"2026-04-09 01:30:46:3046","unit":"microseconds"}
-info: Performance: process_uptime = 31.976486423 seconds {"duration":31.976486423,"operation":"process_uptime","timestamp":"2026-04-09 01:30:46:3046","unit":"seconds"}
-info: Performance: event_loop_lag = 0.341361 milliseconds {"duration":0.341361,"operation":"event_loop_lag","timestamp":"2026-04-09 01:30:46:3046","unit":"milliseconds"}
+info: ✅ Environment variables validated via Zod {"timestamp":"2026-04-09 14:47:07:477"}
+info: 🔗 Constructed internal REDIS_URL from host and port configuration {"timestamp":"2026-04-09 14:47:07:477"}
+info: ✅ Configuration validation passed {"timestamp":"2026-04-09 14:47:07:477"}
+info: ConfigService initialized as wrapper for ConfigManager {"timestamp":"2026-04-09 14:47:07:477"}
+info: Analytics service initialized {"timestamp":"2026-04-09 14:47:08:478"}
+info: QueueService initialized: campaigns {"timestamp":"2026-04-09 14:47:08:478"}
+info: BullMQ Job Queue Service initialized {"timestamp":"2026-04-09 14:47:09:479"}
+info: >>> [MASTERMIND] ABSOLUTE START OF MAIN.TS {"timestamp":"2026-04-09 14:47:09:479"}
+info: >>> [MASTERMIND] Starting main() {"timestamp":"2026-04-09 14:47:09:479"}
+info: 🚀 Starting DeXMart... {"timestamp":"2026-04-09 14:47:09:479"}
+info: >>> [MASTERMIND] Validating environment variables... {"timestamp":"2026-04-09 14:47:09:479"}
+info: 🔍 Validating environment variables... {"timestamp":"2026-04-09 14:47:09:479"}
+info: ✅ FIREBASE_SERVICE_ACCOUNT_PATH: service-account.json {"timestamp":"2026-04-09 14:47:09:479"}
+info: ✅ FIREBASE_PROJECT_ID: dexmart {"timestamp":"2026-04-09 14:47:09:479"}
+info: ✅ GOOGLE_GEMINI_API_KEY: ***[REDACTED]*** {"timestamp":"2026-04-09 14:47:09:479"}
+info: ✅ PORT: 3001 {"timestamp":"2026-04-09 14:47:09:479"}
+info: ✅ NODE_ENV: development {"timestamp":"2026-04-09 14:47:09:479"}
+info: ✅ JWT_SECRET: ***[REDACTED]*** {"timestamp":"2026-04-09 14:47:09:479"}
+info: ✅ RATE_LIMIT_AI_REQ: 10 {"timestamp":"2026-04-09 14:47:09:479"}
+info: ✅ USE_BAILEYS_DIRECT: false {"timestamp":"2026-04-09 14:47:09:479"}
+info: ✅ Environment validation passed! {"timestamp":"2026-04-09 14:47:09:479"}
+info: >>> [MASTERMIND] Environment validation passed. {"timestamp":"2026-04-09 14:47:09:479"}
+info: >>> [MASTERMIND] initializeContext() called {"timestamp":"2026-04-09 14:47:09:479"}
+info: >>> [MASTERMIND] Starting fresh initialization {"timestamp":"2026-04-09 14:47:09:479"}
+info: >>> [MASTERMIND] Base context object built. {"timestamp":"2026-04-09 14:47:09:479"}
+info: 🔧 Unified Command System initialized {"timestamp":"2026-04-09 14:47:09:479"}
+info: Initializing Command System and loading commands... {"timestamp":"2026-04-09 14:47:09:479"}
+info: 🔄 Parallelizing command loading... {"timestamp":"2026-04-09 14:47:09:479"}
+info: ✅ Redis connected successfully {"timestamp":"2026-04-09 14:47:09:479"}
+info: ✅ Redis Connected - Switching to distributed cache {"timestamp":"2026-04-09 14:47:09:479"}
+info: BullMQ Queues initialized with unified Redis connection {"timestamp":"2026-04-09 14:47:13:4713"}
+info: 🎉 High-Speed Load Complete: 93 commands in 4317ms {"timestamp":"2026-04-09 14:47:13:4713"}
+info: >>> [MASTERMIND] Command loading finished. Getting mock bot... {"timestamp":"2026-04-09 14:47:13:4713"}
+info: ✅ Global Context initialized successfully {"timestamp":"2026-04-09 14:47:13:4713"}
+info: >>> [MASTERMIND] Global Context initialized successfully {"timestamp":"2026-04-09 14:47:13:4713"}
+info: >>> [MASTERMIND] Global Context initialized. {"timestamp":"2026-04-09 14:47:13:4713"}
+info: >>> [MASTERMIND] Initializing Job Registry... {"timestamp":"2026-04-09 14:47:13:4713"}
+info: [ApiKeyManager] Initialized Universal Manager with 12 keys (Semantic Cache Enabled) {"timestamp":"2026-04-09 14:47:13:4713"}
+info: AIUtilityService initialized with 12 API keys (12 healthy) {"timestamp":"2026-04-09 14:47:13:4713"}
+info: Initializing job queues... {"timestamp":"2026-04-09 14:47:13:4713"}
+info: Queue 'ai-processing' created successfully {"timestamp":"2026-04-09 14:47:13:4713"}
+info: Queue 'media-processing' created successfully {"timestamp":"2026-04-09 14:47:13:4713"}
+info: Queue 'notification' created successfully {"timestamp":"2026-04-09 14:47:13:4713"}
+info: Queue 'analytics' created successfully {"timestamp":"2026-04-09 14:47:13:4713"}
+info: Queue 'cleanup' created successfully {"timestamp":"2026-04-09 14:47:13:4713"}
+info: Queue 'whatsapp-outbound' created successfully {"timestamp":"2026-04-09 14:47:13:4713"}
+info: Queue 'group-sync' created successfully {"timestamp":"2026-04-09 14:47:13:4713"}
+info: All job queues initialized successfully {"timestamp":"2026-04-09 14:47:13:4713"}
+info: Registering job processors... {"timestamp":"2026-04-09 14:47:13:4713"}
+info: Registered BullMQ worker for queue 'ai-processing' {"timestamp":"2026-04-09 14:47:13:4713"}
+info: Registered BullMQ worker for queue 'media-processing' {"timestamp":"2026-04-09 14:47:13:4713"}
+info: StatsAggregatorJob initialized {"timestamp":"2026-04-09 14:47:13:4713"}
+info: Initializing WhatsApp Outbound Worker (Anti-Ban enabled)... {"timestamp":"2026-04-09 14:47:13:4713"}
+info: Registered BullMQ worker for queue 'whatsapp-outbound' {"timestamp":"2026-04-09 14:47:13:4713"}
+info: [GroupSyncWorker] Initializing Group Sync Worker... {"timestamp":"2026-04-09 14:47:13:4713"}
+info: Registered BullMQ worker for queue 'group-sync' {"timestamp":"2026-04-09 14:47:13:4713"}
+info: [GroupSyncWorker] Group Sync Worker registered and listening {"timestamp":"2026-04-09 14:47:13:4713"}
+info: Initializing Anti-Ban Resume Worker (Interval: 20000ms)... {"timestamp":"2026-04-09 14:47:13:4713"}
+info: All job processors registered successfully {"timestamp":"2026-04-09 14:47:13:4713"}
+info: >>> [MASTERMIND] Initializing Campaign Worker... {"timestamp":"2026-04-09 14:47:13:4713"}
+info: CampaignWorker initialized with Omnichannel Adapter + Anti-Ban Engine {"timestamp":"2026-04-09 14:47:13:4713"}
+info: >>> [MASTERMIND] Campaign Worker call finished. {"timestamp":"2026-04-09 14:47:13:4713"}
+info: >>> [MASTERMIND] USE_SERVER is true. Initializing MultiTenantApp... {"timestamp":"2026-04-09 14:47:13:4713"}
+info: Initializing Multi-tenant DeXMart SaaS Platform... {"timestamp":"2026-04-09 14:47:13:4713"}
+info: >>> [MASTERMIND] Setting up server middleware... {"timestamp":"2026-04-09 14:47:13:4713"}
+info: >>> [MASTERMIND] Setting up server routes... {"timestamp":"2026-04-09 14:47:13:4713"}
+info: >>> [MASTERMIND] Initializing Analytics Service... {"timestamp":"2026-04-09 14:47:13:4713"}
+info: WebSocket server started on port 3002 {"timestamp":"2026-04-09 14:47:13:4713"}
+info: >>> [MASTERMIND] Enterprise Analytics Gateway online at port 3002 {"timestamp":"2026-04-09 14:47:13:4713"}
+info: >>> [MASTERMIND] Initializing Unified WebSockets... {"timestamp":"2026-04-09 14:47:13:4713"}
+info: Unified Socket Service initialized {"timestamp":"2026-04-09 14:47:13:4713"}
+info: >>> [MASTERMIND] Initializing additional services... {"timestamp":"2026-04-09 14:47:13:4713"}
+info: >>> [MASTERMIND] Starting active tenant bots... {"timestamp":"2026-04-09 14:47:13:4713"}
+info: Starting active tenant channels... {"timestamp":"2026-04-09 14:47:13:4713"}
+info: >>> [MASTERMIND] Resuming all active channels... {"timestamp":"2026-04-09 14:47:13:4713"}
+info: Loading service account from: service-account.json {"timestamp":"2026-04-09 14:47:13:4713"}
+info: Using service account for project: dexmart {"timestamp":"2026-04-09 14:47:13:4713"}
+info: Initializing Firebase Admin... {"timestamp":"2026-04-09 14:47:13:4713"}
+info: 🔥 Firebase Admin Initialized (Project: dexmart) {"timestamp":"2026-04-09 14:47:13:4713"}
+info: [ChannelService] Successfully queued 0 channels for resumption. {"timestamp":"2026-04-09 14:47:21:4721"}
+info: Multi-tenant app initialized successfully {"timestamp":"2026-04-09 14:47:21:4721"}
+info: >>> [MASTERMIND] MultiTenantApp initialized. {"timestamp":"2026-04-09 14:47:21:4721"}
+info: >>> [MASTERMIND] Attempting to listen on port 3001... {"timestamp":"2026-04-09 14:47:21:4721"}
+info: >>> [MASTERMIND] MultiTenantApp started. {"timestamp":"2026-04-09 14:47:21:4721"}
+info: >>> [MASTERMIND] Starting ChannelService watchdog (interval: 60000ms) {"timestamp":"2026-04-09 14:47:21:4721"}
+info: [EventListener] Starting agent event listener {"timestamp":"2026-04-09 14:47:21:4721"}
+info: ✨ DeXMart is ready! {"timestamp":"2026-04-09 14:47:21:4721"}
+info: >>> [MASTERMIND] Multi-tenant DeXMart server running on port 3001 {"timestamp":"2026-04-09 14:47:21:4721"}

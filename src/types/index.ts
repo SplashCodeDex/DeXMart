@@ -126,7 +126,6 @@ export interface MessageContext {
         name: string;
         pushName?: string | null;
         isOwner: boolean;
-        isAdmin: boolean;
     };
     author?: {
         id: string;
@@ -185,7 +184,6 @@ export interface MessageContext {
     // Tenant & Permissions
     tenant: import('./tenantConfig.js').TenantSettings;
     isOwner: boolean;
-    isAdmin: boolean;
 
     // Group Functions
     group: (jid?: string) => GroupFunctions;

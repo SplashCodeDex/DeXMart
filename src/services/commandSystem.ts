@@ -40,6 +40,20 @@ export class CommandSystem {
   }
 
   /**
+   * Directories under src/commands/ that are OpenClaw/infrastructure files added
+   * during fusion — not WhatsApp bot commands. Importing them is wasted work
+   * since they'll all fail validateCommand() anyway (no {name, code} export).
+   */
+  private static readonly SKIP_CATEGORIES = new Set([
+    'models',                 // Claude Code model-management CLI internals
+    'channels',               // OpenClaw channel-registry CLI (not bot commands)
+    'status-all',             // OpenClaw status-report internals
+    'onboard-non-interactive',// OpenClaw onboarding flow
+    'onboarding',             // OpenClaw plugin-install flow
+    'gateway-status',         // OpenClaw gateway helpers (no command export)
+  ]);
+
+  /**
    * LOAD ALL COMMANDS
    */
   async loadCommands() {
@@ -60,6 +74,7 @@ export class CommandSystem {
       // Parallelize category loading
       await Promise.all(categories.map(async (category) => {
         if (!category.isDirectory()) return;
+        if (CommandSystem.SKIP_CATEGORIES.has(category.name)) return;
 
         const categoryPath = path.join(commandsDir, category.name);
         const commandFiles = await fs.readdir(categoryPath);
@@ -68,7 +83,8 @@ export class CommandSystem {
 
         // Parallelize file loading within category
         await Promise.all(commandFiles.map(async (file) => {
-          if ((file.endsWith('.js') || file.endsWith('.ts')) && !file.endsWith('.d.ts')) {
+          const isTestFile = file.endsWith('.test.ts') || file.endsWith('.spec.ts') || file.endsWith('.test.js') || file.endsWith('.spec.js');
+          if ((file.endsWith('.js') || file.endsWith('.ts')) && !file.endsWith('.d.ts') && !isTestFile) {
             try {
               const commandPath = path.join(categoryPath, file);
               const command = await this.loadSingleCommand(commandPath, category.name);
@@ -86,7 +102,8 @@ export class CommandSystem {
       }));
 
       const duration = Date.now() - startTime;
-      this.context.logger.info(`🎉 High-Speed Load Complete: ${this.loadedCount} commands in ${duration}ms`);
+      const failMsg = this.failedCount > 0 ? ` (${this.failedCount} failed)` : '';
+      this.context.logger.info(`🎉 High-Speed Load Complete: ${this.loadedCount} commands in ${duration}ms${failMsg}`);
 
     } catch (error: unknown) {
       const err = error instanceof Error ? error.message : String(error);
@@ -279,11 +296,15 @@ export class CommandSystem {
     const tenantResult = await (bot.context as GlobalContext).tenantConfigService.getTenantSettings(bot.tenantId);
     const tenantSettings = tenantResult.success ? tenantResult.data : ({} as any);
 
+    const senderNumber = messageData.key?.participant?.split('@')[0] || jid.split('@')[0];
+    const isOwner = tenantSettings.ownerNumber
+      ? senderNumber === tenantSettings.ownerNumber.replace(/[^0-9]/g, '')
+      : false;
+
     const msgContext: MessageContext = {
       ...messageData,
       tenant: tenantSettings,
-      isOwner: false,
-      isAdmin: false,
+      isOwner,
       id: jid,
       body: text,
       args: commandInfo.args,
@@ -294,8 +315,7 @@ export class CommandSystem {
         jid,
         name: messageData.pushName || 'Unknown',
         pushName: messageData.pushName ?? undefined,
-        isOwner: false, // Will be set below
-        isAdmin: false,
+        isOwner,
       },
       author: {
         id: jid // Legacy alias for sender.jid

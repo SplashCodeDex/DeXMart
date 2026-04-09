@@ -281,8 +281,6 @@ const createChannelContext = async (
   const ownerNumber = tenantSettings.ownerNumber || 'system';
   const isOwner = tools.cmd.isOwner([ownerNumber], senderId, !isCommonMessage(messageSource) ? (messageSource.key?.id || '') : messageSource.id);
 
-  const isAdmin = isGroup ? await group().isAdmin(senderId) : false;
-
   // Extract quoted message if available
   let quotedContext: any = undefined;
   if (!isCommonMessage(messageSource)) {
@@ -314,7 +312,6 @@ const createChannelContext = async (
       name: pushName || 'Unknown',
       pushName: pushName,
       isOwner,
-      isAdmin
     },
     getId: (jid: string) => getJid(jid),
     group,
@@ -330,7 +327,6 @@ const createChannelContext = async (
     relevantContext, // Phase 5 Intelligence
     tenant: tenantSettings,
     isOwner,
-    isAdmin,
     cooldown: {},
     getContentType: () => {
       if (isCommonMessage(messageSource)) {

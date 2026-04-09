@@ -258,16 +258,22 @@
   },
   "hotPaths": [
     {
+      "path": "",
+      "accessCount": 16,
+      "lastAccessed": 1775752108384,
+      "type": "directory"
+    },
+    {
       "path": "docs/TrueFusionPlan.md",
       "accessCount": 8,
       "lastAccessed": 1775467425556,
       "type": "file"
     },
     {
-      "path": "",
+      "path": "conductor/tracks.md",
       "accessCount": 8,
-      "lastAccessed": 1775698633275,
-      "type": "directory"
+      "lastAccessed": 1775752112449,
+      "type": "file"
     },
     {
       "path": "src/billing/auth-guard.ts",
@@ -276,9 +282,9 @@
       "type": "file"
     },
     {
-      "path": "conductor/tracks.md",
+      "path": "package.json",
       "accessCount": 7,
-      "lastAccessed": 1775680976295,
+      "lastAccessed": 1775747272118,
       "type": "file"
     },
     {
@@ -291,12 +297,6 @@
       "path": "tsconfig.json",
       "accessCount": 5,
       "lastAccessed": 1775468109843,
-      "type": "file"
-    },
-    {
-      "path": "package.json",
-      "accessCount": 5,
-      "lastAccessed": 1775469170125,
       "type": "file"
     },
     {
@@ -313,8 +313,8 @@
     },
     {
       "path": "pnpm-workspace.yaml",
-      "accessCount": 4,
-      "lastAccessed": 1775681529386,
+      "accessCount": 5,
+      "lastAccessed": 1775746529914,
       "type": "file"
     },
     {
@@ -369,6 +369,12 @@
       "path": "conductor/tracks/true_fusion_audit_sync_20260401/spec.md",
       "accessCount": 2,
       "lastAccessed": 1775680961773,
+      "type": "file"
+    },
+    {
+      "path": "src/dexmart-config/env.schema.ts",
+      "accessCount": 2,
+      "lastAccessed": 1775745111058,
       "type": "file"
     },
     {
@@ -501,12 +507,6 @@
       "path": "src/dexmart-jobs/index.ts",
       "accessCount": 1,
       "lastAccessed": 1775168676629,
-      "type": "file"
-    },
-    {
-      "path": "src/dexmart-config/env.schema.ts",
-      "accessCount": 1,
-      "lastAccessed": 1775168676699,
       "type": "file"
     },
     {

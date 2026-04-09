@@ -59,7 +59,8 @@ export const permissionMiddleware: Middleware = async (ctx: MessageContext, next
 
     // 4. Admin Check (Group only)
     if (perms.admin && ctx.isGroup()) {
-        if (!ctx.sender.isAdmin) {
+        const senderIsGroupAdmin = await ctx.group().isAdmin();
+        if (!senderIsGroupAdmin) {
             await ctx.replyReact('👮');
             return ctx.reply(formatter.quote('⚠️ You must be an admin to use this command.'));
         }
