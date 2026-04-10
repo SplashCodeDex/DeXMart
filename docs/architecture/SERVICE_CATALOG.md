@@ -1,8 +1,8 @@
 # DeXMart Service Catalog
 
-> **Last verified**: 2026-04-03 | **Source**: `src/services/` directory listing (65 service files)
+> **Last verified**: 2026-04-10 | **Source**: `src/services/` directory listing
 >
-> **Phase 4 complete**: All `backend/src/` source migrated to `src/`. The `backend/` directory contains only compiled `dist/` artifacts pending deletion after staging smoke test. All service files now exist exclusively in `src/`.
+> **True Fusion complete**: All source code exists exclusively in the unified `src/` tree. The `backend/` and `openclaw/` directories have been deleted. No migration artifacts remain.
 
 ---
 
