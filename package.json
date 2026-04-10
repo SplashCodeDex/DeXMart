@@ -17,6 +17,7 @@
     "test:run": "vitest run",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
+    "start": "tsx src/main.ts",
     "sync:report": "tsx scripts/automation/upstream-watcher.ts"
   },
   "devDependencies": {
