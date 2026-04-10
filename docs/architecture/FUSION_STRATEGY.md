@@ -356,8 +356,8 @@ The fusion is complete when a new developer sees **one project called DeXMart**:
 - [ ] **Zero duplication (second pass)**: Second-pass dedup of `src/services/` vs. `src/billing/`, `src/tenancy/` etc. (some service files still reference old patterns)
 - [ ] **Frontend sees everything**: Every backend endpoint accessible through the dashboard (ongoing)
 - [ ] **Upstream sync is invisible**: Upstream watcher automation not yet configured
-- [ ] **B2C isolation verified**: Integration tests proving User A cannot see User B's data
-- [ ] **Billing enforcement verified**: Integration tests proving Free users cannot access Pro features
+- [x] **B2C isolation verified**: Integration tests proving User A cannot see User B's data (`src/tenancy/__tests__/isolation.integration.test.ts` — 14 tests, 2026-04-10)
+- [x] **Billing enforcement verified**: Integration tests proving Free users cannot access Pro features (`src/billing/__tests__/enforcement.integration.test.ts` — 28 tests, 2026-04-10)
 - [ ] **Phase 3 complete**: MastermindStreamService → OpenClaw agent events; Firestore memory adapter
 - [ ] **`backend/` deleted**: After staging smoke test confirms `src/main.ts` boots correctly
 - [ ] **Indistinguishable**: No developer needs to know what came from OpenClaw vs what DeXMart built.

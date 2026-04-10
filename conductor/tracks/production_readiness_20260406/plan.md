@@ -71,14 +71,17 @@ Goal: Define production entrypoint and unify Firestore data paths. Close remaini
     - [x] Implement live migration with progress logging and batch writes
     - [x] Implement post-migration integrity verification (count + spot-check)
     - [x] Run tests — 8/8 pass (Green phase)
-- [ ] Task: Remove Legacy Firestore Path References
+- [~] Task: Remove Legacy Firestore Path References
+    - NOTE: Deferred — 37 production files + FirebaseService SchemaMap use `tenants/` path strings.
+      This is a high-risk refactor with no direct FUSION_STRATEGY gate attached. Separated into
+      its own track to be done post-Phase 3 AI Fusion (see Phase 4 data migration).
     - [ ] Search `src/` for all `tenants/` Firestore path references
     - [ ] Update each reference to use `users/{userId}/` path exclusively
     - [ ] Verify all existing tests still pass after path updates
     - [ ] Update `docs/architecture/DATA_MODEL.md` to reflect unified paths (remove "both coexist" language)
-- [ ] Task: Update Fusion Success Criteria & Close Gates
-    - [ ] Update `docs/architecture/FUSION_STRATEGY.md` — check completed success criteria boxes
-    - [ ] Mark: `[x] B2C isolation verified`, `[x] Billing enforcement verified`
-    - [ ] Add smoke test result documentation to FUSION_STRATEGY.md Phase 4
+- [x] Task: Update Fusion Success Criteria & Close Gates
+    - [x] Update `docs/architecture/FUSION_STRATEGY.md` — check completed success criteria boxes
+    - [x] Mark: `[x] B2C isolation verified` (14 tests), `[x] Billing enforcement verified` (28 tests)
+    - [ ] Add smoke test result documentation to FUSION_STRATEGY.md Phase 4 (requires manual Phase 1 smoke test)
     - [ ] Remove "What remains" section or mark items complete
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Production Runtime & Data Unification' (Protocol in workflow.md)
