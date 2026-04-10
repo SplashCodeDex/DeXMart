@@ -12,10 +12,10 @@ Goal: Verify 100% code parity, merge overlapping logic, and remove all "bridge" 
 ## Phase 2: Core Documentation Sync (Enterprise Vision)
 Goal: Update all documentation to reflect a single, unified, enterprise-grade platform.
 
-- [ ] Task: Revise `conductor/product.md` to reflect DeXMart as a unified enterprise-grade platform (OpenClaw engine + DeXMart core modules). Remove all references to DeXMart as a "layer on top".
-- [ ] Task: Synchronize `conductor/tech-stack.md` with the confirmed unified versions (Node 24+, Next.js 16.1.6, etc.).
-- [ ] Task: Update `conductor/workflow.md` to formally document the "Managed Fork" upstream sync strategy for the unified project.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Core Documentation Sync' (Protocol in workflow.md)
+- [x] Task: Revise `conductor/product.md` to reflect DeXMart as a unified enterprise-grade platform (OpenClaw engine + DeXMart core modules). Remove all references to DeXMart as a "layer on top". [d3dc946]
+- [x] Task: Synchronize `conductor/tech-stack.md` with the confirmed unified versions (Node 24+, Next.js 16.1.6, etc.). [d3dc946]
+- [x] Task: Update `conductor/workflow.md` to formally document the "Managed Fork" upstream sync strategy for the unified project. [d3dc946]
+- [~] Task: Conductor - User Manual Verification 'Phase 2: Core Documentation Sync' (Protocol in workflow.md)
 
 ## Phase 3: Component Documentation Refactor
 Goal: Centralize and modernize architectural documentation for the unified platform.
