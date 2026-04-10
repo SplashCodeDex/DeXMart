@@ -8,7 +8,7 @@
 
 ## 1. Frontend
 
-- **Framework:** Next.js 16.1.6 (App Router, Turbopack, PPR Stable)
+- **Framework:** Next.js 16.1.4+ (App Router, Turbopack, PPR Stable)
 - **Library:** React 19.2.3 (Server Components, Server Actions, React Compiler Enabled)
 - **Language:** TypeScript 5.9.3 (Strict Mode)
 - **Styling:** Tailwind CSS 4.1.18 (CSS-first `@theme` configuration, Zero Config)
@@ -20,7 +20,7 @@
   - **Mutation State:** `useActionState` (replacing manual loading states)
   - **Client UI State:** Zustand 5.0.10
   - **URL State:** Next.js Navigation Hooks
-- **Validation:** Zod 4.3.5 (Mandatory for all I/O)
+- **Validation:** Zod 4.3.6 (Mandatory for all I/O)
 - **Icons:** Lucide React 0.562.0
 - **API Communication:** REST for CRUD + WebSocket for real-time (hybrid, industry best practice)
 
@@ -35,9 +35,9 @@
 - **Agent Runtime:** pi-embedded-runner (13+ model providers, fallback chains, context window guards)
 - **Model Providers:** Google Gemini, Anthropic Claude, OpenAI GPT, AWS Bedrock, Ollama, HuggingFace, Groq, Together, Replicate, Fireworks, DeepSeek, Mistral, LM Studio
 - **Channel System:** 40+ channel plugins (WhatsApp, Telegram, Discord, Slack, Signal, iMessage, Line, Matrix, MS Teams, Twitch, etc.)
-- **WhatsApp API:** Baileys 7.0.0 (via OpenClaw web/ module)
-- **Telegram API:** grammY 1.40.0 (via OpenClaw telegram/ module)
-- **Discord API:** discord.js 14.18.0 (via OpenClaw discord/ module)
+- **WhatsApp API:** Baileys 7.0.0-rc.9 (via OpenClaw web/ module)
+- **Telegram API:** grammY 1.41.0 (via OpenClaw telegram/ module)
+- **Discord API:** discord.js 14.25.1 (via OpenClaw discord/ module)
 - **Tool System:** OpenClaw native tools + plugin-resolved tools
 - **Memory:** OpenClaw memory system (sqlite-vec, vector store)
 - **Health Monitor:** Stale socket detection, restart cooldowns, max-restarts-per-hour
@@ -59,20 +59,20 @@
 - **Real-time:** WebSockets (Socket.io 4.8.3) for Mastermind stream, channel status push, QR codes, billing warnings (`billing_warning` event)
 - **Observability:** OpenTelemetry (Tracing & Metrics, Low-overhead auto-instrumentation)
 - **Logging:** Pino (High-performance, JSON structured)
-- **Testing:** Node.js Native Test Runner (`node --test`) & Vitest 4.0
+- **Testing:** Vitest 4.0.18 (Unified — both backend and frontend)
 
 ## 3. Infrastructure & Services
 
 - **Database:** Firebase Firestore (User-level subcollection pattern: `/users/{userId}/...`)
-- **Authentication:** Firebase Admin / Client SDK 12.8.0
-- **Payments:** Stripe 20.1.2
-- **Caching:** Redis (ioredis 5.9.1) with Node-Cache fallback for development
+- **Authentication:** Firebase Admin / Client SDK 13.6.0
+- **Payments:** Stripe 20.2.0
+- **Caching:** Redis (ioredis 5.9.2) with Node-Cache fallback for development
 - **AI Integration:** Multi-provider via OpenClaw (Gemini, Claude, GPT, etc.)
 - **File Storage:** Firebase Storage / Google Drive API
 
 ## 4. Development & Tooling
 
-- **Testing:** Vitest 4.0 (Unified)
+- **Testing:** Vitest 4.0.18 (Unified)
 - **Linting:** ESLint 9+ (Flat Config), Prettier
 - **Git Hooks:** Husky, Lint-staged
 - **API Validation:** Zod (Mandatory for all contracts)

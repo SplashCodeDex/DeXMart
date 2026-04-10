@@ -2,7 +2,7 @@
 
 ## Initial Concept
 
-DeXMart is an enterprise-grade, omnichannel AI automation platform built on the OpenClaw engine. OpenClaw IS the engine — untouched. DeXMart adds two things on top: **user-level multi-tenancy** (B2C model, like Spotify/CapCut) and **billing gating** (Stripe subscriptions controlling feature access per plan).
+DeXMart is an enterprise-grade, omnichannel AI automation platform with a unified codebase that fuses the OpenClaw engine with DeXMart's platform layer into a single `src/` tree. OpenClaw is maintained as a **managed fork** — its engine capabilities are preserved and extended natively rather than wrapped. DeXMart's platform layer contributes two capabilities that OpenClaw itself does not have: **user-level multi-tenancy** (B2C model, like Spotify/CapCut) and **billing gating** (Stripe subscriptions controlling feature access per plan).
 
 The platform follows the B2C multi-tenant pattern: every user is isolated via their `userId`, all data is tagged per-user in Firestore, and the authorization layer ensures User A cannot access User B's data. There are no teams, orgs, or admin roles — the user IS the tenant.
 
@@ -23,7 +23,7 @@ The platform follows the B2C multi-tenant pattern: every user is isolated via th
 
 ### 2. Channel Management
 
-Powered by **OpenClaw's channel plugin system** (40+ extensions) — DeXMart does not rebuild channel adapters.
+Powered by **OpenClaw's channel plugin system** (40+ extensions), integrated natively into the unified `src/` tree.
 
 - **Connectivity Slots:** Link WhatsApp via QR code, connect Telegram, Discord, Slack, Signal, and 35+ other platforms via OpenClaw's native channel plugins.
 - **Webhook Mode:** Support for connectivity-only use cases where incoming messages are forwarded to external webhooks without AI intervention.
@@ -33,7 +33,7 @@ Powered by **OpenClaw's channel plugin system** (40+ extensions) — DeXMart doe
 
 ### 3. AI Agent System
 
-Powered by **OpenClaw's pi-embedded-runner** — DeXMart does not maintain a separate AI brain.
+Powered by **OpenClaw's pi-embedded-runner**, integrated natively into the unified `src/` tree.
 
 - **13+ Model Providers:** Anthropic, OpenAI, Google Gemini, AWS Bedrock, Ollama, HuggingFace, and more — all via OpenClaw's model selection system.
 - **Model Fallback Chains:** If one model fails, the engine automatically tries the next in the chain.
@@ -83,4 +83,4 @@ Powered by **OpenClaw's pi-embedded-runner** — DeXMart does not maintain a sep
 
 ## Vision
 
-To build a scalable and reliable B2C SaaS platform that democratizes access to powerful omnichannel AI automation tools, powered by the OpenClaw engine with DeXMart's user-level isolation and subscription billing on top.
+To build a scalable and reliable B2C SaaS platform that democratizes access to powerful omnichannel AI automation tools — a unified platform where the OpenClaw engine and DeXMart's user-level isolation and subscription billing form a single, cohesive product.

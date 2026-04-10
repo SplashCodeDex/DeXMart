@@ -172,11 +172,46 @@ Our GitHub Actions workflows MUST follow these standards:
 4.  **Security-as-Code**: Mandatory `npm audit` or `snyk test` in every pipeline.
 5.  **Path Filtering**: Only run module-specific CI if files in that module changed.
 
+### Managed Fork Upstream Sync Strategy
+
+DeXMart maintains OpenClaw as a **managed fork** within the unified `src/` tree. The upstream
+remote is tracked as `git remote openclaw-upstream`. The following rules govern how upstream
+changes flow into the project:
+
+1. **Security Patches (Mandatory, Fast-Track)**
+   - Cherry-pick critical security fixes immediately: `git cherry-pick <commit>`
+   - Run the full test suite before merging
+   - Commit message: `fix(security): cherry-pick <upstream-sha> — <description>`
+
+2. **Bug Fixes (Selective)**
+   - Review upstream bug fix commits for applicability
+   - Cherry-pick only fixes that affect code paths used by DeXMart
+   - Verify the fix doesn't conflict with DeXMart's multi-tenant extensions
+
+3. **New Features (Manual Adaptation)**
+   - Do NOT merge upstream feature branches wholesale
+   - Manually port features that align with the product roadmap
+   - Adapt any new code to respect DeXMart's `UserContext` / `AuthGuard` isolation patterns
+   - Document adaptation decisions in the relevant conductor track
+
+4. **Upstream Check Cadence**
+   - Review upstream for new commits at least once per sprint
+   - The GitHub Action `.github/workflows/openclaw-watcher.yml` runs every 12 hours and
+     produces a report at `docs/OPENCLAW_UPSTREAM_REPORT.md`
+
+5. **Conflict Resolution**
+   - DeXMart extensions ALWAYS take precedence over upstream code
+   - If upstream changes a file that DeXMart has also modified, merge manually — never
+     use `git merge -X theirs`
+   - Document any intentional divergence from upstream in a code comment: `// DeXMart: <reason>`
+
 ### Before Committing
 
 ```bash
-# Standard Quality Gate
-npm run check # Runs lint, typecheck, and tests in parallel
+# Standard Quality Gate (pnpm — do NOT use npm or yarn)
+pnpm exec vitest run   # Run tests
+pnpm lint:backend      # ESLint zero-warnings
+pnpm typecheck         # tsc --noEmit
 ```
 
 ## Testing Requirements
