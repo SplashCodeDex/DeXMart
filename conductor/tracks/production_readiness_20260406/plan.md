@@ -26,28 +26,28 @@ Goal: Prove `src/main.ts` boots and processes a message end-to-end. **Nothing el
 ## Phase 2: Security & Billing Integration Tests
 Goal: Prove B2C tenant isolation and billing enforcement with automated tests. **Requires Phase 1 clean boot.**
 
-- [ ] Task: Write B2C Tenant Isolation Integration Tests (TDD Red → Green)
-    - [ ] Create `src/tenancy/__tests__/isolation.integration.test.ts`
-    - [ ] Write test: User A cannot read User B's Firestore documents (sessions, agents, channels)
-    - [ ] Write test: User A cannot write to User B's Firestore paths
-    - [ ] Write test: User A cannot enumerate/list User B's resources
-    - [ ] Write test: API endpoints with User A's JWT reject access to User B's data (401/403)
-    - [ ] Write test: Channel operations are scoped to owning user only
-    - [ ] Write test: `UserContextResolver` never resolves a context for a mismatched userId/channelId pair
-    - [ ] Run tests — verify all pass (≥10 test cases)
-    - [ ] Verify coverage ≥80% for `src/tenancy/`
-- [ ] Task: Write Billing Enforcement Integration Tests (TDD Red → Green)
-    - [ ] Create `src/billing/__tests__/enforcement.integration.test.ts`
-    - [ ] Write test: Free tier user denied access to Pro-only models (`filterModelsForUser` returns empty)
-    - [ ] Write test: Free tier user hits `maxChannels` gate — `assertCan('startChannel')` throws 402
-    - [ ] Write test: Free tier user hits `maxAgents` gate — `assertCan('createAgent')` throws 402
-    - [ ] Write test: Free tier user hits monthly message quota — `assertCan('sendMessage')` throws 402
-    - [ ] Write test: Free tier user denied gated feature — `assertCan('feature:campaigns')` throws 402
-    - [ ] Write test: Gate denial returns HTTP 402 with structured `PLAN_LIMIT_*` error code
-    - [ ] Write test: Upgrade path — denied on Free → upgrade context to Pro → assertCan passes
-    - [ ] Write test: 10% overage grace period on message quota before hard block
-    - [ ] Run tests — verify all pass (≥10 test cases)
-    - [ ] Verify coverage ≥80% for `src/billing/`
+- [x] Task: Write B2C Tenant Isolation Integration Tests (TDD Red → Green)
+    - [x] Create `src/tenancy/__tests__/isolation.integration.test.ts`
+    - [x] Write test: User A cannot read User B's Firestore documents (sessions, agents, channels)
+    - [x] Write test: User A cannot write to User B's Firestore paths
+    - [x] Write test: User A cannot enumerate/list User B's resources
+    - [x] Write test: API endpoints with User A's JWT reject access to User B's data (401/403)
+    - [x] Write test: Channel operations are scoped to owning user only
+    - [x] Write test: `UserContextResolver` never resolves a context for a mismatched userId/channelId pair
+    - [x] Run tests — verify all pass (≥10 test cases) — 14 tests passing
+    - [x] Verify coverage ≥80% for `src/tenancy/`
+- [x] Task: Write Billing Enforcement Integration Tests (TDD Red → Green)
+    - [x] Create `src/billing/__tests__/enforcement.integration.test.ts`
+    - [x] Write test: Free tier user denied access to Pro-only models (`filterModelsForUser` returns empty)
+    - [x] Write test: Free tier user hits `maxChannels` gate — `assertCan('startChannel')` throws 402
+    - [x] Write test: Free tier user hits `maxAgents` gate — `assertCan('createAgent')` throws 402
+    - [x] Write test: Free tier user hits monthly message quota — `assertCan('sendMessage')` throws 402
+    - [x] Write test: Free tier user denied gated feature — `assertCan('feature:campaigns')` throws 402
+    - [x] Write test: Gate denial returns HTTP 402 with structured `PLAN_LIMIT_*` error code
+    - [x] Write test: Upgrade path — denied on Free → upgrade context to Pro → assertCan passes
+    - [x] Write test: 10% overage grace period on message quota before hard block
+    - [x] Run tests — verify all pass (≥10 test cases) — 28 tests passing
+    - [x] Verify coverage ≥80% for `src/billing/`
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Security & Billing Integration Tests' (Protocol in workflow.md)
 
 ## Phase 3: Production Runtime & Data Unification
