@@ -28,6 +28,11 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
+## [ ] Track: Pre-Existing Test Suite Failures: Audit, Root-Cause Investigation & Systematic Remediation
+*Link: [./tracks/test_failures_audit_20260410/](./tracks/test_failures_audit_20260410/)*
+
+---
+
 ## Archived Tracks
 
 ### [x] Track: System Health & Technical Debt Remediation

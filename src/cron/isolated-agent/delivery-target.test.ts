@@ -19,7 +19,20 @@ vi.mock("../../pairing/pairing-store.js", () => ({
 
 vi.mock("../../web/accounts.js", () => ({
   resolveWhatsAppAccount: vi.fn(() => ({ allowFrom: [] })),
+  hasAnyWhatsAppAuth: vi.fn().mockReturnValue(false),
 }));
+
+vi.mock("../../infra/outbound/targets.js", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../../infra/outbound/targets.js")>();
+  return {
+    ...actual,
+    resolveOutboundTarget: vi.fn((params: { to?: string }) =>
+      params.to
+        ? { ok: true as const, to: params.to }
+        : { ok: false as const, error: new Error("No delivery target resolved") },
+    ),
+  };
+});
 
 import { loadSessionStore } from "../../config/sessions.js";
 import { resolveMessageChannelSelection } from "../../infra/outbound/channel-selection.js";
