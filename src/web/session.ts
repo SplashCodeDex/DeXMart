@@ -95,12 +95,51 @@ export type WaAuthStateFactory = () => Promise<{
   state: import("@whiskeysockets/baileys").AuthenticationState;
   saveCreds: () => Promise<void>;
 }>;
+
+export type WaSocketOpts = {
+  authDir?: string;
+  onQr?: (qr: string) => void;
+  authStateFactory?: WaAuthStateFactory;
+  /** DeXMart B2C: Firebase UID — triggers Firestore auth when SAAS_MODE=true */
+  userId?: string;
+  /** DeXMart B2C: Channel ID — used as Firestore auth path segment in SaaS mode */
+  channelId?: string;
+};
+
+/**
+ * Resolves which auth state factory to use for a WhatsApp session.
+ *
+ * Priority:
+ *   1. Explicit `authStateFactory` in opts — always takes precedence.
+ *   2. When `saasMode=true` AND both `userId` and `channelId` are provided —
+ *      returns a factory that uses Firestore-backed auth (useFirestoreChannelAuthState).
+ *   3. Otherwise — returns undefined, causing the caller to fall back to
+ *      file-based auth (useMultiFileAuthState, OpenClaw CLI default).
+ *
+ * The `saasMode` param defaults to `process.env['SAAS_MODE'] === 'true'` so
+ * callers in production get automatic behaviour while tests can inject the flag.
+ */
+export function resolveWaAuthStateFactory(
+  opts: Pick<WaSocketOpts, "authStateFactory" | "userId" | "channelId">,
+  saasMode = process.env["SAAS_MODE"] === "true",
+): WaAuthStateFactory | undefined {
+  if (opts.authStateFactory) return opts.authStateFactory;
+  if (saasMode && opts.userId && opts.channelId) {
+    const { userId, channelId } = opts;
+    return async () => {
+      const { useFirestoreChannelAuthState } = await import("../persistence/channel-auth-state.js");
+      const { db } = await import("../lib/firebase.js");
+      return useFirestoreChannelAuthState(userId, channelId, db);
+    };
+  }
+  return undefined;
+}
 // ─────────────────────────────────────────────────────────────────────────────
 
 export async function createWaSocket(
   printQr: boolean,
   verbose: boolean,
-  opts: { authDir?: string; onQr?: (qr: string) => void; authStateFactory?: WaAuthStateFactory } = {},
+  opts: WaSocketOpts = {},
 ): Promise<ReturnType<typeof makeWASocket>> {
   const baseLogger = getChildLogger(
     { module: "baileys" },
@@ -111,12 +150,12 @@ export async function createWaSocket(
   const logger = toPinoLikeLogger(baseLogger, verbose ? "info" : "silent");
   const authDir = resolveUserPath(opts.authDir ?? resolveDefaultWebAuthDir());
 
-  // If an authStateFactory is provided (multi-user/Firestore path), use it directly.
-  // Otherwise fall back to OpenClaw's default file-based auth (single-user CLI path).
+  // Resolve auth factory: explicit > SaaS auto-Firestore > CLI file-based.
+  const authStateFactory = resolveWaAuthStateFactory(opts);
   let state: import("@whiskeysockets/baileys").AuthenticationState;
   let saveCreds: () => Promise<void>;
-  if (opts.authStateFactory) {
-    ({ state, saveCreds } = await opts.authStateFactory());
+  if (authStateFactory) {
+    ({ state, saveCreds } = await authStateFactory());
   } else {
     await ensureDir(authDir);
     maybeRestoreCredsFromBackup(authDir);
@@ -153,11 +192,9 @@ export async function createWaSocket(
         if (connection === "close") {
           const status = getStatusCode(lastDisconnect?.error);
           if (status === DisconnectReason.loggedOut) {
-            console.error(
-              danger(
-                `WhatsApp session logged out. Run: ${formatCliCommand("openclaw channels login")}`,
-              ),
-            );
+            // Logged-out handling (status persistence, QR re-auth) is managed by
+            // WhatsappAdapter. No CLI instruction is relevant in dashboard mode.
+            sessionLogger.warn({ statusCode: status }, "WhatsApp session logged out (401)");
           }
         }
         if (connection === "open" && verbose) {
