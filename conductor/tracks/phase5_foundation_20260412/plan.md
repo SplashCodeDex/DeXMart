@@ -10,10 +10,10 @@
 - [x] Task 5.1.5: Run tests (green) + coverage check
 
 ### Task 5.2 — Inject Firestore Auth as Default for SaaS Mode
-- [ ] Task 5.2.1: Write failing tests — integration test asserts `src/web/session.ts` selects `makeFirestoreAuthStore()` when `SAAS_MODE=true` and file-based store otherwise
-- [ ] Task 5.2.2: Update `src/web/session.ts`: read `SAAS_MODE` env; default `authStateFactory` to `makeFirestoreAuthStore(userId, channelId, db)` in SaaS mode
-- [ ] Task 5.2.3: Ensure CLI mode (`SAAS_MODE` unset/false) retains file-based auth unchanged
-- [ ] Task 5.2.4: Run tests (green) + coverage check
+- [x] Task 5.2.1: Write failing tests — integration test asserts `src/web/session.ts` selects `makeFirestoreAuthStore()` when `SAAS_MODE=true` and file-based store otherwise
+- [x] Task 5.2.2: Update `src/web/session.ts`: read `SAAS_MODE` env; default `authStateFactory` to `makeFirestoreAuthStore(userId, channelId, db)` in SaaS mode
+- [x] Task 5.2.3: Ensure CLI mode (`SAAS_MODE` unset/false) retains file-based auth unchanged
+- [x] Task 5.2.4: Run tests (green) + coverage check
 
 ### Task 5.3 — Inject Stripe Billing Gates into Channel Startup
 - [ ] Task 5.3.1: Write failing tests — billing gate unit tests: `assertCan('startChannel')` blocks start when plan limit exceeded, passes when within limit
