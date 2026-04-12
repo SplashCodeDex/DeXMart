@@ -172,6 +172,8 @@ export type ChannelGatewayContext<ResolvedAccount = unknown> = {
   log?: ChannelLogSink;
   getStatus: () => ChannelAccountSnapshot;
   setStatus: (next: ChannelAccountSnapshot) => void;
+  /** DeXMart B2C: Firebase UID of the user this channel belongs to. Undefined in CLI/single-user mode. */
+  userId?: string;
 };
 
 export type ChannelLogoutResult = {

@@ -59,6 +59,8 @@ type ChannelManagerOptions = {
   loadConfig: () => OpenClawConfig;
   channelLogs: Record<ChannelId, SubsystemLogger>;
   channelRuntimeEnvs: Record<ChannelId, RuntimeEnv>;
+  /** DeXMart B2C: Firebase UID scoping this channel manager to a single user. Undefined in CLI mode. */
+  userId?: string;
 };
 
 type StartChannelOptions = {
@@ -78,7 +80,7 @@ export type ChannelManager = {
 
 // Channel docking: lifecycle hooks (`plugin.gateway`) flow through this manager.
 export function createChannelManager(opts: ChannelManagerOptions): ChannelManager {
-  const { loadConfig, channelLogs, channelRuntimeEnvs } = opts;
+  const { loadConfig, channelLogs, channelRuntimeEnvs, userId } = opts;
 
   const channelStores = new Map<ChannelId, ChannelRuntimeStore>();
   // Tracks restart attempts per channel:account. Reset on successful start.
@@ -199,6 +201,7 @@ export function createChannelManager(opts: ChannelManagerOptions): ChannelManage
           log,
           getStatus: () => getRuntime(channelId, id),
           setStatus: (next) => setRuntime(channelId, id, next),
+          userId,
         });
         const trackedPromise = Promise.resolve(task)
           .catch((err) => {
@@ -305,6 +308,7 @@ export function createChannelManager(opts: ChannelManagerOptions): ChannelManage
             log: channelLogs[channelId],
             getStatus: () => getRuntime(channelId, id),
             setStatus: (next) => setRuntime(channelId, id, next),
+            userId,
           });
         }
         try {
