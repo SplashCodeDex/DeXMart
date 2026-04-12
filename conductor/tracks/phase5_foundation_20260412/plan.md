@@ -16,10 +16,10 @@
 - [x] Task 5.2.4: Run tests (green) + coverage check
 
 ### Task 5.3 — Inject Stripe Billing Gates into Channel Startup
-- [ ] Task 5.3.1: Write failing tests — billing gate unit tests: `assertCan('startChannel')` blocks start when plan limit exceeded, passes when within limit
-- [ ] Task 5.3.2: Import `assertCan` from `src/billing/auth-guard.ts` into `gateway/server-channels.ts`
-- [ ] Task 5.3.3: Call `assertCan('startChannel', userId)` inside `startChannelInternal()` before booting any plugin; return structured Result error on denial
-- [ ] Task 5.3.4: Run tests (green) + coverage check
+- [x] Task 5.3.1: Write failing tests — billing gate unit tests: `assertCan('startChannel')` blocks start when plan limit exceeded, passes when within limit
+- [x] Task 5.3.2: Add `ChannelBillingGuard` interface and `billingGuard?` to `ChannelManagerOptions`
+- [x] Task 5.3.3: Enforce `billingGuard.canStartChannel()` in `startChannelInternal()` before booting any plugin; throws HTTP 402 on denial
+- [x] Task 5.3.4: Run tests (green) + coverage check
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Engine Foundation Injection' (Protocol in workflow.md)
 
 ---
