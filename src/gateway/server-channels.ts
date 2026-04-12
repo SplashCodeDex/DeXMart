@@ -55,12 +55,26 @@ function cloneDefaultRuntime(channelId: ChannelId, accountId: string): ChannelAc
   return { ...resolveDefaultRuntime(channelId), accountId };
 }
 
+/**
+ * Injected by DeXMart to enforce Stripe plan limits before any plugin boots.
+ * Keeping this interface minimal so the OpenClaw engine stays decoupled from
+ * DeXMart's billing types.
+ */
+export type ChannelBillingGuard = {
+  /** Returns true if the user can start another channel. */
+  canStartChannel(): boolean;
+  /** Human-readable message used in the thrown error when the gate blocks. */
+  deniedMessage: string;
+};
+
 type ChannelManagerOptions = {
   loadConfig: () => OpenClawConfig;
   channelLogs: Record<ChannelId, SubsystemLogger>;
   channelRuntimeEnvs: Record<ChannelId, RuntimeEnv>;
   /** DeXMart B2C: Firebase UID scoping this channel manager to a single user. Undefined in CLI mode. */
   userId?: string;
+  /** DeXMart B2C: Stripe plan gate — checked before booting any channel plugin. Undefined in CLI mode. */
+  billingGuard?: ChannelBillingGuard;
 };
 
 type StartChannelOptions = {
@@ -80,7 +94,7 @@ export type ChannelManager = {
 
 // Channel docking: lifecycle hooks (`plugin.gateway`) flow through this manager.
 export function createChannelManager(opts: ChannelManagerOptions): ChannelManager {
-  const { loadConfig, channelLogs, channelRuntimeEnvs, userId } = opts;
+  const { loadConfig, channelLogs, channelRuntimeEnvs, userId, billingGuard } = opts;
 
   const channelStores = new Map<ChannelId, ChannelRuntimeStore>();
   // Tracks restart attempts per channel:account. Reset on successful start.
@@ -122,6 +136,14 @@ export function createChannelManager(opts: ChannelManagerOptions): ChannelManage
     accountId?: string,
     opts: StartChannelOptions = {},
   ) => {
+    // DeXMart B2C: enforce Stripe plan limit before booting any plugin.
+    if (billingGuard && !billingGuard.canStartChannel()) {
+      throw Object.assign(new Error(billingGuard.deniedMessage), {
+        statusCode: 402,
+        code: "PLAN_LIMIT_CHANNEL",
+      });
+    }
+
     const plugin = getChannelPlugin(channelId);
     const startAccount = plugin?.gateway?.startAccount;
     if (!startAccount) {
