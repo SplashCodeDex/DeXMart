@@ -3,11 +3,11 @@
 ## Phase 1: Engine Foundation Injection
 
 ### Task 5.1 — Inject TenantContext into PluginRuntime
-- [ ] Task 5.1.1: Write failing tests — `PluginRuntime` unit tests assert that `startChannel()` propagates `userId`/`TenantContext` to plugin lifecycle hooks
-- [ ] Task 5.1.2: Extend `PluginRuntime` types to accept optional `TenantContext` param in `createChannelManager()` and `startChannel()`
-- [ ] Task 5.1.3: Thread `TenantContext` through `PluginRuntime` internals so all plugin hooks receive it
-- [ ] Task 5.1.4: Update `src/services/ChannelService.ts` call sites to pass `userId` when starting channels
-- [ ] Task 5.1.5: Run tests (green) + coverage check
+- [x] Task 5.1.1: Write failing tests — `PluginRuntime` unit tests assert that `startChannel()` propagates `userId`/`TenantContext` to plugin lifecycle hooks
+- [x] Task 5.1.2: Extend `PluginRuntime` types to accept optional `TenantContext` param in `createChannelManager()` and `startChannel()`
+- [x] Task 5.1.3: Thread `TenantContext` through `PluginRuntime` internals so all plugin hooks receive it
+- [x] Task 5.1.4: Update `src/services/ChannelService.ts` call sites to pass `userId` when starting channels
+- [x] Task 5.1.5: Run tests (green) + coverage check
 
 ### Task 5.2 — Inject Firestore Auth as Default for SaaS Mode
 - [ ] Task 5.2.1: Write failing tests — integration test asserts `src/web/session.ts` selects `makeFirestoreAuthStore()` when `SAAS_MODE=true` and file-based store otherwise
