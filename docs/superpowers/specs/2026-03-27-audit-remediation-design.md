@@ -4,6 +4,11 @@ Date: 2026-03-27
 Status: Approved
 Approach: C — Complete the Core, Gate the Rest
 
+> [!WARNING]
+> **Path Migration Notice (Post-Phase 4)**
+> All `backend/src/...` paths in this document should be read as `src/...`.
+> The `backend/` directory was dissolved into the unified `src/` tree on 2026-04-03 (Phase 4).
+
 ---
 
 ## Problem Statement

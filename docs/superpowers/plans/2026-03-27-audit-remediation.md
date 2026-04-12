@@ -1,5 +1,14 @@
 # Audit Remediation Implementation Plan
 
+> [!WARNING]
+> **Path Migration Notice (Post-Phase 4)**
+>
+> This plan was written on 2026-03-27, before Phase 4 dissolved the `backend/` directory into the unified `src/` tree (completed 2026-04-03). All file paths referencing `backend/src/...` should be read as `src/...`.
+>
+> Example: `backend/src/types/result.ts` → `src/types/result.ts`
+>
+> The `frontend/` paths remain unchanged.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Fix the security gap (JWT placeholder), make channel capability errors honest (501 instead of 500), wire omnichannel context stubs to existing groupService implementations, and stop silent message swallowing in the automation trigger path.

@@ -2,7 +2,21 @@
 
 **Generated on:** 2026-03-07 12:39:17
 **Upstream Repository:** https://github.com/openclaw/openclaw
-**Your Fork Location:** openclaw/ subdirectory in DeXMart project
+
+> [!WARNING]
+> **STALE REPORT — Last refreshed 2026-03-07 (5+ weeks ago)**
+>
+> The upstream watcher automation (`scripts/upstream-watcher.ts`) has not updated this report since March 7.
+> Re-enable the automation or manually regenerate this report.
+>
+> **Known breaking changes since last refresh (v2026.3.2):**
+> 1. Plugin SDK removed `api.registerHttpHandler()` → must use `api.registerHttpRoute({ path, auth, match, handler })` — **verify all DeXMart extensions**
+> 2. Onboarding now defaults `tools.profile` to `messaging` — may affect new user setup flow
+> 3. ACP dispatch now defaults to enabled — may need `acp.dispatch.enabled=false` if DeXMart doesn't use ACP
+
+> [!IMPORTANT]
+> **Foundation Grounding Strategy (Phase 5)**
+> When cherry-picking channel updates from upstream, apply them directly to `extensions/`. The `extensions/` directory is the canonical channel implementation. **DO NOT** apply channel logic to the deprecated `src/services/channels/` parallel system.
 
 ---
 

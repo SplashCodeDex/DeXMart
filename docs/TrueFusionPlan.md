@@ -1,16 +1,25 @@
 # DeXMart: TRUE Fusion Plan
 
-## The Vision (Final, Crystallized)
+## The Master Plan
 
-> **DeXMart is one project.** OpenClaw is the upstream heritage — the foundation it was built on. After fusion, there is no "OpenClaw side" and "DeXMart side" — there is only DeXMart.
+> **DeXMart = OpenClaw, but with B2C multi-tenancy, Stripe billing gates, and Firebase email
+> auth grounded into the foundation — as if OpenClaw was always built with it.** The DeXMart
+> Next.js dashboard completely replaces ControlUI as the sole user-facing interface.
 >
-> **The non-negotiable rules:**
-> - **Zero duplication** — every function exists exactly once. No mirrors, no copies.
-> - **No bridges** — no wrappers, adapters, or shims. Code calls code directly.
-> - **Frontend dominates** — every backend capability is accessible through the DeXMart Next.js dashboard.
-> - **Centralized elevation** — monetization (Stripe), tenant auth (Firebase), cloud persistence (Firestore), and DeXMart-exclusive features apply to the entire project.
->
-> OpenClaw is to DeXMart what the Linux kernel is to Ubuntu: the engine under the hood that users never see and developers rarely think about as a separate thing.
+> There is no "OpenClaw side" and "DeXMart side." There is only **DeXMart**.
+
+### The Non-Negotiable Rules
+
+1. **Zero duplication** — every function exists exactly once. No mirrors, no copies.
+2. **No bridges** — no wrappers, adapters, or shims. Code calls code directly.
+3. **Extensions are canonical** — `extensions/` contains the rich, battle-tested channel plugins (polls, reactions, media, pairing, directory). **Never** duplicate channel logic in `src/services/channels/`.
+4. **Frontend dominates** — the DeXMart Next.js dashboard is THE UI. ControlUI is upstream heritage, not user-facing.
+5. **Centralized elevation** — B2C tenancy, Stripe billing, Firebase auth, and Firestore persistence are injected into OpenClaw's **engine foundation** — not wrapped around it.
+6. **One engine** — OpenClaw's `createChannelManager()` + `PluginRegistry` + `extensions/` is the single channel management system. There is no parallel system.
+
+### The Analogy
+
+OpenClaw is to DeXMart what the Linux kernel is to Ubuntu: the engine under the hood that users never see and developers rarely think about as a separate thing.
 
 ## Upstream Sync: Managed Fork (Invisible to the Product)
 OpenClaw upstream tracked as git remote. Security patches cherry-picked. New features reviewed, adapted, merged manually. This is an implementation detail — no developer needs to know or care about it during normal work.
@@ -77,16 +86,75 @@ OpenClaw upstream tracked as git remote. Security patches cherry-picked. New fea
 - ✅ `src/main.ts` unified: boots Express + watchdog + usage flush scheduler
 - ✅ `MultiTenantApp.shutdown()` drains watchdog + usage tracker on SIGTERM
 - ✅ 202 dead `dexmart-*` stub files deleted
-- ✅ `src/services/channels/ChannelManager.ts` recreated + enhanced with `getAdaptersForUser()`, `shutdownUserAdapters()`
-- ✅ `src/services/channels/registry.ts` recreated — `GenericOpenClawAdapter` bridge gone; `nativeOpenClaw` flag for MSTeams/Matrix/Facebook
-- ✅ `src/services/channels/whatsapp/WhatsappAdapter.ts` — **fusion point**: OpenClaw `createWaSocket()` + Firestore auth (Phase 2 FR-2) + anti-ban queue
 - ✅ **`IngressService` → `runEmbeddedPiAgent()`**: core wiring done. DeXMart inbound → OpenClaw agent runtime. `GeminiAI` fully replaced.
 - ✅ `GlobalContext.unifiedAI` dead type removed
+
+> [!WARNING]
+> ### ⚠️ DEPRECATED — Parallel Channel System (Dead End)
+> The following files were recreated during Phase 4 as a **temporary measure** but represent a
+> **dead-end architecture** — a parallel channel management system that duplicates OpenClaw's
+> native `createChannelManager()` + `extensions/` plugin infrastructure. They are pending
+> removal in Phase 5.
+>
+> | File | Why It's Wrong |
+> |---|---|
+> | `src/services/channels/ChannelManager.ts` | Duplicates `gateway/server-channels.ts` `createChannelManager()` |
+> | `src/services/channels/registry.ts` | Duplicates `src/channels/plugins/index.ts` + `src/plugins/registry.ts` |
+> | `src/services/channels/whatsapp/WhatsappAdapter.ts` | Wraps OpenClaw's native WhatsApp extension instead of grounding B2C into the engine |
+>
+> **DO NOT extend these files.** New channel work belongs in `extensions/` and the native plugin system.
 
 ### Remaining before `backend/` can be deleted:
 1. Staging smoke test — `src/main.ts` boots, channels reconnect, agent processes messages end-to-end
 2. Delete `backend/` directory
 3. Remove `backend` from `pnpm-workspace.yaml`
+
+---
+
+## Phase 5: Foundation Grounding 🔄 IN PROGRESS
+
+> **The core of the Master Plan.** B2C multi-tenancy, Stripe billing gates, and Firebase auth
+> are injected directly into OpenClaw's engine — specifically its `PluginRuntime`,
+> `createChannelManager()`, and `src/web/session.ts` — so every one of the 40+ extensions
+> automatically inherits these capabilities without needing individual adapters.
+
+### The Architectural Correction
+
+Phase 4 accidentally created a **parallel channel management system** alongside OpenClaw's native one:
+
+| What Should Exist (One System) | What Phase 4 Built (Wrong — Two Systems) |
+|---|---|
+| OpenClaw's `createChannelManager()` + plugin registry | ✅ Still there, untouched |
+| ...with `userId` tenant context at the foundation | ❌ Separate `ChannelService` + `ChannelManager` singleton built instead |
+| ...with `extensions/whatsapp/` as canonical WhatsApp | ❌ Separate `WhatsappAdapter.ts` built instead |
+| ...with `extensions/` registry as source of truth | ❌ Separate `registry.ts` built instead |
+
+Phase 5 corrects this by injecting DeXMart's B2C requirements directly into OpenClaw's engine.
+
+### Tasks:
+- [ ] **5.1**: Inject `userId` / `TenantContext` into `PluginRuntime` — so `createChannelManager().startChannel()` knows which tenant it's operating for
+- [ ] **5.2**: Inject Firestore auth into `src/web/session.ts` as the **default** for SaaS mode — not just an opt-in `authStateFactory` parameter
+- [ ] **5.3**: Inject Stripe billing gates into `gateway/server-channels.ts` — so `startChannelInternal()` checks `assertCan('startChannel')` before booting any plugin
+- [ ] **5.4**: Make `ChannelService` orchestrate OpenClaw's native `createChannelManager()` — not reinvent it with a separate `AdapterClass` system
+- [ ] **5.5**: Delete the deprecated parallel system: `WhatsappAdapter.ts`, DeXMart's `ChannelManager.ts`, DeXMart's `registry.ts`
+- [ ] **5.6**: Wire `HybridMemoryAdapter` into `runEmbeddedPiAgent()` via optional `memoryManager` param
+- [ ] **5.7**: Verify all 40+ extensions automatically inherit B2C isolation, Stripe gating, and Firestore persistence
+- [ ] **5.8**: Delete the `backend/` directory, remove `backend` from `pnpm-workspace.yaml`, and update CI/CD scripts — source is fully migrated to `src/` since Phase 4
+- [ ] **5.9**: Complete `tenants/{tenantId}` → `users/{userId}` path migration — update `FirebaseService.SchemaMap`, Firestore security rules, and all service queries to use the canonical `users/` hierarchy (see `DATA_MODEL.md` Section 9)
+- [ ] **5.10**: Consolidate `SystemAuthorityService` (legacy, `src/services/`) into `auth-guard.ts` (Phase 2, `src/billing/`) — both perform plan-gated feature enforcement, only one should exist
+
+---
+
+## Phase 6: ControlUI Replacement 🔲 PLANNED
+
+> DeXMart's Next.js dashboard is **THE** user interface. ControlUI (OpenClaw's built-in
+> web interface at `:18789`) is the upstream heritage UI and is **not user-facing** in DeXMart.
+
+### Tasks:
+- [ ] **6.1**: Map every ControlUI capability to a DeXMart dashboard feature
+- [ ] **6.2**: Ensure the DeXMart dashboard can manage all channel operations (start, stop, QR, pairing, status) through the grounded engine (Phase 5)
+- [ ] **6.3**: Remove the `/api/openclaw-ui` proxy from DeXMart's Express routes
+- [ ] **6.4**: Document ControlUI as "development-only / upstream debugging tool" — not exposed to end users
 
 ---
 
@@ -102,10 +170,10 @@ OpenClaw upstream tracked as git remote. Security patches cherry-picked. New fea
 | Anti-ban | `src/safety/`, `src/services/AntiBanService.ts` | Rate limiting |
 | Content moderation | `src/safety/`, `src/services/ContentModeration.ts` | Safety filters |
 | AI analytics | `src/analytics/`, `src/services/analytics.ts` | Usage tracking, audit |
-| Mastermind stream | `src/services/MastermindStreamService.ts` | Real-time reasoning (Phase 3 pending) |
+| Mastermind stream | `src/services/MastermindStreamService.ts` | Real-time reasoning |
 | Ingress routing | `src/ingress/` | Omnichannel inbound message routing |
 | Agent management | `src/agents-management/`, `src/services/AgentService.ts` | Multi-agent CRUD per user |
-| Dashboard | `frontend/` | Next.js management UI |
+| Dashboard | `frontend/` | Next.js management UI (**replaces ControlUI**) |
 | Automation/Flows | `src/services/FlowEngine.ts`, `src/services/FlowService.ts` | Automation engine |
 | Contact/Group mgmt | `src/services/ContactService.ts`, `src/services/GroupService.ts` | CRM features |
 | Usage tracking | `src/billing/usage-tracker.ts` | Batched Firestore writes (Phase 2) |

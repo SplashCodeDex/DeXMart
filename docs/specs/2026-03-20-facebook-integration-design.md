@@ -1,7 +1,19 @@
 # Facebook Messenger Integration Design (Hybrid Architecture)
 
+> [!CAUTION]
+> **OUTDATED — Pre-Fusion Architecture (2026-03-20)**
+>
+> This spec was written **before** the True Fusion plan (Phase 4) was completed. It references:
+> - `GenericOpenClawAdapter` — **deleted** in Phase 1 restructure
+> - `backend/src/services/channels/` — **deprecated** parallel channel system (scheduled for removal in Phase 5)
+> - `openclaw/src/facebook/` — should now be `extensions/facebook/` (the canonical channel location)
+>
+> **Correct approach (post-Fusion):** Facebook must be implemented as a native OpenClaw **extension plugin** in `extensions/facebook/`, following the same pattern as `extensions/whatsapp/` and `extensions/telegram/`. No adapter wrappers, no `ChannelManager` registration. See `docs/architecture/FUSION_STRATEGY.md` Section 5 and `docs/PROJECT_RULES.md` Rules 3-4.
+>
+> The **business logic** in this spec (Graph API integration, webhook validation, credential storage) is still valid. Only the **architectural wiring** is outdated.
+
 **Date:** 2026-03-20
-**Status:** Approved
+**Status:** ~~Approved~~ → OUTDATED (superseded by True Fusion architecture)
 **Author:** Adema (Gemini CLI)
 
 ## 1. Overview
