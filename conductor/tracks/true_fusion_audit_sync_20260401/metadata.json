@@ -1,8 +1,0 @@
-{
-  "track_id": "true_fusion_audit_sync_20260401",
-  "type": "chore",
-  "status": "new",
-  "created_at": "2026-04-01T18:00:00Z",
-  "updated_at": "2026-04-01T18:00:00Z",
-  "description": "Audit current codebase against 'True Fusion' vision, deduplicate overlapping logic, remove legacy directories (openclaw/, backend/), and synchronize all project documentation to reflect the unified, enterprise-grade platform."
-}

@@ -1,8 +1,0 @@
-{
-  "track_id": "logout_fix_20260310",
-  "type": "bug",
-  "status": "new",
-  "created_at": "2026-03-10T23:15:00Z",
-  "updated_at": "2026-03-10T23:15:00Z",
-  "description": "Fix infinite page reload during logout caused by backend watcher instability and frontend auth hydration loops."
-}

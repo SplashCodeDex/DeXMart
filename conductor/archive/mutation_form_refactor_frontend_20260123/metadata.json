@@ -1,8 +1,0 @@
-{
-  "track_id": "mutation_form_refactor_frontend_20260123",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-01-23T02:43:00Z",
-  "updated_at": "2026-01-23T02:43:00Z",
-  "description": "Migration of all frontend forms to useActionState and Result<T> pattern for React 19 compliance."
-}

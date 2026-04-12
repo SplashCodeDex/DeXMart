@@ -1,35 +1,28 @@
 # DeXMart Product Guidelines
 
-## 1. Tone and Voice
+## The Fusion Principle — One Project
+- Zero duplication: every function exists exactly once
+- No bridges: no wrappers, adapters, or shims — code calls code directly via `@dexmart/*`
+- Extensions are canonical: channel features live in `extensions/`, never duplicated
+- One channel engine: OpenClaw's `createChannelManager()` + `PluginRegistry`
+- Frontend dominates: Next.js dashboard is THE UI; ControlUI is dev-only
 
-- **Professional & Authoritative:** Instill confidence through technical precision and formal language. Communications should reflect the enterprise-grade nature of the platform.
-- **Clarity & Precision:** Use clear, concise, and business-oriented language. Labels, tooltips, and system messages must be unambiguous.
-- **Supportive Resilience:** When errors occur (e.g., bot disconnection), provide actionable solutions and clear guidance rather than just stating a failure.
-- **Transparancy:** Be honest about system status, especially regarding the limitations of the "Free" tier vs. "Premium" capabilities.
-- **Real-time Reasoning Transparency:** Prioritize live, granular monitoring of AI thought processes. Users should see each stage of reasoning (Researching, Auditing, Executing) as it happens, fostering trust through visibility.
+## Code Quality
+- TypeScript strict mode — no `any` without justification
+- ESLint zero-warnings policy (`--max-warnings 0`)
+- Result pattern: `{ success: true; data: T } | { success: false; error: AppError }`
+- Zod validation at every system boundary (Firestore, API, user input)
+- Strict ESM: all relative imports must include `.js` extension
 
-## 2. Visual Identity & Aesthetic
+## Frontend Standards
+- Server Components by default; `'use client'` only at interaction leaves
+- Thin page pattern: `app/**/page.tsx` renders feature components only, no logic
+- No `useEffect` for data fetching — use Server Components or React Query
+- Pixel perfection: Tailwind spacing tokens only, all interactive states (hover/active/focus)
+- No emojis in UI — SVG icons from `lucide-react` only
 
-- **Sleek & Minimalist:** Prioritize high contrast, generous whitespace, and a sophisticated "Dark Mode" (or high-quality light theme) to reduce visual fatigue for power users.
-- **Pixel Perfection:** Every component must adhere to strict spacing tokens (Tailwind v4 tokens). Hover, active, and focus-visible states are mandatory for all interactive elements.
-- **Tactile Depth:** Apply multi-layered drop shadows and subtle background noise to create a premium, high-end feel.
-- **Branding:** Use the iconic WhatsApp green (`#25D366`) sparingly as an accent color for status indicators and primary calls to action, maintaining a clean enterprise look.
-
-## 3. User Experience (UX) Principles
-
-- **Server-First Interaction:** Leverage Next.js 16 Server Components and Actions to ensure the UI is fast and reactive.
-- **Optimistic UI:** Use `useOptimistic` for state mutations to provide immediate feedback to the user while backend processes complete.
-- **Accessibility (A11Y):** Adhere to WCAG 2.1 AA standards. Ensure keyboard navigability and meaningful semantic labels (Radix UI primitives).
-- **Mobile Responsiveness:** The dashboard must be fully functional and aesthetically pleasing on all screen sizes, from desktop to mobile.
-
-## 4. Product Logic & Tiers
-
-- **User-Centric:** All UI and logic is scoped to the individual user (B2C model). Users should feel their environment is personal, private, and secure — like Spotify or CapCut.
-- **Tier-Aware UI:** Feature availability must be clearly communicated via the `UserContext.capabilities`. Provide clear "Upgrade" paths for premium features (e.g., additional channel slots, advanced AI models) without being intrusive.
-- **Initialization Clarity:** The process of linking a WhatsApp Channel (QR Scan/Pairing Code) must be the most polished and guided experience in the app.
-
-## 5. Animation & Motion
-
-- **Purposeful Motion:** Use Framer Motion for GPU-accelerated animations that provide context or feedback (e.g., page transitions, modal entries).
-- **Standardized Durations:** 150ms (micro), 250ms (normal), 400ms (page transitions).
-- **Performance First:** Animate only `transform` and `opacity` to maintain 60fps performance.
+## Testing Strategy
+- TDD mandate: Red → Green → Refactor
+- 80%+ coverage minimum; co-located test files (`*.test.ts` next to source)
+- Mock external I/O (Firebase, Baileys, Stripe, Redis); never mock internal logic
+- Zero-error policy: no console warnings in passing tests

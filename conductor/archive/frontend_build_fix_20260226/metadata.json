@@ -1,8 +1,0 @@
-{
-  "track_id": "frontend_build_fix_20260226",
-  "type": "bug",
-  "status": "new",
-  "created_at": "2026-02-26T01:44:00Z",
-  "updated_at": "2026-02-26T01:44:00Z",
-  "description": "Resolve systemic Frontend build failures (Next.js 16/React 19 useContext/useEffect prerendering errors)."
-}

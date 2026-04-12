@@ -1,8 +1,0 @@
-{
-  "track_id": "cleanup_placeholders_20260121",
-  "type": "chore",
-  "status": "new",
-  "created_at": "2026-01-21T07:31:00Z",
-  "updated_at": "2026-01-21T07:31:00Z",
-  "description": "Codebase-wide placeholder, dummy data, and simulation cleanup to move to live-ready state."
-}

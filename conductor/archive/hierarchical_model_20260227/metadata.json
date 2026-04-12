@@ -1,8 +1,0 @@
-{
-  "track_id": "hierarchical_model_20260227",
-  "type": "feature",
-  "status": "completed",
-  "created_at": "2026-02-27T17:52:00Z",
-  "updated_at": "2026-02-28T01:30:00Z",
-  "description": "Refactor to Hierarchical Agent-Controller Model (Path-Aware)"
-}

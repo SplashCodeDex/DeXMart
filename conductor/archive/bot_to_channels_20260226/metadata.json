@@ -1,8 +1,0 @@
-{
-  "track_id": "bot_to_channels_20260226",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-02-26T04:02:00Z",
-  "updated_at": "2026-02-26T04:02:00Z",
-  "description": "Refactor WhatsApp connectivity to Channels, retire the 'Bot' entity while preserving all its features/logics, and make the 'Agent' handle assignments."
-}

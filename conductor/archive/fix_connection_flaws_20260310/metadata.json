@@ -1,8 +1,0 @@
-{
-  "track_id": "fix_connection_flaws_20260310",
-  "type": "bug_fix",
-  "status": "new",
-  "created_at": "2026-03-10T02:07:00Z",
-  "updated_at": "2026-03-10T02:07:00Z",
-  "description": "Fix critical connection flaws (stale path routing, inaccurate status, reconnection loop, auth cleanup)"
-}

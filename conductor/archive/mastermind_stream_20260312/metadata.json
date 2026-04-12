@@ -1,8 +1,0 @@
-{
-  "track_id": "mastermind_stream_20260312",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-03-12T19:15:00Z",
-  "updated_at": "2026-03-12T19:15:00Z",
-  "description": "Implement a real-time reasoning stream for DeXMart Agents using Socket.io to provide live transparency of AI thought processes, tool invocations, and sub-agent spawning."
-}

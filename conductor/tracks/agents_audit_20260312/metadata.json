@@ -1,8 +1,0 @@
-{
-  "track_id": "agents_audit_20260312",
-  "type": "audit_and_enhancement",
-  "status": "new",
-  "created_at": "2026-03-12T05:45:00Z",
-  "updated_at": "2026-03-12T05:45:00Z",
-  "description": "i want us to go full audit on the Agents page. our mission is to first follow @.gemini/GEMINI.md , the investigate placeholders, dummies, fixMe, simulations, hardcodings. we then start a new track to discuss about how we can make it much beter, enhacanced, powerful and robost. The rules are: NO ASSUMPTIONS, NO GUESSING, NO HALLUCINATION. FACTS BASED, INVESTIGATION TO THE CORE, CONSISTENCY. PRO DIAGNOSTIC AND PRO TROUBLESHOOTER."
-}

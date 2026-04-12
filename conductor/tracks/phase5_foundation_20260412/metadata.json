@@ -1,0 +1,8 @@
+{
+  "track_id": "phase5_foundation_20260412",
+  "type": "feature",
+  "status": "in_progress",
+  "created_at": "2026-04-12T00:00:00Z",
+  "updated_at": "2026-04-12T00:00:00Z",
+  "description": "Phase 5: Foundation Grounding — inject B2C multi-tenancy, Stripe billing gates, and Firebase auth directly into OpenClaw's engine (PluginRuntime, createChannelManager, session.ts). Delete the deprecated parallel channel system. Wire HybridMemoryAdapter. Migrate data paths from tenants/ to users/. Complete backend/ removal."
+}

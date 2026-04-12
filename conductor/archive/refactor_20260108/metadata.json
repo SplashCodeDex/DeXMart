@@ -1,8 +1,0 @@
-{
-  "track_id": "refactor_20260108",
-  "type": "chore",
-  "status": "new",
-  "created_at": "2026-01-08T00:00:00Z",
-  "updated_at": "2026-01-08T00:00:00Z",
-  "description": "Refactor Codebase to Strict TypeScript and Service-Oriented Architecture"
-}

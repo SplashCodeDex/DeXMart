@@ -1,8 +1,0 @@
-{
-  "track_id": "auth_robustness_20260219",
-  "type": "bug",
-  "status": "new",
-  "created_at": "2026-02-19T03:20:00Z",
-  "updated_at": "2026-02-19T03:20:00Z",
-  "description": "Fix auth form state preservation, checkbox inconsistencies, and signUp reference errors."
-}

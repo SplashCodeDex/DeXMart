@@ -1,8 +1,0 @@
-{
-  "track_id": "openclaw_sync_20260228",
-  "type": "modernization",
-  "status": "new",
-  "created_at": "2026-02-28T19:55:00Z",
-  "updated_at": "2026-02-28T19:55:00Z",
-  "description": "Upstream Engine Synchronization - Update OpenClaw to 2026.2.24"
-}
