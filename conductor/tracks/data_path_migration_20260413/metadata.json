@@ -1,0 +1,8 @@
+{
+  "track_id": "data_path_migration_20260413",
+  "type": "bug",
+  "status": "new",
+  "created_at": "2026-04-13T21:30:37Z",
+  "updated_at": "2026-04-13T21:30:37Z",
+  "description": "Fix Task 5.9 partial migration — data isolation bug: old FirebaseService.ts still uses tenants/{tenantId} paths, ~22 service files bypass correct persistence layer"
+}

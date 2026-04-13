@@ -1,0 +1,8 @@
+{
+  "track_id": "test_health_20260413",
+  "type": "chore",
+  "status": "new",
+  "created_at": "2026-04-13T21:30:37Z",
+  "updated_at": "2026-04-13T21:30:37Z",
+  "description": "Test Suite Health — Triage & fix 199 pre-existing test failures across 131 test files (Baileys mocks, Telegram timeouts, stale DeXMart tests, OpenClaw upstream internals)"
+}
