@@ -1,0 +1,115 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Global helpers ────────────────────────────────────────────────────────
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // ── Legacy tenants root (read-only for migration period) ─────────────────
+    // TODO: Remove after migrate-tenants-to-users.ts script has run in prod.
+    match /tenants/{tenantId} {
+      allow read: if isAuthenticated() && request.auth.token.tenantId == tenantId;
+      allow write: if false; // Block all writes to legacy path
+    }
+
+    // ── B2C user-scoped data ──────────────────────────────────────────────────
+    // All per-user data lives under users/{userId}/...
+    // Only the authenticated user owning that userId may read or write.
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+
+      match /channels/{channelId} {
+        allow read, write: if isOwner(userId);
+
+        match /auth/{authId} {
+          allow read, write: if isOwner(userId);
+        }
+      }
+
+      match /agents/{agentId} {
+        allow read, write: if isOwner(userId);
+
+        match /channels/{channelId} {
+          allow read, write: if isOwner(userId);
+
+          match /auth/{authId} {
+            allow read, write: if isOwner(userId);
+          }
+        }
+      }
+
+      match /users/{memberId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /groups/{groupId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /contacts/{contactId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /campaigns/{campaignId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /webhooks/{webhookId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /templates/{templateId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /analytics/{analyticsId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /learning/{learningId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /subscriptions/{subscriptionId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /moderation/{moderationId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /violations/{violationId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /audiences/{audienceId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /slots/{slotId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /members/{memberId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Catch-all for any other subcollections under users/{userId}
+      match /{subcollection=**} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    // ── Public tenants lookup (subdomain → tenantId resolution) ──────────────
+    match /tenants/{tenantId} {
+      allow read: if true; // Public for subdomain lookup
+    }
+  }
+}

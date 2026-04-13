@@ -70,11 +70,11 @@
 - [x] Task 5.8.5: Run `pnpm install` and `pnpm build` — verify success with no backend workspace
 
 ### Task 5.9 — Complete tenants/ → users/ Path Migration
-- [ ] Task 5.9.1: Write failing tests — service query tests assert all Firestore paths use `users/{userId}/...` pattern
-- [ ] Task 5.9.2: Update `FirebaseService.SchemaMap`: replace all `tenants/{tenantId}/...` keys with `users/{userId}/...`
-- [ ] Task 5.9.3: Update Firestore security rules: `tenants/{tenantId}` → `users/{userId}`, enforce `request.auth.uid == userId`
-- [ ] Task 5.9.4: Write migration script `scripts/migrate-tenants-to-users.ts` for existing Firestore data
-- [ ] Task 5.9.5: Run tests (green) + coverage check
+- [x] Task 5.9.1: Write failing tests — service query tests assert all Firestore paths use `users/{userId}/...` pattern
+- [x] Task 5.9.2: Update `FirebaseService.SchemaMap`: replace all `tenants/{tenantId}/...` keys with `users/{userId}/...`
+- [x] Task 5.9.3: Update Firestore security rules: `tenants/{tenantId}` → `users/{userId}`, enforce `request.auth.uid == userId`
+- [x] Task 5.9.4: Write migration script `scripts/migrate-tenants-to-users.ts` for existing Firestore data
+- [x] Task 5.9.5: Run tests (green) + coverage check
 
 ### Task 5.10 — Consolidate SystemAuthorityService into auth-guard.ts
 - [ ] Task 5.10.1: Audit all `SystemAuthorityService` call sites across `src/`

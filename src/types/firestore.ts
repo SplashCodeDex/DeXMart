@@ -163,23 +163,23 @@ export interface SubscriptionDocument {
  */
 export interface FirestoreSchema {
   tenants: TenantDocument;
-  'tenants/{tenantId}/users': TenantUserDocument;
-  'tenants/{tenantId}/channels': ChannelDocument;
-  'tenants/{tenantId}/agents': AgentDocument;
-  'tenants/{tenantId}/agents/{agentId}/channels': ChannelDocument;
-  'tenants/{tenantId}/agents/{agentId}/channels/{channelId}/auth': { value: any };
-  'tenants/{tenantId}/slots': ChannelInstanceDocument;
-  'tenants/{tenantId}/members': ChannelMemberDocument;
-  'tenants/{tenantId}/groups': ChannelGroupDocument;
-  'tenants/{tenantId}/subscriptions': SubscriptionDocument;
-  'tenants/{tenantId}/moderation': ModerationItem;
-  'tenants/{tenantId}/violations': Violation;
-  'tenants/{tenantId}/campaigns': Campaign;
-  'tenants/{tenantId}/webhooks': Webhook;
-  'tenants/{tenantId}/contacts': Contact;
-  'tenants/{tenantId}/audiences': Audience;
-  'tenants/{tenantId}/templates': MessageTemplate;
-  'tenants/{tenantId}/channels/{channelId}/auth': { value: any };
-  'tenants/{tenantId}/learning': LearningData;
-  'tenants/{tenantId}/analytics': AnalyticsData;
+  'users/{userId}/users': TenantUserDocument;
+  'users/{userId}/channels': ChannelDocument;
+  'users/{userId}/agents': AgentDocument;
+  'users/{userId}/agents/{agentId}/channels': ChannelDocument;
+  'users/{userId}/agents/{agentId}/channels/{channelId}/auth': { value: any };
+  'users/{userId}/slots': ChannelInstanceDocument;
+  'users/{userId}/members': ChannelMemberDocument;
+  'users/{userId}/groups': ChannelGroupDocument;
+  'users/{userId}/subscriptions': SubscriptionDocument;
+  'users/{userId}/moderation': ModerationItem;
+  'users/{userId}/violations': Violation;
+  'users/{userId}/campaigns': Campaign;
+  'users/{userId}/webhooks': Webhook;
+  'users/{userId}/contacts': Contact;
+  'users/{userId}/audiences': Audience;
+  'users/{userId}/templates': MessageTemplate;
+  'users/{userId}/channels/{channelId}/auth': { value: any };
+  'users/{userId}/learning': LearningData;
+  'users/{userId}/analytics': AnalyticsData;
 }

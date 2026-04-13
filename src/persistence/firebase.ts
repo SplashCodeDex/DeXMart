@@ -26,25 +26,25 @@ type CollectionKey = keyof FirestoreSchema;
 
 const SchemaMap: Record<CollectionKey, z.ZodSchema<any>> = {
   'tenants': TenantSchema as any,
-  'tenants/{tenantId}/users': TenantUserSchema as any,
-  'tenants/{tenantId}/channels': ChannelSchema as any,
-  'tenants/{tenantId}/agents': AgentSchema as any,
-  'tenants/{tenantId}/agents/{agentId}/channels': ChannelSchema as any,
-  'tenants/{tenantId}/slots': ChannelSchema as any,
-  'tenants/{tenantId}/members': z.any(),
-  'tenants/{tenantId}/groups': z.any(),
-  'tenants/{tenantId}/subscriptions': SubscriptionSchema as any,
-  'tenants/{tenantId}/moderation': ModerationItemSchema as any,
-  'tenants/{tenantId}/violations': ViolationSchema as any,
-  'tenants/{tenantId}/campaigns': CampaignSchema as any,
-  'tenants/{tenantId}/webhooks': WebhookSchema as any,
-  'tenants/{tenantId}/contacts': ContactSchema as any,
-  'tenants/{tenantId}/audiences': AudienceSchema as any,
-  'tenants/{tenantId}/templates': TemplateSchema as any,
-  'tenants/{tenantId}/channels/{channelId}/auth': AuthSchema as any,
-  'tenants/{tenantId}/agents/{agentId}/channels/{channelId}/auth': AuthSchema as any,
-  'tenants/{tenantId}/learning': LearningSchema as any,
-  'tenants/{tenantId}/analytics': AnalyticsSchema as any,
+  'users/{userId}/users': TenantUserSchema as any,
+  'users/{userId}/channels': ChannelSchema as any,
+  'users/{userId}/agents': AgentSchema as any,
+  'users/{userId}/agents/{agentId}/channels': ChannelSchema as any,
+  'users/{userId}/slots': ChannelSchema as any,
+  'users/{userId}/members': z.any(),
+  'users/{userId}/groups': z.any(),
+  'users/{userId}/subscriptions': SubscriptionSchema as any,
+  'users/{userId}/moderation': ModerationItemSchema as any,
+  'users/{userId}/violations': ViolationSchema as any,
+  'users/{userId}/campaigns': CampaignSchema as any,
+  'users/{userId}/webhooks': WebhookSchema as any,
+  'users/{userId}/contacts': ContactSchema as any,
+  'users/{userId}/audiences': AudienceSchema as any,
+  'users/{userId}/templates': TemplateSchema as any,
+  'users/{userId}/channels/{channelId}/auth': AuthSchema as any,
+  'users/{userId}/agents/{agentId}/channels/{channelId}/auth': AuthSchema as any,
+  'users/{userId}/learning': LearningSchema as any,
+  'users/{userId}/analytics': AnalyticsSchema as any,
 };
 
 export class FirebaseService {
@@ -123,31 +123,31 @@ export class FirebaseService {
 
         // Pattern: agents/{agentId}/channels/{channelId}/auth
         if (parts[0] === 'agents' && parts[2] === 'channels' && parts[4] === 'auth') {
-          path = `tenants/${tenantId}/agents/${parts[1]}/channels/${parts[3]}/auth`;
-          schemaKey = `tenants/{tenantId}/agents/{agentId}/channels/{channelId}/auth` as CollectionKey;
+          path = `users/${tenantId}/agents/${parts[1]}/channels/${parts[3]}/auth`;
+          schemaKey = `users/{userId}/agents/{agentId}/channels/{channelId}/auth` as CollectionKey;
         }
         // Pattern: agents/{agentId}/channels
         else if (parts[0] === 'agents' && parts[2] === 'channels') {
-          path = `tenants/${tenantId}/agents/${parts[1]}/channels`;
-          schemaKey = `tenants/{tenantId}/agents/{agentId}/channels` as CollectionKey;
+          path = `users/${tenantId}/agents/${parts[1]}/channels`;
+          schemaKey = `users/{userId}/agents/{agentId}/channels` as CollectionKey;
         }
         // Pattern: channels/{id}/auth (Legacy/Top-level)
         else if (parts[0] === 'channels' && parts[2] === 'auth') {
           const type = parts[0];
-          path = `tenants/${tenantId}/${type}/${parts[1]}/auth`;
-          schemaKey = `tenants/{tenantId}/${type}/{channelId}/auth` as CollectionKey;
+          path = `users/${tenantId}/${type}/${parts[1]}/auth`;
+          schemaKey = `users/{userId}/${type}/{channelId}/auth` as CollectionKey;
         } else if (parts[0] === 'slots') {
-          path = `tenants/${tenantId}/slots`;
-          schemaKey = `tenants/{tenantId}/slots` as CollectionKey;
+          path = `users/${tenantId}/slots`;
+          schemaKey = `users/{userId}/slots` as CollectionKey;
         } else {
           this.validatePath(collection);
-          path = `tenants/${tenantId}/${collection}`;
-          schemaKey = `tenants/{tenantId}/${collection}` as CollectionKey;
+          path = `users/${tenantId}/${collection}`;
+          schemaKey = `users/{userId}/${collection}` as CollectionKey;
         }
       } else {
         this.validatePath(collection);
-        path = `tenants/${tenantId}/${collection}`;
-        schemaKey = `tenants/{tenantId}/${collection}` as CollectionKey;
+        path = `users/${tenantId}/${collection}`;
+        schemaKey = `users/{userId}/${collection}` as CollectionKey;
       }
     } else {
       this.validatePath(collection);
