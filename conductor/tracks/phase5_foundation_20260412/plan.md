@@ -77,9 +77,9 @@
 - [x] Task 5.9.5: Run tests (green) + coverage check
 
 ### Task 5.10 — Consolidate SystemAuthorityService into auth-guard.ts
-- [ ] Task 5.10.1: Audit all `SystemAuthorityService` call sites across `src/`
-- [ ] Task 5.10.2: Write tests in `src/billing/auth-guard.test.ts` covering all `SystemAuthorityService` scenarios not already covered
-- [ ] Task 5.10.3: Update all call sites to use `assertCan()` / `filterModelsForUser()` from `src/billing/auth-guard.ts`
-- [ ] Task 5.10.4: Delete `src/services/SystemAuthorityService.ts` (or equivalent path)
-- [ ] Task 5.10.5: Run full test suite (green) + coverage check
+- [x] Task 5.10.1: Audit all `SystemAuthorityService` call sites across `src/` [audit_done]
+- [x] Task 5.10.2: Write tests in `src/billing/auth-guard.test.ts` covering all `SystemAuthorityService` scenarios not already covered [tests_pass]
+- [x] Task 5.10.3: Update all call sites to use `assertCan()` / `filterModelsForUser()` from `src/billing/auth-guard.ts` [sites_updated]
+- [x] Task 5.10.4: Delete `src/services/SystemAuthorityService.ts` (or equivalent path) [file_deleted]
+- [x] Task 5.10.5: Run full test suite (green) + coverage check [5b3a69a]
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Repository Cleanup' (Protocol in workflow.md)
