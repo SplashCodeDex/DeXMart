@@ -46,11 +46,11 @@
 ## Phase 3: Memory & Verification
 
 ### Task 5.6 — Wire HybridMemoryAdapter into runEmbeddedPiAgent()
-- [ ] Task 5.6.1: Write failing tests — agent memory integration test: `runEmbeddedPiAgent()` with `memoryManager` option stores and recalls a fact across two invocations
-- [ ] Task 5.6.2: Add optional `memoryManager?: MemorySearchManager` param to `runEmbeddedPiAgent()` signature
-- [ ] Task 5.6.3: Wire `memoryManager` into agent tool registration (via `src/agents/tools/memory-tool.ts`)
-- [ ] Task 5.6.4: Update `IngressService` to instantiate `HybridMemoryAdapter` per user and pass it to `runEmbeddedPiAgent()`
-- [ ] Task 5.6.5: Run tests (green) + coverage check
+- [x] Task 5.6.1: Write failing tests — agent memory integration test: `runEmbeddedPiAgent()` with `memoryManager` option stores and recalls a fact across two invocations
+- [x] Task 5.6.2: Add optional `memoryManager?: MemorySearchManager` param to `runEmbeddedPiAgent()` signature
+- [x] Task 5.6.3: Wire `memoryManager` into agent tool registration (via `src/agents/tools/memory-tool.ts`)
+- [x] Task 5.6.4: Update `IngressService` to instantiate `HybridMemoryAdapter` per user and pass it to `runEmbeddedPiAgent()`
+- [x] Task 5.6.5: Run tests (green) + coverage check [efc485c]
 
 ### Task 5.7 — Verify All 40+ Extensions Inherit B2C Capabilities
 - [ ] Task 5.7.1: Write multi-tenant isolation integration tests: start WhatsApp channel for two different `userId`s, assert sessions are isolated in Firestore
