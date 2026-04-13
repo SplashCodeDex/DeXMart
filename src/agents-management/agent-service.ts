@@ -3,7 +3,10 @@ import { Agent, AgentSchema, Result } from '../types/contracts.js';
 import { Timestamp } from 'firebase-admin/firestore';
 import logger from '@/utils/logger.js';
 import channelService from '../services/ChannelService.js';
-import { systemAuthorityService } from '../services/SystemAuthorityService.js';
+import { userContextResolver } from '../tenancy/resolver-instance.js';
+import { createAuthGuard } from '../tenancy/tenant-context.js';
+import { assertCan } from '../billing/auth-guard.js';
+import { trackUsage } from '../billing/usage-tracker.js';
 
 /**
  * Agent Service
@@ -90,9 +93,13 @@ export class AgentService {
   async createAgent(tenantId: string, agentData: Partial<Agent>): Promise<Result<Agent>> {
     try {
       // 1. Check authority for agent creation
-      const auth = await systemAuthorityService.checkAuthority(tenantId, 'create_agent');
-      if (!auth.allowed) {
-        return { success: false, error: new Error(auth.error || 'Agent creation limit reached') };
+      const ctx = await userContextResolver.fromUserId(tenantId);
+      const guard = createAuthGuard(ctx);
+
+      try {
+        assertCan(guard.canCreateAgent(), 'agent', ctx);
+      } catch (err: any) {
+        return { success: false, error: new Error(err.message || 'Agent creation limit reached') };
       }
 
       const agentId = agentData.id || `agent_${Date.now()}`;
@@ -110,7 +117,7 @@ export class AgentService {
       await firebaseService.setDoc<'tenants/{tenantId}/agents'>('agents', agentId, agent as any, tenantId);
 
       // 2. Record usage
-      await systemAuthorityService.recordUsage(tenantId, 'agents', 1);
+      trackUsage(tenantId, 'agents', 1);
 
       return { success: true, data: agent };
     } catch (error: any) {
@@ -141,7 +148,7 @@ export class AgentService {
       await firebaseService.deleteDoc<'tenants/{tenantId}/agents'>('agents', agentId, tenantId);
 
       // 4. Record usage decrement
-      await systemAuthorityService.recordUsage(tenantId, 'agents', -1);
+      trackUsage(tenantId, 'agents', -1);
 
       logger.info(`Agent ${agentId} deleted for tenant ${tenantId}`);
       return { success: true, data: undefined };

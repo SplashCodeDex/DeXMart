@@ -1,7 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ChannelService } from './ChannelService.js';
 import { firebaseService } from '@/services/FirebaseService.js';
-import { systemAuthorityService } from './SystemAuthorityService.js';
+import { userContextResolver } from '../tenancy/resolver-instance.js';
+import { createAuthGuard } from '../tenancy/tenant-context.js';
+import { assertCan, systemAuthorityService } from '../billing/auth-guard.js';
+import { trackUsage } from '../billing/usage-tracker.js';
 import { createChannelManager } from '../gateway/server-channels.js';
 import type { ChannelManager } from '../gateway/server-channels.js';
 
@@ -16,12 +19,27 @@ vi.mock('@/services/FirebaseService.js', () => ({
   }
 }));
 
-vi.mock('./SystemAuthorityService.js', () => ({
+vi.mock('../billing/auth-guard.js', () => ({
+  assertCan: vi.fn(),
   systemAuthorityService: {
     checkAuthority: vi.fn(),
     recordUsage: vi.fn(),
     getCapabilities: vi.fn()
   }
+}));
+
+vi.mock('../billing/usage-tracker.js', () => ({
+  trackUsage: vi.fn()
+}));
+
+vi.mock('../tenancy/resolver-instance.js', () => ({
+  userContextResolver: {
+    fromUserId: vi.fn()
+  }
+}));
+
+vi.mock('../tenancy/tenant-context.js', () => ({
+  createAuthGuard: vi.fn()
 }));
 
 vi.mock('../gateway/server-channels.js', () => ({
@@ -43,7 +61,9 @@ describe('ChannelService', () => {
 
   describe('createChannel', () => {
     it('should create a new channel under system_default by default', async () => {
-      vi.mocked(systemAuthorityService.checkAuthority).mockResolvedValue({ allowed: true });
+      vi.mocked(userContextResolver.fromUserId).mockResolvedValue({ userId } as any);
+      vi.mocked(createAuthGuard).mockReturnValue({ canStartChannel: () => true } as any);
+      vi.mocked(assertCan).mockReturnValue(undefined);
       vi.mocked(firebaseService.setDoc).mockResolvedValue(undefined);
 
       const result = await service.createChannel(tenantId, { name: 'Test Channel', type: 'whatsapp' }, 'system_default', userId);
@@ -53,12 +73,15 @@ describe('ChannelService', () => {
         expect(result.data.name).toBe('Test Channel');
         expect(result.data.assignedAgentId).toBe('system_default');
         expect(firebaseService.setDoc).toHaveBeenCalledWith(systemPath, result.data.id, expect.any(Object), tenantId);
-        expect(systemAuthorityService.recordUsage).toHaveBeenCalledWith(userId, 'channels', 1);
+        expect(trackUsage).toHaveBeenCalledWith(userId, 'channels', 1);
       }
     });
 
     it('should create a new channel under a specific agent', async () => {
-      vi.mocked(systemAuthorityService.checkAuthority).mockResolvedValue({ allowed: true });
+      vi.mocked(userContextResolver.fromUserId).mockResolvedValue({ userId: tenantId } as any);
+      vi.mocked(createAuthGuard).mockReturnValue({ canStartChannel: () => true } as any);
+      vi.mocked(assertCan).mockReturnValue(undefined);
+      
       const agentId = 'custom-agent';
       const result = await service.createChannel(tenantId, { name: 'Agent Bot' }, agentId);
 
@@ -102,7 +125,7 @@ describe('ChannelService', () => {
 
       expect(result.success).toBe(true);
       expect(firebaseService.deleteDoc).toHaveBeenCalledWith(systemPath, 'chan-1', tenantId);
-      expect(systemAuthorityService.recordUsage).toHaveBeenCalledWith(userId, 'channels', -1);
+      expect(trackUsage).toHaveBeenCalledWith(userId, 'channels', -1);
     });
   });
 });

@@ -9,7 +9,7 @@
  */
 import { describe, it, expect, vi } from 'vitest';
 import { createAuthGuard, PLAN_CAPABILITIES, type UserContext } from '../tenancy/tenant-context.js';
-import { filterModelsForUser, assertCanWithGrace, type GraceNotifier } from './auth-guard.js';
+import { filterModelsForUser, assertCanWithGrace, getCapabilities, type GraceNotifier, type PlanTier } from './auth-guard.js';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function makeCtx(overrides: Partial<UserContext> = {}): UserContext {
@@ -291,5 +291,41 @@ describe('assertCanWithGrace', () => {
         expect(err.code).toBe('PLAN_LIMIT_AGENT');
       }
     });
+  });
+});
+
+// ── Task 5.10.2 — getCapabilities (SystemAuthorityService scenarios) ──────────
+// These tests fail RED until getCapabilities is exported from auth-guard.ts (Task 5.10.3).
+
+describe('getCapabilities (consolidated from SystemAuthorityService)', () => {
+  it('returns starter capabilities for the starter tier', () => {
+    const caps = getCapabilities('starter' as PlanTier);
+    expect(caps.maxChannelSlots).toBe(1);
+    expect(caps.maxAgents).toBe(1);
+    expect(caps.maxMessages).toBe(1000);
+    expect(caps.models).toContain('gemini-1.5-flash');
+    expect(caps.features.marketing).toBe(false);
+  });
+
+  it('returns pro capabilities for the pro tier', () => {
+    const caps = getCapabilities('pro' as PlanTier);
+    expect(caps.maxChannelSlots).toBe(3);
+    expect(caps.maxAgents).toBe(5);
+    expect(caps.maxMessages).toBe(10000);
+    expect(caps.features.marketing).toBe(true);
+    expect(caps.models).toContain('gemini-1.5-pro');
+  });
+
+  it('returns enterprise capabilities for the enterprise tier', () => {
+    const caps = getCapabilities('enterprise' as PlanTier);
+    expect(caps.maxChannelSlots).toBe(100);
+    expect(caps.maxAgents).toBe(100);
+    expect(caps.maxMessages).toBe(10000000);
+    expect(caps.features.aiMessageSpinning).toBe(true);
+  });
+
+  it('returns starter capabilities for an unknown tier (safe default)', () => {
+    const caps = getCapabilities('unknown-tier' as PlanTier);
+    expect(caps).toEqual(getCapabilities('starter' as PlanTier));
   });
 });

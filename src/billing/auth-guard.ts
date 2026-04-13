@@ -17,6 +17,66 @@
  */
 
 import type { UserContext } from '../tenancy/tenant-context.js';
+import logger from '../utils/logger.js';
+import { db } from '../lib/firebase.js';
+import { Timestamp, FieldValue } from 'firebase-admin/firestore';
+
+// ── Capability matrix (consolidated from SystemAuthorityService) ──────────────
+
+export type PlanTier = 'starter' | 'pro' | 'enterprise';
+
+export interface Capabilities {
+  maxMessages: number;
+  maxAgents: number;
+  maxChannelSlots: number;
+  minCronIntervalMs: number;
+  allowedSkills: string[];
+  features: {
+    marketing: boolean;
+    backups: boolean;
+    aiReasoning: boolean;
+    aiMessageSpinning: boolean;
+  };
+  models: string[];
+}
+
+const CAPABILITY_MATRIX: Record<PlanTier, Capabilities> = {
+  starter: {
+    maxMessages: 1000,
+    maxAgents: 1,
+    maxChannelSlots: 1,
+    minCronIntervalMs: 60 * 60 * 1000,
+    allowedSkills: ['basic_reply', 'summarize', 'translate'],
+    features: { marketing: false, backups: false, aiReasoning: true, aiMessageSpinning: false },
+    models: ['gemini-1.5-flash'],
+  },
+  pro: {
+    maxMessages: 10000,
+    maxAgents: 5,
+    maxChannelSlots: 3,
+    minCronIntervalMs: 15 * 60 * 1000,
+    allowedSkills: ['basic_reply', 'summarize', 'translate', 'web_search', 'file_analysis', 'image_generation'],
+    features: { marketing: true, backups: true, aiReasoning: true, aiMessageSpinning: false },
+    models: ['gemini-1.5-flash', 'gemini-1.5-pro'],
+  },
+  enterprise: {
+    maxMessages: 10000000,
+    maxAgents: 100,
+    maxChannelSlots: 100,
+    minCronIntervalMs: 1 * 60 * 1000,
+    allowedSkills: ['basic_reply', 'summarize', 'translate', 'web_search', 'file_analysis', 'image_generation', 'custom_scripting', 'database_query'],
+    features: { marketing: true, backups: true, aiReasoning: true, aiMessageSpinning: true },
+    models: ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-2.0-flash-exp'],
+  },
+};
+
+/**
+ * Returns the capability set for a billing tier.
+ * Falls back to `starter` for unrecognised tiers (safe default).
+ */
+export function getCapabilities(tier: PlanTier): Capabilities {
+  return CAPABILITY_MATRIX[tier] ?? CAPABILITY_MATRIX.starter;
+}
 
 /** Minimal interface for the socket notifier dependency — avoids hard-coupling to SocketService. */
 interface BillingSocketEmitter {
@@ -171,3 +231,144 @@ export function assertCanWithGrace(
     notify(ctx.userId, capability, Math.round(usedPercent * 100) / 100);
   }
 }
+
+// ── SystemAuthorityService (Deprecated compatibility layer) ──────────────────
+// This class is preserved to maintain backward compatibility with legacy
+// call sites while they are being migrated to pure auth-guard functions.
+
+/**
+ * @deprecated Use pure functions from auth-guard.ts and trackUsage from usage-tracker.ts instead.
+ */
+export class SystemAuthorityService {
+  private static instance: SystemAuthorityService;
+
+  private constructor() {}
+
+  public static getInstance(): SystemAuthorityService {
+    if (!SystemAuthorityService.instance) {
+      SystemAuthorityService.instance = new SystemAuthorityService();
+    }
+    return SystemAuthorityService.instance;
+  }
+
+  public getCapabilities(tier: PlanTier): Capabilities {
+    return getCapabilities(tier);
+  }
+
+  public isSkillAllowed(tier: PlanTier, skillId: string): boolean {
+    return getCapabilities(tier).allowedSkills.includes(skillId);
+  }
+
+  public async checkAuthority(
+    userId: string,
+    action: 'send_message' | 'create_agent' | 'add_channel',
+  ): Promise<{ allowed: boolean; error?: string }> {
+    try {
+      const userRef = db.doc(`users/${userId}`);
+      const doc = await userRef.get();
+
+      if (!doc.exists) {
+        return { allowed: false, error: 'User not found' };
+      }
+
+      const data = doc.data()!;
+      const tier = (data.plan || 'starter') as PlanTier;
+      const caps = this.getCapabilities(tier);
+
+      switch (action) {
+        case 'send_message': {
+          const currentUsage = data.usage?.messagesThisPeriod || data.stats?.totalMessagesSent || 0;
+          if (caps.maxMessages !== -1 && currentUsage >= caps.maxMessages) {
+            return { allowed: false, error: 'Monthly message limit reached' };
+          }
+          break;
+        }
+        case 'create_agent': {
+          const counterRef = db.doc(`users/${userId}/usage/counters`);
+          const counterSnap = await counterRef.get();
+          const currentCount = counterSnap.exists ? (counterSnap.data()?.agentCount || 0) : 0;
+
+          if (caps.maxAgents !== -1 && currentCount >= caps.maxAgents) {
+            return { allowed: false, error: `Agent limit reached for ${tier} plan.` };
+          }
+          break;
+        }
+        case 'add_channel': {
+          const currentCount = data.usage?.activeChannels || data.stats?.activeChannels || 0;
+          if (caps.maxChannelSlots !== -1 && currentCount >= caps.maxChannelSlots) {
+            return { allowed: false, error: `Channel slot limit reached for ${tier} plan.` };
+          }
+          break;
+        }
+      }
+
+      return { allowed: true };
+    } catch (error: any) {
+      logger.error(`SystemAuthorityService.checkAuthority error for ${userId}:`, error);
+      return { allowed: true };
+    }
+  }
+
+  public async recordUsage(
+    userId: string,
+    metric: 'messages' | 'agents' | 'channels',
+    amount: number = 1,
+  ): Promise<void> {
+    const userRef = db.doc(`users/${userId}`);
+    const batch = db.batch();
+
+    try {
+      if (metric === 'messages') {
+        const today = new Date().toISOString().split('T')[0];
+        const analyticsRef = db.doc(`users/${userId}/analytics/${today}`);
+
+        batch.set(
+          analyticsRef,
+          {
+            date: today,
+            sent: FieldValue.increment(amount),
+            updatedAt: Timestamp.now(),
+          },
+          { merge: true },
+        );
+
+        batch.set(
+          userRef,
+          {
+            'usage.messagesThisPeriod': FieldValue.increment(amount),
+            updatedAt: Timestamp.now(),
+          },
+          { merge: true },
+        );
+      } else if (metric === 'agents') {
+        const counterRef = db.doc(`users/${userId}/usage/counters`);
+        batch.set(
+          counterRef,
+          {
+            agentCount: FieldValue.increment(amount),
+            updatedAt: Timestamp.now(),
+          },
+          { merge: true },
+        );
+      } else if (metric === 'channels') {
+        batch.set(
+          userRef,
+          {
+            'usage.activeChannels': FieldValue.increment(amount),
+            updatedAt: Timestamp.now(),
+          },
+          { merge: true },
+        );
+      }
+
+      await batch.commit();
+      logger.debug(`[Authority] Recorded ${amount} ${metric} usage for user ${userId}`);
+    } catch (error) {
+      logger.error(`[Authority] Failed to record ${metric} usage for user ${userId}:`, error);
+    }
+  }
+}
+
+export const systemAuthorityService = SystemAuthorityService.getInstance();
+
+

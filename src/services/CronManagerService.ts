@@ -1,5 +1,5 @@
 import logger from '@/utils/logger.js';
-import { systemAuthorityService, PlanTier } from './SystemAuthorityService.js';
+import { getCapabilities, PlanTier } from '../billing/auth-guard.js';
 import type { CronJobCreate } from '../cron/types.js';
 import type { CronServiceState } from '../cron/service/state.js';
 import * as cronOps from '../cron/service/ops.js';
@@ -14,7 +14,7 @@ export interface FrequencyValidationResult {
  *
  * Responsibilities:
  *   1. Policy: validates that the requested schedule interval is allowed
- *      for the user's billing tier (via SystemAuthorityService)
+ *      for the user's billing tier (via auth-guard capabilities)
  *   2. Execution: delegates job CRUD to OpenClaw's cron engine (src/cron/service/ops.ts)
  *
  * The OpenClaw cron engine (ops.ts) manages job storage, locking, state
@@ -47,7 +47,7 @@ export class CronManagerService {
      * @param intervalMs - Requested interval in milliseconds
      */
     public validateFrequency(tier: PlanTier, intervalMs: number): FrequencyValidationResult {
-        const caps = systemAuthorityService.getCapabilities(tier);
+        const caps = getCapabilities(tier);
         const minInterval = caps.minCronIntervalMs;
 
         if (intervalMs < minInterval) {

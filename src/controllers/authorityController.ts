@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { systemAuthorityService } from '../services/SystemAuthorityService.js';
+import { userContextResolver } from '../tenancy/resolver-instance.js';
 import logger from '../utils/logger.js';
 
 /**
@@ -19,22 +19,15 @@ export class AuthorityController {
                 return res.status(401).json({ success: false, error: 'Unauthorized' });
             }
 
-            // In a real scenario, we might want to fetch the latest tenant data from DB 
-            // to get the current plan, but for now we trust the JWT or fallback to starter.
-            // A more robust way is to use SystemAuthorityService to fetch the tenant doc.
+            // Use the UserContextResolver to fetch the latest context,
+            // which already implements caching and standard structures.
+            const ctx = await userContextResolver.fromUserId(user.tenantId);
             
-            const { db } = await import('../lib/firebase.js');
-            const tenantRef = db.doc(`tenants/${user.tenantId}`);
-            const doc = await tenantRef.get();
-            
-            const plan = (doc.exists ? doc.data()!.plan : 'starter') || 'starter';
-            const capabilities = systemAuthorityService.getCapabilities(plan);
-
             res.json({
                 success: true,
                 data: {
-                    tier: plan,
-                    capabilities
+                    tier: ctx.plan,
+                    capabilities: ctx.capabilities
                 }
             });
         } catch (error: any) {

@@ -4,7 +4,10 @@ import { Timestamp, FieldValue } from 'firebase-admin/firestore';
 import logger from '@/utils/logger.js';
 import crypto from 'crypto';
 import { getSupportedPlatforms, type PlatformMetadata } from './channels/platform-metadata.js';
-import { systemAuthorityService } from './SystemAuthorityService.js';
+import { userContextResolver } from '../tenancy/resolver-instance.js';
+import { createAuthGuard } from '../tenancy/tenant-context.js';
+import { assertCan } from '../billing/auth-guard.js';
+import { trackUsage } from '../billing/usage-tracker.js';
 import { createChannelManager, type ChannelManager } from '../gateway/server-channels.js';
 import { listChannelPlugins, type ChannelId } from '../channels/plugins/index.js';
 import { createSubsystemLogger, runtimeForLogger } from '../logging/subsystem.js';
@@ -78,9 +81,13 @@ export class ChannelService {
   async createChannel(tenantId: string, channelData: Partial<Channel>, agentId: string = 'system_default', userId?: string): Promise<Result<Channel>> {
     try {
       // 1. Check authority for channel creation
-      const auth = await systemAuthorityService.checkAuthority(userId ?? tenantId, 'add_channel');
-      if (!auth.allowed) {
-        throw new Error(auth.error || 'Channel slot limit reached for your current plan.');
+      const ctx = await userContextResolver.fromUserId(userId ?? tenantId);
+      const guard = createAuthGuard(ctx);
+      
+      try {
+        assertCan(guard.canStartChannel(), 'channel', ctx);
+      } catch (err: any) {
+        throw new Error(err.message || 'Channel slot limit reached for your current plan.');
       }
 
       const channelId = `chan_${crypto.randomUUID()}`;
@@ -114,7 +121,7 @@ export class ChannelService {
       await firebaseService.setDoc(this.getPath(agentId), channelId, data as any, tenantId);
 
       // 2. Record usage
-      await systemAuthorityService.recordUsage(userId ?? tenantId, 'channels', 1);
+      trackUsage(userId ?? tenantId, 'channels', 1);
 
       logger.info(`Channel created: ${channelId} for tenant ${tenantId} under Agent ${agentId}`);
       return { success: true, data };
@@ -422,7 +429,7 @@ export class ChannelService {
         await firebaseService.deleteCollection(authPath, tenantId);
         
         // 2d. Record usage decrement
-        await systemAuthorityService.recordUsage(userId ?? tenantId, 'channels', -1);
+        trackUsage(userId ?? tenantId, 'channels', -1);
 
         logger.info(`Channel deleted: ${channelId} from tenant ${tenantId} under Agent ${agentId} (with auth cleanup)`);
       }

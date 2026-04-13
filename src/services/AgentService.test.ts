@@ -2,7 +2,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { AgentService } from './AgentService.js';
 import { firebaseService } from './FirebaseService.js';
 import channelService from './ChannelService.js';
-import { systemAuthorityService } from './SystemAuthorityService.js';
+import { userContextResolver } from '../tenancy/resolver-instance.js';
+import { createAuthGuard } from '../tenancy/tenant-context.js';
+import { assertCan } from '../billing/auth-guard.js';
+import { trackUsage } from '../billing/usage-tracker.js';
 
 // Mock dependencies
 vi.mock('./FirebaseService.js', () => ({
@@ -22,11 +25,26 @@ vi.mock('./ChannelService.js', () => ({
   }
 }));
 
-vi.mock('./SystemAuthorityService.js', () => ({
+vi.mock('../billing/auth-guard.js', () => ({
+  assertCan: vi.fn(),
   systemAuthorityService: {
     checkAuthority: vi.fn(),
     recordUsage: vi.fn()
   }
+}));
+
+vi.mock('../billing/usage-tracker.js', () => ({
+  trackUsage: vi.fn()
+}));
+
+vi.mock('../tenancy/resolver-instance.js', () => ({
+  userContextResolver: {
+    fromUserId: vi.fn()
+  }
+}));
+
+vi.mock('../tenancy/tenant-context.js', () => ({
+  createAuthGuard: vi.fn()
 }));
 
 vi.mock('@/utils/logger.js', () => ({
@@ -77,22 +95,24 @@ describe('AgentService', () => {
 
   describe('createAgent', () => {
     it('should create an agent when authority allows', async () => {
-      vi.mocked(systemAuthorityService.checkAuthority).mockResolvedValue({ allowed: true });
+      vi.mocked(userContextResolver.fromUserId).mockResolvedValue({ userId } as any);
+      vi.mocked(createAuthGuard).mockReturnValue({ canCreateAgent: () => true } as any);
+      vi.mocked(assertCan).mockReturnValue(undefined);
       vi.mocked(firebaseService.setDoc).mockResolvedValue(undefined);
-      vi.mocked(systemAuthorityService.recordUsage).mockResolvedValue(undefined);
 
       const result = await service.createAgent(tenantId, { name: 'My Bot', personality: 'Helpful' }, userId);
 
       expect(result.success).toBe(true);
-      expect(systemAuthorityService.checkAuthority).toHaveBeenCalledWith(userId, 'create_agent');
+      expect(userContextResolver.fromUserId).toHaveBeenCalledWith(userId);
       expect(firebaseService.setDoc).toHaveBeenCalled();
-      expect(systemAuthorityService.recordUsage).toHaveBeenCalledWith(userId, 'agents', 1);
+      expect(trackUsage).toHaveBeenCalledWith(userId, 'agents', 1);
     });
 
     it('should block agent creation when authority denies', async () => {
-      vi.mocked(systemAuthorityService.checkAuthority).mockResolvedValue({
-        allowed: false,
-        error: 'Agent limit reached for your plan'
+      vi.mocked(userContextResolver.fromUserId).mockResolvedValue({ userId } as any);
+      vi.mocked(createAuthGuard).mockReturnValue({ canCreateAgent: () => false } as any);
+      vi.mocked(assertCan).mockImplementation(() => {
+        throw new Error('Agent limit reached for your plan');
       });
 
       const result = await service.createAgent(tenantId, { name: 'Blocked Bot' }, userId);
@@ -102,11 +122,15 @@ describe('AgentService', () => {
         expect(result.error.message).toBe('Agent limit reached for your plan');
       }
       expect(firebaseService.setDoc).not.toHaveBeenCalled();
-      expect(systemAuthorityService.recordUsage).not.toHaveBeenCalled();
+      expect(trackUsage).not.toHaveBeenCalled();
     });
 
     it('should use fallback error message when authority denies without a message', async () => {
-      vi.mocked(systemAuthorityService.checkAuthority).mockResolvedValue({ allowed: false });
+      vi.mocked(userContextResolver.fromUserId).mockResolvedValue({ userId } as any);
+      vi.mocked(createAuthGuard).mockReturnValue({ canCreateAgent: () => false } as any);
+      vi.mocked(assertCan).mockImplementation(() => {
+        throw new Error();
+      });
 
       const result = await service.createAgent(tenantId, { name: 'Blocked Bot' }, userId);
 
@@ -131,6 +155,7 @@ describe('AgentService', () => {
       expect(channelService.getChannelsForAgent).toHaveBeenCalledWith(tenantId, agentId);
       expect(channelService.deleteChannel).toHaveBeenCalledTimes(2);
       expect(firebaseService.deleteDoc).toHaveBeenCalledWith('agents', agentId, tenantId);
+      expect(trackUsage).toHaveBeenCalledWith(userId, 'agents', -1);
     });
 
     it('should fail if trying to delete system_default', async () => {

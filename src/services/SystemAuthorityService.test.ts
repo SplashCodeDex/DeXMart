@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { SystemAuthorityService } from './SystemAuthorityService.js';
+import { SystemAuthorityService } from '../billing/auth-guard.js';
 
 // Mock Firestore
 const mockGet = vi.fn();
