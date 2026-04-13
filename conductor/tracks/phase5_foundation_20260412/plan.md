@@ -53,9 +53,9 @@
 - [x] Task 5.6.5: Run tests (green) + coverage check [efc485c]
 
 ### Task 5.7 — Verify All 40+ Extensions Inherit B2C Capabilities
-- [ ] Task 5.7.1: Write multi-tenant isolation integration tests: start WhatsApp channel for two different `userId`s, assert sessions are isolated in Firestore
-- [ ] Task 5.7.2: Write Stripe-gating integration test: verify `startChannel` is blocked for over-plan user across at least 2 channel types
-- [ ] Task 5.7.3: Run full integration suite — confirm all 40+ extensions inherit B2C isolation, Stripe gating, Firestore persistence
+- [x] Task 5.7.1: Write multi-tenant isolation integration tests: start WhatsApp channel for two different `userId`s, assert sessions are isolated in Firestore
+- [x] Task 5.7.2: Write Stripe-gating integration test: verify `startChannel` is blocked for over-plan user across at least 2 channel types
+- [x] Task 5.7.3: Run full integration suite — confirm all 40+ extensions inherit B2C isolation, Stripe gating, Firestore persistence
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Memory & Verification' (Protocol in workflow.md)
 
 ---
