@@ -38,8 +38,8 @@
 - [x] Task 5.5.3: Delete `src/services/channels/whatsapp/WhatsappAdapter.ts`
 - [x] Task 5.5.4: Delete `src/services/channels/ChannelManager.ts`
 - [x] Task 5.5.5: Delete `src/services/channels/registry.ts`
-- [x] Task 5.5.6: Run full test suite — verify zero references to deleted files, all tests green
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Channel System Unification' (Protocol in workflow.md)
+- [x] Task 5.5.6: Run full test suite — verify zero references to deleted files, all tests green [4a7dbb8]
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Channel System Unification' (Protocol in workflow.md)
 
 ---
 
