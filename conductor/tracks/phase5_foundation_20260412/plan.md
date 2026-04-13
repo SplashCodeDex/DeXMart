@@ -56,18 +56,18 @@
 - [x] Task 5.7.1: Write multi-tenant isolation integration tests: start WhatsApp channel for two different `userId`s, assert sessions are isolated in Firestore
 - [x] Task 5.7.2: Write Stripe-gating integration test: verify `startChannel` is blocked for over-plan user across at least 2 channel types
 - [x] Task 5.7.3: Run full integration suite — confirm all 40+ extensions inherit B2C isolation, Stripe gating, Firestore persistence
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Memory & Verification' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Memory & Verification' (Protocol in workflow.md) [0c2956df6]
 
 ---
 
 ## Phase 4: Repository Cleanup
 
 ### Task 5.8 — Delete backend/ Directory
-- [ ] Task 5.8.1: Confirm no source files in `backend/src/` are referenced anywhere in `src/` (grep check)
-- [ ] Task 5.8.2: Remove `backend` entry from `pnpm-workspace.yaml`
-- [ ] Task 5.8.3: Delete `backend/` directory
-- [ ] Task 5.8.4: Update `.github/workflows/backend-ci.yml` — rename to `ci.yml`, change paths to `src/`
-- [ ] Task 5.8.5: Run `pnpm install` and `pnpm build` — verify success with no backend workspace
+- [x] Task 5.8.1: Confirm no source files in `backend/src/` are referenced anywhere in `src/` (grep check)
+- [x] Task 5.8.2: Remove `backend` entry from `pnpm-workspace.yaml`
+- [x] Task 5.8.3: Delete `backend/` directory
+- [x] Task 5.8.4: Update `.github/workflows/backend-ci.yml` — rename to `ci.yml`, change paths to `src/`
+- [x] Task 5.8.5: Run `pnpm install` and `pnpm build` — verify success with no backend workspace
 
 ### Task 5.9 — Complete tenants/ → users/ Path Migration
 - [ ] Task 5.9.1: Write failing tests — service query tests assert all Firestore paths use `users/{userId}/...` pattern
