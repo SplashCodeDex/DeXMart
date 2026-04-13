@@ -3,8 +3,7 @@ import { Channel, ChannelSchema, Result } from '../types/contracts.js';
 import { Timestamp, FieldValue } from 'firebase-admin/firestore';
 import logger from '@/utils/logger.js';
 import crypto from 'crypto';
-import { channelManager } from './channels/ChannelManager.js';
-import { getSupportedPlatforms, PlatformMetadata } from './channels/registry.js';
+import { getSupportedPlatforms, type PlatformMetadata } from './channels/platform-metadata.js';
 import { systemAuthorityService } from './SystemAuthorityService.js';
 import { createChannelManager, type ChannelManager } from '../gateway/server-channels.js';
 import { listChannelPlugins, type ChannelId } from '../channels/plugins/index.js';
@@ -173,7 +172,7 @@ export class ChannelService {
         const chanResult = await this.getChannelsForAgent(tenantId, agent.id);
         if (chanResult.success) {
           // MASTERMIND Goodie: Memory-State Truth Sync
-          const synchronized = chanResult.data.map(chan => this.syncMemoryStatus(chan));
+          const synchronized = chanResult.data.map(chan => this.syncMemoryStatus(chan, tenantId));
           allChannels.push(...synchronized);
         }
       }
@@ -192,23 +191,26 @@ export class ChannelService {
   }
 
   /**
-   * Synchronize Firestore status with real memory state
+   * Synchronize Firestore status with native runtime state.
+   * Uses the native ChannelManager's runtime snapshot instead of the deprecated adapter registry.
    */
-  private syncMemoryStatus(channel: Channel): Channel {
-    const isInMemory = !!channelManager.getAdapter(channel.id);
+  private syncMemoryStatus(channel: Channel, tenantId: string): Channel {
+    const snapshot = this.getNativeManager(tenantId).getRuntimeSnapshot();
+    const accounts = snapshot.channelAccounts[channel.type as ChannelId];
+    const isRunning = accounts?.[channel.id]?.running === true;
     let status = channel.status;
 
-    // Do not force 'connected' for WhatsApp channels as they emit accurate fine-grained statuses (qr_pending, disconnected, error)
-    if (isInMemory && channel.type !== 'whatsapp' && (status === 'disconnected' || status === 'error')) {
+    // Do not force 'connected' for WhatsApp channels as they emit accurate fine-grained statuses
+    if (isRunning && channel.type !== 'whatsapp' && (status === 'disconnected' || status === 'error')) {
       status = 'connected'; // Sync UP
-    } else if (!isInMemory && status === 'connected') {
+    } else if (!isRunning && status === 'connected') {
       status = 'disconnected'; // Sync DOWN (stale from crash)
     }
 
     return {
       ...channel,
       status,
-      phoneNumber: channel.phoneNumber || undefined
+      phoneNumber: channel.phoneNumber || undefined,
     };
   }
 
@@ -262,14 +264,6 @@ export class ChannelService {
       // 3. Delete old document
       await firebaseService.deleteDoc(this.getPath(currentAgentId), channelId, tenantId);
 
-      // 4. Update memory adapter if running
-      const adapter = channelManager.getAdapter(channelId);
-      if (adapter && adapter.updatePath) {
-        const newPath = `tenants/${tenantId}/agents/${targetAgentId}/channels/${channelId}`;
-        adapter.updatePath(newPath);
-        logger.info(`Channel ${channelId} adapter path updated to ${newPath}`);
-      }
-
       logger.info(`Channel ${channelId} moved from ${currentAgentId} to ${targetAgentId}`);
       return { success: true, data: undefined };
     } catch (error: any) {
@@ -310,17 +304,6 @@ export class ChannelService {
    * Start a channel instance (OpenClaw)
    */
   async startChannel(tenantId: string, channelId: string, agentId: string = 'system_default', force: boolean = false): Promise<Result<void>> {
-    if (channelManager.getAdapter(channelId)) {
-      if (!force) {
-        logger.info(`Channel ${channelId} is already running`);
-        return { success: true, data: undefined };
-      }
-      // force=true: the existing adapter may be stale (e.g. dead socket after QR failure).
-      // Shut it down before creating a fresh one so the retry actually takes effect.
-      logger.info(`[ChannelService] Force-restarting channel ${channelId} — shutting down stale adapter`);
-      await channelManager.shutdownAdapter(channelId);
-    }
-
     // Deduplication: Prevent concurrent startChannel calls for same channelId
     const existingStart = this.startingChannels.get(channelId);
     if (existingStart) {
@@ -339,20 +322,33 @@ export class ChannelService {
     }
   }
 
-  private async _doStartChannel(tenantId: string, channelId: string, agentId: string, _force: boolean): Promise<Result<void>> {
+  private async _doStartChannel(tenantId: string, channelId: string, agentId: string, force: boolean): Promise<Result<void>> {
     try {
       const channelResult = await this.getChannel(tenantId, channelId, agentId);
       if (!channelResult.success) return { success: false, error: channelResult.error };
 
       const channel = channelResult.data;
       const pluginId = channel.type as ChannelId;
+      const manager = this.getNativeManager(tenantId);
+
+      // Check native runtime to avoid redundant restarts.
+      const snapshot = manager.getRuntimeSnapshot();
+      const isRunning = snapshot.channelAccounts[pluginId]?.[channelId]?.running === true;
+      if (isRunning) {
+        if (!force) {
+          logger.info(`Channel ${channelId} is already running`);
+          return { success: true, data: undefined };
+        }
+        // force=true: stop the existing native channel so the restart actually takes effect.
+        logger.info(`[ChannelService] Force-restarting channel ${channelId} — stopping native channel`);
+        await manager.stopChannel(pluginId, channelId);
+      }
 
       // Persist 'connecting' so a crash during handshake doesn't leave stale status.
       await this.updateStatus(tenantId, channelId, 'connecting', agentId);
 
       // Delegate to the native OpenClaw plugin runtime (replaces AdapterClass dispatch).
       // The native manager uses pluginId ('whatsapp', 'telegram', …) + channelId as accountId.
-      const manager = this.getNativeManager(tenantId);
       await manager.startChannel(pluginId, channelId);
 
       // Fire-and-forget status sync — native plugin manages its own lifecycle;
@@ -407,8 +403,10 @@ export class ChannelService {
         return { success: false, error: new Error('UNAUTHORIZED: Tenant does not own this channel.') };
       }
 
-      // 2. Kill live session in memory (Rule 0 / Rule 9 integrity)
-      await channelManager.shutdownAdapter(channelId);
+      // 2. Stop any running native channel session before deleting records (Rule 0 / Rule 9 integrity)
+      await this.getNativeManager(tenantId)
+        .stopChannel(channel.data.type as ChannelId, channelId)
+        .catch(() => undefined); // Non-fatal if already stopped
 
       if (options.archive) {
         // 2a. Mark as archived
@@ -554,32 +552,20 @@ export class ChannelService {
 
   /**
    * Get the current QR code for a channel (image DataURL)
+   * QR exposure via native plugin runtime is not yet implemented; returns null.
    */
-  public getChannelQR(channelId: string): string | null {
-    const adapter = channelManager.getAdapter(channelId);
-    if (adapter && (adapter as any).getQR) {
-      return (adapter as any).getQR();
-    }
+  public getChannelQR(_channelId: string): string | null {
     return null;
   }
 
   /**
    * Request a pairing code for a channel
+   * Pairing code injection via native plugin runtime is not yet implemented.
    */
-  public async requestPairingCode(tenantId: string, channelId: string, phoneNumber: string, agentId: string = 'system_default'): Promise<Result<string>> {
+  public async requestPairingCode(tenantId: string, channelId: string, _phoneNumber: string, agentId: string = 'system_default'): Promise<Result<string>> {
     try {
-      let adapter = channelManager.getAdapter(channelId);
-      if (!adapter) {
-        // Start if not running
-        await this.startChannel(tenantId, channelId, agentId);
-        adapter = channelManager.getAdapter(channelId);
-      }
-
-      if (adapter && (adapter as any).requestPairingCode) {
-        const code = await (adapter as any).requestPairingCode(phoneNumber);
-        return { success: true, data: code };
-      }
-      return { success: false, error: new Error('Pairing code not supported for this channel') };
+      await this.startChannel(tenantId, channelId, agentId);
+      return { success: false, error: new Error('Pairing code not supported via native runtime yet') };
     } catch (error: any) {
       return { success: false, error };
     }

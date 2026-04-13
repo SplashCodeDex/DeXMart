@@ -84,7 +84,17 @@ describe('ChannelService', () => {
 
   describe('deleteChannel', () => {
     it('should delete channel from nested path', async () => {
-      vi.mocked(firebaseService.getDoc).mockResolvedValue({ id: 'chan-1', name: 'Test' });
+      // Provide a mock native manager so deleteChannel can call stopChannel()
+      vi.mocked(createChannelManager).mockReturnValue({
+        stopChannel: vi.fn().mockResolvedValue(undefined),
+        startChannel: vi.fn().mockResolvedValue(undefined),
+        startChannels: vi.fn().mockResolvedValue(undefined),
+        getRuntimeSnapshot: vi.fn().mockReturnValue({ channels: {}, channelAccounts: {} }),
+        markChannelLoggedOut: vi.fn(),
+        isManuallyStopped: vi.fn().mockReturnValue(false),
+        resetRestartAttempts: vi.fn(),
+      });
+      vi.mocked(firebaseService.getDoc).mockResolvedValue({ id: 'chan-1', name: 'Test', type: 'whatsapp' });
       vi.mocked(firebaseService.deleteDoc).mockResolvedValue(undefined);
       vi.mocked(firebaseService.deleteCollection).mockResolvedValue(undefined);
 
