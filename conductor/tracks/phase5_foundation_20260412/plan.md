@@ -1,6 +1,6 @@
 # Plan: Phase 5 — Foundation Grounding
 
-## Phase 1: Engine Foundation Injection
+## Phase 1: Engine Foundation Injection [checkpoint: 4612742]
 
 ### Task 5.1 — Inject TenantContext into PluginRuntime
 - [x] Task 5.1.1: Write failing tests — `PluginRuntime` unit tests assert that `startChannel()` propagates `userId`/`TenantContext` to plugin lifecycle hooks
@@ -20,7 +20,7 @@
 - [x] Task 5.3.2: Add `ChannelBillingGuard` interface and `billingGuard?` to `ChannelManagerOptions`
 - [x] Task 5.3.3: Enforce `billingGuard.canStartChannel()` in `startChannelInternal()` before booting any plugin; throws HTTP 402 on denial
 - [x] Task 5.3.4: Run tests (green) + coverage check
-- [~] Task: Conductor - User Manual Verification 'Phase 1: Engine Foundation Injection' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Engine Foundation Injection' (Protocol in workflow.md) [4612742]
 
 ---
 
