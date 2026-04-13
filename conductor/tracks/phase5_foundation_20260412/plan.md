@@ -27,10 +27,10 @@
 ## Phase 2: Channel System Unification
 
 ### Task 5.4 — ChannelService Orchestrates Native createChannelManager()
-- [ ] Task 5.4.1: Write failing tests — `ChannelService` integration tests assert start/stop/status delegated to `createChannelManager()` from `gateway/server-channels.ts`
-- [ ] Task 5.4.2: Refactor `src/services/ChannelService.ts` to call `createChannelManager()` for channel lifecycle (remove `AdapterClass` dispatch)
-- [ ] Task 5.4.3: Verify plugin registry auto-discovers `extensions/` plugins without manual registration
-- [ ] Task 5.4.4: Run tests (green) + coverage check
+- [x] Task 5.4.1: Write failing tests — `ChannelService` integration tests assert start/stop/status delegated to `createChannelManager()` from `gateway/server-channels.ts`
+- [x] Task 5.4.2: Refactor `src/services/ChannelService.ts` to call `createChannelManager()` for channel lifecycle (remove `AdapterClass` dispatch)
+- [x] Task 5.4.3: Verify plugin registry auto-discovers `extensions/` plugins without manual registration
+- [x] Task 5.4.4: Run tests (green) + coverage check [c566894]
 
 ### Task 5.5 — Delete Deprecated Parallel Channel System
 - [ ] Task 5.5.1: Audit all imports of `WhatsappAdapter`, `ChannelManager` (DeXMart's), and `registry` (DeXMart's) across `src/`
