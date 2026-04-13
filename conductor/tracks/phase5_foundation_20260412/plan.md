@@ -20,7 +20,7 @@
 - [x] Task 5.3.2: Add `ChannelBillingGuard` interface and `billingGuard?` to `ChannelManagerOptions`
 - [x] Task 5.3.3: Enforce `billingGuard.canStartChannel()` in `startChannelInternal()` before booting any plugin; throws HTTP 402 on denial
 - [x] Task 5.3.4: Run tests (green) + coverage check
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Engine Foundation Injection' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 1: Engine Foundation Injection' (Protocol in workflow.md)
 
 ---
 
