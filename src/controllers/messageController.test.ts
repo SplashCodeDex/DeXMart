@@ -1,14 +1,17 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Request, Response } from 'express';
 import { MessageController } from './messageController.js';
-import { channelManager } from '../services/channels/ChannelManager.js';
 import { db } from '../lib/firebase.js';
 
-// Mock dependencies
-vi.mock('../services/channels/ChannelManager.js', () => ({
-  channelManager: {
-    getAdapter: vi.fn(),
+// ── Hoisted mocks ─────────────────────────────────────────────────────────────
+const { mockJobQueue } = vi.hoisted(() => ({
+  mockJobQueue: {
+    addJob: vi.fn().mockResolvedValue(undefined),
   },
+}));
+
+vi.mock('../services/jobQueue.js', () => ({
+  default: mockJobQueue,
 }));
 
 vi.mock('../lib/firebase.js', () => ({
@@ -32,6 +35,7 @@ describe('MessageController', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockJobQueue.addJob.mockResolvedValue(undefined);
     mockReq = {
       user: { tenantId: 'tenant-123' } as any,
     };
@@ -42,10 +46,10 @@ describe('MessageController', () => {
   });
 
   describe('reply', () => {
-    it('should send a reply via the active channel adapter', async () => {
+    it('should enqueue a reply via the job queue', async () => {
       mockReq.body = {
         messageId: 'msg-original',
-        text: 'This is a reply'
+        text: 'This is a reply',
       };
 
       // Mock fetching the original message
@@ -53,21 +57,20 @@ describe('MessageController', () => {
         exists: true,
         data: () => ({
           channelId: 'chan-456',
-          remoteJid: 'user-789@s.whatsapp.net'
+          remoteJid: 'user-789@s.whatsapp.net',
         }),
       });
 
-      const mockAdapter = {
-        sendMessage: vi.fn().mockResolvedValue(undefined)
-      };
-      (channelManager.getAdapter as any).mockReturnValue(mockAdapter);
-
       await (MessageController as any).reply(mockReq as Request, mockRes as Response);
 
-      expect(channelManager.getAdapter).toHaveBeenCalledWith('chan-456');
-      expect(mockAdapter.sendMessage).toHaveBeenCalledWith(
-        'user-789@s.whatsapp.net',
-        expect.objectContaining({ text: 'This is a reply' })
+      expect(mockJobQueue.addJob).toHaveBeenCalledWith(
+        'whatsapp-outbound',
+        'reply',
+        expect.objectContaining({
+          channelId: 'chan-456',
+          jid: 'user-789@s.whatsapp.net',
+          message: 'This is a reply',
+        }),
       );
       expect(mockRes.json).toHaveBeenCalledWith(expect.objectContaining({ success: true }));
     });

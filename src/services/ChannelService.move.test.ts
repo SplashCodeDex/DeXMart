@@ -1,78 +1,103 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ChannelService } from './ChannelService.js';
 import { firebaseService } from '@/services/FirebaseService.js';
-import { channelManager } from './channels/ChannelManager.js';
-import { IngressService } from './IngressService.js';
 
-// Mock dependencies
+// ── Hoisted mocks ─────────────────────────────────────────────────────────────
+const { mockNativeManager } = vi.hoisted(() => ({
+  mockNativeManager: {
+    startChannel: vi.fn().mockResolvedValue(undefined),
+    stopChannel: vi.fn().mockResolvedValue(undefined),
+    getRuntimeSnapshot: vi.fn().mockReturnValue({ channels: {}, channelAccounts: {} }),
+  },
+}));
+
 vi.mock('@/services/FirebaseService.js', () => ({
   firebaseService: {
     getDoc: vi.fn(),
     setDoc: vi.fn(),
-    deleteDoc: vi.fn()
-  }
+    deleteDoc: vi.fn(),
+    deleteCollection: vi.fn(),
+  },
 }));
 
-vi.mock('./channels/ChannelManager.js', () => ({
-  channelManager: {
-    getAdapter: vi.fn()
-  }
+vi.mock('../gateway/server-channels.js', () => ({
+  createChannelManager: vi.fn().mockReturnValue(mockNativeManager),
 }));
 
-vi.mock('./IngressService.js', () => ({
-  ingressService: {
-    handleMessage: vi.fn()
-  }
+vi.mock('../channels/plugins/index.js', () => ({
+  listChannelPlugins: vi.fn().mockReturnValue([]),
 }));
 
-describe('ChannelService Path-Aware Routing', () => {
+vi.mock('../logging/subsystem.js', () => ({
+  createSubsystemLogger: vi.fn().mockReturnValue({ info: vi.fn(), error: vi.fn(), warn: vi.fn() }),
+  runtimeForLogger: vi.fn().mockReturnValue({}),
+}));
+
+vi.mock('../config/config.js', () => ({
+  loadConfig: vi.fn().mockReturnValue({}),
+}));
+
+vi.mock('./SystemAuthorityService.js', () => ({
+  systemAuthorityService: {
+    checkAuthority: vi.fn().mockResolvedValue({ allowed: true }),
+    recordUsage: vi.fn().mockResolvedValue(undefined),
+  },
+}));
+
+vi.mock('./socketService.js', () => ({
+  socketService: { emitChannelStatus: vi.fn() },
+}));
+
+// ── Tests ─────────────────────────────────────────────────────────────────────
+
+describe('ChannelService Move', () => {
   let service: ChannelService;
   const tenantId = 'tenant-123';
   const channelId = 'chan-1';
   const oldAgentId = 'agent-old';
   const newAgentId = 'agent-new';
+  const mockChannel = {
+    id: channelId,
+    type: 'whatsapp',
+    status: 'connected',
+    assignedAgentId: oldAgentId,
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
-    // @ts-ignore - reset instance
+    // @ts-ignore — reset singleton
     ChannelService.instance = undefined;
     service = ChannelService.getInstance();
+    vi.mocked(firebaseService.getDoc).mockResolvedValue(mockChannel);
+    vi.mocked(firebaseService.setDoc).mockResolvedValue(undefined);
+    vi.mocked(firebaseService.deleteDoc).mockResolvedValue(undefined);
   });
 
   describe('moveChannel', () => {
-    it('should update the adapter fullPath when a channel is moved', async () => {
-      const mockChannel = {
-        id: channelId,
-        type: 'whatsapp',
-        status: 'connected',
-        assignedAgentId: oldAgentId
-      };
-
-      const mockAdapter = {
-        channelId,
-        tenantId,
-        fullPath: `tenants/${tenantId}/agents/${oldAgentId}/channels/${channelId}`,
-        updatePath: function(newPath: string) {
-            this.fullPath = newPath;
-        }
-      };
-
-      vi.mocked(firebaseService.getDoc).mockResolvedValue(mockChannel);
-      vi.mocked(channelManager.getAdapter).mockReturnValue(mockAdapter as any);
-
+    it('should copy channel doc to new agent path and delete from old path', async () => {
       await service.moveChannel(tenantId, channelId, oldAgentId, newAgentId);
 
-      // Verify Firestore changes
       expect(firebaseService.setDoc).toHaveBeenCalledWith(
         `agents/${newAgentId}/channels`,
         channelId,
         expect.objectContaining({ assignedAgentId: newAgentId }),
-        tenantId
+        tenantId,
       );
-      expect(firebaseService.deleteDoc).toHaveBeenCalledWith(`agents/${oldAgentId}/channels`, channelId, tenantId);
+      expect(firebaseService.deleteDoc).toHaveBeenCalledWith(
+        `agents/${oldAgentId}/channels`,
+        channelId,
+        tenantId,
+      );
+    });
 
-      // Verify Adapter path update (This is what we want to fix)
-      expect(mockAdapter.fullPath).toBe(`tenants/${tenantId}/agents/${newAgentId}/channels/${channelId}`);
+    it('should return error if channel not found', async () => {
+      vi.mocked(firebaseService.getDoc).mockResolvedValue(null);
+
+      const result = await service.moveChannel(tenantId, channelId, oldAgentId, newAgentId);
+
+      expect(result.success).toBe(false);
+      expect(firebaseService.setDoc).not.toHaveBeenCalled();
+      expect(firebaseService.deleteDoc).not.toHaveBeenCalled();
     });
   });
 });

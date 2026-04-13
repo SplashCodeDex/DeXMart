@@ -35,10 +35,10 @@
 ### Task 5.5 — Delete Deprecated Parallel Channel System
 - [x] Task 5.5.1: Audit all imports of `WhatsappAdapter`, `ChannelManager` (DeXMart's), and `registry` (DeXMart's) across `src/`
 - [x] Task 5.5.2: Update all import sites to use native OpenClaw plugin system equivalents [b006635]
-- [ ] Task 5.5.3: Delete `src/services/channels/whatsapp/WhatsappAdapter.ts`
-- [ ] Task 5.5.4: Delete `src/services/channels/ChannelManager.ts`
-- [ ] Task 5.5.5: Delete `src/services/channels/registry.ts`
-- [ ] Task 5.5.6: Run full test suite — verify zero references to deleted files, all tests green
+- [x] Task 5.5.3: Delete `src/services/channels/whatsapp/WhatsappAdapter.ts`
+- [x] Task 5.5.4: Delete `src/services/channels/ChannelManager.ts`
+- [x] Task 5.5.5: Delete `src/services/channels/registry.ts`
+- [x] Task 5.5.6: Run full test suite — verify zero references to deleted files, all tests green
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Channel System Unification' (Protocol in workflow.md)
 
 ---

@@ -3,7 +3,6 @@ import request from 'supertest';
 import express from 'express';
 import router from './multiTenant.js';
 import { channelService } from '../services/ChannelService.js';
-import { channelManager } from '../services/channels/ChannelManager.js';
 import agentService from '../services/AgentService.js';
 import multiTenantService from '../services/multiTenantService.js';
 
@@ -48,13 +47,6 @@ vi.mock('../services/multiTenantService.js', () => ({
     canAddBot: vi.fn(),
     listTenants: vi.fn(),
   }
-}));
-
-vi.mock('../services/channels/ChannelManager.js', () => ({
-  channelManager: {
-    getAdapter: vi.fn(),
-    getRegisteredChannelKeys: vi.fn(),
-  },
 }));
 
 // Setup app
