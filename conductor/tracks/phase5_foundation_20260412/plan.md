@@ -33,8 +33,8 @@
 - [x] Task 5.4.4: Run tests (green) + coverage check [c566894]
 
 ### Task 5.5 — Delete Deprecated Parallel Channel System
-- [ ] Task 5.5.1: Audit all imports of `WhatsappAdapter`, `ChannelManager` (DeXMart's), and `registry` (DeXMart's) across `src/`
-- [ ] Task 5.5.2: Update all import sites to use native OpenClaw plugin system equivalents
+- [x] Task 5.5.1: Audit all imports of `WhatsappAdapter`, `ChannelManager` (DeXMart's), and `registry` (DeXMart's) across `src/`
+- [x] Task 5.5.2: Update all import sites to use native OpenClaw plugin system equivalents [b006635]
 - [ ] Task 5.5.3: Delete `src/services/channels/whatsapp/WhatsappAdapter.ts`
 - [ ] Task 5.5.4: Delete `src/services/channels/ChannelManager.ts`
 - [ ] Task 5.5.5: Delete `src/services/channels/registry.ts`
