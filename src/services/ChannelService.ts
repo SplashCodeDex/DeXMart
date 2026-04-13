@@ -4,9 +4,12 @@ import { Timestamp, FieldValue } from 'firebase-admin/firestore';
 import logger from '@/utils/logger.js';
 import crypto from 'crypto';
 import { channelManager } from './channels/ChannelManager.js';
-import { getPlatformAdapter, getSupportedPlatforms, PlatformMetadata } from './channels/registry.js';
-import type { WhatsappAdapter } from './channels/whatsapp/WhatsappAdapter.js';
+import { getSupportedPlatforms, PlatformMetadata } from './channels/registry.js';
 import { systemAuthorityService } from './SystemAuthorityService.js';
+import { createChannelManager, type ChannelManager } from '../gateway/server-channels.js';
+import { listChannelPlugins, type ChannelId } from '../channels/plugins/index.js';
+import { createSubsystemLogger, runtimeForLogger } from '../logging/subsystem.js';
+import { loadConfig } from '../config/config.js';
 
 /**
  * Channel Service
@@ -17,8 +20,44 @@ import { systemAuthorityService } from './SystemAuthorityService.js';
 export class ChannelService {
   private static instance: ChannelService;
   private startingChannels: Map<string, Promise<Result<void>>> = new Map();
+  /** Per-tenant native channel managers (B2C SaaS mode). */
+  private nativeManagers: Map<string, ChannelManager> = new Map();
+  /** Shared manager for aggregate stats and CLI/single-user mode. */
+  private sharedNativeManager: ChannelManager | null = null;
 
   private constructor() { }
+
+  /** Build the log/runtime options required by createChannelManager(). */
+  private buildManagerOptions() {
+    const plugins = listChannelPlugins();
+    const log = createSubsystemLogger('channels');
+    const channelLogs = Object.fromEntries(
+      plugins.map((p) => [p.id, createSubsystemLogger(`channels/${p.id}`)]),
+    ) as Record<ChannelId, ReturnType<typeof createSubsystemLogger>>;
+    const channelRuntimeEnvs = Object.fromEntries(
+      Object.entries(channelLogs).map(([id, l]) => [id, runtimeForLogger(l)]),
+    ) as Record<ChannelId, ReturnType<typeof runtimeForLogger>>;
+    void log; // used for context naming only
+    return { channelLogs, channelRuntimeEnvs };
+  }
+
+  /** Get or create a native ChannelManager scoped to a specific userId. */
+  private getNativeManager(userId: string): ChannelManager {
+    const existing = this.nativeManagers.get(userId);
+    if (existing) return existing;
+    const { channelLogs, channelRuntimeEnvs } = this.buildManagerOptions();
+    const manager = createChannelManager({ loadConfig, channelLogs, channelRuntimeEnvs, userId });
+    this.nativeManagers.set(userId, manager);
+    return manager;
+  }
+
+  /** Get or create the shared (non-tenant-scoped) native ChannelManager for stats/CLI. */
+  private getSharedNativeManager(): ChannelManager {
+    if (this.sharedNativeManager) return this.sharedNativeManager;
+    const { channelLogs, channelRuntimeEnvs } = this.buildManagerOptions();
+    this.sharedNativeManager = createChannelManager({ loadConfig, channelLogs, channelRuntimeEnvs });
+    return this.sharedNativeManager;
+  }
 
   public static getInstance(): ChannelService {
     if (!ChannelService.instance) {
@@ -37,10 +76,10 @@ export class ChannelService {
   /**
    * Create a new channel slot
    */
-  async createChannel(tenantId: string, channelData: Partial<Channel>, agentId: string = 'system_default'): Promise<Result<Channel>> {
+  async createChannel(tenantId: string, channelData: Partial<Channel>, agentId: string = 'system_default', userId?: string): Promise<Result<Channel>> {
     try {
       // 1. Check authority for channel creation
-      const auth = await systemAuthorityService.checkAuthority(tenantId, 'add_channel');
+      const auth = await systemAuthorityService.checkAuthority(userId ?? tenantId, 'add_channel');
       if (!auth.allowed) {
         throw new Error(auth.error || 'Channel slot limit reached for your current plan.');
       }
@@ -76,7 +115,7 @@ export class ChannelService {
       await firebaseService.setDoc(this.getPath(agentId), channelId, data as any, tenantId);
 
       // 2. Record usage
-      await systemAuthorityService.recordUsage(tenantId, 'channels', 1);
+      await systemAuthorityService.recordUsage(userId ?? tenantId, 'channels', 1);
 
       logger.info(`Channel created: ${channelId} for tenant ${tenantId} under Agent ${agentId}`);
       return { success: true, data };
@@ -272,8 +311,14 @@ export class ChannelService {
    */
   async startChannel(tenantId: string, channelId: string, agentId: string = 'system_default', force: boolean = false): Promise<Result<void>> {
     if (channelManager.getAdapter(channelId)) {
-      logger.info(`Channel ${channelId} is already running`);
-      return { success: true, data: undefined };
+      if (!force) {
+        logger.info(`Channel ${channelId} is already running`);
+        return { success: true, data: undefined };
+      }
+      // force=true: the existing adapter may be stale (e.g. dead socket after QR failure).
+      // Shut it down before creating a fresh one so the retry actually takes effect.
+      logger.info(`[ChannelService] Force-restarting channel ${channelId} — shutting down stale adapter`);
+      await channelManager.shutdownAdapter(channelId);
     }
 
     // Deduplication: Prevent concurrent startChannel calls for same channelId
@@ -294,86 +339,32 @@ export class ChannelService {
     }
   }
 
-  private async _doStartChannel(tenantId: string, channelId: string, agentId: string, force: boolean): Promise<Result<void>> {
+  private async _doStartChannel(tenantId: string, channelId: string, agentId: string, _force: boolean): Promise<Result<void>> {
     try {
       const channelResult = await this.getChannel(tenantId, channelId, agentId);
       if (!channelResult.success) return { success: false, error: channelResult.error };
 
       const channel = channelResult.data;
-      const fullPath = `tenants/${tenantId}/agents/${agentId}/channels/${channelId}`;
+      const pluginId = channel.type as ChannelId;
 
-      // Initialize Adapter from Registry
-      const AdapterClass = getPlatformAdapter(channel.type);
-      if (!AdapterClass) {
-        return { success: false, error: new Error(`Unsupported channel type: ${channel.type}`) };
-      }
-
-      let adapter = new AdapterClass(tenantId, channelId, fullPath, channel as any);
-      
-      if (channel.type === 'whatsapp') {
-        // --- MIDDLEWARE INJECTION ---
-        const { default: mainMiddleware } = await import('../middleware/main.js');
-        const gCtx = await (await import('../lib/context.js')).default();
-        mainMiddleware(adapter as any, gCtx);
-        (adapter as any).setContext(gCtx);
-
-        adapter.onMessage(async (event: any) => {
-          const { ingressService } = await import('./IngressService.js');
-          const context = await (await import('../lib/context.js')).default();
-          this.incrementChannelStat(tenantId, channelId, 'messagesReceived', agentId);
-          await ingressService.handleMessage(tenantId, channelId, event.raw, context, fullPath);
-        });
-      } else {
-        adapter.onMessage(async (event: any) => {
-          const { ingressService } = await import('./IngressService.js');
-          const context = await (await import('../lib/context.js')).default();
-          this.incrementChannelStat(tenantId, channelId, 'messagesReceived', agentId);
-
-          await ingressService.handleCommonMessage(tenantId, channelId, {
-            id: event.raw?.id || event.raw?.message_id?.toString() || crypto.randomUUID(),
-            platform: channel.type as any,
-            from: event.sender,
-            to: channelId,
-            content: { text: event.content },
-            timestamp: event.timestamp instanceof Date ? event.timestamp.getTime() : new Date(event.timestamp).getTime(),
-            metadata: { raw: event.raw, fullPath }
-          }, context, fullPath);
-        });
-      }
-
-      await adapter.initialize(); // Essential for Telegram to run bot.init()
-
-      // Register BEFORE connect() so the Watchdog sees the adapter as alive
-      // during the QR-pending phase (WhatsApp connect() blocks until handshake).
-      channelManager.registerAdapter(adapter);
-
-      // Persist 'connecting' immediately so a crash/restart during handshake
-      // doesn't leave a stale 'connected' status that causes perpetual QR loops.
+      // Persist 'connecting' so a crash during handshake doesn't leave stale status.
       await this.updateStatus(tenantId, channelId, 'connecting', agentId);
 
-      if (channel.type === 'whatsapp') {
-        // WhatsApp manages its own status lifecycle asynchronously via Baileys events.
-        // Pass a callback so each status transition is persisted to Firestore.
-        // Critically: 'qr_pending' being written here means resumeActiveChannels()
-        // will NOT auto-restart this channel on the next boot, preventing the
-        // perpetual QR-on-every-restart loop for unauthenticated channels.
-        const whatsappAdapter = adapter as unknown as WhatsappAdapter;
-        await whatsappAdapter.connect(force, async (status) => {
-          await this.updateStatus(tenantId, channelId, status as Channel['status'], agentId).catch(err =>
-            logger.error(`[ChannelService] Failed to persist WhatsApp status '${status}' for ${channelId}:`, err)
-          );
-        });
-      } else {
-        await adapter.connect(force);
-        await this.updateStatus(tenantId, channelId, 'connected', agentId);
-      }
+      // Delegate to the native OpenClaw plugin runtime (replaces AdapterClass dispatch).
+      // The native manager uses pluginId ('whatsapp', 'telegram', …) + channelId as accountId.
+      const manager = this.getNativeManager(tenantId);
+      await manager.startChannel(pluginId, channelId);
+
+      // Fire-and-forget status sync — native plugin manages its own lifecycle;
+      // persist 'connected' as an optimistic marker until plugin emits real status.
+      this.updateStatus(tenantId, channelId, 'connected', agentId).catch(err =>
+        logger.error(`[ChannelService] Failed to persist connected status for ${channelId}:`, err),
+      );
 
       return { success: true, data: undefined };
     } catch (error: any) {
       logger.error(`Failed to start channel ${channelId}:`, error);
-      // Unregister the adapter on failure so it's not left dangling
-      await channelManager.shutdownAdapter(channelId);
-      await this.updateStatus(tenantId, channelId, 'error', agentId);
+      this.updateStatus(tenantId, channelId, 'error', agentId).catch(() => undefined);
       return { success: false, error };
     }
   }
@@ -383,14 +374,21 @@ export class ChannelService {
    */
   async stopChannel(channelId: string, tenantId: string, agentId: string = 'system_default'): Promise<Result<void>> {
     try {
-      // 1. Ownership Check (Scenario 34): Verify channel belongs to tenant
-      const channel = await this.getChannel(tenantId, channelId, agentId);
-      if (!channel.success) {
+      // 1. Ownership Check: Verify channel belongs to tenant
+      const channelResult = await this.getChannel(tenantId, channelId, agentId);
+      if (!channelResult.success) {
         return { success: false, error: new Error('UNAUTHORIZED: Tenant does not own this channel.') };
       }
 
-      await channelManager.shutdownAdapter(channelId);
-      await this.updateStatus(tenantId, channelId, 'disconnected', agentId);
+      // Delegate stop to the native OpenClaw plugin runtime.
+      const manager = this.getNativeManager(tenantId);
+      await manager.stopChannel(channelResult.data.type as ChannelId, channelId);
+
+      // Fire-and-forget Firestore status sync.
+      this.updateStatus(tenantId, channelId, 'disconnected', agentId).catch(err =>
+        logger.error(`[ChannelService] Failed to persist disconnected status for ${channelId}:`, err),
+      );
+
       return { success: true, data: undefined };
     } catch (error: any) {
       return { success: false, error };
@@ -401,7 +399,7 @@ export class ChannelService {
    * Delete a channel slot
    * STRICT: Shuts down live connection BEFORE deleting/archiving database record.
    */
-  async deleteChannel(tenantId: string, channelId: string, agentId: string = 'system_default', options: { archive?: boolean } = {}): Promise<Result<void>> {
+  async deleteChannel(tenantId: string, channelId: string, agentId: string = 'system_default', options: { archive?: boolean } = {}, userId?: string): Promise<Result<void>> {
     try {
       // 1. Ownership Check (Scenario 34)
       const channel = await this.getChannel(tenantId, channelId, agentId);
@@ -426,7 +424,7 @@ export class ChannelService {
         await firebaseService.deleteCollection(authPath, tenantId);
         
         // 2d. Record usage decrement
-        await systemAuthorityService.recordUsage(tenantId, 'channels', -1);
+        await systemAuthorityService.recordUsage(userId ?? tenantId, 'channels', -1);
 
         logger.info(`Channel deleted: ${channelId} from tenant ${tenantId} under Agent ${agentId} (with auth cleanup)`);
       }
@@ -591,11 +589,14 @@ export class ChannelService {
    * Get global stats for dashboard
    */
   public getGlobalStats() {
-    const keys = channelManager.getRegisteredChannelKeys();
+    const snapshot = this.getSharedNativeManager().getRuntimeSnapshot();
+    const activeChannels = Object.values(snapshot.channels).filter(
+      (c) => c?.running === true,
+    ).length;
     return {
-      activeChannels: keys.length,
-      totalAdapters: keys.length,
-      runningProcesses: 1
+      activeChannels,
+      totalAdapters: activeChannels,
+      runningProcesses: 1,
     };
   }
 
@@ -603,7 +604,10 @@ export class ChannelService {
    * Get simple list of active channel IDs
    */
   public getActiveChannelIds() {
-    return channelManager.getRegisteredChannelKeys().map(id => ({ id, isActive: true }));
+    const snapshot = this.getSharedNativeManager().getRuntimeSnapshot();
+    return Object.entries(snapshot.channels)
+      .filter(([, c]) => c?.running === true)
+      .map(([id]) => ({ id, isActive: true }));
   }
 }
 
