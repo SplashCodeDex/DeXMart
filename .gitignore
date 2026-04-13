@@ -155,7 +155,7 @@ backend/backend_typecheck_log.txt
 *.txt
 !frontend/src/features/auth/
 openclaw_backup/
-backend/{,+
+backend/*
 backend/MAX_NAME_LENGTH)
 
 # Claude settings & Windows Artifacts

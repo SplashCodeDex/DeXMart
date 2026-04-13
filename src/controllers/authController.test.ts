@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { loginWithGoogle, updateProfile } from './authController.js';
-import { firebaseService } from '@/services/FirebaseService.js';
+import { firebaseService } from '@/persistence/firebase.js';
 import { multiTenantService } from '@/services/multiTenantService.js';
 import { db, admin } from '@/lib/firebase.js';
 import { Request, Response } from 'express';
 
 // Mock dependencies
-vi.mock('@/services/FirebaseService.js', () => ({
+vi.mock('@/persistence/firebase.js', () => ({
   firebaseService: {
     verifyIdToken: vi.fn(),
   },

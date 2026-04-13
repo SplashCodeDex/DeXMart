@@ -21,7 +21,7 @@ const { mockFirebaseService } = vi.hoisted(() => {
 });
 
 // Mock dependencies
-vi.mock('@/services/FirebaseService.js', () => ({
+vi.mock('@/persistence/firebase.js', () => ({
     firebaseService: { // Mock the exported instance directly if possible, or the class
         getDoc: mockFirebaseService.getDoc,
         getCollection: mockFirebaseService.getCollection,

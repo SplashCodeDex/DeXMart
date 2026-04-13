@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ChannelService } from './ChannelService.js';
-import { firebaseService } from '@/services/FirebaseService.js';
+import { firebaseService } from '@/persistence/firebase.js';
 
 // ── Hoisted mocks ─────────────────────────────────────────────────────────────
 const { mockNativeManager } = vi.hoisted(() => ({
@@ -11,7 +11,7 @@ const { mockNativeManager } = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('@/services/FirebaseService.js', () => ({
+vi.mock('@/persistence/firebase.js', () => ({
   firebaseService: {
     getDoc: vi.fn(),
     setDoc: vi.fn(),

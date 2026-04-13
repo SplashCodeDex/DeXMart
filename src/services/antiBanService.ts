@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import configManager from '../dexmart-config/ConfigManager.js';
 import logger from '../utils/logger.js';
 import { socketService } from './socketService.js';
-import { firebaseService } from './FirebaseService.js';
+import { firebaseService } from '@/persistence/firebase.js';
 
 /**
  * AntiBanService
@@ -218,7 +218,7 @@ class AntiBanService {
 
     // 1. Pause the campaign in Firebase
     try {
-      await firebaseService.setDoc<'tenants/{tenantId}/campaigns'>(
+      await firebaseService.setDoc<'users/{userId}/campaigns'>(
         'campaigns',
         campaignId,
         {

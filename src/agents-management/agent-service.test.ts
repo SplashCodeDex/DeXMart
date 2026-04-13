@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { AgentService } from './agent-service.js';
 
-vi.mock('@/services/FirebaseService.js', () => ({
+vi.mock('@/persistence/firebase.js', () => ({
   firebaseService: {
     getDoc: vi.fn(),
     setDoc: vi.fn(),
@@ -37,7 +37,7 @@ vi.mock('@/utils/logger.js', () => ({
 import { userContextResolver } from '../tenancy/resolver-instance.js';
 import { createAuthGuard } from '../tenancy/tenant-context.js';
 import { assertCan } from '../billing/auth-guard.js';
-import { firebaseService } from '@/services/FirebaseService.js';
+import { firebaseService } from '@/persistence/firebase.js';
 
 describe('agents-management/AgentService', () => {
   let service: AgentService;

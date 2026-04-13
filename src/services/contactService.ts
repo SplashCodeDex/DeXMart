@@ -1,5 +1,5 @@
 import { db } from '../lib/firebase.js';
-import { firebaseService } from './FirebaseService.js';
+import { firebaseService } from '@/persistence/firebase.js';
 import { ContactSchema, Result, type Contact } from '../types/contracts.js';
 import logger from '../utils/logger.js';
 import crypto from 'node:crypto';
@@ -143,7 +143,7 @@ export class ContactService {
         try {
           if (channelId) {
             // Update specific channel
-            await firebaseService.setDoc<'tenants/{tenantId}/channels'>(
+            await firebaseService.setDoc<'users/{userId}/channels'>(
               'channels',
               channelId,
               { 'stats.contactsCount': FieldValue.increment(count) } as any,
@@ -151,9 +151,9 @@ export class ContactService {
               true
             );
           } else {
-            const channels = await firebaseService.getCollection<'tenants/{tenantId}/channels'>('channels', tenantId);
+            const channels = await firebaseService.getCollection<'users/{userId}/channels'>('channels', tenantId);
             const statsPromises = channels.map(channel =>
-              firebaseService.setDoc<'tenants/{tenantId}/channels'>(
+              firebaseService.setDoc<'users/{userId}/channels'>(
                 'channels',
                 channel.id,
                 { 'stats.contactsCount': FieldValue.increment(count) } as any,
@@ -326,9 +326,9 @@ export class ContactService {
       // Update channel stats (decrement)
       if (historyData.importedCount > 0) {
         try {
-          const channels = await firebaseService.getCollection<'tenants/{tenantId}/channels'>('channels', tenantId);
+          const channels = await firebaseService.getCollection<'users/{userId}/channels'>('channels', tenantId);
           const statsPromises = channels.map(channel =>
-            firebaseService.setDoc<'tenants/{tenantId}/channels'>(
+            firebaseService.setDoc<'users/{userId}/channels'>(
               'channels',
               channel.id,
               { 'stats.contactsCount': FieldValue.increment(-historyData.importedCount) } as any,

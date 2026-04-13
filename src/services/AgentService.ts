@@ -1,4 +1,4 @@
-import { firebaseService } from '@/services/FirebaseService.js';
+import { firebaseService } from '@/persistence/firebase.js';
 import { Agent, AgentSchema, Result } from '../types/contracts.js';
 import { Timestamp } from 'firebase-admin/firestore';
 import logger from '@/utils/logger.js';
@@ -32,7 +32,7 @@ export class AgentService {
   async ensureSystemAgent(tenantId: string): Promise<Result<Agent>> {
     try {
       const systemAgentId = 'system_default';
-      const existing = await firebaseService.getDoc<'tenants/{tenantId}/agents'>('agents', systemAgentId, tenantId);
+      const existing = await firebaseService.getDoc<'users/{userId}/agents'>('agents', systemAgentId, tenantId);
 
       if (existing) {
         return { success: true, data: existing as Agent };
@@ -50,7 +50,7 @@ export class AgentService {
       };
 
       const agent = AgentSchema.parse(rawAgent);
-      await firebaseService.setDoc<'tenants/{tenantId}/agents'>('agents', systemAgentId, agent as any, tenantId);
+      await firebaseService.setDoc<'users/{userId}/agents'>('agents', systemAgentId, agent as any, tenantId);
 
       logger.info(`System Default Agent created for tenant ${tenantId}`);
       return { success: true, data: agent };
@@ -65,7 +65,7 @@ export class AgentService {
    */
   async getAgent(tenantId: string, agentId: string): Promise<Result<Agent>> {
     try {
-      const doc = await firebaseService.getDoc<'tenants/{tenantId}/agents'>('agents', agentId, tenantId);
+      const doc = await firebaseService.getDoc<'users/{userId}/agents'>('agents', agentId, tenantId);
       if (!doc) {
         return { success: false, error: new Error(`Agent not found: ${agentId}`) };
       }
@@ -80,7 +80,7 @@ export class AgentService {
    */
   async getAllAgents(tenantId: string): Promise<Result<Agent[]>> {
     try {
-      const docs = await firebaseService.getCollection<'tenants/{tenantId}/agents'>('agents', tenantId);
+      const docs = await firebaseService.getCollection<'users/{userId}/agents'>('agents', tenantId);
       return { success: true, data: docs as Agent[] };
     } catch (error: any) {
       return { success: false, error };
@@ -114,7 +114,7 @@ export class AgentService {
       };
 
       const agent = AgentSchema.parse(rawAgent);
-      await firebaseService.setDoc<'tenants/{tenantId}/agents'>('agents', agentId, agent as any, tenantId);
+      await firebaseService.setDoc<'users/{userId}/agents'>('agents', agentId, agent as any, tenantId);
 
       // 2. Record usage
       trackUsage(userId ?? tenantId, 'agents', 1);
@@ -145,7 +145,7 @@ export class AgentService {
       }
 
       // 3. Delete the agent itself
-      await firebaseService.deleteDoc<'tenants/{tenantId}/agents'>('agents', agentId, tenantId);
+      await firebaseService.deleteDoc<'users/{userId}/agents'>('agents', agentId, tenantId);
 
       // 4. Record usage decrement
       trackUsage(userId ?? tenantId, 'agents', -1);

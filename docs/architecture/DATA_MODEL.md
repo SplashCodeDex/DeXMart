@@ -1,6 +1,6 @@
 # DeXMart Data Model & Persistence
 
-> **Last verified**: 2026-04-10 | **Current Phase**: Phase 5 (Foundation Grounding) | **Source of truth**: `src/services/FirebaseService.ts` SchemaMap
+> **Last verified**: 2026-04-10 | **Current Phase**: Phase 5 (Foundation Grounding) | **Source of truth**: `src/persistence/firebase.ts` SchemaMap
 
 ---
 

@@ -1,4 +1,4 @@
-import { firebaseService } from '@/services/FirebaseService.js';
+import { firebaseService } from '@/persistence/firebase.js';
 import logger from '@/utils/logger.js';
 import crypto from 'crypto';
 import { Tenant, TenantSchema, Result, TenantUser, TenantUserSchema } from '@/types/index.js';

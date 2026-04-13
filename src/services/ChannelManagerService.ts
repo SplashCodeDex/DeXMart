@@ -1,5 +1,5 @@
 import logger from '@/utils/logger.js';
-import { firebaseService } from '@/services/FirebaseService.js';
+import { firebaseService } from '@/persistence/firebase.js';
 import { Result } from '../types/contracts.js';
 import { Timestamp } from 'firebase-admin/firestore';
 
@@ -44,7 +44,7 @@ export class ChannelManagerService {
             // Ideally check tenants/{tenantId}/agents/{agentId}
 
             // 2. Update Slot in Firestore
-            await firebaseService.setDoc<'tenants/{tenantId}/slots'>(
+            await firebaseService.setDoc<'users/{userId}/slots'>(
                 'slots', 
                 slotId, 
                 { 
@@ -70,7 +70,7 @@ export class ChannelManagerService {
         slotId: string
     ): Promise<Result<void>> {
         try {
-            await firebaseService.setDoc<'tenants/{tenantId}/slots'>(
+            await firebaseService.setDoc<'users/{userId}/slots'>(
                 'slots', 
                 slotId, 
                 { 

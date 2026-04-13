@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1776029326598,
+  "lastScanned": 1776117117010,
   "projectRoot": "/home/codedex/projects/DeXMart",
   "techStack": {
     "languages": [
@@ -91,45 +91,69 @@
       "path": "Expiremental",
       "purpose": null,
       "fileCount": 3,
-      "lastAccessed": 1776029326575,
+      "lastAccessed": 1776117116963,
       "keyFiles": [
         "SwitchToggle.css",
         "SwitchToggle.html",
         "SwitchToggle.js"
       ]
     },
+    "conductor": {
+      "path": "conductor",
+      "purpose": null,
+      "fileCount": 6,
+      "lastAccessed": 1776117116981,
+      "keyFiles": [
+        "product-guidelines.md",
+        "product.md",
+        "setup_state.json",
+        "tech-stack.md",
+        "tracks.md"
+      ]
+    },
+    "coverage": {
+      "path": "coverage",
+      "purpose": null,
+      "fileCount": 9,
+      "lastAccessed": 1776117116985,
+      "keyFiles": [
+        "base.css",
+        "block-navigation.js",
+        "coverage-final.json",
+        "favicon.png",
+        "index.html"
+      ]
+    },
     "dist": {
       "path": "dist",
       "purpose": "Distribution/build output",
       "fileCount": 0,
-      "lastAccessed": 1776029326579,
+      "lastAccessed": 1776117116990,
       "keyFiles": []
     },
     "docs": {
       "path": "docs",
       "purpose": "Documentation",
-      "fileCount": 7,
-      "lastAccessed": 1776029326588,
+      "fileCount": 3,
+      "lastAccessed": 1776117116993,
       "keyFiles": [
-        "FirebasePrompt.md",
-        "NextJS-16.md",
         "OPENCLAW_UPSTREAM_REPORT.md",
         "PROJECT_RULES.md",
-        "PageIndex.md"
+        "TrueFusionPlan.md"
       ]
     },
     "extensions": {
       "path": "extensions",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1776029326590,
+      "lastAccessed": 1776117116993,
       "keyFiles": []
     },
     "frontend": {
       "path": "frontend",
       "purpose": null,
       "fileCount": 15,
-      "lastAccessed": 1776029326591,
+      "lastAccessed": 1776117116993,
       "keyFiles": [
         "components.json",
         "eslint.config.mjs",
@@ -141,28 +165,35 @@
     "logs": {
       "path": "logs",
       "purpose": null,
-      "fileCount": 15,
-      "lastAccessed": 1776029326591,
+      "fileCount": 21,
+      "lastAccessed": 1776117116994,
       "keyFiles": [
         "app-2026-04-07.log",
         "app-2026-04-08.log",
         "app-2026-04-09.log",
         "app-2026-04-10.log",
-        "error-2026-04-07.log"
+        "app-2026-04-12.log"
       ]
     },
     "processed": {
       "path": "processed",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1776029326591,
+      "lastAccessed": 1776117116994,
+      "keyFiles": []
+    },
+    "research-reports": {
+      "path": "research-reports",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1776117116996,
       "keyFiles": []
     },
     "scripts": {
       "path": "scripts",
       "purpose": "Build/utility scripts",
       "fileCount": 1,
-      "lastAccessed": 1776029326592,
+      "lastAccessed": 1776117116997,
       "keyFiles": [
         "migrate-tenants-to-users.ts"
       ]
@@ -171,7 +202,7 @@
       "path": "shared",
       "purpose": null,
       "fileCount": 3,
-      "lastAccessed": 1776029326592,
+      "lastAccessed": 1776117116997,
       "keyFiles": [
         "fieldAliases.ts",
         "package.json",
@@ -182,7 +213,7 @@
       "path": "src",
       "purpose": "Source code",
       "fileCount": 20,
-      "lastAccessed": 1776029326592,
+      "lastAccessed": 1776117116999,
       "keyFiles": [
         "channel-web.ts",
         "docker-image-digests.test.ts",
@@ -195,21 +226,21 @@
       "path": "temp",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1776029326592,
+      "lastAccessed": 1776117116999,
       "keyFiles": []
     },
     "test": {
       "path": "test",
       "purpose": "Test files",
       "fileCount": 0,
-      "lastAccessed": 1776029326593,
+      "lastAccessed": 1776117117000,
       "keyFiles": []
     },
     "tests": {
       "path": "tests",
       "purpose": "Test files",
       "fileCount": 1,
-      "lastAccessed": 1776029326593,
+      "lastAccessed": 1776117117000,
       "keyFiles": [
         "ApiKeyManager.test.ts"
       ]
@@ -218,14 +249,25 @@
       "path": "uploads",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1776029326593,
+      "lastAccessed": 1776117117002,
       "keyFiles": []
+    },
+    "coverage/src": {
+      "path": "coverage/src",
+      "purpose": "Source code",
+      "fileCount": 7,
+      "lastAccessed": 1776117117005,
+      "keyFiles": [
+        "globals.ts.html",
+        "index.html",
+        "logger.ts.html"
+      ]
     },
     "scripts/__tests__": {
       "path": "scripts/__tests__",
       "purpose": "Test files",
       "fileCount": 1,
-      "lastAccessed": 1776029326596,
+      "lastAccessed": 1776117117006,
       "keyFiles": [
         "migrate-tenants-to-users.test.ts"
       ]
@@ -234,7 +276,7 @@
       "path": "shared/dist",
       "purpose": "Distribution/build output",
       "fileCount": 2,
-      "lastAccessed": 1776029326597,
+      "lastAccessed": 1776117117007,
       "keyFiles": [
         "index.d.ts",
         "index.js"
@@ -244,14 +286,14 @@
       "path": "shared/node_modules",
       "purpose": "Dependencies",
       "fileCount": 0,
-      "lastAccessed": 1776029326597,
+      "lastAccessed": 1776117117009,
       "keyFiles": []
     },
     "shared/src": {
       "path": "shared/src",
       "purpose": "Source code",
       "fileCount": 1,
-      "lastAccessed": 1776029326597,
+      "lastAccessed": 1776117117009,
       "keyFiles": [
         "index.ts"
       ]
@@ -260,7 +302,7 @@
       "path": "test/helpers",
       "purpose": "Helper functions",
       "fileCount": 1,
-      "lastAccessed": 1776029326598,
+      "lastAccessed": 1776117117010,
       "keyFiles": [
         "normalize-text.ts"
       ]
@@ -269,7 +311,7 @@
       "path": "test/mocks",
       "purpose": "Mock data",
       "fileCount": 1,
-      "lastAccessed": 1776029326598,
+      "lastAccessed": 1776117117010,
       "keyFiles": [
         "baileys.ts"
       ]
@@ -278,20 +320,32 @@
   "hotPaths": [
     {
       "path": "",
-      "accessCount": 42,
-      "lastAccessed": 1776074062983,
+      "accessCount": 43,
+      "lastAccessed": 1776117454731,
       "type": "directory"
     },
     {
       "path": "conductor/tracks.md",
-      "accessCount": 25,
-      "lastAccessed": 1776071459212,
+      "accessCount": 29,
+      "lastAccessed": 1776117147454,
+      "type": "file"
+    },
+    {
+      "path": "src/billing/auth-guard.ts",
+      "accessCount": 17,
+      "lastAccessed": 1776103408434,
       "type": "file"
     },
     {
       "path": "conductor/tech-stack.md",
+      "accessCount": 14,
+      "lastAccessed": 1776107464210,
+      "type": "file"
+    },
+    {
+      "path": "conductor/workflow.md",
       "accessCount": 13,
-      "lastAccessed": 1776031274707,
+      "lastAccessed": 1776117142011,
       "type": "file"
     },
     {
@@ -301,33 +355,21 @@
       "type": "file"
     },
     {
-      "path": "src/billing/auth-guard.ts",
-      "accessCount": 11,
-      "lastAccessed": 1776031454174,
+      "path": "src/tenancy/context-resolver.ts",
+      "accessCount": 10,
+      "lastAccessed": 1776103640753,
       "type": "file"
     },
     {
-      "path": "conductor/workflow.md",
-      "accessCount": 11,
-      "lastAccessed": 1776071464735,
+      "path": "conductor/product.md",
+      "accessCount": 10,
+      "lastAccessed": 1776105138436,
       "type": "file"
     },
     {
       "path": "docs/TrueFusionPlan.md",
       "accessCount": 9,
       "lastAccessed": 1776030806207,
-      "type": "file"
-    },
-    {
-      "path": "conductor/product.md",
-      "accessCount": 9,
-      "lastAccessed": 1776031269719,
-      "type": "file"
-    },
-    {
-      "path": "src/tenancy/context-resolver.ts",
-      "accessCount": 7,
-      "lastAccessed": 1775795129391,
       "type": "file"
     },
     {

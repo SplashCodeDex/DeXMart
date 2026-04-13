@@ -1,5 +1,5 @@
 import { antiBanService } from '../services/antiBanService.js';
-import { firebaseService } from '../services/FirebaseService.js';
+import { firebaseService } from '../persistence/firebase.js';
 import { getCampaignWorker } from '../jobs/campaignWorker.js';
 import logger from '../utils/logger.js';
 import { socketService } from '../services/socketService.js';
@@ -35,7 +35,7 @@ async function processExpiredCooldowns() {
                 
                 // 1. Flip status in Firebase to 'queued'
                 // We use 'queued' so the CampaignWorker picks it up in its next pass
-                await firebaseService.setDoc<'tenants/{tenantId}/campaigns'>(
+                await firebaseService.setDoc<'users/{userId}/campaigns'>(
                     'campaigns',
                     campaignId,
                     {
@@ -47,7 +47,7 @@ async function processExpiredCooldowns() {
                 );
 
                 // 2. Re-invoke the campaign worker by adding a job
-                const campaign = await firebaseService.getDoc<'tenants/{tenantId}/campaigns'>('campaigns', campaignId, tenantId);
+                const campaign = await firebaseService.getDoc<'users/{userId}/campaigns'>('campaigns', campaignId, tenantId);
                 if (campaign) {
                     const campaignWorker = getCampaignWorker();
                     // Pulse the queue to make sure it's processed

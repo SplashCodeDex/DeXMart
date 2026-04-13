@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { getCampaignWorker } from './campaignWorker.js';
-import { firebaseService } from '../services/FirebaseService.js';
+import { firebaseService } from '../persistence/firebase.js';
 import { groupService } from '../services/groupService.js';
 
 // ── Hoisted mocks ─────────────────────────────────────────────────────────────
@@ -27,7 +27,7 @@ const { mockFirebase, mockJobQueue, mockChannelService, mockGroupService, mockSo
 });
 
 // Mock dependencies
-vi.mock('../services/FirebaseService.js', () => ({
+vi.mock('../persistence/firebase.js', () => ({
   firebaseService: mockFirebase,
   FirebaseService: { getInstance: () => mockFirebase },
 }));

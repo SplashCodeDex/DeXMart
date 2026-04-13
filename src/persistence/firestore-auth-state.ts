@@ -1,5 +1,5 @@
 import { AuthenticationState, AuthenticationCreds, BufferJSON, initAuthCreds, proto } from 'baileys';
-import { firebaseService } from '../services/FirebaseService.js';
+import { firebaseService } from './firebase.js';
 
 /**
  * Custom Baileys Auth State using Firestore subcollections

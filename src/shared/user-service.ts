@@ -1,5 +1,5 @@
 import { Timestamp } from 'firebase-admin/firestore';
-import { firebaseService } from '@/services/FirebaseService.js';
+import { firebaseService } from '@/persistence/firebase.js';
 import logger from '@/utils/logger.js';
 import { TenantUserDocument } from '@/types/index.js';
 
@@ -35,7 +35,7 @@ export class UserService {
    */
   async getUserById(tenantId: string, userId: string): Promise<TenantUserDocument | null> {
     try {
-      return await firebaseService.getDoc<'tenants/{tenantId}/users'>('users', userId, tenantId);
+      return await firebaseService.getDoc<'users/{userId}/users'>('users', userId, tenantId);
     } catch (error: unknown) {
       logger.error(`UserService.getUserById error [${tenantId}/${userId}]:`, error);
       return null;
@@ -47,7 +47,7 @@ export class UserService {
    */
   async saveUser(tenantId: string, user: TenantUserDocument): Promise<void> {
     try {
-      await firebaseService.setDoc<'tenants/{tenantId}/users'>('users', user.id, user, tenantId);
+      await firebaseService.setDoc<'users/{userId}/users'>('users', user.id, user, tenantId);
     } catch (error: unknown) {
       logger.error(`UserService.saveUser error [${tenantId}/${user.id}]:`, error);
       throw error;
@@ -59,7 +59,7 @@ export class UserService {
    */
   async updateLastLogin(tenantId: string, userId: string): Promise<void> {
     try {
-      await firebaseService.setDoc<'tenants/{tenantId}/users'>(
+      await firebaseService.setDoc<'users/{userId}/users'>(
         'users',
         userId,
         { lastLogin: Timestamp.now() },

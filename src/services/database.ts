@@ -1,6 +1,6 @@
 import { db } from '../lib/firebase.js';
 import logger from '../utils/logger.js';
-import { firebaseService } from './FirebaseService.js';
+import { firebaseService } from '@/persistence/firebase.js';
 import { ChannelMember, Result, ChannelMemberSchema, ChannelGroupDocument } from '../types/index.js';
 import { Timestamp } from 'firebase-admin/firestore';
 
@@ -22,7 +22,7 @@ export class DatabaseService {
      */
     async getUser(tenantId: string, jid: string): Promise<ChannelMember | null> {
         try {
-            const data = await firebaseService.getDoc<'tenants/{tenantId}/members'>('members', jid, tenantId);
+            const data = await firebaseService.getDoc<'users/{userId}/members'>('members', jid, tenantId);
             if (!data) return null;
 
             // Zero-Trust Validation
@@ -43,7 +43,7 @@ export class DatabaseService {
                 updatedAt: Timestamp.now()
             };
 
-            await firebaseService.setDoc<'tenants/{tenantId}/members'>('members', jid, updatePayload, tenantId, true);
+            await firebaseService.setDoc<'users/{userId}/members'>('members', jid, updatePayload, tenantId, true);
             return { success: true, data: undefined };
         } catch (error: unknown) {
             const err = error instanceof Error ? error : new Error(String(error));
@@ -72,7 +72,7 @@ export class DatabaseService {
      */
     async getGroup(tenantId: string, jid: string): Promise<ChannelGroupDocument | null> {
         try {
-            const data = await firebaseService.getDoc<'tenants/{tenantId}/groups'>('groups', jid, tenantId);
+            const data = await firebaseService.getDoc<'users/{userId}/groups'>('groups', jid, tenantId);
             if (!data) return null;
 
             // Optional: You might want to parse against BotGroupSchema here too if strict runtime checks are needed
@@ -95,7 +95,7 @@ export class DatabaseService {
                 updatedAt: Timestamp.now()
             };
 
-            await firebaseService.setDoc<'tenants/{tenantId}/groups'>('groups', jid, updatePayload, tenantId, true);
+            await firebaseService.setDoc<'users/{userId}/groups'>('groups', jid, updatePayload, tenantId, true);
             return { success: true, data: undefined };
         } catch (error: unknown) {
             const err = error instanceof Error ? error : new Error(String(error));
@@ -212,7 +212,7 @@ export class DatabaseService {
     public chat = {
         clearHistory: async (jid: string, tenantId: string = 'system') => {
             try {
-                await firebaseService.deleteDoc('tenants/{tenantId}/conversation_memory' as any, jid, tenantId);
+                await firebaseService.deleteDoc('users/{userId}/conversation_memory' as any, jid, tenantId);
                 logger.info(`Chat history cleared for ${jid} (${tenantId})`);
             } catch (error: any) {
                 logger.error(`DatabaseService.clearHistory failed for ${jid} (${tenantId})`, error);

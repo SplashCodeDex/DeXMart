@@ -3,7 +3,7 @@ import { WebSocket, WebSocketServer } from 'ws';
 import logger from '../utils/logger.js';
 import { db, admin } from '../lib/firebase.js';
 import { Timestamp } from 'firebase-admin/firestore';
-import { firebaseService } from './FirebaseService.js';
+import { firebaseService } from '@/persistence/firebase.js';
 import { Result, AnalyticsData } from '../types/contracts.js';
 
 interface AnalyticsMetrics {
@@ -146,7 +146,7 @@ class AnalyticsService {
       const field = type === 'sent' ? 'sent' : type === 'received' ? 'received' : 'errors';
 
       // 1. Daily Analytics Roll-up (for charts)
-      await firebaseService.setDoc<'tenants/{tenantId}/analytics'>(
+      await firebaseService.setDoc<'users/{userId}/analytics'>(
         'analytics',
         date,
         {
@@ -176,7 +176,7 @@ class AnalyticsService {
 
   async getHistoricalMetrics(tenantId: string, days = 7): Promise<Result<AnalyticsData[]>> {
     try {
-      const metrics = await firebaseService.getCollection<'tenants/{tenantId}/analytics'>(
+      const metrics = await firebaseService.getCollection<'users/{userId}/analytics'>(
         'analytics',
         tenantId
       );

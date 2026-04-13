@@ -418,7 +418,7 @@ Prevents duplicate processing of the same inbound message. Used by IngressServic
 ### FirebaseService
 | Field | Value |
 |-------|-------|
-| **File** | `src/services/FirebaseService.ts` |
+| **File** | `src/persistence/firebase.ts` |
 | **Pattern** | Singleton |
 | **Purpose** | Low-level Firestore CRUD with Zod schema validation |
 | **Tests** | `FirebaseService.test.ts`, `.hierarchy.test.ts`, `.path.test.ts` |
@@ -685,7 +685,7 @@ Status of each service relative to the Phase 4 migration (backend/ → src/). **
 | Channel Registry | `src/services/channels/registry.ts` | ⚠️ **DEPRECATED** (parallel system) |
 | WhatsappAdapter | `src/services/channels/whatsapp/WhatsappAdapter.ts` | ⚠️ **DEPRECATED** (parallel system — use `extensions/` instead) |
 | IngressService | `src/ingress/ingress-service.ts` | ✅ Migrated + **wired to `runEmbeddedPiAgent()`** (Phase 4 core fusion) |
-| FirebaseService | `src/services/FirebaseService.ts` | ✅ Migrated |
+| FirebaseService | `src/persistence/firebase.ts` | ✅ Migrated |
 | ConfigService | `src/services/ConfigService.ts` | ✅ Migrated |
 | MultiTenantService | `src/services/MultiTenantService.ts` | ✅ Migrated |
 | MastermindStreamService | `src/services/MastermindStreamService.ts` | ✅ Migrated — Phase 3 wiring complete via `src/analytics/event-listener.ts` |

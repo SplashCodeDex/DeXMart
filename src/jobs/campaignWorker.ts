@@ -1,6 +1,6 @@
 import { Worker, Job } from 'bullmq';
 import { Campaign, CampaignStatus, MessageTemplate, Contact } from '../types/contracts.js';
-import { firebaseService } from '../services/FirebaseService.js';
+import { firebaseService } from '../persistence/firebase.js';
 import { channelService } from '../services/ChannelService.js';
 import jobQueueService from '../services/jobQueue.js';
 import { groupService } from '../services/groupService.js';
@@ -77,7 +77,7 @@ class CampaignWorker {
         const { tenantId, campaign } = job.data;
         const { id } = campaign;
 
-        const currentCampaign = await firebaseService.getDoc<'tenants/{tenantId}/campaigns'>('campaigns', id, tenantId);
+        const currentCampaign = await firebaseService.getDoc<'users/{userId}/campaigns'>('campaigns', id, tenantId);
         if (!currentCampaign) throw new Error('Campaign not found');
 
         if (currentCampaign.status === 'completed' || currentCampaign.status === 'cancelled') return;
@@ -137,7 +137,7 @@ class CampaignWorker {
             const contact = targets[i];
 
             if (i % 5 === 0) {
-                const live = await firebaseService.getDoc<'tenants/{tenantId}/campaigns'>('campaigns', id, tenantId);
+                const live = await firebaseService.getDoc<'users/{userId}/campaigns'>('campaigns', id, tenantId);
                 if (live?.status === 'paused' || live?.status === 'cancelled') return;
             }
 
@@ -201,9 +201,9 @@ class CampaignWorker {
 
     private async loadTargets(tenantId: string, audience: Campaign['audience']): Promise<Contact[]> {
         if (audience.type === 'audience') {
-            const aud = await firebaseService.getDoc<'tenants/{tenantId}/audiences'>('audiences', audience.targetId, tenantId);
+            const aud = await firebaseService.getDoc<'users/{userId}/audiences'>('audiences', audience.targetId, tenantId);
             if (!aud) return [];
-            const allContacts = await firebaseService.getCollection<'tenants/{tenantId}/contacts'>('contacts', tenantId);
+            const allContacts = await firebaseService.getCollection<'users/{userId}/contacts'>('contacts', tenantId);
             if (aud.filters && aud.filters.tags) {
                 return allContacts.filter(c => c.tags.some(t => aud.filters.tags.includes(t)));
             }
@@ -214,7 +214,7 @@ class CampaignWorker {
             const activeChannelIds = this.getAvailableChannelIds(tenantId, { type: 'pool' } as any);
 
             if (audience.targetId === 'all') {
-                let groups = await firebaseService.getCollection<'tenants/{tenantId}/groups'>('groups', tenantId);
+                let groups = await firebaseService.getCollection<'users/{userId}/groups'>('groups', tenantId);
 
                 if (groups.length === 0 && activeChannelIds.length > 0) {
                     try {
@@ -222,7 +222,7 @@ class CampaignWorker {
                         const socket = getWhatsAppRuntime().channel.whatsapp.getActiveWebListener();
                         if (socket) {
                             await groupService.syncAllGroups(socket as any);
-                            groups = await firebaseService.getCollection<'tenants/{tenantId}/groups'>('groups', tenantId);
+                            groups = await firebaseService.getCollection<'users/{userId}/groups'>('groups', tenantId);
                         }
                     } catch { /* runtime not yet initialised */ }
                 }
@@ -238,7 +238,7 @@ class CampaignWorker {
                     updatedAt: new Date()
                 } as Contact));
             } else {
-                let group = await firebaseService.getDoc<'tenants/{tenantId}/groups'>('groups', audience.targetId, tenantId);
+                let group = await firebaseService.getDoc<'users/{userId}/groups'>('groups', audience.targetId, tenantId);
 
                 if (!group && activeChannelIds.length > 0) {
                     try {
@@ -246,7 +246,7 @@ class CampaignWorker {
                         const socket = getWhatsAppRuntime().channel.whatsapp.getActiveWebListener();
                         if (socket) {
                             await groupService.syncGroup(socket as any, audience.targetId);
-                            group = await firebaseService.getDoc<'tenants/{tenantId}/groups'>('groups', audience.targetId, tenantId);
+                            group = await firebaseService.getDoc<'users/{userId}/groups'>('groups', audience.targetId, tenantId);
                         }
                     } catch { /* runtime not yet initialised */ }
                 }
@@ -266,7 +266,7 @@ class CampaignWorker {
         }
 
         if (audience.type === 'contacts') {
-            return await firebaseService.getCollection<'tenants/{tenantId}/contacts'>('contacts', tenantId);
+            return await firebaseService.getCollection<'users/{userId}/contacts'>('contacts', tenantId);
         }
 
         return [];
@@ -301,11 +301,11 @@ class CampaignWorker {
     }
 
     private async updateCampaignStats(tenantId: string, campaignId: string, stats: Partial<Campaign['stats']>): Promise<void> {
-        await firebaseService.setDoc<'tenants/{tenantId}/campaigns'>('campaigns', campaignId, { stats: stats as any, updatedAt: new Date() }, tenantId, true);
+        await firebaseService.setDoc<'users/{userId}/campaigns'>('campaigns', campaignId, { stats: stats as any, updatedAt: new Date() }, tenantId, true);
     }
 
     private async updateCampaignStatus(tenantId: string, campaignId: string, status: CampaignStatus): Promise<void> {
-        await firebaseService.setDoc<'tenants/{tenantId}/campaigns'>('campaigns', campaignId, { status, updatedAt: new Date() }, tenantId, true);
+        await firebaseService.setDoc<'users/{userId}/campaigns'>('campaigns', campaignId, { status, updatedAt: new Date() }, tenantId, true);
     }
 
     private static instance: CampaignWorker;
@@ -318,7 +318,7 @@ class CampaignWorker {
     }
 
     private async finalizeCampaign(tenantId: string, id: string, sent: number, failed: number, total: number) {
-        await firebaseService.setDoc<'tenants/{tenantId}/campaigns'>('campaigns', id, {
+        await firebaseService.setDoc<'users/{userId}/campaigns'>('campaigns', id, {
             status: 'completed',
             stats: { sent, failed, pending: 0, total },
             updatedAt: new Date()

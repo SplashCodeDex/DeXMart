@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ChannelManagerService } from './ChannelManagerService';
 
 // Mock dependencies
-vi.mock('@/services/FirebaseService', () => ({
+vi.mock('@/persistence/firebase.js', () => ({
     firebaseService: {
         getDoc: vi.fn(),
         setDoc: vi.fn(),

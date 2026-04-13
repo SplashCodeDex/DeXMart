@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ChannelService } from './ChannelService.js';
-import { firebaseService } from '@/services/FirebaseService.js';
+import { firebaseService } from '@/persistence/firebase.js';
 import { userContextResolver } from '../tenancy/resolver-instance.js';
 import { createAuthGuard } from '../tenancy/tenant-context.js';
 import { assertCan, systemAuthorityService } from '../billing/auth-guard.js';
@@ -9,7 +9,7 @@ import { createChannelManager } from '../gateway/server-channels.js';
 import type { ChannelManager } from '../gateway/server-channels.js';
 
 // Mock dependencies
-vi.mock('@/services/FirebaseService.js', () => ({
+vi.mock('@/persistence/firebase.js', () => ({
   firebaseService: {
     getDoc: vi.fn(),
     setDoc: vi.fn(),

@@ -8,7 +8,7 @@ import { ConfigService, config } from '@/services/ConfigService.js';
 import auditService from '@/services/auditService.js';
 import logger from '@/utils/logger.js';
 import { multiTenantService } from '@/services/multiTenantService.js';
-import { firebaseService } from '@/services/FirebaseService.js';
+import { firebaseService } from '@/persistence/firebase.js';
 import { cacheService } from '@/services/cache.js';
 import { parseDuration } from '@/utils/time.js';
 

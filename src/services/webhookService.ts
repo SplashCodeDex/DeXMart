@@ -1,6 +1,6 @@
 import axios from 'axios';
 import crypto from 'crypto';
-import { firebaseService } from './FirebaseService.js';
+import { firebaseService } from '@/persistence/firebase.js';
 import { Webhook, WebhookSchema, WebhookEvent, Result } from '../types/contracts.js';
 import { Timestamp } from 'firebase-admin/firestore';
 import logger from '../utils/logger.js';
@@ -75,7 +75,7 @@ export class WebhookService {
             };
 
             const webhook = WebhookSchema.parse(rawWebhook);
-            await firebaseService.setDoc<'tenants/{tenantId}/webhooks'>('webhooks', webhookId, webhook as any, tenantId);
+            await firebaseService.setDoc<'users/{userId}/webhooks'>('webhooks', webhookId, webhook as any, tenantId);
             return { success: true, data: webhook };
         } catch (error: unknown) {
             const err = error instanceof Error ? error : new Error(String(error));
@@ -89,7 +89,7 @@ export class WebhookService {
      */
     async getWebhooks(tenantId: string): Promise<Result<Webhook[]>> {
         try {
-            const webhooks = await firebaseService.getCollection<'tenants/{tenantId}/webhooks'>('webhooks', tenantId);
+            const webhooks = await firebaseService.getCollection<'users/{userId}/webhooks'>('webhooks', tenantId);
             return { success: true, data: webhooks as Webhook[] };
         } catch (error: unknown) {
             const err = error instanceof Error ? error : new Error(String(error));
@@ -183,7 +183,7 @@ export class WebhookService {
      */
     async deleteWebhook(tenantId: string, webhookId: string, metadata: { actor: string; ip?: string } = { actor: 'system' }): Promise<Result<void>> {
         try {
-            await firebaseService.deleteDoc<'tenants/{tenantId}/webhooks'>('webhooks', webhookId, tenantId);
+            await firebaseService.deleteDoc<'users/{userId}/webhooks'>('webhooks', webhookId, tenantId);
             return { success: true, data: undefined };
         } catch (error: unknown) {
             return { success: false, error: error instanceof Error ? error : new Error(String(error)) };

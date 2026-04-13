@@ -1,4 +1,4 @@
-import { firebaseService } from '@/services/FirebaseService.js';
+import { firebaseService } from '@/persistence/firebase.js';
 import { Channel, ChannelSchema, Result } from '../types/contracts.js';
 import { Timestamp, FieldValue } from 'firebase-admin/firestore';
 import logger from '@/utils/logger.js';

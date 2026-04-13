@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { useFirestoreAuthState } from './baileysFirestoreAuth.js';
-import { firebaseService } from '../services/FirebaseService.js';
+import { firebaseService } from '../persistence/firebase.js';
 
 describe('Firestore Auth Provider', () => {
   const tenantId = 'test-tenant';
