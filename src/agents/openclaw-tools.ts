@@ -69,6 +69,11 @@ export function createOpenClawTools(options?: {
   requesterSenderId?: string | null;
   /** Whether the requesting sender is an owner. */
   senderIsOwner?: boolean;
+  /** Optional per-user memory manager (e.g. HybridMemoryAdapter).
+   *  Forwarded to resolvePluginTools so the memory-core plugin uses
+   *  per-user Firestore-backed memory instead of the file-based default.
+   *  Set by IngressService for authenticated user requests (Phase 3.3 fusion). */
+  memoryManager?: import("../memory/types.js").MemorySearchManager;
 }): AnyAgentTool[] {
   const workspaceDir = resolveWorkspaceRoot(options?.workspaceDir);
   const imageTool = options?.agentDir?.trim()
@@ -193,6 +198,7 @@ export function createOpenClawTools(options?: {
     },
     existingToolNames: new Set(tools.map((tool) => tool.name)),
     toolAllowlist: options?.pluginToolAllowlist,
+    memoryManager: options?.memoryManager,
   });
 
   return [...tools, ...pluginTools];

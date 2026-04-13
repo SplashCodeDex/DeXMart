@@ -236,6 +236,10 @@ export function createOpenClawCodingTools(options?: {
   disableMessageTool?: boolean;
   /** Whether the sender is an owner (required for owner-only tools). */
   senderIsOwner?: boolean;
+  /** Optional per-user memory manager (e.g. HybridMemoryAdapter).
+   *  Forwarded to createOpenClawTools → resolvePluginTools so memory tools
+   *  use per-user Firestore-backed memory instead of the file-based default. */
+  memoryManager?: import("../memory/types.js").MemorySearchManager;
 }): AnyAgentTool[] {
   const execToolName = "exec";
   const sandbox = options?.sandbox?.enabled ? options.sandbox : undefined;
@@ -493,6 +497,7 @@ export function createOpenClawCodingTools(options?: {
       requesterAgentIdOverride: agentId,
       requesterSenderId: options?.senderId,
       senderIsOwner: options?.senderIsOwner,
+      memoryManager: options?.memoryManager,
     }),
   ];
   const toolsForMessageProvider = applyMessageProviderToolPolicy(tools, options?.messageProvider);
