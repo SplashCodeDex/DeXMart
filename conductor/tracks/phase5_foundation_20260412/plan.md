@@ -60,7 +60,7 @@
 
 ---
 
-## Phase 4: Repository Cleanup
+## Phase 4: Repository Cleanup [checkpoint: 886ede3]
 
 ### Task 5.8 — Delete backend/ Directory
 - [x] Task 5.8.1: Confirm no source files in `backend/src/` are referenced anywhere in `src/` (grep check)
@@ -82,4 +82,4 @@
 - [x] Task 5.10.3: Update all call sites to use `assertCan()` / `filterModelsForUser()` from `src/billing/auth-guard.ts` [sites_updated]
 - [x] Task 5.10.4: Delete `src/services/SystemAuthorityService.ts` (or equivalent path) [file_deleted]
 - [x] Task 5.10.5: Run full test suite (green) + coverage check [5b3a69a]
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Repository Cleanup' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Repository Cleanup' (Protocol in workflow.md) [886ede3]
