@@ -1,12 +1,12 @@
 # DeXMart Architecture Blueprint
 
-> **Last verified**: 2026-04-10 | **Branch**: `fusion/phase-1-restructure` | **Status**: True Fusion Complete — unified `src/` tree, no legacy directories
+> **Last verified**: 2026-04-10 | **Current Phase**: Phase 5 (Foundation Grounding) | **Status**: True Fusion — unified `src/` tree, `extensions/` canonical
 
 ---
 
 ## 1. Vision
 
-**DeXMart is one project.** It is a B2C multi-tenant omnichannel AI automation platform built on top of the OpenClaw engine. After fusion, there is no "OpenClaw side" and "DeXMart side" -- there is only **DeXMart**.
+**DeXMart = OpenClaw, but with B2C multi-tenancy, Stripe billing gates, and Firebase email auth grounded into the foundation — as if OpenClaw was always built with it.** The DeXMart Next.js dashboard completely replaces ControlUI as the sole user-facing interface.
 
 ### The Fusion Contract
 
@@ -14,7 +14,9 @@
 >
 > - **No bridges, wrappers, or adapters** between "OpenClaw code" and "DeXMart code"
 > - **No duplicated functions or features** -- every capability has exactly one implementation
-> - **No mirrors** -- code exists in one place only (not in both `backend/` and `src/`)
+> - **Extensions are canonical** -- `extensions/` contains the rich, battle-tested channel plugins. Channel logic is never duplicated in `src/services/channels/`
+> - **One channel engine** -- OpenClaw's `createChannelManager()` + `PluginRegistry` is the single channel management system
+> - **DeXMart UI replaces ControlUI** -- the Next.js dashboard is the sole user-facing frontend
 > - **No separate identity** -- the project IS DeXMart, full stop
 >
 > OpenClaw is to DeXMart what WebKit is to Safari: the engine under the hood that users never see and developers rarely think about as a separate thing.
@@ -27,7 +29,7 @@ The entire OpenClaw engine is elevated with enterprise-grade capabilities that a
 2. **Tenant authentication** -- Gmail/email OAuth via Firebase Auth, every user isolated by `userId`
 3. **Cloud persistence** -- Firestore replaces all file-based storage (sessions, config, memory)
 4. **DeXMart-exclusive features** -- campaigns, anti-ban, content moderation, Mastermind stream, analytics, visual flows -- centralized for the entire project
-5. **DeXMart frontend** -- the Next.js dashboard is THE UI; every backend endpoint (including those originating from OpenClaw's engine) is accessible through it
+5. **DeXMart frontend** -- the Next.js dashboard completely **replaces ControlUI** as the sole user-facing interface
 
 ### The End State
 
@@ -111,8 +113,8 @@ DeXMart/                          # Root -- pnpm workspace
 |   |   +-- memory/              # Vector memory (sqlite-vec)
 |   |   +-- commands/            # Bot command system (OpenClaw + DeXMart subdirs)
 |   |
-|   +-- [Channel Plugins]        # 40+ messaging platforms
-|   |   +-- web/                 # WhatsApp (Baileys 7.0) — OpenClaw engine
+|   +-- [Channel Plugins]        # 40+ messaging platforms (CANONICAL: extensions/)
+|   |   +-- web/                 # WhatsApp (Baileys 7.0) — OpenClaw engine core
 |   |   +-- telegram/            # Telegram (grammy)
 |   |   +-- discord/             # Discord (discord.js)
 |   |   +-- slack/               # Slack (@slack/bolt)
@@ -122,7 +124,7 @@ DeXMart/                          # Root -- pnpm workspace
 |   |   +-- line/, matrix/, ...  # 35+ more channels
 |   |   +-- channels/            # Generic channel abstractions
 |   |   +-- routing/             # Message routing
-|   |   +-- services/channels/   # DeXMart adapter registry + WhatsappAdapter
+|   |   +-- services/channels/   # ⚠️ DEPRECATED — parallel system pending removal (Phase 5)
 |   |
 |   +-- [Platform Infrastructure]
 |   |   +-- gateway/             # Hono HTTP gateway + channel health monitor
@@ -165,7 +167,7 @@ DeXMart/                          # Root -- pnpm workspace
 |   |
 |   +-- main.ts                  # UNIFIED entry point (boots Express + watchdog + usage flush)
 |
-+-- extensions/                  # OpenClaw extension plugins (40+)
++-- extensions/                  # OpenClaw extension plugins (40+) — CANONICAL channel implementations
 |
 +-- frontend/                    # Next.js 16 dashboard
 |   +-- src/
@@ -176,8 +178,7 @@ DeXMart/                          # Root -- pnpm workspace
 |       +-- stores/              # Zustand stores
 |       +-- lib/                 # Client utilities
 |
-+-- backend/                     # LEGACY — source migrated to src/ in Phase 4
-|   |                            # dist/ kept as reference; delete after staging smoke test
++-- backend/                     # ⚠️ LEGACY — source migrated to src/ in Phase 4; pending deletion
 |   +-- dist/                    # Compiled JS only (source is now in src/)
 |
 +-- shared/                      # @DeXMart/shared -- cross-package Zod schemas
@@ -373,8 +374,11 @@ Having `openclaw/src/`, `backend/src/`, and `src/` created import path chaos, du
 ### 9.5 Why Flatten Into src/?
 One `src/` tree means one project. TypeScript path aliases (`@dexmart/*`, `@/*`) provide clean imports. No developer needs to ask "is this the OpenClaw version or the DeXMart version?" -- there is only one version.
 
-### 9.6 Why DeXMart Frontend Dominates?
-Every backend endpoint must be accessible from the DeXMart Next.js dashboard. If the engine supports an agent feature, the dashboard surfaces it. If the engine connects a channel, the dashboard shows its status. The frontend IS the product experience -- the backend (regardless of its upstream origin) serves it.
+### 9.6 Why DeXMart Frontend Replaces ControlUI?
+ControlUI is OpenClaw's built-in web interface (served on `:18789`). It's designed for single-user CLI setups. DeXMart's Next.js dashboard replaces it entirely for the SaaS product — it supports multi-tenant isolation, Stripe billing UI, campaign management, and all features ControlUI cannot provide. ControlUI remains available as an upstream debugging tool during development, but is **never** exposed to end users.
+
+### 9.7 Why extensions/ Is Canonical for Channels?
+OpenClaw's `extensions/` directory contains the full-featured channel plugins — WhatsApp with polls, reactions, rich media, pairing, directory; Telegram with streaming, voice, groups; Discord with slash commands, threads; and 37+ more. These plugins are managed by `createChannelManager()` → `PluginRegistry` → `startAccount()` — a proven lifecycle system with backoff, restart policies, and abort handling. Building a parallel `WhatsappAdapter.ts` that wraps OpenClaw's socket duplicates this entire lifecycle without the richness. Phase 5 corrects this by injecting B2C context at the engine level so ALL extensions automatically inherit multi-tenancy.
 
 ---
 

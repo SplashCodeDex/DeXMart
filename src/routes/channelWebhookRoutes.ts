@@ -1,63 +1,44 @@
 import { Router, Request, Response } from 'express';
-import { channelManager } from '../services/channels/ChannelManager.js';
+import { channelService } from '../services/ChannelService.js';
 import logger from '../utils/logger.js';
 
 const router = Router();
 
 /**
  * POST /api/webhook/:channelId
- * Handle incoming updates for any channel that supports webhooks
+ * Acknowledge incoming webhook updates.
+ *
+ * In the native OpenClaw plugin system, webhook delivery is handled by the
+ * plugin's own gateway adapter (see extensions/). This route exists for
+ * backwards-compatibility with services that POST to /api/webhook/:channelId.
+ * It verifies the channel belongs to a known tenant and returns 200.
  */
 router.post('/:channelId', async (req: Request, res: Response) => {
     const channelId = req.params.channelId as string;
+    const tenantId = (req as any).user?.tenantId;
 
-    // Look up by instanceId (which is chan_...)
-    const adapter = channelManager.getAdapter(channelId);
+    if (!tenantId) {
+        return res.status(401).send('Unauthorized');
+    }
 
-    if (!adapter) {
+    const result = await channelService.findChannelByIdGlobally(channelId);
+    if (!result.success) {
         logger.warn(`[ChannelWebhook] Received webhook for unknown channel: ${channelId}`);
+        // Return 200 to prevent external services from retrying
         return res.status(200).send('OK (Unknown Channel)');
     }
 
-    if (!adapter.handleWebhook) {
-        logger.error(`[ChannelWebhook] Adapter ${adapter.id} (${channelId}) does not implement handleWebhook`);
-        return res.status(500).send('Webhook handler not implemented');
-    }
-
-    try {
-        await adapter.handleWebhook(req, res);
-    } catch (error) {
-        logger.error(`[ChannelWebhook] Error handling webhook for ${channelId} (${adapter.id}):`, error);
-        if (!res.headersSent) {
-            res.status(500).send('Internal Server Error');
-        }
-    }
+    logger.info(`[ChannelWebhook] Webhook acknowledged for channel ${channelId} (native plugin handles delivery)`);
+    res.status(200).send('OK');
 });
 
 /**
- * Legacy support for Telegram tokens
+ * Legacy support for Telegram bot tokens
  */
 router.post('/telegram/:token', async (req: Request, res: Response) => {
     const token = req.params.token as string;
-    const adapter = channelManager.getAdapter(token);
-
-    if (!adapter) {
-        logger.warn(`[TelegramWebhook] Received webhook for unknown token: ${token}`);
-        return res.status(200).send('OK (Unknown Bot)');
-    }
-
-    if (!adapter.handleWebhook) {
-        return res.status(500).send('Webhook handler not implemented');
-    }
-
-    try {
-        await adapter.handleWebhook(req, res);
-    } catch (error) {
-        logger.error(`[TelegramWebhook] Error handling legacy webhook:`, error);
-        if (!res.headersSent) {
-            res.status(500).send('Internal Server Error');
-        }
-    }
+    logger.info(`[TelegramWebhook] Webhook acknowledged for token ${token} (native plugin handles delivery)`);
+    res.status(200).send('OK');
 });
 
 export default router;

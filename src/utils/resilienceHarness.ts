@@ -1,23 +1,25 @@
-import { WhatsappAdapter } from '../services/channels/whatsapp/WhatsappAdapter.js';
+import { getWhatsAppRuntime } from '../../extensions/whatsapp/src/runtime.js';
 import { vi } from 'vitest';
 
 /**
  * Resilience Mock Harness
- * Provides utilities to inject failures into a live or mocked WhatsappAdapter.
+ * Provides utilities to inject failures into the live native WhatsApp socket.
+ * Uses the OpenClaw WhatsApp runtime (getWhatsAppRuntime) instead of the
+ * deprecated WhatsappAdapter (removed in Task 5.5).
  */
 export class ResilienceHarness {
-    constructor(private adapter: WhatsappAdapter) {}
+    private getSocket(): any {
+        return getWhatsAppRuntime().channel.whatsapp.getActiveWebListener();
+    }
 
     /**
      * Simulates an abrupt socket closure
      */
     public simulateSocketClose() {
-        const socket = this.adapter.getSocket();
+        const socket = this.getSocket();
         if (socket && socket.ws) {
-            // Emulate the WebSocket 'close' event
             socket.ws.emit('close', 1006, 'Abrupt close simulated by harness');
         } else if (socket && socket.ev) {
-            // Fallback: direct Baileys event emission
             socket.ev.emit('connection.update', {
                 connection: 'close',
                 lastDisconnect: {
@@ -32,7 +34,7 @@ export class ResilienceHarness {
      * Simulates a 401 Unauthorized (Session Expired)
      */
     public simulateAuthFailure() {
-        const socket = this.adapter.getSocket();
+        const socket = this.getSocket();
         if (socket && socket.ev) {
             socket.ev.emit('connection.update', {
                 connection: 'close',
@@ -65,7 +67,7 @@ export class ResilienceHarness {
      * Simulates a thundering herd of messages
      */
     public async simulateMessageBurst(count: number, sender = '12345@s.whatsapp.net') {
-        const socket = this.adapter.getSocket();
+        const socket = this.getSocket();
         if (!socket || !socket.ev) return;
 
         for (let i = 0; i < count; i++) {

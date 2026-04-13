@@ -1,6 +1,6 @@
 # True Fusion Strategy
 
-> **Last verified**: 2026-04-10 | **Status**: True Fusion Complete
+> **Last verified**: 2026-04-10 | **Current Phase**: Phase 5 (Foundation Grounding)
 
 ---
 
@@ -15,8 +15,10 @@ True Fusion is the process of making **one project called DeXMart** from two ori
 | **One project** | After fusion, there is only DeXMart. OpenClaw is the upstream heritage, not a visible boundary. |
 | **Zero duplication** | Every function, feature, and service exists exactly once. No mirrors, no copies. |
 | **No bridges** | No wrappers, adapters, or bridge files. Code calls code directly. |
-| **Frontend dominates** | Every backend capability is accessible through the DeXMart Next.js dashboard. |
-| **Centralized elevation** | Monetization, tenant auth, cloud persistence, and DeXMart-exclusive features apply to the entire project -- not bolted onto a side. |
+| **Extensions are canonical** | `extensions/` contains the rich, battle-tested channel plugins. Channel logic is never duplicated in `src/services/channels/`. |
+| **One channel engine** | OpenClaw's `createChannelManager()` + `PluginRegistry` is the single channel management system. |
+| **Frontend replaces ControlUI** | The DeXMart Next.js dashboard is THE UI. ControlUI is upstream heritage, not user-facing. |
+| **Centralized elevation** | B2C tenancy, Stripe billing, Firebase auth, and Firestore persistence are injected into OpenClaw's engine foundation — not wrapped around it. |
 
 **The analogy:** OpenClaw is to DeXMart what the Linux kernel is to Ubuntu. Ubuntu IS the product. The kernel is the heritage. Nobody opens Ubuntu and sees "the Linux part" and "the Ubuntu part" -- they see one operating system. That's True Fusion.
 
@@ -250,10 +252,17 @@ All `backend/src/` directories moved directly into `src/` with no `dexmart-*` pr
 - **`MultiTenantApp.shutdown()`**: Now stops watchdog + flushes usage tracker on SIGTERM
 - **202 dead `dexmart-*` stub files deleted** (artifacts from Phase 1's incomplete staging)
 - **`context-resolver.ts` imports fixed**: Now uses `../lib/firebase.js` and `../utils/logger.js` (real locations)
-- **Recreated from compiled JS** (source deleted in Phase 1, now properly typed and fused):
+- **Recreated from compiled JS** (source deleted in Phase 1, now properly typed):
   - `src/services/channels/ChannelManager.ts` — adapter instance registry with `getAdaptersForUser()`, `shutdownUserAdapters()`
   - `src/services/channels/registry.ts` — platform registry; `GenericOpenClawAdapter` bridge removed; `msteams/matrix/facebook` correctly flagged as `nativeOpenClaw: true`
-  - `src/services/channels/whatsapp/WhatsappAdapter.ts` — **the fusion point**: wraps OpenClaw's `createWaSocket()` with Firestore auth (Phase 2 FR-2), anti-ban queue, multi-tenant isolation
+  - `src/services/channels/whatsapp/WhatsappAdapter.ts` — wraps OpenClaw's `createWaSocket()` with Firestore auth
+
+> [!WARNING]
+> ### ⚠️ DEPRECATED — Parallel Channel System (Dead End)
+> The three files above (`ChannelManager.ts`, `registry.ts`, `WhatsappAdapter.ts`) were recreated as a temporary measure but represent a **dead-end architecture**. They duplicate OpenClaw's native `createChannelManager()` + `extensions/` plugin infrastructure. They are **pending removal in Phase 5**.
+>
+> **DO NOT extend these files.** All new channel work belongs in `extensions/` and the native plugin system.
+
 - **`IngressService` → `runEmbeddedPiAgent()`**: Core fusion wiring. DeXMart's inbound message pipeline now feeds directly into OpenClaw's embedded agent runtime. `GeminiAI` (deleted in Phase 1) is replaced by the real engine.
 - **`GlobalContext.unifiedAI`** type fixed — dead `GeminiAI` reference removed
 
@@ -324,9 +333,9 @@ The `scripts/upstream-watcher.ts` automation runs every 12 hours and commits a r
 | `src/persistence/channel-auth-state.ts` | 2 | Universal Firestore auth state for all channels |
 | `src/billing/usage-tracker.ts` | 2 | Batched usage tracking |
 | `src/billing/auth-guard.ts` | 2 | Billing gate utilities (`filterModelsForUser`, `assertCan`) |
-| `src/services/channels/ChannelManager.ts` | 4 | Multi-tenant adapter registry |
-| `src/services/channels/registry.ts` | 4 | Platform registry (no bridges, `nativeOpenClaw` flag) |
-| `src/services/channels/whatsapp/WhatsappAdapter.ts` | 4 | Fusion point: OpenClaw socket + Firestore auth + anti-ban |
+| `src/services/channels/ChannelManager.ts` | 4 | ⚠️ **DEPRECATED** — parallel adapter registry, pending removal in Phase 5 |
+| `src/services/channels/registry.ts` | 4 | ⚠️ **DEPRECATED** — parallel platform registry, pending removal in Phase 5 |
+| `src/services/channels/whatsapp/WhatsappAdapter.ts` | 4 | ⚠️ **DEPRECATED** — parallel WhatsApp wrapper, pending removal in Phase 5 |
 | All of `src/services/`, `src/routes/`, `src/middleware/`, `src/lib/`, `src/jobs/`, `src/server/` etc. | 4 | DeXMart business logic migrated from `backend/src/` |
 
 ---
@@ -337,9 +346,10 @@ The `scripts/upstream-watcher.ts` automation runs every 12 hours and commits a r
 |------|-----------|--------|------------|
 | OpenClaw upstream breaks injection points | Low | High | Upstream watcher monitors changed files; injection points are stable APIs |
 | Firestore costs scale with users | Medium | Medium | Usage tracking with batched writes; Redis caching reduces reads |
-| Memory migration (sqlite-vec -> Firestore) loses vector search | Medium | High | Implement vector similarity in Firestore or use a managed vector DB |
-| Phase 4 migration introduces regressions | Medium | Medium | TDD mandate; every moved service gets its tests moved too |
+| Memory migration (sqlite-vec → Firestore) loses vector search | Medium | High | HybridMemoryAdapter: local sqlite-vec + Firestore text backup (Phase 3 complete) |
+| Phase 5 engine injection introduces regressions | Medium | Medium | TDD mandate; existing OpenClaw tests + DeXMart injection tests must all pass |
 | Session persistence adds Firestore latency | Low | Low | Auth state reads are cached; writes are batched |
+| Parallel channel system causes confusion | Medium | High | Deprecated with warnings in all docs; Phase 5 removes completely |
 
 ---
 
@@ -347,17 +357,48 @@ The `scripts/upstream-watcher.ts` automation runs every 12 hours and commits a r
 
 The fusion is complete when a new developer sees **one project called DeXMart**:
 
-- [x] **One codebase**: A single `src/` tree. All `backend/src/` source migrated. No mirrors in active development. (`backend/` kept only until staging smoke test, then deleted)
+- [x] **One codebase**: A single `src/` tree. All `backend/src/` source migrated. No mirrors in active development.
 - [x] **One entry point**: `src/main.ts` is the unified entry point (boots Express, watchdog, usage flush)
 - [x] **Zero bridges**: No `openclawImports`, `OpenClawSkillBridge`, `GenericOpenClawAdapter`, or shim files. Code calls code directly.
 - [x] **Core agent wiring**: `IngressService` calls `runEmbeddedPiAgent()` — not a custom AI wrapper
-- [x] **Session fusion**: `WhatsappAdapter` uses OpenClaw's `createWaSocket()` with Firestore auth state
 - [x] **54 tests passing**: Phase 2 injection point tests — all green, zero failures
-- [ ] **Zero duplication (second pass)**: Second-pass dedup of `src/services/` vs. `src/billing/`, `src/tenancy/` etc. (some service files still reference old patterns)
-- [ ] **Frontend sees everything**: Every backend endpoint accessible through the dashboard (ongoing)
-- [ ] **Upstream sync is invisible**: Upstream watcher automation not yet configured
 - [x] **B2C isolation verified**: Integration tests proving User A cannot see User B's data (`src/tenancy/__tests__/isolation.integration.test.ts` — 14 tests, 2026-04-10)
 - [x] **Billing enforcement verified**: Integration tests proving Free users cannot access Pro features (`src/billing/__tests__/enforcement.integration.test.ts` — 28 tests, 2026-04-10)
-- [ ] **Phase 3 complete**: MastermindStreamService → OpenClaw agent events; Firestore memory adapter
+- [ ] **Foundation grounded (Phase 5)**: B2C/Stripe/Firebase injected into `PluginRuntime`, `createChannelManager()`, and `src/web/session.ts` at the engine level
+- [ ] **Parallel system removed (Phase 5)**: `WhatsappAdapter.ts`, DeXMart's `ChannelManager.ts`, and DeXMart's `registry.ts` deleted
+- [ ] **ControlUI replaced (Phase 6)**: DeXMart dashboard handles all channel operations; `/api/openclaw-ui` proxy removed
+- [ ] **Zero duplication (second pass)**: Second-pass dedup of `src/services/` vs. `src/billing/`, `src/tenancy/` etc.
+- [ ] **Upstream sync is invisible**: Upstream watcher automation configured
 - [ ] **`backend/` deleted**: After staging smoke test confirms `src/main.ts` boots correctly
 - [ ] **Indistinguishable**: No developer needs to know what came from OpenClaw vs what DeXMart built.
+
+---
+
+## 8. Architectural Course Correction
+
+> [!IMPORTANT]
+> This section documents a critical discovery made on 2026-04-10.
+
+### The Discovery: Two Parallel Channel Systems
+
+During Phase 4, three channel files were recreated from compiled JavaScript: `WhatsappAdapter.ts`, `ChannelManager.ts`, and `registry.ts`. These were intended as "fusion points" — bridges between DeXMart's business logic and OpenClaw's socket layer.
+
+**The problem**: They created a **parallel channel management system** alongside OpenClaw's native one. The codebase now had:
+
+| System 1 (OpenClaw Native) | System 2 (Dead-End Parallel) |
+|---|---|
+| `gateway/server-channels.ts` → `createChannelManager()` | `src/services/ChannelManagerService.ts` |
+| `src/plugins/registry.ts` → `PluginRegistry` | `src/services/channels/registry.ts` |
+| `extensions/whatsapp/` → rich plugin (polls, reactions, media, pairing, directory) | `src/services/channels/whatsapp/WhatsappAdapter.ts` → thin wrapper |
+
+### The Correct Approach (Phase 5)
+
+Instead of wrapping OpenClaw's engine with adapters, **inject B2C requirements into the engine's foundation**:
+
+1. `PluginRuntime` gets a `userId` parameter so every extension knows its tenant
+2. `src/web/session.ts` defaults to Firestore auth in SaaS mode
+3. `gateway/server-channels.ts` checks Stripe billing before starting any channel
+4. All 40+ extensions automatically inherit multi-tenancy, billing gates, and cloud persistence
+
+The parallel system files are **deprecated and pending removal**.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          q1i9kol.

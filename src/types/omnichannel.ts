@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { getPlatformMetadata } from '../services/channels/registry.js';
+import { getPlatformMetadata } from '../services/channels/platform-metadata.js';
 
 export const PlatformSchema = z.string().refine(
   (val) => !!getPlatformMetadata(val) || val === 'system', // Allow 'system' for internal routing

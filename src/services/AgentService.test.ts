@@ -41,6 +41,7 @@ vi.mock('@/utils/logger.js', () => ({
 describe('AgentService', () => {
   let service: AgentService;
   const tenantId = 'tenant-123';
+  const userId = 'user-abc123';
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -80,12 +81,12 @@ describe('AgentService', () => {
       vi.mocked(firebaseService.setDoc).mockResolvedValue(undefined);
       vi.mocked(systemAuthorityService.recordUsage).mockResolvedValue(undefined);
 
-      const result = await service.createAgent(tenantId, { name: 'My Bot', personality: 'Helpful' });
+      const result = await service.createAgent(tenantId, { name: 'My Bot', personality: 'Helpful' }, userId);
 
       expect(result.success).toBe(true);
-      expect(systemAuthorityService.checkAuthority).toHaveBeenCalledWith(tenantId, 'create_agent');
+      expect(systemAuthorityService.checkAuthority).toHaveBeenCalledWith(userId, 'create_agent');
       expect(firebaseService.setDoc).toHaveBeenCalled();
-      expect(systemAuthorityService.recordUsage).toHaveBeenCalledWith(tenantId, 'agents', 1);
+      expect(systemAuthorityService.recordUsage).toHaveBeenCalledWith(userId, 'agents', 1);
     });
 
     it('should block agent creation when authority denies', async () => {
@@ -94,7 +95,7 @@ describe('AgentService', () => {
         error: 'Agent limit reached for your plan'
       });
 
-      const result = await service.createAgent(tenantId, { name: 'Blocked Bot' });
+      const result = await service.createAgent(tenantId, { name: 'Blocked Bot' }, userId);
 
       expect(result.success).toBe(false);
       if (!result.success) {
@@ -107,7 +108,7 @@ describe('AgentService', () => {
     it('should use fallback error message when authority denies without a message', async () => {
       vi.mocked(systemAuthorityService.checkAuthority).mockResolvedValue({ allowed: false });
 
-      const result = await service.createAgent(tenantId, { name: 'Blocked Bot' });
+      const result = await service.createAgent(tenantId, { name: 'Blocked Bot' }, userId);
 
       expect(result.success).toBe(false);
       if (!result.success) {
@@ -124,7 +125,7 @@ describe('AgentService', () => {
       vi.mocked(channelService.getChannelsForAgent).mockResolvedValue({ success: true, data: mockChannels as any });
       vi.mocked(channelService.deleteChannel).mockResolvedValue({ success: true, data: undefined });
 
-      const result = await service.deleteAgent(tenantId, agentId);
+      const result = await service.deleteAgent(tenantId, agentId, userId);
 
       expect(result.success).toBe(true);
       expect(channelService.getChannelsForAgent).toHaveBeenCalledWith(tenantId, agentId);

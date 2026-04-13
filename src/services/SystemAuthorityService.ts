@@ -184,10 +184,10 @@ export class SystemAuthorityService {
                     updatedAt: Timestamp.now()
                 }, { merge: true });
 
-                batch.update(userRef, {
+                batch.set(userRef, {
                     'usage.messagesThisPeriod': FieldValue.increment(amount),
                     updatedAt: Timestamp.now()
-                });
+                }, { merge: true });
             } else if (metric === 'agents') {
                 const counterRef = db.doc(`users/${userId}/usage/counters`);
                 batch.set(counterRef, {
@@ -195,10 +195,10 @@ export class SystemAuthorityService {
                     updatedAt: Timestamp.now()
                 }, { merge: true });
             } else if (metric === 'channels') {
-                batch.update(userRef, {
+                batch.set(userRef, {
                     'usage.activeChannels': FieldValue.increment(amount),
                     updatedAt: Timestamp.now()
-                });
+                }, { merge: true });
             }
 
             await batch.commit();

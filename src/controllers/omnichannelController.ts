@@ -433,24 +433,23 @@ export class OmnichannelController {
     /** POST /api/omnichannel/send */
     static async sendMessage(req: Request, res: Response) {
         try {
-            const { channelManager } = await import('../services/channels/ChannelManager.js');
             const { channelId, botId, to, text } = req.body;
             const targetId = channelId || botId;
+            const tenantId = (req as any).user?.tenantId;
 
             if (!targetId || !to || !text) {
                 return res.status(400).json({ success: false, error: 'Missing required fields: channelId, to, text' });
             }
 
-            const adapter = channelManager.getAdapter(targetId);
-            if (!adapter) {
-                return res.status(400).json({ success: false, error: 'Channel not active' });
-            }
-
-            if (!adapter.sendMessage) {
-                return res.status(503).json({ success: false, error: 'Channel does not support direct send' });
-            }
-            await adapter.sendMessage(to, { text });
-            res.json({ success: true, data: { status: 'sent' } });
+            // Enqueue to anti-ban outbound queue (replaces deprecated channelManager.getAdapter().sendMessage())
+            const { default: jobQueueService } = await import('../services/jobQueue.js');
+            await jobQueueService.addJob('whatsapp-outbound', 'send', {
+                tenantId,
+                channelId: targetId,
+                jid: to,
+                message: text,
+            });
+            res.json({ success: true, data: { status: 'queued' } });
         } catch (error: any) {
             logger.error('OmnichannelController.sendMessage', error);
             res.status(500).json({ success: false, error: error.message });

@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1775677779860,
+  "lastScanned": 1776029326598,
   "projectRoot": "/home/codedex/projects/DeXMart",
   "techStack": {
     "languages": [
@@ -28,14 +28,14 @@
         "category": "backend"
       },
       {
-        "name": "vitest",
-        "version": "4.0.18",
-        "category": "testing"
-      },
-      {
         "name": "esbuild",
         "version": "0.27.3",
         "category": "build"
+      },
+      {
+        "name": "vitest",
+        "version": "4.0.18",
+        "category": "testing"
       }
     ],
     "packageManager": "pnpm",
@@ -60,6 +60,7 @@
       "test:run": "vitest run",
       "test": "vitest",
       "test:coverage": "vitest run --coverage",
+      "start": "tsx src/main.ts",
       "sync:report": "tsx scripts/automation/upstream-watcher.ts"
     }
   },
@@ -76,6 +77,7 @@
       "docs",
       "scripts",
       "src",
+      "test",
       "tests"
     ],
     "gitBranches": {
@@ -89,51 +91,45 @@
       "path": "Expiremental",
       "purpose": null,
       "fileCount": 3,
-      "lastAccessed": 1775677779775,
+      "lastAccessed": 1776029326575,
       "keyFiles": [
         "SwitchToggle.css",
         "SwitchToggle.html",
         "SwitchToggle.js"
       ]
     },
-    "conductor": {
-      "path": "conductor",
-      "purpose": null,
-      "fileCount": 9,
-      "lastAccessed": 1775677779784,
-      "keyFiles": [
-        "final_system_audit_20260122.md",
-        "index.md",
-        "manuscript_phase_2.md",
-        "product-guidelines.md",
-        "product.md"
-      ]
+    "dist": {
+      "path": "dist",
+      "purpose": "Distribution/build output",
+      "fileCount": 0,
+      "lastAccessed": 1776029326579,
+      "keyFiles": []
     },
     "docs": {
       "path": "docs",
       "purpose": "Documentation",
       "fileCount": 7,
-      "lastAccessed": 1775677779806,
+      "lastAccessed": 1776029326588,
       "keyFiles": [
         "FirebasePrompt.md",
         "NextJS-16.md",
         "OPENCLAW_UPSTREAM_REPORT.md",
-        "PageIndex.md",
-        "TheAwakening.md"
+        "PROJECT_RULES.md",
+        "PageIndex.md"
       ]
     },
     "extensions": {
       "path": "extensions",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1775677779813,
+      "lastAccessed": 1776029326590,
       "keyFiles": []
     },
     "frontend": {
       "path": "frontend",
       "purpose": null,
       "fileCount": 15,
-      "lastAccessed": 1775677779816,
+      "lastAccessed": 1776029326591,
       "keyFiles": [
         "components.json",
         "eslint.config.mjs",
@@ -145,48 +141,37 @@
     "logs": {
       "path": "logs",
       "purpose": null,
-      "fileCount": 9,
-      "lastAccessed": 1775677779825,
+      "fileCount": 15,
+      "lastAccessed": 1776029326591,
       "keyFiles": [
         "app-2026-04-07.log",
         "app-2026-04-08.log",
-        "error-2026-04-07.log",
-        "error-2026-04-08.log",
-        "http-2026-04-07.log"
-      ]
-    },
-    "openclaw": {
-      "path": "openclaw",
-      "purpose": null,
-      "fileCount": 51,
-      "lastAccessed": 1775677779825,
-      "keyFiles": [
-        "AGENTS.md",
-        "CHANGELOG.md",
-        "CONTRIBUTING.md",
-        "Dockerfile",
-        "Dockerfile.sandbox"
+        "app-2026-04-09.log",
+        "app-2026-04-10.log",
+        "error-2026-04-07.log"
       ]
     },
     "processed": {
       "path": "processed",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1775677779826,
+      "lastAccessed": 1776029326591,
       "keyFiles": []
     },
     "scripts": {
       "path": "scripts",
       "purpose": "Build/utility scripts",
-      "fileCount": 0,
-      "lastAccessed": 1775677779827,
-      "keyFiles": []
+      "fileCount": 1,
+      "lastAccessed": 1776029326592,
+      "keyFiles": [
+        "migrate-tenants-to-users.ts"
+      ]
     },
     "shared": {
       "path": "shared",
       "purpose": null,
       "fileCount": 3,
-      "lastAccessed": 1775677779827,
+      "lastAccessed": 1776029326592,
       "keyFiles": [
         "fieldAliases.ts",
         "package.json",
@@ -197,7 +182,7 @@
       "path": "src",
       "purpose": "Source code",
       "fileCount": 20,
-      "lastAccessed": 1775677779831,
+      "lastAccessed": 1776029326592,
       "keyFiles": [
         "channel-web.ts",
         "docker-image-digests.test.ts",
@@ -210,14 +195,21 @@
       "path": "temp",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1775677779831,
+      "lastAccessed": 1776029326592,
+      "keyFiles": []
+    },
+    "test": {
+      "path": "test",
+      "purpose": "Test files",
+      "fileCount": 0,
+      "lastAccessed": 1776029326593,
       "keyFiles": []
     },
     "tests": {
       "path": "tests",
       "purpose": "Test files",
       "fileCount": 1,
-      "lastAccessed": 1775677779832,
+      "lastAccessed": 1776029326593,
       "keyFiles": [
         "ApiKeyManager.test.ts"
       ]
@@ -226,14 +218,23 @@
       "path": "uploads",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1775677779833,
+      "lastAccessed": 1776029326593,
       "keyFiles": []
+    },
+    "scripts/__tests__": {
+      "path": "scripts/__tests__",
+      "purpose": "Test files",
+      "fileCount": 1,
+      "lastAccessed": 1776029326596,
+      "keyFiles": [
+        "migrate-tenants-to-users.test.ts"
+      ]
     },
     "shared/dist": {
       "path": "shared/dist",
       "purpose": "Distribution/build output",
       "fileCount": 2,
-      "lastAccessed": 1775677779846,
+      "lastAccessed": 1776029326597,
       "keyFiles": [
         "index.d.ts",
         "index.js"
@@ -243,54 +244,108 @@
       "path": "shared/node_modules",
       "purpose": "Dependencies",
       "fileCount": 0,
-      "lastAccessed": 1775677779853,
+      "lastAccessed": 1776029326597,
       "keyFiles": []
     },
     "shared/src": {
       "path": "shared/src",
       "purpose": "Source code",
       "fileCount": 1,
-      "lastAccessed": 1775677779853,
+      "lastAccessed": 1776029326597,
       "keyFiles": [
         "index.ts"
+      ]
+    },
+    "test/helpers": {
+      "path": "test/helpers",
+      "purpose": "Helper functions",
+      "fileCount": 1,
+      "lastAccessed": 1776029326598,
+      "keyFiles": [
+        "normalize-text.ts"
+      ]
+    },
+    "test/mocks": {
+      "path": "test/mocks",
+      "purpose": "Mock data",
+      "fileCount": 1,
+      "lastAccessed": 1776029326598,
+      "keyFiles": [
+        "baileys.ts"
       ]
     }
   },
   "hotPaths": [
     {
       "path": "",
-      "accessCount": 16,
-      "lastAccessed": 1775752108384,
+      "accessCount": 42,
+      "lastAccessed": 1776074062983,
       "type": "directory"
     },
     {
-      "path": "docs/TrueFusionPlan.md",
-      "accessCount": 8,
-      "lastAccessed": 1775467425556,
-      "type": "file"
-    },
-    {
       "path": "conductor/tracks.md",
-      "accessCount": 8,
-      "lastAccessed": 1775752112449,
-      "type": "file"
-    },
-    {
-      "path": "src/billing/auth-guard.ts",
-      "accessCount": 7,
-      "lastAccessed": 1775679046144,
-      "type": "file"
-    },
-    {
-      "path": "package.json",
-      "accessCount": 7,
-      "lastAccessed": 1775747272118,
+      "accessCount": 25,
+      "lastAccessed": 1776071459212,
       "type": "file"
     },
     {
       "path": "conductor/tech-stack.md",
+      "accessCount": 13,
+      "lastAccessed": 1776031274707,
+      "type": "file"
+    },
+    {
+      "path": "package.json",
+      "accessCount": 12,
+      "lastAccessed": 1776031214984,
+      "type": "file"
+    },
+    {
+      "path": "src/billing/auth-guard.ts",
+      "accessCount": 11,
+      "lastAccessed": 1776031454174,
+      "type": "file"
+    },
+    {
+      "path": "conductor/workflow.md",
+      "accessCount": 11,
+      "lastAccessed": 1776071464735,
+      "type": "file"
+    },
+    {
+      "path": "docs/TrueFusionPlan.md",
+      "accessCount": 9,
+      "lastAccessed": 1776030806207,
+      "type": "file"
+    },
+    {
+      "path": "conductor/product.md",
+      "accessCount": 9,
+      "lastAccessed": 1776031269719,
+      "type": "file"
+    },
+    {
+      "path": "src/tenancy/context-resolver.ts",
+      "accessCount": 7,
+      "lastAccessed": 1775795129391,
+      "type": "file"
+    },
+    {
+      "path": "src/agents/openclaw-tools.ts",
+      "accessCount": 7,
+      "lastAccessed": 1776072105269,
+      "type": "file"
+    },
+    {
+      "path": "pnpm-workspace.yaml",
       "accessCount": 6,
-      "lastAccessed": 1775680396841,
+      "lastAccessed": 1776031205722,
+      "type": "file"
+    },
+    {
+      "path": "src/tenancy/tenant-context.ts",
+      "accessCount": 6,
+      "lastAccessed": 1776031453708,
       "type": "file"
     },
     {
@@ -306,27 +361,15 @@
       "type": "file"
     },
     {
-      "path": "src/tenancy/context-resolver.ts",
-      "accessCount": 5,
-      "lastAccessed": 1775700217329,
-      "type": "file"
-    },
-    {
-      "path": "pnpm-workspace.yaml",
-      "accessCount": 5,
-      "lastAccessed": 1775746529914,
-      "type": "file"
-    },
-    {
-      "path": "conductor/product.md",
+      "path": "conductor/tracks/true_fusion_audit_sync_20260401/spec.md",
       "accessCount": 3,
-      "lastAccessed": 1775679305950,
+      "lastAccessed": 1775787700095,
       "type": "file"
     },
     {
-      "path": "conductor/workflow.md",
+      "path": "conductor/index.md",
       "accessCount": 3,
-      "lastAccessed": 1775680962749,
+      "lastAccessed": 1775792207807,
       "type": "file"
     },
     {
@@ -354,21 +397,9 @@
       "type": "file"
     },
     {
-      "path": "src/tenancy/tenant-context.ts",
-      "accessCount": 2,
-      "lastAccessed": 1775678453928,
-      "type": "file"
-    },
-    {
       "path": "src/dexmart-config/ConfigManager.ts",
       "accessCount": 2,
       "lastAccessed": 1775678561013,
-      "type": "file"
-    },
-    {
-      "path": "conductor/tracks/true_fusion_audit_sync_20260401/spec.md",
-      "accessCount": 2,
-      "lastAccessed": 1775680961773,
       "type": "file"
     },
     {
@@ -387,12 +418,6 @@
       "path": "backend/ARCHITECTURE.md",
       "accessCount": 1,
       "lastAccessed": 1775168662585,
-      "type": "file"
-    },
-    {
-      "path": "conductor/index.md",
-      "accessCount": 1,
-      "lastAccessed": 1775168662799,
       "type": "file"
     },
     {
@@ -537,12 +562,6 @@
       "path": "backend/src/server/multiTenantApp.ts",
       "accessCount": 1,
       "lastAccessed": 1775168685565,
-      "type": "file"
-    },
-    {
-      "path": "src/agents/openclaw-tools.ts",
-      "accessCount": 1,
-      "lastAccessed": 1775168685797,
       "type": "file"
     },
     {

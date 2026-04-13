@@ -87,10 +87,10 @@ export class AgentService {
   /**
    * Create a custom AI Agent
    */
-  async createAgent(tenantId: string, agentData: Partial<Agent>): Promise<Result<Agent>> {
+  async createAgent(tenantId: string, agentData: Partial<Agent>, userId?: string): Promise<Result<Agent>> {
     try {
       // 1. Check authority for agent creation
-      const auth = await systemAuthorityService.checkAuthority(tenantId, 'create_agent');
+      const auth = await systemAuthorityService.checkAuthority(userId ?? tenantId, 'create_agent');
       if (!auth.allowed) {
         return { success: false, error: new Error(auth.error || 'Agent creation limit reached') };
       }
@@ -110,7 +110,7 @@ export class AgentService {
       await firebaseService.setDoc<'tenants/{tenantId}/agents'>('agents', agentId, agent as any, tenantId);
 
       // 2. Record usage
-      await systemAuthorityService.recordUsage(tenantId, 'agents', 1);
+      await systemAuthorityService.recordUsage(userId ?? tenantId, 'agents', 1);
 
       return { success: true, data: agent };
     } catch (error: any) {
@@ -121,7 +121,7 @@ export class AgentService {
   /**
    * Delete an agent and logically cascade to connections
    */
-  async deleteAgent(tenantId: string, agentId: string): Promise<Result<void>> {
+  async deleteAgent(tenantId: string, agentId: string, userId?: string): Promise<Result<void>> {
     try {
       if (agentId === 'system_default') {
         throw new Error('Cannot delete the system default agent.');
@@ -133,7 +133,7 @@ export class AgentService {
         // 2. Shut down and delete each channel
         for (const channel of channelsResult.data) {
           logger.info(`Cascading delete: Removing channel ${channel.id} for agent ${agentId}`);
-          await channelService.deleteChannel(tenantId, channel.id, agentId);
+          await channelService.deleteChannel(tenantId, channel.id, agentId, {}, userId);
         }
       }
 
@@ -141,7 +141,7 @@ export class AgentService {
       await firebaseService.deleteDoc<'tenants/{tenantId}/agents'>('agents', agentId, tenantId);
 
       // 4. Record usage decrement
-      await systemAuthorityService.recordUsage(tenantId, 'agents', -1);
+      await systemAuthorityService.recordUsage(userId ?? tenantId, 'agents', -1);
 
       logger.info(`Agent ${agentId} deleted for tenant ${tenantId}`);
       return { success: true, data: undefined };

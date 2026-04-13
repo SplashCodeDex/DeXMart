@@ -2,7 +2,10 @@
 
 > The definitive guide to the DeXMart platform architecture, True Fusion strategy, and system design.
 >
-> **Last updated**: 2026-04-03 | **Branch**: `fusion/phase-4-backend-dissolution`
+> **Master Plan**: DeXMart = OpenClaw with B2C/Stripe/Firebase grounded into the foundation.
+> `extensions/` is the canonical channel system. DeXMart UI replaces ControlUI.
+>
+> **Last updated**: 2026-04-10 | **Current Phase**: Phase 5 (Foundation Grounding)
 
 ---
 
@@ -33,6 +36,7 @@
 - **New to the project?** Start with [BLUEPRINT.md](./BLUEPRINT.md) for the big picture, then [FUSION_STRATEGY.md](./FUSION_STRATEGY.md) to understand why things are structured this way.
 - **Need to understand data flow?** See [SYSTEM_DIAGRAMS.md](./SYSTEM_DIAGRAMS.md) for visual diagrams and [DATA_MODEL.md](./DATA_MODEL.md) for the persistence layer.
 - **Looking for a specific service?** Check [SERVICE_CATALOG.md](./SERVICE_CATALOG.md) for the complete inventory with file paths and dependencies.
+- **Working on channels?** All channel work belongs in `extensions/`. The files in `src/services/channels/` are **deprecated** dead-end code pending removal in Phase 5. See [TrueFusionPlan.md](../TrueFusionPlan.md) for the architectural correction.
 - **Working on a conductor track?** Cross-reference the track's `spec.md` with these architecture docs to understand the system context.
 
 ## Keeping Docs Current
@@ -44,3 +48,4 @@ These documents describe the system as of the date noted at the top of each file
 3. If adding new services, add them to SERVICE_CATALOG.md
 4. If changing data paths, update DATA_MODEL.md
 5. If modifying injection points, update FUSION_STRATEGY.md
+6. **Never** document `src/services/channels/whatsapp/WhatsappAdapter.ts`, DeXMart's `ChannelManager.ts`, or DeXMart's `registry.ts` as canonical — they are deprecated

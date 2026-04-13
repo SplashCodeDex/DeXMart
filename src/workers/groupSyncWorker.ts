@@ -9,7 +9,6 @@ import { Job } from 'bullmq';
 import { jobQueueService } from '../services/jobQueue.js';
 import { groupService } from '../services/groupService.js';
 import { channelService } from '../services/ChannelService.js';
-import { channelManager } from '../services/channels/ChannelManager.js';
 import { ActiveChannel } from '../types/index.js';
 import logger from '../utils/logger.js';
 
@@ -53,16 +52,21 @@ export function initializeGroupSyncWorker() {
                 return;
             }
 
-            // Use ChannelManager to get the live active adapter instance
-            const activeChannel = channelManager.getAdapter(channelId);
-            if (!activeChannel || activeChannel.status !== 'connected') {
-                logger.warn(`[GroupSyncWorker] Skipping job: Channel ${channelId} instance not active or not connected`);
+            // Use native OpenClaw WhatsApp runtime to get the active socket
+            const { getWhatsAppRuntime } = await import('../../extensions/whatsapp/src/runtime.js');
+            let socket: ActiveChannel | undefined;
+            try {
+                socket = getWhatsAppRuntime().channel.whatsapp.getActiveWebListener() as unknown as ActiveChannel;
+            } catch {
+                // Runtime not yet initialised (no channel started)
+            }
+            if (!socket) {
+                logger.warn(`[GroupSyncWorker] Skipping job: No active WhatsApp socket for channel ${channelId}`);
                 return;
             }
 
             // 2. Execute Delta-Sync
-            // Cast to any then ActiveChannel because ChannelAdapter is more minimal than ActiveChannel
-            await groupService.syncDelta(activeChannel as any as ActiveChannel, (groupJids || []) as string[], options);
+            await groupService.syncDelta(socket, (groupJids || []) as string[], options);
 
             logger.info(`[GroupSyncWorker] Successfully processed ${groupJids?.length || 0} groups for ${channelId}`);
 

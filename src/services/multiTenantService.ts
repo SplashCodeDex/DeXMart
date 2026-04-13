@@ -86,6 +86,7 @@ export class MultiTenantService {
           email,
           tenantId,
           role: 'owner',
+          plan,
           createdAt: Timestamp.now()
         });
 

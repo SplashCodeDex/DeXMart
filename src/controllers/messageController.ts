@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
 import logger from '../utils/logger.js';
-import { channelManager } from '../services/channels/ChannelManager.js';
+import jobQueueService from '../services/jobQueue.js';
 import { db } from '../lib/firebase.js';
 
 // Validation Schemas
@@ -47,6 +47,7 @@ export class MessageController {
 
     /**
      * Send a reply to an existing message (OMNICHANNEL)
+     * Enqueues to the whatsapp-outbound anti-ban queue.
      */
     static async reply(req: Request, res: Response) {
         try {
@@ -70,16 +71,13 @@ export class MessageController {
             const originalMessage = messageSnap.data() as any;
             const channelId = originalMessage.channelId;
 
-            // 2. Send via the SAME channel
-            const adapter = channelManager.getAdapter(channelId);
-            if (!adapter) {
-                return res.status(400).json({ success: false, error: 'Channel not connected or inactive' });
-            }
-
-            if (!adapter.sendMessage) {
-                return res.status(503).json({ success: false, error: 'Channel does not support direct send' });
-            }
-            await adapter.sendMessage(originalMessage.remoteJid, { text });
+            // 2. Enqueue to anti-ban outbound queue (replaces deprecated adapter.sendMessage())
+            await jobQueueService.addJob('whatsapp-outbound', 'reply', {
+                tenantId,
+                channelId,
+                jid: originalMessage.remoteJid,
+                message: text,
+            });
 
             res.json({ success: true, data: { message: 'Reply sent' } });
 
@@ -94,6 +92,7 @@ export class MessageController {
 
     /**
      * Send a message via a specific channel
+     * Enqueues to the whatsapp-outbound anti-ban queue.
      */
     static async sendMessage(req: Request, res: Response) {
         try {
@@ -102,23 +101,19 @@ export class MessageController {
 
             const payload = sendMessageSchema.parse(req.body);
 
-            // 1. Resolve Adapter
-            const adapter = channelManager.getAdapter(payload.channelId);
-            if (!adapter) {
-                return res.status(400).json({ success: false, error: 'Channel not active' });
-            }
-
-            // 2. Send Message
-            if (!adapter.sendMessage) {
-                return res.status(503).json({ success: false, error: 'Channel does not support direct send' });
-            }
-            await adapter.sendMessage(payload.to, {
-                text: payload.message || '',
-                mediaUrl: payload.mediaUrl,
-                caption: payload.caption
+            // Enqueue to anti-ban outbound queue (replaces deprecated adapter.sendMessage())
+            await jobQueueService.addJob('whatsapp-outbound', 'send', {
+                tenantId,
+                channelId: payload.channelId,
+                jid: payload.to,
+                message: payload.message || '',
+                options: {
+                    mediaUrl: payload.mediaUrl,
+                    caption: payload.caption,
+                },
             });
 
-            res.json({ success: true, data: { status: 'sent' } });
+            res.json({ success: true, data: { status: 'queued' } });
 
         } catch (error: any) {
             if (error instanceof z.ZodError) {

@@ -45,11 +45,12 @@ router.get('/agents', async (req: Request, res: Response) => {
 router.post('/agents', async (req: Request, res: Response) => {
     try {
         const tenantId = req.user?.tenantId as string;
+        const userId = req.user?.userId;
         if (!tenantId) {
             return res.status(401).json({ success: false, error: 'Authentication required' });
         }
 
-        const result = await agentService.createAgent(tenantId, req.body);
+        const result = await agentService.createAgent(tenantId, req.body, userId);
         if (result.success) {
             res.json({ success: true, data: result.data });
         } else {
@@ -66,11 +67,12 @@ router.post('/agents', async (req: Request, res: Response) => {
 router.delete('/agents/:id', async (req: Request, res: Response) => {
     try {
         const tenantId = req.user?.tenantId as string;
+        const userId = req.user?.userId;
         if (!tenantId) {
             return res.status(401).json({ success: false, error: 'Authentication required' });
         }
 
-        const result = await agentService.deleteAgent(tenantId, req.params.id as string);
+        const result = await agentService.deleteAgent(tenantId, req.params.id as string, userId);
         if (result.success) {
             res.json({ success: true, data: { message: 'Agent deleted' } });
         } else {
@@ -91,12 +93,13 @@ router.delete('/agents/:id', async (req: Request, res: Response) => {
 router.post(['/agents/:agentId/channels', '/channels', '/bots'], async (req: Request, res: Response) => {
     try {
         const tenantId = req.user?.tenantId as string;
+        const userId = req.user?.userId;
         const agentId = (req.params.agentId || 'system_default') as string;
         if (!tenantId) {
             return res.status(401).json({ success: false, error: 'Authentication required' });
         }
 
-        const result = await channelService.createChannel(tenantId, req.body, agentId);
+        const result = await channelService.createChannel(tenantId, req.body, agentId, userId);
 
         if (result.success) {
             // Auto-start the channel connection in the background.
@@ -264,6 +267,7 @@ router.patch(['/agents/:agentId/channels/:id', '/channels/:id'], async (req: Req
 router.delete(['/agents/:agentId/channels/:id', '/channels/:id'], async (req: Request, res: Response) => {
     try {
         const tenantId = req.user?.tenantId as string;
+        const userId = req.user?.userId;
         const agentId = (req.params.agentId || 'system_default') as string;
         const id = req.params.id as string;
         const archive = req.query.archive === 'true';
@@ -272,7 +276,7 @@ router.delete(['/agents/:agentId/channels/:id', '/channels/:id'], async (req: Re
             return res.status(401).json({ success: false, error: 'Authentication required' });
         }
 
-        const result = await channelService.deleteChannel(tenantId, id, agentId, { archive });
+        const result = await channelService.deleteChannel(tenantId, id, agentId, { archive }, userId);
         if (result.success) {
             res.json({ success: true, data: { message: `Channel ${archive ? 'archived' : 'deleted'} successfully` } });
         } else {

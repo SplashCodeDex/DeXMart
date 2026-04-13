@@ -10,15 +10,36 @@
 
 ## Table of Contents
 
-1. [Tenancy (`src/tenancy/`)](#1-tenancy-srctenancy)
-2. [Billing (`src/billing/`)](#2-billing-srcbilling)
-3. [Campaigns (`src/campaigns/`)](#3-campaigns-srccampaigns)
-4. [Safety (`src/safety/`)](#4-safety-srcsafety)
-5. [Analytics (`src/analytics/`)](#5-analytics-srcanalytics)
+1. [Engine Foundation (The Core)](#1-engine-foundation-the-core)
+2. [Tenancy (`src/tenancy/`)](#2-tenancy-srctenancy)
+3. [Billing (`src/billing/`)](#3-billing-srcbilling)
+4. [Campaigns (`src/campaigns/`)](#4-campaigns-srccampaigns)
+5. [Safety (`src/safety/`)](#5-safety-srcsafety)
+6. [Analytics (`src/analytics/`)](#6-analytics-srcanalytics)
 
 ---
 
-## 1. Tenancy (`src/tenancy/`)
+## 1. Engine Foundation (The Core)
+
+**Purpose:** OpenClaw's channel and plugin architecture. This is the **only** channel runtime in DeXMart. The DeXMart team injects B2C logic (billing, tenancy, auth) directly into this engine during Phase 5.
+
+### Files & Directories
+
+| Module | Role |
+|---|---|
+| `gateway/server-channels.ts` | Hosts `createChannelManager()`. Boots extensions, manages channel lifecycle. **Injection point for Stripe billing gates.** |
+| `plugins/registry.ts` | Discovers and loads plugin modules (`PluginRuntime`). **Injection point for B2C `userId` context.** |
+| `plugin-sdk/` | The core interfaces (`ChannelPlugin`, `PluginApi`) that all extensions implement. |
+| `extensions/` | **Canonical channel origin**. Contains all 40+ plugins (WhatsApp, Telegram, Discord). Native rich features belong here. |
+
+### Key Concepts
+
+- **Extensions are Canonical**: DeXMart does not build wrapper classes (like `WhatsappAdapter`) around OpenClaw channels. Instead, the B2C requirements are "grounded" into `gateway/` and `src/web/session.ts` so that every plugin in `extensions/` automatically inherits them.
+- **One Engine**: `createChannelManager` is the orchestrator. There is no parallel channel system.
+
+---
+
+## 2. Tenancy (`src/tenancy/`)
 
 **Purpose:** B2C user-level isolation. Every data operation in the platform is scoped to a
 `userId`. This module defines the trust boundary between users.
@@ -54,7 +75,7 @@
 
 ---
 
-## 2. Billing (`src/billing/`)
+## 3. Billing (`src/billing/`)
 
 **Purpose:** Stripe subscription management and feature gating. Controls which models,
 channels, tools, and agents are available based on the user's plan tier.
@@ -99,7 +120,7 @@ channels, tools, and agents are available based on the user's plan tier.
 
 ---
 
-## 3. Campaigns (`src/campaigns/`)
+## 4. Campaigns (`src/campaigns/`)
 
 **Purpose:** High-volume broadcast messaging with intelligent anti-ban throttling.
 Not part of OpenClaw — a DeXMart-exclusive capability.
@@ -137,7 +158,7 @@ User creates campaign
 
 ---
 
-## 4. Safety (`src/safety/`)
+## 5. Safety (`src/safety/`)
 
 **Purpose:** Platform-wide protection against WhatsApp bans and harmful content.
 Not part of OpenClaw — DeXMart-exclusive.
@@ -175,7 +196,7 @@ Runs each outbound message through safety filters before sending:
 
 ---
 
-## 5. Analytics (`src/analytics/`)
+## 6. Analytics (`src/analytics/`)
 
 **Purpose:** AI usage tracking, audit trail, and real-time reasoning transparency.
 

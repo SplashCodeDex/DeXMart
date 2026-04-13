@@ -1,7 +1,8 @@
 import { Worker, Job } from 'bullmq';
 import { Campaign, CampaignStatus, MessageTemplate, Contact } from '../types/contracts.js';
-import { channelManager } from '../services/channels/ChannelManager.js';
 import { firebaseService } from '../services/FirebaseService.js';
+import { channelService } from '../services/ChannelService.js';
+import jobQueueService from '../services/jobQueue.js';
 import { groupService } from '../services/groupService.js';
 import { webhookService } from '../services/webhookService.js';
 import { socketService } from '../services/socketService.js';
@@ -141,11 +142,8 @@ class CampaignWorker {
             }
 
             const channelId = activeChannelIds[i % activeChannelIds.length];
-            const adapter = channelManager.getAdapter(channelId);
 
             try {
-                if (!adapter) throw new Error(`Adapter for ${channelId} disconnected during campaign`);
-
                 const content = await this.prepareMessage(tenantId, template, contact, currentCampaign.antiBan.aiSpinning);
 
                 // ─── ANTI-BAN: CONTENT RULE CHECK ────────────────────
@@ -164,9 +162,14 @@ class CampaignWorker {
                     await this.updateCampaignStats(tenantId, id, { sent, failed, pending: total - (sent + failed) });
                     return;
                 }
-                // TypeScript type assertions since base ChannelAdapter doesn't declare full features
-                const waAdapter = adapter as unknown as import('../services/channels/whatsapp/WhatsappAdapter.js').WhatsappAdapter;
-                await waAdapter.sendMessage(contact.phone, { text: content });
+
+                // Enqueue to anti-ban queue worker (replaces deprecated adapter.sendMessage())
+                await jobQueueService.addJob('whatsapp-outbound', 'campaign-send', {
+                    tenantId,
+                    channelId,
+                    jid: contact.phone,
+                    message: content,
+                });
                 sent++;
 
                 if (i % 5 === 0 || i === endIndex - 1) {
@@ -214,11 +217,14 @@ class CampaignWorker {
                 let groups = await firebaseService.getCollection<'tenants/{tenantId}/groups'>('groups', tenantId);
 
                 if (groups.length === 0 && activeChannelIds.length > 0) {
-                    const adapter = channelManager.getAdapter(activeChannelIds[0]);
-                    if (adapter && (adapter as any).socket) {
-                        await groupService.syncAllGroups((adapter as any).socket);
-                        groups = await firebaseService.getCollection<'tenants/{tenantId}/groups'>('groups', tenantId);
-                    }
+                    try {
+                        const { getWhatsAppRuntime } = await import('../../extensions/whatsapp/src/runtime.js');
+                        const socket = getWhatsAppRuntime().channel.whatsapp.getActiveWebListener();
+                        if (socket) {
+                            await groupService.syncAllGroups(socket as any);
+                            groups = await firebaseService.getCollection<'tenants/{tenantId}/groups'>('groups', tenantId);
+                        }
+                    } catch { /* runtime not yet initialised */ }
                 }
 
                 return groups.map(g => ({
@@ -235,11 +241,14 @@ class CampaignWorker {
                 let group = await firebaseService.getDoc<'tenants/{tenantId}/groups'>('groups', audience.targetId, tenantId);
 
                 if (!group && activeChannelIds.length > 0) {
-                    const adapter = channelManager.getAdapter(activeChannelIds[0]);
-                    if (adapter && (adapter as any).socket) {
-                        await groupService.syncGroup((adapter as any).socket, audience.targetId);
-                        group = await firebaseService.getDoc<'tenants/{tenantId}/groups'>('groups', audience.targetId, tenantId);
-                    }
+                    try {
+                        const { getWhatsAppRuntime } = await import('../../extensions/whatsapp/src/runtime.js');
+                        const socket = getWhatsAppRuntime().channel.whatsapp.getActiveWebListener();
+                        if (socket) {
+                            await groupService.syncGroup(socket as any, audience.targetId);
+                            group = await firebaseService.getDoc<'tenants/{tenantId}/groups'>('groups', audience.targetId, tenantId);
+                        }
+                    } catch { /* runtime not yet initialised */ }
                 }
 
                 if (!group) return [];
@@ -264,13 +273,15 @@ class CampaignWorker {
     }
 
     private getAvailableChannelIds(tenantId: string, distribution: Campaign['distribution']): string[] {
-        const keys = channelManager.getRegisteredChannelKeys();
-        // Simplified filter: in 2026 production, we'd verify tenantId ownership via ChannelService
+        // Use native ChannelService runtime snapshot instead of deprecated channelManager singleton.
+        // getActiveChannelIds() returns running channel type IDs; for campaign routing we use
+        // channelService.getActiveChannelIds() as a best-effort active check.
         const channelId = distribution.channelId || (distribution as any).botId;
         if (distribution.type === 'single' && channelId) {
-            return keys.includes(channelId) ? [channelId] : [];
+            const active = channelService.getActiveChannelIds();
+            return active.some(c => c.id === channelId) ? [channelId] : [channelId]; // always attempt single
         }
-        return keys;
+        return channelService.getActiveChannelIds().map(c => c.id);
     }
 
     private async prepareMessage(tenantId: string, template: MessageTemplate, contact: Contact, spin: boolean): Promise<string> {

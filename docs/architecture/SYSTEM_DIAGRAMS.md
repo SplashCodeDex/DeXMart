@@ -84,8 +84,7 @@ C4Container
 
     Container_Boundary(dexmart, "DeXMart Platform") {
         Container(frontend, "Frontend", "Next.js 16, React 19", "Dashboard UI with SSR/RSC")
-        Container(backend, "Backend API", "Express 5, Node.js 24+", "REST API + WebSocket server")
-        Container(gateway, "OpenClaw Gateway", "Hono, Node.js 24+", "Channel WebSocket + Agent UI")
+        Container(backend, "Unified Backend Engine", "Express 5 + Hono, Node.js 24+", "REST API, WebSocket, and Channel Gateway")
         Container(workers, "Job Workers", "BullMQ, Node.js", "Campaign processing, media, analytics")
     }
 
@@ -97,12 +96,11 @@ C4Container
 
     Rel(user, frontend, "HTTPS", "Manages bots and campaigns")
     Rel(frontend, backend, "REST + WebSocket", "API calls + real-time updates")
-    Rel(backend, gateway, "HTTP Proxy", "/api/openclaw-ui -> :18789")
     Rel(backend, firestore, "gRPC", "User data CRUD")
     Rel(backend, redis, "TCP", "Cache reads/writes + job enqueue")
     Rel(backend, stripe, "HTTPS", "Payment operations")
     Rel(backend, ai, "HTTPS", "LLM inference")
-    Rel(gateway, channels, "WebSocket/HTTPS", "Channel connections")
+    Rel(backend, channels, "WebSocket/HTTPS", "Channel connections via extensions/")
     Rel(workers, redis, "TCP", "Dequeue + process jobs")
     Rel(workers, firestore, "gRPC", "Read/write campaign data")
     Rel(customer, channels, "Native protocol", "Sends/receives messages")
@@ -300,43 +298,37 @@ sequenceDiagram
 
 ---
 
-## 6. Channel Lifecycle Sequence
+## 6. Native Extension Plugin Lifecycle
 
-How a user connects a new channel (e.g., WhatsApp).
+How a user connects a new channel (e.g., WhatsApp) through the grounded engine (Phase 5).
 
 ```mermaid
 sequenceDiagram
     participant User
-    participant Dashboard as Frontend Dashboard
+    participant Dashboard as DeXMart Dashboard
     participant API as Backend API
-    participant AgentSvc as AgentService
-    participant ChanSvc as ChannelService
-    participant AuthGuard as BillingGate
-    participant Baileys as Baileys (WhatsApp)
-    participant Firestore as Firestore
+    participant Engine as Gateway (server-channels.ts)
+    participant Registry as PluginRegistry
+    participant Plugin as extensions/whatsapp
+    participant Firebase as Firestore
 
     User->>Dashboard: Click "Add WhatsApp Channel"
-    Dashboard->>API: POST /api/internal/agents/{agentId}/channels
-    API->>AuthGuard: assertCan('startChannel', ctx)
+    Dashboard->>API: POST /api/internal/channels
+    API->>Engine: startChannelInternal(channelId, platform, userId)
 
-    alt Over channel limit
-        AuthGuard-->>API: 402 Upgrade Required
-        API-->>Dashboard: Show upgrade prompt
-    else Within limit
-        AuthGuard-->>API: Allowed
-    end
+    Note over Engine: Phase 5 Injection Point:<br/>Billing Gate (assertCan)
 
-    API->>ChanSvc: createChannel(agentId, 'whatsapp')
-    ChanSvc->>Firestore: Create channel document
-    ChanSvc->>Baileys: createWaSocket(authStateFactory)
+    Engine->>Registry: getPlugin('whatsapp')
+    Registry-->>Engine: WhatsappPlugin
 
-    Note over Baileys: authStateFactory uses<br/>useFirestoreChannelAuthState()
+    Engine->>Plugin: startAccount({ channelId, userId, authStateFactory })
 
-    Baileys-->>Dashboard: QR Code (via WebSocket)
-    User->>Baileys: Scan QR with phone
-    Baileys->>Firestore: Save auth state<br/>/users/{userId}/channels/{channelId}/auth
-    Baileys-->>Dashboard: Connection established
-    ChanSvc->>Firestore: Update channel status: 'connected'
+    Note over Plugin: Pluggable Firestore auth<br/>injected at engine level
+
+    Plugin-->>Dashboard: QR Code (via WebSocket)
+    User->>Plugin: Scan QR with phone
+    Plugin->>Firebase: Save auth state
+    Plugin-->>Dashboard: Connection established
     Dashboard->>User: Channel connected!
 ```
 
@@ -564,9 +556,8 @@ graph TB
 
     subgraph "Application Tier"
         FE[Frontend Server<br/>Next.js 16<br/>Port 3000]
-        BE[Backend API<br/>Express 5<br/>Port 3001]
+        BE[Unified Engine API<br/>Express + Hono<br/>Port 3001]
         WS[WebSocket Server<br/>Socket.io<br/>Port 3002]
-        GW[OpenClaw Gateway<br/>Hono<br/>Port 18789]
         WK[BullMQ Workers<br/>Background Jobs]
     end
 
@@ -587,23 +578,20 @@ graph TB
     BR --> WS
     PH --> CH
     CH --> BE
-    CH --> GW
 
     FE --> BE
-    BE --> GW
     BE --> FS
     BE --> RD
     BE --> ST
     BE --> FB
     BE --> AI
+    BE --> CH
     WK --> RD
     WK --> FS
-    GW --> CH
     WS --> RD
 
     style FE fill:#264653,color:#fff
     style BE fill:#2a9d8f,color:#fff
-    style GW fill:#e9c46a,color:#000
     style WK fill:#e76f51,color:#fff
 ```
 
@@ -611,21 +599,19 @@ graph TB
 
 ## 13. Monorepo Package Dependencies
 
-How the pnpm workspace packages relate.
+How the pnpm workspace packages relate post-fusion.
 
 ```mermaid
 graph LR
-    ROOT[src/<br/>DeXMart Codebase]
+    ROOT[src/<br/>DeXMart Unified Engine]
 
-    FE[frontend/<br/>Next.js 16<br/>THE product UI]
-    BE[backend/<br/>LEGACY<br/>dissolving into src/]
+    FE[frontend/<br/>Next.js 16<br/>Dashboard UI]
     OC[openclaw/<br/>Upstream reference<br/>for sync only]
     SH[shared/<br/>Zod Schemas]
-    EXT[extensions/<br/>Channel Plugins]
+    EXT[extensions/<br/>Canonical Channel Plugins]
 
     FE -->|imports types| SH
     FE -->|REST + WS| ROOT
-    BE -->|being absorbed into| ROOT
     OC -->|upstream patches<br/>cherry-picked into| ROOT
     ROOT -->|uses| EXT
     ROOT -->|validates with| SH
@@ -633,7 +619,6 @@ graph LR
     style ROOT fill:#2d6a4f,color:#fff
     style FE fill:#264653,color:#fff
     style OC fill:#6c757d,color:#fff
-    style BE fill:#e9c46a,color:#000
 ```
 
 ---
@@ -688,29 +673,30 @@ gantt
     title True Fusion Phases
     dateFormat YYYY-MM-DD
 
-    section Phase 1: Repository Restructure
+    section Phase 1: Restructure
     Flatten OpenClaw into src/         :done, p1a, 2026-03-15, 2026-03-20
-    Delete duplicates (8318 LOC)       :done, p1b, 2026-03-20, 2026-03-22
-    Organize DeXMart modules           :done, p1c, 2026-03-22, 2026-03-25
+    Delete duplicate logic             :done, p1b, 2026-03-20, 2026-03-25
 
-    section Phase 2: UserContext Injection
+    section Phase 2: Injection
     User-scoped config (FR-1)          :done, p2a, 2026-03-25, 2026-03-28
-    Firestore session persistence (FR-2):done, p2b, 2026-03-28, 2026-03-30
-    Billing gates (FR-3)               :done, p2c, 2026-03-30, 2026-04-01
-    Context resolver pipeline (FR-4)   :done, p2d, 2026-04-01, 2026-04-02
+    Auth + Billing gates (FR-2/3)      :done, p2b, 2026-03-28, 2026-04-02
 
-    section Phase 3: AI Agent Fusion
-    Hook MastermindStream into OpenClaw :active, p3a, 2026-04-02, 2026-04-10
-    Swap file memory for Firestore     :p3b, 2026-04-10, 2026-04-15
-    Tenant-scoped model gating         :p3c, 2026-04-15, 2026-04-20
+    section Phase 3: AI Fusion
+    Wire Mastermind Stream             :done, p3a, 2026-04-02, 2026-04-08
+    Hybrid Firestore Memory            :done, p3b, 2026-04-08, 2026-04-10
 
-    section Phase 4: Dissolve backend/
-    Move all backend/src/ to src/      :done, p4a, 2026-04-02, 2026-04-03
-    Unify entry point (src/main.ts)    :done, p4b, 2026-04-02, 2026-04-03
-    Recreate deleted channel files     :done, p4c, 2026-04-03, 2026-04-03
-    Wire IngressService → OpenClaw agent:done, p4d, 2026-04-03, 2026-04-03
-    Staging smoke test                 :p4e, 2026-04-04, 2026-04-05
-    Delete backend/ directory          :p4f, 2026-04-05, 2026-04-06
+    section Phase 4: backend/ Dissolve
+    Migrate route/service source       :done, p4a, 2026-04-02, 2026-04-03
+    Create dead-end parallel channels  :crit, done, p4b, 2026-04-03, 2026-04-03
+
+    section Phase 5: Grounding
+    Inject B2C into gateway/           :active, p5a, 2026-04-10, 2026-04-15
+    Delete parallel adapters           :p5b, 2026-04-15, 2026-04-17
+    Wire memoryManager into engine     :p5c, 2026-04-17, 2026-04-20
+
+    section Phase 6: ControlUI
+    DeXMart dashboard channel mgmt     :p6a, 2026-04-20, 2026-04-25
+    Remove openclaw-ui proxy           :p6b, 2026-04-25, 2026-04-26
 ```
 
 ---

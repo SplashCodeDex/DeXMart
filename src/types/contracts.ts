@@ -81,7 +81,7 @@ export const TenantUserSchema = z.object({
 
 export type TenantUser = z.infer<typeof TenantUserSchema>;
 
-import { getPlatformMetadata } from '../services/channels/registry.js';
+import { getPlatformMetadata } from '../services/channels/platform-metadata.js';
 
 /**
  * Channel Schema ('tenants/{tenantId}/channels' subcollection)

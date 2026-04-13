@@ -1,6 +1,6 @@
 # DeXMart Data Model & Persistence
 
-> **Last verified**: 2026-04-03 | **Source of truth**: `src/services/FirebaseService.ts` SchemaMap (line 27-48)
+> **Last verified**: 2026-04-10 | **Current Phase**: Phase 5 (Foundation Grounding) | **Source of truth**: `src/services/FirebaseService.ts` SchemaMap
 
 ---
 
@@ -85,12 +85,12 @@ firestore-root/
     +-- {userId}/
     |
     +-- config/
-    |   +-- settings                   # User-scoped configuration
+    |   +-- settings                   # Engine config (maps to OpenClaw UserConfig object)
     |
     +-- channels/
     |   +-- {channelId}/
     |       +-- auth/
-    |           +-- {docId}            # Universal channel auth state
+    |           +-- {docId}            # Universal channel auth state for all extensions
     |
     +-- usage/
     |   +-- current                    # Batched usage counters
@@ -491,8 +491,8 @@ service cloud.firestore {
 The codebase currently has both path patterns. The migration strategy:
 
 1. **Phase 2 (complete)**: New modules (`usage-tracker`, `channel-auth-state`, `user-config`) write to `users/{userId}/` paths
-2. **Phase 4 (pending)**: Migrate existing `tenants/{tenantId}/` data to `users/{userId}/` with a one-time migration script
-3. **Post-migration**: Update `FirebaseService.SchemaMap` to use `users/` paths exclusively
-4. **Cleanup**: Remove `tenants/` collection references from codebase
+2. **Phase 4 (complete)**: `backend/` source migrated to `src/` to share Zod schemas
+3. **Phase 5 (in progress)**: Engine foundation wired to use `users/{userId}/` for multi-tenancy
+4. **Post-migration**: Update `FirebaseService.SchemaMap` to use `users/` paths exclusively and remove `tenants/` paths
 
 **During transition**: Both paths coexist. New code reads from `users/` first, falls back to `tenants/` for backward compatibility.

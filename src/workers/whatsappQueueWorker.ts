@@ -1,39 +1,37 @@
 import { Job } from 'bullmq';
 import jobQueueService from '../services/jobQueue.js';
 import logger from '../utils/logger.js';
-import { channelManager } from '../services/channels/ChannelManager.js';
-import { WhatsappAdapter } from '../services/channels/whatsapp/WhatsappAdapter.js';
 import { antiBanService } from '../services/antiBanService.js';
 
 /**
  * Worker to process outbound WhatsApp messages with human-like delays
  * and Anti-Ban velocity enforcement.
- * 
+ *
  * This is the ONLY exit point for ALL WhatsApp messages (AI replies,
  * campaigns, direct sends). The Velocity Rule gate here protects
  * the server IP from being flagged by WhatsApp.
+ *
+ * Uses the native OpenClaw WhatsApp runtime (getWhatsAppRuntime) instead
+ * of the deprecated WhatsappAdapter / ChannelManager singleton (Task 5.5).
  */
 export const initializeWhatsappWorker = () => {
     logger.info('Initializing WhatsApp Outbound Worker (Anti-Ban enabled)...');
 
     jobQueueService.process('whatsapp-outbound', async (job: Job) => {
-        const { tenantId, channelId, jid, message, options } = job.data;
+        const { channelId, jid, message, options } = job.data;
 
         logger.info(`Processing outbound WhatsApp message for ${jid} (Job: ${job.id})`);
 
         try {
-            const genericAdapter = channelManager.getAdapter(channelId);
-            if (!genericAdapter) {
-                throw new Error(`Adapter for channel ${channelId} not found in memory`);
-            }
-            const adapter = genericAdapter as unknown as WhatsappAdapter;
+            // Lazy import — avoids pulling the WhatsApp runtime before it is initialised
+            const { getWhatsAppRuntime } = await import('../../extensions/whatsapp/src/runtime.js');
+            const runtime = getWhatsAppRuntime();
 
-            // ─── ANTI-BAN: VELOCITY RULE GATE (ATOMIC) ───────────────
-            // Enforce minimum 5-7s gap between messages per channel (number).
+            // ─── ANTI-BAN: VELOCITY RULE GATE (ATOMIC) ───────────────────────
             let velocityDelay = 0;
-            
-            // If this job was already rescheduled for velocity, we skip the reservation
-            // but still allow the human-mimicry jitter below.
+
+            // If this job was already rescheduled for velocity, skip the reservation
+            // but still apply the human-mimicry jitter below.
             if (!job.data.skipVelocityReserve) {
                 velocityDelay = await antiBanService.reserveVelocityDelay(channelId);
             }
@@ -44,7 +42,7 @@ export const initializeWhatsappWorker = () => {
                 logger.info(`[AntiBan] Delay too long (${Math.round(velocityDelay)}ms). Rescheduling as delayed job...`);
                 await jobQueueService.addJob('whatsapp-outbound', job.name || 'rescheduled-send', {
                     ...job.data,
-                    skipVelocityReserve: true // Don't book another 6s slot when we wake up
+                    skipVelocityReserve: true, // Don't book another slot when we wake up
                 }, { delay: velocityDelay });
                 return { success: true, rescheduled: true };
             }
@@ -52,32 +50,40 @@ export const initializeWhatsappWorker = () => {
             if (velocityDelay > 0) {
                 logger.debug(
                     `[AntiBan] Velocity gate: delaying ${Math.round(velocityDelay)}ms ` +
-                    `for channel ${channelId} (to ${jid})`
+                    `for channel ${channelId} (to ${jid})`,
                 );
                 await new Promise(resolve => setTimeout(resolve, velocityDelay));
             }
-            // ─────────────────────────────────────────────────────────
+            // ─────────────────────────────────────────────────────────────────
 
             // 1. Calculate a human-like delay based on message length
-            // Base delay 2s + 50ms per character, capped at 10s
-            const textLength = typeof message === 'string' ? message.length : 10;
+            const text = typeof message === 'string' ? message : (message as any)?.text ?? '';
+            const textLength = text.length || 10;
             const baseDelay = 2000 + Math.min(textLength * 50, 8000);
             // Add randomness (+/- 20%)
             const jitter = baseDelay * (0.8 + Math.random() * 0.4);
 
             logger.debug(`Simulating typing for ${Math.round(jitter)}ms...`);
 
-            // 2. Clear presence and set "composing"
-            await adapter.getSocket()?.sendPresenceUpdate('composing', jid);
+            // 2. Set "composing" presence via native runtime socket
+            const socket = runtime.channel.whatsapp.getActiveWebListener();
+            await (socket as any)?.sendPresenceUpdate('composing', jid);
 
             // 3. Wait the duration
             await new Promise(resolve => setTimeout(resolve, jitter));
 
-            // 4. Stop typing and send
-            await adapter.getSocket()?.sendPresenceUpdate('paused', jid);
+            // 4. Stop typing
+            await (socket as any)?.sendPresenceUpdate('paused', jid);
 
-            // 5. Dispatch the message
-            await (adapter as any)._directSendMessage(jid, message, options);
+            // 5. Send via native WhatsApp runtime (respects accountId scoping)
+            await runtime.channel.whatsapp.sendMessageWhatsApp(jid, text, {
+                verbose: false,
+                accountId: channelId,
+                ...(options ?? {}),
+                ...(typeof message === 'object' && (message as any)?.mediaUrl
+                    ? { mediaUrl: (message as any).mediaUrl }
+                    : {}),
+            });
 
             logger.info(`Successfully dispatched message to ${jid} via queue`);
             return { success: true };

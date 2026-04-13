@@ -1,91 +1,308 @@
-[Env] ✅ Loaded central env from /home/codedex/codedex/env (common.env, llm.env, stripe.env)
-[dotenv@17.3.1] injecting env (4) from .env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
-[Env] ✅ Loaded local .env overrides
-info: ✅ Environment variables validated via Zod {"timestamp":"2026-04-09 14:47:07:477"}
-info: 🔗 Constructed internal REDIS_URL from host and port configuration {"timestamp":"2026-04-09 14:47:07:477"}
-info: ✅ Configuration validation passed {"timestamp":"2026-04-09 14:47:07:477"}
-info: ConfigService initialized as wrapper for ConfigManager {"timestamp":"2026-04-09 14:47:07:477"}
-info: Analytics service initialized {"timestamp":"2026-04-09 14:47:08:478"}
-info: QueueService initialized: campaigns {"timestamp":"2026-04-09 14:47:08:478"}
-info: BullMQ Job Queue Service initialized {"timestamp":"2026-04-09 14:47:09:479"}
-info: >>> [MASTERMIND] ABSOLUTE START OF MAIN.TS {"timestamp":"2026-04-09 14:47:09:479"}
-info: >>> [MASTERMIND] Starting main() {"timestamp":"2026-04-09 14:47:09:479"}
-info: 🚀 Starting DeXMart... {"timestamp":"2026-04-09 14:47:09:479"}
-info: >>> [MASTERMIND] Validating environment variables... {"timestamp":"2026-04-09 14:47:09:479"}
-info: 🔍 Validating environment variables... {"timestamp":"2026-04-09 14:47:09:479"}
-info: ✅ FIREBASE_SERVICE_ACCOUNT_PATH: service-account.json {"timestamp":"2026-04-09 14:47:09:479"}
-info: ✅ FIREBASE_PROJECT_ID: dexmart {"timestamp":"2026-04-09 14:47:09:479"}
-info: ✅ GOOGLE_GEMINI_API_KEY: ***[REDACTED]*** {"timestamp":"2026-04-09 14:47:09:479"}
-info: ✅ PORT: 3001 {"timestamp":"2026-04-09 14:47:09:479"}
-info: ✅ NODE_ENV: development {"timestamp":"2026-04-09 14:47:09:479"}
-info: ✅ JWT_SECRET: ***[REDACTED]*** {"timestamp":"2026-04-09 14:47:09:479"}
-info: ✅ RATE_LIMIT_AI_REQ: 10 {"timestamp":"2026-04-09 14:47:09:479"}
-info: ✅ USE_BAILEYS_DIRECT: false {"timestamp":"2026-04-09 14:47:09:479"}
-info: ✅ Environment validation passed! {"timestamp":"2026-04-09 14:47:09:479"}
-info: >>> [MASTERMIND] Environment validation passed. {"timestamp":"2026-04-09 14:47:09:479"}
-info: >>> [MASTERMIND] initializeContext() called {"timestamp":"2026-04-09 14:47:09:479"}
-info: >>> [MASTERMIND] Starting fresh initialization {"timestamp":"2026-04-09 14:47:09:479"}
-info: >>> [MASTERMIND] Base context object built. {"timestamp":"2026-04-09 14:47:09:479"}
-info: 🔧 Unified Command System initialized {"timestamp":"2026-04-09 14:47:09:479"}
-info: Initializing Command System and loading commands... {"timestamp":"2026-04-09 14:47:09:479"}
-info: 🔄 Parallelizing command loading... {"timestamp":"2026-04-09 14:47:09:479"}
-info: ✅ Redis connected successfully {"timestamp":"2026-04-09 14:47:09:479"}
-info: ✅ Redis Connected - Switching to distributed cache {"timestamp":"2026-04-09 14:47:09:479"}
-info: BullMQ Queues initialized with unified Redis connection {"timestamp":"2026-04-09 14:47:13:4713"}
-info: 🎉 High-Speed Load Complete: 93 commands in 4317ms {"timestamp":"2026-04-09 14:47:13:4713"}
-info: >>> [MASTERMIND] Command loading finished. Getting mock bot... {"timestamp":"2026-04-09 14:47:13:4713"}
-info: ✅ Global Context initialized successfully {"timestamp":"2026-04-09 14:47:13:4713"}
-info: >>> [MASTERMIND] Global Context initialized successfully {"timestamp":"2026-04-09 14:47:13:4713"}
-info: >>> [MASTERMIND] Global Context initialized. {"timestamp":"2026-04-09 14:47:13:4713"}
-info: >>> [MASTERMIND] Initializing Job Registry... {"timestamp":"2026-04-09 14:47:13:4713"}
-info: [ApiKeyManager] Initialized Universal Manager with 12 keys (Semantic Cache Enabled) {"timestamp":"2026-04-09 14:47:13:4713"}
-info: AIUtilityService initialized with 12 API keys (12 healthy) {"timestamp":"2026-04-09 14:47:13:4713"}
-info: Initializing job queues... {"timestamp":"2026-04-09 14:47:13:4713"}
-info: Queue 'ai-processing' created successfully {"timestamp":"2026-04-09 14:47:13:4713"}
-info: Queue 'media-processing' created successfully {"timestamp":"2026-04-09 14:47:13:4713"}
-info: Queue 'notification' created successfully {"timestamp":"2026-04-09 14:47:13:4713"}
-info: Queue 'analytics' created successfully {"timestamp":"2026-04-09 14:47:13:4713"}
-info: Queue 'cleanup' created successfully {"timestamp":"2026-04-09 14:47:13:4713"}
-info: Queue 'whatsapp-outbound' created successfully {"timestamp":"2026-04-09 14:47:13:4713"}
-info: Queue 'group-sync' created successfully {"timestamp":"2026-04-09 14:47:13:4713"}
-info: All job queues initialized successfully {"timestamp":"2026-04-09 14:47:13:4713"}
-info: Registering job processors... {"timestamp":"2026-04-09 14:47:13:4713"}
-info: Registered BullMQ worker for queue 'ai-processing' {"timestamp":"2026-04-09 14:47:13:4713"}
-info: Registered BullMQ worker for queue 'media-processing' {"timestamp":"2026-04-09 14:47:13:4713"}
-info: StatsAggregatorJob initialized {"timestamp":"2026-04-09 14:47:13:4713"}
-info: Initializing WhatsApp Outbound Worker (Anti-Ban enabled)... {"timestamp":"2026-04-09 14:47:13:4713"}
-info: Registered BullMQ worker for queue 'whatsapp-outbound' {"timestamp":"2026-04-09 14:47:13:4713"}
-info: [GroupSyncWorker] Initializing Group Sync Worker... {"timestamp":"2026-04-09 14:47:13:4713"}
-info: Registered BullMQ worker for queue 'group-sync' {"timestamp":"2026-04-09 14:47:13:4713"}
-info: [GroupSyncWorker] Group Sync Worker registered and listening {"timestamp":"2026-04-09 14:47:13:4713"}
-info: Initializing Anti-Ban Resume Worker (Interval: 20000ms)... {"timestamp":"2026-04-09 14:47:13:4713"}
-info: All job processors registered successfully {"timestamp":"2026-04-09 14:47:13:4713"}
-info: >>> [MASTERMIND] Initializing Campaign Worker... {"timestamp":"2026-04-09 14:47:13:4713"}
-info: CampaignWorker initialized with Omnichannel Adapter + Anti-Ban Engine {"timestamp":"2026-04-09 14:47:13:4713"}
-info: >>> [MASTERMIND] Campaign Worker call finished. {"timestamp":"2026-04-09 14:47:13:4713"}
-info: >>> [MASTERMIND] USE_SERVER is true. Initializing MultiTenantApp... {"timestamp":"2026-04-09 14:47:13:4713"}
-info: Initializing Multi-tenant DeXMart SaaS Platform... {"timestamp":"2026-04-09 14:47:13:4713"}
-info: >>> [MASTERMIND] Setting up server middleware... {"timestamp":"2026-04-09 14:47:13:4713"}
-info: >>> [MASTERMIND] Setting up server routes... {"timestamp":"2026-04-09 14:47:13:4713"}
-info: >>> [MASTERMIND] Initializing Analytics Service... {"timestamp":"2026-04-09 14:47:13:4713"}
-info: WebSocket server started on port 3002 {"timestamp":"2026-04-09 14:47:13:4713"}
-info: >>> [MASTERMIND] Enterprise Analytics Gateway online at port 3002 {"timestamp":"2026-04-09 14:47:13:4713"}
-info: >>> [MASTERMIND] Initializing Unified WebSockets... {"timestamp":"2026-04-09 14:47:13:4713"}
-info: Unified Socket Service initialized {"timestamp":"2026-04-09 14:47:13:4713"}
-info: >>> [MASTERMIND] Initializing additional services... {"timestamp":"2026-04-09 14:47:13:4713"}
-info: >>> [MASTERMIND] Starting active tenant bots... {"timestamp":"2026-04-09 14:47:13:4713"}
-info: Starting active tenant channels... {"timestamp":"2026-04-09 14:47:13:4713"}
-info: >>> [MASTERMIND] Resuming all active channels... {"timestamp":"2026-04-09 14:47:13:4713"}
-info: Loading service account from: service-account.json {"timestamp":"2026-04-09 14:47:13:4713"}
-info: Using service account for project: dexmart {"timestamp":"2026-04-09 14:47:13:4713"}
-info: Initializing Firebase Admin... {"timestamp":"2026-04-09 14:47:13:4713"}
-info: 🔥 Firebase Admin Initialized (Project: dexmart) {"timestamp":"2026-04-09 14:47:13:4713"}
-info: [ChannelService] Successfully queued 0 channels for resumption. {"timestamp":"2026-04-09 14:47:21:4721"}
-info: Multi-tenant app initialized successfully {"timestamp":"2026-04-09 14:47:21:4721"}
-info: >>> [MASTERMIND] MultiTenantApp initialized. {"timestamp":"2026-04-09 14:47:21:4721"}
-info: >>> [MASTERMIND] Attempting to listen on port 3001... {"timestamp":"2026-04-09 14:47:21:4721"}
-info: >>> [MASTERMIND] MultiTenantApp started. {"timestamp":"2026-04-09 14:47:21:4721"}
-info: >>> [MASTERMIND] Starting ChannelService watchdog (interval: 60000ms) {"timestamp":"2026-04-09 14:47:21:4721"}
-info: [EventListener] Starting agent event listener {"timestamp":"2026-04-09 14:47:21:4721"}
-info: ✨ DeXMart is ready! {"timestamp":"2026-04-09 14:47:21:4721"}
-info: >>> [MASTERMIND] Multi-tenant DeXMart server running on port 3001 {"timestamp":"2026-04-09 14:47:21:4721"}
+info: Performance: memory_heap_total = 486203392 bytes {"duration":486203392,"operation":"memory_heap_total","timestamp":"2026-04-10 01:36:21:3621","unit":"bytes"}
+info: Performance: memory_rss = 717078528 bytes {"duration":717078528,"operation":"memory_rss","timestamp":"2026-04-10 01:36:21:3621","unit":"bytes"}
+info: Performance: memory_external = 23504917 bytes {"duration":23504917,"operation":"memory_external","timestamp":"2026-04-10 01:36:21:3621","unit":"bytes"}
+info: Performance: cpu_user_time = 7699053 microseconds {"duration":7699053,"operation":"cpu_user_time","timestamp":"2026-04-10 01:36:21:3621","unit":"microseconds"}
+info: Performance: cpu_system_time = 1719697 microseconds {"duration":1719697,"operation":"cpu_system_time","timestamp":"2026-04-10 01:36:21:3621","unit":"microseconds"}
+info: Performance: process_uptime = 61.16886112 seconds {"duration":61.16886112,"operation":"process_uptime","timestamp":"2026-04-10 01:36:21:3621","unit":"seconds"}
+info: Performance: event_loop_lag = 0.47107 milliseconds {"duration":0.47107,"operation":"event_loop_lag","timestamp":"2026-04-10 01:36:21:3621","unit":"milliseconds"}
+info: >>> [MASTERMIND] Resuming all active channels... {"timestamp":"2026-04-10 01:36:31:3631"}
+info: [ChannelService] Successfully queued 0 channels for resumption. {"timestamp":"2026-04-10 01:36:33:3633"}
+info: Performance: memory_heap_used = 381626888 bytes {"duration":381626888,"operation":"memory_heap_used","timestamp":"2026-04-10 01:36:51:3651","unit":"bytes"}
+info: Performance: memory_heap_total = 486465536 bytes {"duration":486465536,"operation":"memory_heap_total","timestamp":"2026-04-10 01:36:51:3651","unit":"bytes"}
+info: Performance: memory_rss = 718651392 bytes {"duration":718651392,"operation":"memory_rss","timestamp":"2026-04-10 01:36:51:3651","unit":"bytes"}
+info: Performance: memory_external = 23564553 bytes {"duration":23564553,"operation":"memory_external","timestamp":"2026-04-10 01:36:51:3651","unit":"bytes"}
+info: Performance: cpu_user_time = 7772588 microseconds {"duration":7772588,"operation":"cpu_user_time","timestamp":"2026-04-10 01:36:51:3651","unit":"microseconds"}
+info: Performance: cpu_system_time = 1722958 microseconds {"duration":1722958,"operation":"cpu_system_time","timestamp":"2026-04-10 01:36:51:3651","unit":"microseconds"}
+info: Performance: process_uptime = 91.168212495 seconds {"duration":91.168212495,"operation":"process_uptime","timestamp":"2026-04-10 01:36:51:3651","unit":"seconds"}
+info: Performance: event_loop_lag = 0.311246 milliseconds {"duration":0.311246,"operation":"event_loop_lag","timestamp":"2026-04-10 01:36:51:3651","unit":"milliseconds"}
+info: Performance: memory_heap_used = 311763128 bytes {"duration":311763128,"operation":"memory_heap_used","timestamp":"2026-04-10 01:37:25:3725","unit":"bytes"}
+info: Performance: memory_heap_total = 353619968 bytes {"duration":353619968,"operation":"memory_heap_total","timestamp":"2026-04-10 01:37:25:3725","unit":"bytes"}
+info: Performance: memory_rss = 513695744 bytes {"duration":513695744,"operation":"memory_rss","timestamp":"2026-04-10 01:37:25:3725","unit":"bytes"}
+info: Performance: memory_external = 23357149 bytes {"duration":23357149,"operation":"memory_external","timestamp":"2026-04-10 01:37:25:3725","unit":"bytes"}
+info: Performance: cpu_user_time = 8202175 microseconds {"duration":8202175,"operation":"cpu_user_time","timestamp":"2026-04-10 01:37:25:3725","unit":"microseconds"}
+info: Performance: cpu_system_time = 1775265 microseconds {"duration":1775265,"operation":"cpu_system_time","timestamp":"2026-04-10 01:37:25:3725","unit":"microseconds"}
+info: Performance: process_uptime = 121.16926918 seconds {"duration":121.16926918,"operation":"process_uptime","timestamp":"2026-04-10 01:37:25:3725","unit":"seconds"}
+info: Performance: event_loop_lag = 0.274763 milliseconds {"duration":0.274763,"operation":"event_loop_lag","timestamp":"2026-04-10 01:37:25:3725","unit":"milliseconds"}
+info: >>> [MASTERMIND] Resuming all active channels... {"timestamp":"2026-04-10 01:37:38:3738"}
+info: [ChannelService] Successfully queued 0 channels for resumption. {"timestamp":"2026-04-10 01:37:40:3740"}
+info: Performance: memory_heap_used = 312940576 bytes {"duration":312940576,"operation":"memory_heap_used","timestamp":"2026-04-10 01:37:58:3758","unit":"bytes"}
+info: Performance: memory_heap_total = 354668544 bytes {"duration":354668544,"operation":"memory_heap_total","timestamp":"2026-04-10 01:37:58:3758","unit":"bytes"}
+info: Performance: memory_rss = 514482176 bytes {"duration":514482176,"operation":"memory_rss","timestamp":"2026-04-10 01:37:58:3758","unit":"bytes"}
+info: Performance: memory_external = 23387649 bytes {"duration":23387649,"operation":"memory_external","timestamp":"2026-04-10 01:37:58:3758","unit":"bytes"}
+info: Performance: cpu_user_time = 8262147 microseconds {"duration":8262147,"operation":"cpu_user_time","timestamp":"2026-04-10 01:37:58:3758","unit":"microseconds"}
+info: Performance: cpu_system_time = 1789683 microseconds {"duration":1789683,"operation":"cpu_system_time","timestamp":"2026-04-10 01:37:58:3758","unit":"microseconds"}
+info: Performance: process_uptime = 151.170361418 seconds {"duration":151.170361418,"operation":"process_uptime","timestamp":"2026-04-10 01:37:58:3758","unit":"seconds"}
+info: Performance: event_loop_lag = 1.104428 milliseconds {"duration":1.104428,"operation":"event_loop_lag","timestamp":"2026-04-10 01:37:58:3758","unit":"milliseconds"}
+info: INCOMING REQUEST: POST /api/auth/google {"timestamp":"2026-04-10 01:38:21:3821"}
+info: Mutating request without Origin/Referer header {"path":"/api/auth/google","timestamp":"2026-04-10 01:38:21:3821"}
+info: POST /api/auth/google {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:38:21:3821","userAgent":"node"}
+info: INCOMING REQUEST: GET /api/auth/me {"timestamp":"2026-04-10 01:38:24:3824"}
+info: GET /api/auth/me {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:38:24:3824","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: INCOMING REQUEST: GET /api/omnichannel/gateway/health {"timestamp":"2026-04-10 01:38:24:3824"}
+info: GET /api/omnichannel/gateway/health {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:38:24:3824","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: INCOMING REQUEST: GET /api/omnichannel/skills/report {"timestamp":"2026-04-10 01:38:24:3824"}
+info: GET /api/omnichannel/skills/report {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:38:24:3824","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: INCOMING REQUEST: GET /api/authority/capabilities {"timestamp":"2026-04-10 01:38:24:3824"}
+info: GET /api/authority/capabilities {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:38:24:3824","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: Socket connected: Nxk46wogCqgcuqT2AAAB joined room tenants:tenant-f7980402-99cb-4674-8374-4e442a2ccc6c {"timestamp":"2026-04-10 01:38:24:3824"}
+info: Performance: memory_heap_used = 318320896 bytes {"duration":318320896,"operation":"memory_heap_used","timestamp":"2026-04-10 01:38:32:3832","unit":"bytes"}
+info: Performance: memory_heap_total = 362270720 bytes {"duration":362270720,"operation":"memory_heap_total","timestamp":"2026-04-10 01:38:32:3832","unit":"bytes"}
+info: Performance: memory_rss = 522477568 bytes {"duration":522477568,"operation":"memory_rss","timestamp":"2026-04-10 01:38:32:3832","unit":"bytes"}
+info: Performance: memory_external = 23491768 bytes {"duration":23491768,"operation":"memory_external","timestamp":"2026-04-10 01:38:32:3832","unit":"bytes"}
+info: Performance: cpu_user_time = 8470040 microseconds {"duration":8470040,"operation":"cpu_user_time","timestamp":"2026-04-10 01:38:32:3832","unit":"microseconds"}
+info: Performance: cpu_system_time = 1830875 microseconds {"duration":1830875,"operation":"cpu_system_time","timestamp":"2026-04-10 01:38:32:3832","unit":"microseconds"}
+info: Performance: process_uptime = 181.171039642 seconds {"duration":181.171039642,"operation":"process_uptime","timestamp":"2026-04-10 01:38:32:3832","unit":"seconds"}
+info: Performance: event_loop_lag = 0.341949 milliseconds {"duration":0.341949,"operation":"event_loop_lag","timestamp":"2026-04-10 01:38:32:3832","unit":"milliseconds"}
+info: INCOMING REQUEST: GET /api/internal/channels/all {"timestamp":"2026-04-10 01:38:35:3835"}
+info: GET /api/internal/channels/all {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:38:35:3835","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: INCOMING REQUEST: GET /api/omnichannel/platforms {"timestamp":"2026-04-10 01:38:35:3835"}
+info: GET /api/omnichannel/platforms {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:38:35:3835","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: INCOMING REQUEST: GET /api/omnichannel/platforms {"timestamp":"2026-04-10 01:38:35:3835"}
+info: GET /api/omnichannel/platforms {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:38:35:3835","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: INCOMING REQUEST: GET /api/internal/channels/all {"timestamp":"2026-04-10 01:38:36:3836"}
+info: GET /api/internal/channels/all {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:38:36:3836","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: INCOMING REQUEST: GET /api/internal/channels/all {"timestamp":"2026-04-10 01:38:37:3837"}
+info: GET /api/internal/channels/all {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:38:37:3837","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: INCOMING REQUEST: GET /api/internal/channels/all {"timestamp":"2026-04-10 01:38:37:3837"}
+info: GET /api/internal/channels/all {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:38:37:3837","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: >>> [MASTERMIND] Resuming all active channels... {"timestamp":"2026-04-10 01:38:45:3845"}
+info: [ChannelService] Successfully queued 0 channels for resumption. {"timestamp":"2026-04-10 01:38:47:3847"}
+info: INCOMING REQUEST: GET /api/omnichannel/agents {"timestamp":"2026-04-10 01:38:47:3847"}
+info: GET /api/omnichannel/agents {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:38:47:3847","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: INCOMING REQUEST: POST /api/internal/agents/system_default/channels/chan_342aeb46-8b18-4fec-ba88-22f3e2696f76/connect {"timestamp":"2026-04-10 01:38:49:3849"}
+info: POST /api/internal/agents/system_default/channels/chan_342aeb46-8b18-4fec-ba88-22f3e2696f76/connect {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:38:49:3849","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: >>> [MASTERMIND] initializeContext() called {"timestamp":"2026-04-10 01:38:50:3850"}
+info: >>> [MASTERMIND] initializeContext() returning existing promise {"timestamp":"2026-04-10 01:38:50:3850"}
+info: [WhatsappAdapter:chan_342aeb46-8b18-4fec-ba88-22f3e2696f76] Initializing... {"timestamp":"2026-04-10 01:38:50:3850"}
+info: [WhatsappAdapter:chan_342aeb46-8b18-4fec-ba88-22f3e2696f76] Initialization complete {"timestamp":"2026-04-10 01:38:50:3850"}
+info: [ChannelManager] Registered adapter for key: chan_342aeb46-8b18-4fec-ba88-22f3e2696f76 {"timestamp":"2026-04-10 01:38:50:3850"}
+info: Rate limiter connected to Redis {"timestamp":"2026-04-10 01:38:50:3850"}
+info: [WhatsappAdapter:chan_342aeb46-8b18-4fec-ba88-22f3e2696f76] Connecting (forceNew=true)... {"timestamp":"2026-04-10 01:38:50:3850"}
+info: INCOMING REQUEST: GET /api/internal/agents/system_default/channels/chan_342aeb46-8b18-4fec-ba88-22f3e2696f76/status {"timestamp":"2026-04-10 01:38:50:3850"}
+info: GET /api/internal/agents/system_default/channels/chan_342aeb46-8b18-4fec-ba88-22f3e2696f76/status {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:38:50:3850","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: [WhatsappAdapter:chan_342aeb46-8b18-4fec-ba88-22f3e2696f76] Cleared Firestore auth state (forceNew=true) {"timestamp":"2026-04-10 01:38:51:3851"}
+info: INCOMING REQUEST: GET /api/internal/agents/system_default/channels/chan_342aeb46-8b18-4fec-ba88-22f3e2696f76/status {"timestamp":"2026-04-10 01:38:51:3851"}
+info: GET /api/internal/agents/system_default/channels/chan_342aeb46-8b18-4fec-ba88-22f3e2696f76/status {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:38:51:3851","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: INCOMING REQUEST: GET /api/internal/agents/system_default/channels/chan_342aeb46-8b18-4fec-ba88-22f3e2696f76/qr {"timestamp":"2026-04-10 01:38:51:3851"}
+info: GET /api/internal/agents/system_default/channels/chan_342aeb46-8b18-4fec-ba88-22f3e2696f76/qr {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:38:51:3851","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: [WhatsappAdapter:chan_342aeb46-8b18-4fec-ba88-22f3e2696f76] QR generated (#1) {"timestamp":"2026-04-10 01:38:52:3852"}
+info: INCOMING REQUEST: GET /api/internal/agents/system_default/channels/chan_342aeb46-8b18-4fec-ba88-22f3e2696f76/status {"timestamp":"2026-04-10 01:38:59:3859"}
+info: GET /api/internal/agents/system_default/channels/chan_342aeb46-8b18-4fec-ba88-22f3e2696f76/status {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:38:59:3859","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: INCOMING REQUEST: GET /api/internal/agents/system_default/channels/chan_342aeb46-8b18-4fec-ba88-22f3e2696f76/qr {"timestamp":"2026-04-10 01:39:00:390"}
+info: GET /api/internal/agents/system_default/channels/chan_342aeb46-8b18-4fec-ba88-22f3e2696f76/qr {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:39:00:390","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: Performance: memory_heap_used = 352631072 bytes {"duration":352631072,"operation":"memory_heap_used","timestamp":"2026-04-10 01:39:05:395","unit":"bytes"}
+info: Performance: memory_heap_total = 438202368 bytes {"duration":438202368,"operation":"memory_heap_total","timestamp":"2026-04-10 01:39:05:395","unit":"bytes"}
+info: Performance: memory_rss = 598446080 bytes {"duration":598446080,"operation":"memory_rss","timestamp":"2026-04-10 01:39:05:395","unit":"bytes"}
+info: Performance: memory_external = 25712980 bytes {"duration":25712980,"operation":"memory_external","timestamp":"2026-04-10 01:39:05:395","unit":"bytes"}
+info: Performance: cpu_user_time = 9645205 microseconds {"duration":9645205,"operation":"cpu_user_time","timestamp":"2026-04-10 01:39:05:395","unit":"microseconds"}
+info: Performance: cpu_system_time = 2071727 microseconds {"duration":2071727,"operation":"cpu_system_time","timestamp":"2026-04-10 01:39:05:395","unit":"microseconds"}
+info: Performance: process_uptime = 211.171143023 seconds {"duration":211.171143023,"operation":"process_uptime","timestamp":"2026-04-10 01:39:05:395","unit":"seconds"}
+info: Performance: event_loop_lag = 0.29671 milliseconds {"duration":0.29671,"operation":"event_loop_lag","timestamp":"2026-04-10 01:39:05:395","unit":"milliseconds"}
+info: INCOMING REQUEST: GET /api/internal/agents/system_default/channels/chan_342aeb46-8b18-4fec-ba88-22f3e2696f76/status {"timestamp":"2026-04-10 01:39:09:399"}
+info: GET /api/internal/agents/system_default/channels/chan_342aeb46-8b18-4fec-ba88-22f3e2696f76/status {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:39:09:399","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: INCOMING REQUEST: GET /api/internal/agents/system_default/channels/chan_342aeb46-8b18-4fec-ba88-22f3e2696f76/qr {"timestamp":"2026-04-10 01:39:09:399"}
+info: GET /api/internal/agents/system_default/channels/chan_342aeb46-8b18-4fec-ba88-22f3e2696f76/qr {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:39:09:399","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: INCOMING REQUEST: GET /api/internal/agents/system_default/channels/chan_342aeb46-8b18-4fec-ba88-22f3e2696f76/status {"timestamp":"2026-04-10 01:39:21:3921"}
+info: GET /api/internal/agents/system_default/channels/chan_342aeb46-8b18-4fec-ba88-22f3e2696f76/status {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:39:21:3921","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: INCOMING REQUEST: GET /api/internal/agents/system_default/channels/chan_342aeb46-8b18-4fec-ba88-22f3e2696f76/qr {"timestamp":"2026-04-10 01:39:21:3921"}
+info: GET /api/internal/agents/system_default/channels/chan_342aeb46-8b18-4fec-ba88-22f3e2696f76/qr {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:39:21:3921","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: INCOMING REQUEST: GET /api/internal/agents/system_default/channels/chan_342aeb46-8b18-4fec-ba88-22f3e2696f76/status {"timestamp":"2026-04-10 01:39:30:3930"}
+info: GET /api/internal/agents/system_default/channels/chan_342aeb46-8b18-4fec-ba88-22f3e2696f76/status {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:39:30:3930","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: INCOMING REQUEST: GET /api/internal/agents/system_default/channels/chan_342aeb46-8b18-4fec-ba88-22f3e2696f76/qr {"timestamp":"2026-04-10 01:39:30:3930"}
+info: GET /api/internal/agents/system_default/channels/chan_342aeb46-8b18-4fec-ba88-22f3e2696f76/qr {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:39:30:3930","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: [WhatsappAdapter:chan_342aeb46-8b18-4fec-ba88-22f3e2696f76] Connection closed during QR handshake — awaiting credential reconnect. {"timestamp":"2026-04-10 01:39:39:3939"}
+info: INCOMING REQUEST: GET /api/internal/agents/system_default/channels/chan_342aeb46-8b18-4fec-ba88-22f3e2696f76/status {"timestamp":"2026-04-10 01:39:39:3939"}
+info: GET /api/internal/agents/system_default/channels/chan_342aeb46-8b18-4fec-ba88-22f3e2696f76/status {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:39:39:3939","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: Performance: memory_heap_used = 337366808 bytes {"duration":337366808,"operation":"memory_heap_used","timestamp":"2026-04-10 01:39:39:3939","unit":"bytes"}
+info: Performance: memory_heap_total = 439250944 bytes {"duration":439250944,"operation":"memory_heap_total","timestamp":"2026-04-10 01:39:39:3939","unit":"bytes"}
+info: Performance: memory_rss = 606523392 bytes {"duration":606523392,"operation":"memory_rss","timestamp":"2026-04-10 01:39:39:3939","unit":"bytes"}
+info: Performance: memory_external = 23753714 bytes {"duration":23753714,"operation":"memory_external","timestamp":"2026-04-10 01:39:39:3939","unit":"bytes"}
+info: Performance: cpu_user_time = 9774662 microseconds {"duration":9774662,"operation":"cpu_user_time","timestamp":"2026-04-10 01:39:39:3939","unit":"microseconds"}
+info: Performance: cpu_system_time = 2116633 microseconds {"duration":2116633,"operation":"cpu_system_time","timestamp":"2026-04-10 01:39:39:3939","unit":"microseconds"}
+info: Performance: process_uptime = 241.171069051 seconds {"duration":241.171069051,"operation":"process_uptime","timestamp":"2026-04-10 01:39:39:3939","unit":"seconds"}
+info: Performance: event_loop_lag = 0.267307 milliseconds {"duration":0.267307,"operation":"event_loop_lag","timestamp":"2026-04-10 01:39:39:3939","unit":"milliseconds"}
+info: >>> [MASTERMIND] Resuming all active channels... {"timestamp":"2026-04-10 01:39:48:3948"}
+info: [ChannelService] Successfully queued 0 channels for resumption. {"timestamp":"2026-04-10 01:39:51:3951"}
+info: Performance: memory_heap_used = 341525464 bytes {"duration":341525464,"operation":"memory_heap_used","timestamp":"2026-04-10 01:40:12:4012","unit":"bytes"}
+info: Performance: memory_heap_total = 439250944 bytes {"duration":439250944,"operation":"memory_heap_total","timestamp":"2026-04-10 01:40:12:4012","unit":"bytes"}
+info: Performance: memory_rss = 606654464 bytes {"duration":606654464,"operation":"memory_rss","timestamp":"2026-04-10 01:40:12:4012","unit":"bytes"}
+info: Performance: memory_external = 23813541 bytes {"duration":23813541,"operation":"memory_external","timestamp":"2026-04-10 01:40:12:4012","unit":"bytes"}
+info: Performance: cpu_user_time = 9841917 microseconds {"duration":9841917,"operation":"cpu_user_time","timestamp":"2026-04-10 01:40:12:4012","unit":"microseconds"}
+info: Performance: cpu_system_time = 2123868 microseconds {"duration":2123868,"operation":"cpu_system_time","timestamp":"2026-04-10 01:40:12:4012","unit":"microseconds"}
+info: Performance: process_uptime = 271.171895391 seconds {"duration":271.171895391,"operation":"process_uptime","timestamp":"2026-04-10 01:40:12:4012","unit":"seconds"}
+info: Performance: event_loop_lag = 0.290994 milliseconds {"duration":0.290994,"operation":"event_loop_lag","timestamp":"2026-04-10 01:40:12:4012","unit":"milliseconds"}
+info: INCOMING REQUEST: GET /api/omnichannel/agents {"timestamp":"2026-04-10 01:40:37:4037"}
+info: GET /api/omnichannel/agents {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:40:37:4037","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: Performance: memory_heap_used = 342998224 bytes {"duration":342998224,"operation":"memory_heap_used","timestamp":"2026-04-10 01:40:46:4046","unit":"bytes"}
+info: Performance: memory_heap_total = 439250944 bytes {"duration":439250944,"operation":"memory_heap_total","timestamp":"2026-04-10 01:40:46:4046","unit":"bytes"}
+info: Performance: memory_rss = 606654464 bytes {"duration":606654464,"operation":"memory_rss","timestamp":"2026-04-10 01:40:46:4046","unit":"bytes"}
+info: Performance: memory_external = 23839074 bytes {"duration":23839074,"operation":"memory_external","timestamp":"2026-04-10 01:40:46:4046","unit":"bytes"}
+info: Performance: cpu_user_time = 9877116 microseconds {"duration":9877116,"operation":"cpu_user_time","timestamp":"2026-04-10 01:40:46:4046","unit":"microseconds"}
+info: Performance: cpu_system_time = 2126903 microseconds {"duration":2126903,"operation":"cpu_system_time","timestamp":"2026-04-10 01:40:46:4046","unit":"microseconds"}
+info: Performance: process_uptime = 301.172204446 seconds {"duration":301.172204446,"operation":"process_uptime","timestamp":"2026-04-10 01:40:46:4046","unit":"seconds"}
+info: Performance: event_loop_lag = 0.360415 milliseconds {"duration":0.360415,"operation":"event_loop_lag","timestamp":"2026-04-10 01:40:46:4046","unit":"milliseconds"}
+info: >>> [MASTERMIND] Resuming all active channels... {"timestamp":"2026-04-10 01:40:56:4056"}
+info: INCOMING REQUEST: DELETE /api/internal/agents/system_default/channels/chan_342aeb46-8b18-4fec-ba88-22f3e2696f76?archive=false {"timestamp":"2026-04-10 01:40:57:4057"}
+info: DELETE /api/internal/agents/system_default/channels/chan_342aeb46-8b18-4fec-ba88-22f3e2696f76 {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:40:57:4057","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: [ChannelManager] Shutting down adapter: chan_342aeb46-8b18-4fec-ba88-22f3e2696f76 {"timestamp":"2026-04-10 01:40:57:4057"}
+info: [WhatsappAdapter:chan_342aeb46-8b18-4fec-ba88-22f3e2696f76] Shutting down... {"timestamp":"2026-04-10 01:40:57:4057"}
+info: [WhatsappAdapter:chan_342aeb46-8b18-4fec-ba88-22f3e2696f76] Shutdown complete {"timestamp":"2026-04-10 01:40:57:4057"}
+info: Firestore collection deleted recursively: tenants/tenant-f7980402-99cb-4674-8374-4e442a2ccc6c/agents/system_default/channels/chan_342aeb46-8b18-4fec-ba88-22f3e2696f76/auth {"timestamp":"2026-04-10 01:40:58:4058"}
+info: [ChannelService] Successfully queued 0 channels for resumption. {"timestamp":"2026-04-10 01:40:58:4058"}
+info: Channel deleted: chan_342aeb46-8b18-4fec-ba88-22f3e2696f76 from tenant tenant-f7980402-99cb-4674-8374-4e442a2ccc6c under Agent system_default (with auth cleanup) {"timestamp":"2026-04-10 01:40:58:4058"}
+info: INCOMING REQUEST: GET /api/internal/channels/all {"timestamp":"2026-04-10 01:40:58:4058"}
+info: GET /api/internal/channels/all {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:40:58:4058","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: INCOMING REQUEST: GET /api/omnichannel/agents {"timestamp":"2026-04-10 01:41:02:412"}
+info: GET /api/omnichannel/agents {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:41:02:412","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: INCOMING REQUEST: GET /api/omnichannel/agents {"timestamp":"2026-04-10 01:41:02:412"}
+info: GET /api/omnichannel/agents {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:41:02:412","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: INCOMING REQUEST: POST /api/internal/agents/system_default/channels {"timestamp":"2026-04-10 01:41:09:419"}
+info: POST /api/internal/agents/system_default/channels {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:41:09:419","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: Channel created: chan_c7957778-f5bb-4566-a1e0-9c7c21dde346 for tenant tenant-f7980402-99cb-4674-8374-4e442a2ccc6c under Agent system_default {"timestamp":"2026-04-10 01:41:10:4110"}
+info: >>> [MASTERMIND] initializeContext() called {"timestamp":"2026-04-10 01:41:10:4110"}
+info: >>> [MASTERMIND] initializeContext() returning existing promise {"timestamp":"2026-04-10 01:41:10:4110"}
+info: [WhatsappAdapter:chan_c7957778-f5bb-4566-a1e0-9c7c21dde346] Initializing... {"timestamp":"2026-04-10 01:41:10:4110"}
+info: [WhatsappAdapter:chan_c7957778-f5bb-4566-a1e0-9c7c21dde346] Initialization complete {"timestamp":"2026-04-10 01:41:10:4110"}
+info: [ChannelManager] Registered adapter for key: chan_c7957778-f5bb-4566-a1e0-9c7c21dde346 {"timestamp":"2026-04-10 01:41:10:4110"}
+info: INCOMING REQUEST: GET /api/internal/channels/all {"timestamp":"2026-04-10 01:41:10:4110"}
+info: GET /api/internal/channels/all {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:41:10:4110","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: [WhatsappAdapter:chan_c7957778-f5bb-4566-a1e0-9c7c21dde346] Connecting (forceNew=true)... {"timestamp":"2026-04-10 01:41:10:4110"}
+info: [WhatsappAdapter:chan_c7957778-f5bb-4566-a1e0-9c7c21dde346] Cleared Firestore auth state (forceNew=true) {"timestamp":"2026-04-10 01:41:11:4111"}
+info: INCOMING REQUEST: GET /api/internal/agents/system_default/channels/chan_c7957778-f5bb-4566-a1e0-9c7c21dde346/status {"timestamp":"2026-04-10 01:41:11:4111"}
+info: GET /api/internal/agents/system_default/channels/chan_c7957778-f5bb-4566-a1e0-9c7c21dde346/status {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:41:11:4111","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: INCOMING REQUEST: GET /api/internal/agents/system_default/channels/chan_c7957778-f5bb-4566-a1e0-9c7c21dde346/status {"timestamp":"2026-04-10 01:41:11:4111"}
+info: GET /api/internal/agents/system_default/channels/chan_c7957778-f5bb-4566-a1e0-9c7c21dde346/status {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:41:11:4111","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: INCOMING REQUEST: GET /api/internal/agents/system_default/channels/chan_c7957778-f5bb-4566-a1e0-9c7c21dde346/qr {"timestamp":"2026-04-10 01:41:12:4112"}
+info: GET /api/internal/agents/system_default/channels/chan_c7957778-f5bb-4566-a1e0-9c7c21dde346/qr {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:41:12:4112","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: [WhatsappAdapter:chan_c7957778-f5bb-4566-a1e0-9c7c21dde346] QR generated (#1) {"timestamp":"2026-04-10 01:41:12:4112"}
+info: INCOMING REQUEST: GET /api/internal/agents/system_default/channels/chan_c7957778-f5bb-4566-a1e0-9c7c21dde346/status {"timestamp":"2026-04-10 01:41:20:4120"}
+info: GET /api/internal/agents/system_default/channels/chan_c7957778-f5bb-4566-a1e0-9c7c21dde346/status {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:41:20:4120","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: Performance: memory_heap_used = 333797208 bytes {"duration":333797208,"operation":"memory_heap_used","timestamp":"2026-04-10 01:41:20:4120","unit":"bytes"}
+info: Performance: memory_heap_total = 357228544 bytes {"duration":357228544,"operation":"memory_heap_total","timestamp":"2026-04-10 01:41:20:4120","unit":"bytes"}
+info: Performance: memory_rss = 553574400 bytes {"duration":553574400,"operation":"memory_rss","timestamp":"2026-04-10 01:41:20:4120","unit":"bytes"}
+info: Performance: memory_external = 24404815 bytes {"duration":24404815,"operation":"memory_external","timestamp":"2026-04-10 01:41:20:4120","unit":"bytes"}
+info: Performance: cpu_user_time = 10520759 microseconds {"duration":10520759,"operation":"cpu_user_time","timestamp":"2026-04-10 01:41:20:4120","unit":"microseconds"}
+info: Performance: cpu_system_time = 2208808 microseconds {"duration":2208808,"operation":"cpu_system_time","timestamp":"2026-04-10 01:41:20:4120","unit":"microseconds"}
+info: Performance: process_uptime = 331.172816211 seconds {"duration":331.172816211,"operation":"process_uptime","timestamp":"2026-04-10 01:41:20:4120","unit":"seconds"}
+info: Performance: event_loop_lag = 0.281941 milliseconds {"duration":0.281941,"operation":"event_loop_lag","timestamp":"2026-04-10 01:41:20:4120","unit":"milliseconds"}
+info: INCOMING REQUEST: GET /api/internal/agents/system_default/channels/chan_c7957778-f5bb-4566-a1e0-9c7c21dde346/qr {"timestamp":"2026-04-10 01:41:20:4120"}
+info: GET /api/internal/agents/system_default/channels/chan_c7957778-f5bb-4566-a1e0-9c7c21dde346/qr {"ip":"::ffff:127.0.0.1","timestamp":"2026-04-10 01:41:20:4120","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"}
+info: [WhatsappAdapter:chan_c7957778-f5bb-4566-a1e0-9c7c21dde346] Connection closed during QR handshake — awaiting credential reconnect. {"timestamp":"2026-04-10 01:41:27:4127"}
+info: Performance: memory_heap_used = 334282648 bytes {"duration":334282648,"operation":"memory_heap_used","timestamp":"2026-04-10 01:41:53:4153","unit":"bytes"}
+info: Performance: memory_heap_total = 353034240 bytes {"duration":353034240,"operation":"memory_heap_total","timestamp":"2026-04-10 01:41:53:4153","unit":"bytes"}
+info: Performance: memory_rss = 554885120 bytes {"duration":554885120,"operation":"memory_rss","timestamp":"2026-04-10 01:41:53:4153","unit":"bytes"}
+info: Performance: memory_external = 23805748 bytes {"duration":23805748,"operation":"memory_external","timestamp":"2026-04-10 01:41:53:4153","unit":"bytes"}
+info: Performance: cpu_user_time = 10595329 microseconds {"duration":10595329,"operation":"cpu_user_time","timestamp":"2026-04-10 01:41:53:4153","unit":"microseconds"}
+info: Performance: cpu_system_time = 2224290 microseconds {"duration":2224290,"operation":"cpu_system_time","timestamp":"2026-04-10 01:41:53:4153","unit":"microseconds"}
+info: Performance: process_uptime = 361.172976783 seconds {"duration":361.172976783,"operation":"process_uptime","timestamp":"2026-04-10 01:41:53:4153","unit":"seconds"}
+info: Performance: event_loop_lag = 0.227064 milliseconds {"duration":0.227064,"operation":"event_loop_lag","timestamp":"2026-04-10 01:41:53:4153","unit":"milliseconds"}
+info: >>> [MASTERMIND] Resuming all active channels... {"timestamp":"2026-04-10 01:42:03:423"}
+info: [ChannelService] Successfully queued 0 channels for resumption. {"timestamp":"2026-04-10 01:42:05:425"}
+info: Performance: memory_heap_used = 334511808 bytes {"duration":334511808,"operation":"memory_heap_used","timestamp":"2026-04-10 01:42:27:4227","unit":"bytes"}
+info: Performance: memory_heap_total = 350150656 bytes {"duration":350150656,"operation":"memory_heap_total","timestamp":"2026-04-10 01:42:27:4227","unit":"bytes"}
+info: Performance: memory_rss = 555278336 bytes {"duration":555278336,"operation":"memory_rss","timestamp":"2026-04-10 01:42:27:4227","unit":"bytes"}
+info: Performance: memory_external = 23843774 bytes {"duration":23843774,"operation":"memory_external","timestamp":"2026-04-10 01:42:27:4227","unit":"bytes"}
+info: Performance: cpu_user_time = 10665118 microseconds {"duration":10665118,"operation":"cpu_user_time","timestamp":"2026-04-10 01:42:27:4227","unit":"microseconds"}
+info: Performance: cpu_system_time = 2232856 microseconds {"duration":2232856,"operation":"cpu_system_time","timestamp":"2026-04-10 01:42:27:4227","unit":"microseconds"}
+info: Performance: process_uptime = 391.172714593 seconds {"duration":391.172714593,"operation":"process_uptime","timestamp":"2026-04-10 01:42:27:4227","unit":"seconds"}
+info: Performance: event_loop_lag = 0.212484 milliseconds {"duration":0.212484,"operation":"event_loop_lag","timestamp":"2026-04-10 01:42:27:4227","unit":"milliseconds"}
+info: Performance: memory_heap_used = 334752888 bytes {"duration":334752888,"operation":"memory_heap_used","timestamp":"2026-04-10 01:43:00:430","unit":"bytes"}
+info: Performance: memory_heap_total = 350674944 bytes {"duration":350674944,"operation":"memory_heap_total","timestamp":"2026-04-10 01:43:00:430","unit":"bytes"}
+info: Performance: memory_rss = 555278336 bytes {"duration":555278336,"operation":"memory_rss","timestamp":"2026-04-10 01:43:00:430","unit":"bytes"}
+info: Performance: memory_external = 23835574 bytes {"duration":23835574,"operation":"memory_external","timestamp":"2026-04-10 01:43:00:430","unit":"bytes"}
+info: Performance: cpu_user_time = 10695999 microseconds {"duration":10695999,"operation":"cpu_user_time","timestamp":"2026-04-10 01:43:00:430","unit":"microseconds"}
+info: Performance: cpu_system_time = 2245937 microseconds {"duration":2245937,"operation":"cpu_system_time","timestamp":"2026-04-10 01:43:00:430","unit":"microseconds"}
+info: Performance: process_uptime = 421.173522804 seconds {"duration":421.173522804,"operation":"process_uptime","timestamp":"2026-04-10 01:43:00:430","unit":"seconds"}
+info: Performance: event_loop_lag = 0.262519 milliseconds {"duration":0.262519,"operation":"event_loop_lag","timestamp":"2026-04-10 01:43:00:430","unit":"milliseconds"}
+info: >>> [MASTERMIND] Resuming all active channels... {"timestamp":"2026-04-10 01:43:10:4310"}
+info: [ChannelService] Successfully queued 0 channels for resumption. {"timestamp":"2026-04-10 01:43:12:4312"}
+info: Performance: memory_heap_used = 335423848 bytes {"duration":335423848,"operation":"memory_heap_used","timestamp":"2026-04-10 01:43:34:4334","unit":"bytes"}
+info: Performance: memory_heap_total = 351985664 bytes {"duration":351985664,"operation":"memory_heap_total","timestamp":"2026-04-10 01:43:34:4334","unit":"bytes"}
+info: Performance: memory_rss = 555409408 bytes {"duration":555409408,"operation":"memory_rss","timestamp":"2026-04-10 01:43:34:4334","unit":"bytes"}
+info: Performance: memory_external = 23874487 bytes {"duration":23874487,"operation":"memory_external","timestamp":"2026-04-10 01:43:34:4334","unit":"bytes"}
+info: Performance: cpu_user_time = 10770540 microseconds {"duration":10770540,"operation":"cpu_user_time","timestamp":"2026-04-10 01:43:34:4334","unit":"microseconds"}
+info: Performance: cpu_system_time = 2253473 microseconds {"duration":2253473,"operation":"cpu_system_time","timestamp":"2026-04-10 01:43:34:4334","unit":"microseconds"}
+info: Performance: process_uptime = 451.174457488 seconds {"duration":451.174457488,"operation":"process_uptime","timestamp":"2026-04-10 01:43:34:4334","unit":"seconds"}
+info: Performance: event_loop_lag = 0.301228 milliseconds {"duration":0.301228,"operation":"event_loop_lag","timestamp":"2026-04-10 01:43:34:4334","unit":"milliseconds"}
+info: Performance: memory_heap_used = 336008288 bytes {"duration":336008288,"operation":"memory_heap_used","timestamp":"2026-04-10 01:44:08:448","unit":"bytes"}
+info: Performance: memory_heap_total = 350937088 bytes {"duration":350937088,"operation":"memory_heap_total","timestamp":"2026-04-10 01:44:08:448","unit":"bytes"}
+info: Performance: memory_rss = 555409408 bytes {"duration":555409408,"operation":"memory_rss","timestamp":"2026-04-10 01:44:08:448","unit":"bytes"}
+info: Performance: memory_external = 23890833 bytes {"duration":23890833,"operation":"memory_external","timestamp":"2026-04-10 01:44:08:448","unit":"bytes"}
+info: Performance: cpu_user_time = 10797023 microseconds {"duration":10797023,"operation":"cpu_user_time","timestamp":"2026-04-10 01:44:08:448","unit":"microseconds"}
+info: Performance: cpu_system_time = 2260136 microseconds {"duration":2260136,"operation":"cpu_system_time","timestamp":"2026-04-10 01:44:08:448","unit":"microseconds"}
+info: Performance: process_uptime = 481.174552909 seconds {"duration":481.174552909,"operation":"process_uptime","timestamp":"2026-04-10 01:44:08:448","unit":"seconds"}
+info: Performance: event_loop_lag = 0.265701 milliseconds {"duration":0.265701,"operation":"event_loop_lag","timestamp":"2026-04-10 01:44:08:448","unit":"milliseconds"}
+info: >>> [MASTERMIND] Resuming all active channels... {"timestamp":"2026-04-10 01:44:17:4417"}
+info: [ChannelService] Successfully queued 0 channels for resumption. {"timestamp":"2026-04-10 01:44:20:4420"}
+info: Performance: memory_heap_used = 337400880 bytes {"duration":337400880,"operation":"memory_heap_used","timestamp":"2026-04-10 01:44:38:4438","unit":"bytes"}
+info: Performance: memory_heap_total = 354344960 bytes {"duration":354344960,"operation":"memory_heap_total","timestamp":"2026-04-10 01:44:38:4438","unit":"bytes"}
+info: Performance: memory_rss = 555409408 bytes {"duration":555409408,"operation":"memory_rss","timestamp":"2026-04-10 01:44:38:4438","unit":"bytes"}
+info: Performance: memory_external = 23913135 bytes {"duration":23913135,"operation":"memory_external","timestamp":"2026-04-10 01:44:38:4438","unit":"bytes"}
+info: Performance: cpu_user_time = 10857849 microseconds {"duration":10857849,"operation":"cpu_user_time","timestamp":"2026-04-10 01:44:38:4438","unit":"microseconds"}
+info: Performance: cpu_system_time = 2274094 microseconds {"duration":2274094,"operation":"cpu_system_time","timestamp":"2026-04-10 01:44:38:4438","unit":"microseconds"}
+info: Performance: process_uptime = 511.175058826 seconds {"duration":511.175058826,"operation":"process_uptime","timestamp":"2026-04-10 01:44:38:4438","unit":"seconds"}
+info: Performance: event_loop_lag = 0.43485 milliseconds {"duration":0.43485,"operation":"event_loop_lag","timestamp":"2026-04-10 01:44:38:4438","unit":"milliseconds"}
+info: Performance: memory_heap_used = 336674104 bytes {"duration":336674104,"operation":"memory_heap_used","timestamp":"2026-04-10 01:45:11:4511","unit":"bytes"}
+info: Performance: memory_heap_total = 351199232 bytes {"duration":351199232,"operation":"memory_heap_total","timestamp":"2026-04-10 01:45:11:4511","unit":"bytes"}
+info: Performance: memory_rss = 555409408 bytes {"duration":555409408,"operation":"memory_rss","timestamp":"2026-04-10 01:45:11:4511","unit":"bytes"}
+info: Performance: memory_external = 23912507 bytes {"duration":23912507,"operation":"memory_external","timestamp":"2026-04-10 01:45:11:4511","unit":"bytes"}
+info: Performance: cpu_user_time = 10880265 microseconds {"duration":10880265,"operation":"cpu_user_time","timestamp":"2026-04-10 01:45:11:4511","unit":"microseconds"}
+info: Performance: cpu_system_time = 2286143 microseconds {"duration":2286143,"operation":"cpu_system_time","timestamp":"2026-04-10 01:45:11:4511","unit":"microseconds"}
+info: Performance: process_uptime = 541.175861731 seconds {"duration":541.175861731,"operation":"process_uptime","timestamp":"2026-04-10 01:45:11:4511","unit":"seconds"}
+info: Performance: event_loop_lag = 0.229201 milliseconds {"duration":0.229201,"operation":"event_loop_lag","timestamp":"2026-04-10 01:45:11:4511","unit":"milliseconds"}
+info: >>> [MASTERMIND] Resuming all active channels... {"timestamp":"2026-04-10 01:45:24:4524"}
+info: [ChannelService] Successfully queued 0 channels for resumption. {"timestamp":"2026-04-10 01:45:27:4527"}
+info: Performance: memory_heap_used = 337986224 bytes {"duration":337986224,"operation":"memory_heap_used","timestamp":"2026-04-10 01:45:45:4545","unit":"bytes"}
+info: Performance: memory_heap_total = 354869248 bytes {"duration":354869248,"operation":"memory_heap_total","timestamp":"2026-04-10 01:45:45:4545","unit":"bytes"}
+info: Performance: memory_rss = 555409408 bytes {"duration":555409408,"operation":"memory_rss","timestamp":"2026-04-10 01:45:45:4545","unit":"bytes"}
+info: Performance: memory_external = 23943423 bytes {"duration":23943423,"operation":"memory_external","timestamp":"2026-04-10 01:45:45:4545","unit":"bytes"}
+info: Performance: cpu_user_time = 10940192 microseconds {"duration":10940192,"operation":"cpu_user_time","timestamp":"2026-04-10 01:45:45:4545","unit":"microseconds"}
+info: Performance: cpu_system_time = 2307426 microseconds {"duration":2307426,"operation":"cpu_system_time","timestamp":"2026-04-10 01:45:45:4545","unit":"microseconds"}
+info: Performance: process_uptime = 571.176080977 seconds {"duration":571.176080977,"operation":"process_uptime","timestamp":"2026-04-10 01:45:45:4545","unit":"seconds"}
+info: Performance: event_loop_lag = 0.259398 milliseconds {"duration":0.259398,"operation":"event_loop_lag","timestamp":"2026-04-10 01:45:45:4545","unit":"milliseconds"}
+info: Performance: memory_heap_used = 338013704 bytes {"duration":338013704,"operation":"memory_heap_used","timestamp":"2026-04-10 01:46:18:4618","unit":"bytes"}
+info: Performance: memory_heap_total = 351985664 bytes {"duration":351985664,"operation":"memory_heap_total","timestamp":"2026-04-10 01:46:18:4618","unit":"bytes"}
+info: Performance: memory_rss = 555540480 bytes {"duration":555540480,"operation":"memory_rss","timestamp":"2026-04-10 01:46:18:4618","unit":"bytes"}
+info: Performance: memory_external = 23951329 bytes {"duration":23951329,"operation":"memory_external","timestamp":"2026-04-10 01:46:18:4618","unit":"bytes"}
+info: Performance: cpu_user_time = 10965985 microseconds {"duration":10965985,"operation":"cpu_user_time","timestamp":"2026-04-10 01:46:18:4618","unit":"microseconds"}
+info: Performance: cpu_system_time = 2319130 microseconds {"duration":2319130,"operation":"cpu_system_time","timestamp":"2026-04-10 01:46:18:4618","unit":"microseconds"}
+info: Performance: process_uptime = 601.176609736 seconds {"duration":601.176609736,"operation":"process_uptime","timestamp":"2026-04-10 01:46:18:4618","unit":"seconds"}
+info: Performance: event_loop_lag = 0.242834 milliseconds {"duration":0.242834,"operation":"event_loop_lag","timestamp":"2026-04-10 01:46:18:4618","unit":"milliseconds"}
+info: >>> [MASTERMIND] Resuming all active channels... {"timestamp":"2026-04-10 01:46:31:4631"}
+info: [ChannelService] Successfully queued 0 channels for resumption. {"timestamp":"2026-04-10 01:46:34:4634"}
+info: Performance: memory_heap_used = 338906216 bytes {"duration":338906216,"operation":"memory_heap_used","timestamp":"2026-04-10 01:46:52:4652","unit":"bytes"}
+info: Performance: memory_heap_total = 353558528 bytes {"duration":353558528,"operation":"memory_heap_total","timestamp":"2026-04-10 01:46:52:4652","unit":"bytes"}
+info: Performance: memory_rss = 555540480 bytes {"duration":555540480,"operation":"memory_rss","timestamp":"2026-04-10 01:46:52:4652","unit":"bytes"}
+info: Performance: memory_external = 23973620 bytes {"duration":23973620,"operation":"memory_external","timestamp":"2026-04-10 01:46:52:4652","unit":"bytes"}
+info: Performance: cpu_user_time = 11013268 microseconds {"duration":11013268,"operation":"cpu_user_time","timestamp":"2026-04-10 01:46:52:4652","unit":"microseconds"}
+info: Performance: cpu_system_time = 2342589 microseconds {"duration":2342589,"operation":"cpu_system_time","timestamp":"2026-04-10 01:46:52:4652","unit":"microseconds"}
+info: Performance: process_uptime = 631.175980774 seconds {"duration":631.175980774,"operation":"process_uptime","timestamp":"2026-04-10 01:46:52:4652","unit":"seconds"}
+info: Performance: event_loop_lag = 0.224828 milliseconds {"duration":0.224828,"operation":"event_loop_lag","timestamp":"2026-04-10 01:46:52:4652","unit":"milliseconds"}
+info: Performance: memory_heap_used = 338800904 bytes {"duration":338800904,"operation":"memory_heap_used","timestamp":"2026-04-10 01:47:26:4726","unit":"bytes"}
+info: Performance: memory_heap_total = 352509952 bytes {"duration":352509952,"operation":"memory_heap_total","timestamp":"2026-04-10 01:47:26:4726","unit":"bytes"}
+info: Performance: memory_rss = 555671552 bytes {"duration":555671552,"operation":"memory_rss","timestamp":"2026-04-10 01:47:26:4726","unit":"bytes"}
+info: Performance: memory_external = 23990365 bytes {"duration":23990365,"operation":"memory_external","timestamp":"2026-04-10 01:47:26:4726","unit":"bytes"}
+info: Performance: cpu_user_time = 11044746 microseconds {"duration":11044746,"operation":"cpu_user_time","timestamp":"2026-04-10 01:47:26:4726","unit":"microseconds"}
+info: Performance: cpu_system_time = 2343509 microseconds {"duration":2343509,"operation":"cpu_system_time","timestamp":"2026-04-10 01:47:26:4726","unit":"microseconds"}
+info: Performance: process_uptime = 661.176614484 seconds {"duration":661.176614484,"operation":"process_uptime","timestamp":"2026-04-10 01:47:26:4726","unit":"seconds"}
+info: Performance: event_loop_lag = 0.371678 milliseconds {"duration":0.371678,"operation":"event_loop_lag","timestamp":"2026-04-10 01:47:26:4726","unit":"milliseconds"}
+info: >>> [MASTERMIND] Resuming all active channels... {"timestamp":"2026-04-10 01:47:35:4735"}
+info: [ChannelService] Successfully queued 0 channels for resumption. {"timestamp":"2026-04-10 01:47:39:4739"}
+info: Performance: memory_heap_used = 340110856 bytes {"duration":340110856,"operation":"memory_heap_used","timestamp":"2026-04-10 01:47:59:4759","unit":"bytes"}
+info: Performance: memory_heap_total = 354082816 bytes {"duration":354082816,"operation":"memory_heap_total","timestamp":"2026-04-10 01:47:59:4759","unit":"bytes"}
+info: Performance: memory_rss = 555671552 bytes {"duration":555671552,"operation":"memory_rss","timestamp":"2026-04-10 01:47:59:4759","unit":"bytes"}
+info: Performance: memory_external = 24012365 bytes {"duration":24012365,"operation":"memory_external","timestamp":"2026-04-10 01:47:59:4759","unit":"bytes"}
+info: Performance: cpu_user_time = 11103300 microseconds {"duration":11103300,"operation":"cpu_user_time","timestamp":"2026-04-10 01:47:59:4759","unit":"microseconds"}
+info: Performance: cpu_system_time = 2351756 microseconds {"duration":2351756,"operation":"cpu_system_time","timestamp":"2026-04-10 01:47:59:4759","unit":"microseconds"}
+info: Performance: process_uptime = 691.181378207 seconds {"duration":691.181378207,"operation":"process_uptime","timestamp":"2026-04-10 01:47:59:4759","unit":"seconds"}
+info: Performance: event_loop_lag = 7.062852 milliseconds {"duration":7.062852,"operation":"event_loop_lag","timestamp":"2026-04-10 01:47:59:4759","unit":"milliseconds"}
+info: Performance: memory_heap_used = 339862344 bytes {"duration":339862344,"operation":"memory_heap_used","timestamp":"2026-04-10 01:48:33:4833","unit":"bytes"}
+info: Performance: memory_heap_total = 353034240 bytes {"duration":353034240,"operation":"memory_heap_total","timestamp":"2026-04-10 01:48:33:4833","unit":"bytes"}
+info: Performance: memory_rss = 555933696 bytes {"duration":555933696,"operation":"memory_rss","timestamp":"2026-04-10 01:48:33:4833","unit":"bytes"}
+info: Performance: memory_external = 24003685 bytes {"duration":24003685,"operation":"memory_external","timestamp":"2026-04-10 01:48:33:4833","unit":"bytes"}
+info: Performance: cpu_user_time = 11130819 microseconds {"duration":11130819,"operation":"cpu_user_time","timestamp":"2026-04-10 01:48:33:4833","unit":"microseconds"}
+info: Performance: cpu_system_time = 2364769 microseconds {"duration":2364769,"operation":"cpu_system_time","timestamp":"2026-04-10 01:48:33:4833","unit":"microseconds"}
+info: Performance: process_uptime = 721.182981976 seconds {"duration":721.182981976,"operation":"process_uptime","timestamp":"2026-04-10 01:48:33:4833","unit":"seconds"}
+info: Performance: event_loop_lag = 0.213124 milliseconds {"duration":0.213124,"operation":"event_loop_lag","timestamp":"2026-04-10 01:48:33:4833","unit":"milliseconds"}
+info: >>> [MASTERMIND] Resuming all active channels... {"timestamp":"2026-04-10 01:48:42:4842"}
+info: [ChannelService] Successfully queued 0 channels for resumption. {"timestamp":"2026-04-10 01:48:44:4844"}

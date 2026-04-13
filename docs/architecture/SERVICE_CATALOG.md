@@ -115,12 +115,20 @@ Manages connectivity slots nested under agents: `tenants/{tenantId}/agents/{agen
 | Field | Value |
 |-------|-------|
 | **File** | `src/services/ChannelManagerService.ts` |
-| **Pattern** | Singleton |
-| **Purpose** | Channel connection pool management and health monitoring |
-| **Dependencies** | `ChannelService`, platform SDKs (Baileys, grammY, discord.js) |
-| **Tests** | `ChannelManagerService.test.ts` |
+| **Status** | ⚠️ **DEPRECATED (Parallel System)** |
+| **Purpose** | Recreated in Phase 4 but duplicates OpenClaw's native channel lifecycle |
 
-Manages active WebSocket/API connections per channel. Handles reconnection logic, stale socket detection, and max-restarts-per-hour caps. The runtime counterpart to `ChannelService` (which handles persistence).
+> **Architectural Note:** This service is part of the dead-end parallel channel system. In Phase 5, DeXMart relies exclusively on OpenClaw's native `createChannelManager()` in `gateway/server-channels.ts`.
+
+### OpenClaw Channel Engine (Canonical)
+| Field | Value |
+|-------|-------|
+| **File** | `src/gateway/server-channels.ts`, `src/plugins/registry.ts` |
+| **Pattern** | Native Engine |
+| **Purpose** | Discovers extensions, boots plugins, manages backoff/restarts |
+| **Dependencies** | `plugin-sdk/` |
+
+> **Architectural Note:** This is the single, canonical channel orchestrator. It manages all 40+ plugins in `extensions/`. In Phase 5, B2C requirements are grounded into this engine.
 
 ### IngressService
 | Field | Value |
@@ -672,10 +680,10 @@ Status of each service relative to the Phase 4 migration (backend/ → src/). **
 |---------|----------|-------|
 | AgentService | `src/services/AgentService.ts` | ✅ Migrated |
 | ChannelService | `src/services/ChannelService.ts` | ✅ Migrated + `startWatchdog()` / `stopWatchdog()` added (ChannelWatchdog dissolved) |
-| ChannelManagerService | `src/services/ChannelManagerService.ts` | ✅ Migrated |
-| ChannelManager (adapter registry) | `src/services/channels/ChannelManager.ts` | ✅ Recreated from compiled JS + enhanced with `getAdaptersForUser()`, `shutdownUserAdapters()` |
-| Channel Registry | `src/services/channels/registry.ts` | ✅ Recreated — `GenericOpenClawAdapter` bridge removed, `nativeOpenClaw` flag added |
-| WhatsappAdapter | `src/services/channels/whatsapp/WhatsappAdapter.ts` | ✅ Recreated + fused: wraps OpenClaw `createWaSocket()` with Firestore auth (Phase 2 FR-2) |
+| ChannelManagerService | `src/services/ChannelManagerService.ts` | ⚠️ **DEPRECATED** (parallel system pending Phase 5 removal) |
+| ChannelManager (adapter registry) | `src/services/channels/ChannelManager.ts` | ⚠️ **DEPRECATED** (parallel system) |
+| Channel Registry | `src/services/channels/registry.ts` | ⚠️ **DEPRECATED** (parallel system) |
+| WhatsappAdapter | `src/services/channels/whatsapp/WhatsappAdapter.ts` | ⚠️ **DEPRECATED** (parallel system — use `extensions/` instead) |
 | IngressService | `src/ingress/ingress-service.ts` | ✅ Migrated + **wired to `runEmbeddedPiAgent()`** (Phase 4 core fusion) |
 | FirebaseService | `src/services/FirebaseService.ts` | ✅ Migrated |
 | ConfigService | `src/services/ConfigService.ts` | ✅ Migrated |
@@ -717,14 +725,14 @@ FirebaseService (depends on: Firebase Admin SDK)
 DatabaseService (depends on: FirebaseService)
     |
     +---> MultiTenantService
-    +---> AgentService -------> ChannelService -------> ChannelManagerService
-    +---> UserService                                        |
-    +---> CampaignService ---> AntiBanService                v
-    +---> ContactService                              Platform SDKs
-    +---> TemplateService                            (Baileys, grammY,
-    +---> WebhookService                              discord.js, etc.)
-    +---> FlowService
-    |
+    +---> AgentService -------> ChannelService
+    +---> UserService               | (Phase 5: Orchestrates)
+    +---> CampaignService           v
+    +---> ContactService       OpenClaw Native Engine
+    +---> TemplateService      (gateway/server-channels.ts)
+    +---> WebhookService            |
+    +---> FlowService               v
+    |                          extensions/ (40+ plugins)
     v
 IngressService (depends on: AgentService, DeduplicationService,
                 AutomationService, FlowEngine, AI Agent, WebhookService)
