@@ -4,15 +4,17 @@ import { db } from '@/lib/firebase.js';
 import { Request, Response } from 'express';
 import { Timestamp } from 'firebase-admin/firestore';
 
+// Hoist mocks so they are accessible in beforeEach for proper reset
+const mockGet = vi.hoisted(() => vi.fn());
+const mockBatch = vi.hoisted(() => ({
+    delete: vi.fn(),
+    set: vi.fn(),
+    update: vi.fn(),
+    commit: vi.fn().mockResolvedValue({}),
+}));
+
 // Mock dependencies
 vi.mock('@/lib/firebase.js', () => {
-    const mockGet = vi.fn();
-    const mockBatch = {
-        delete: vi.fn(),
-        set: vi.fn(),
-        commit: vi.fn().mockResolvedValue({}),
-    };
-
     const mockCollection: any = vi.fn(() => ({
         doc: vi.fn(() => ({
             get: mockGet,
@@ -33,13 +35,23 @@ vi.mock('@/lib/firebase.js', () => {
     };
 });
 
-vi.mock('@/services/ConfigService.js', () => ({
-    ConfigService: {
-        getInstance: () => ({
-            get: vi.fn().mockReturnValue('jwt-secret'),
+vi.mock('@/services/ConfigService.js', () => {
+    const mockConfigInstance = {
+        get: vi.fn((key: string) => {
+            if (key === 'JWT_SECRET') return 'test-secret';
+            if (key === 'auth.jwtExpires') return '4h';
+            if (key === 'auth.refreshExpires') return '7d';
+            return null;
         }),
-    },
-}));
+    };
+    return {
+        ConfigService: {
+            getInstance: () => mockConfigInstance,
+        },
+        config: mockConfigInstance,
+        default: mockConfigInstance,
+    };
+});
 
 describe('authController - refresh', () => {
     let req: Partial<Request>;
@@ -47,6 +59,10 @@ describe('authController - refresh', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
+        // Reset mockGet fully (clears Once queues) to prevent cross-test contamination
+        mockGet.mockReset();
+        // Re-apply default commit implementation after reset
+        mockBatch.commit.mockResolvedValue({});
         req = {
             cookies: { refreshToken: 'old-refresh-token' },
         };
@@ -75,7 +91,6 @@ describe('authController - refresh', () => {
             ref: { delete: vi.fn() },
         };
 
-        const mockGet = (db.collection('any').doc('any').get as any);
         mockGet.mockResolvedValueOnce(mockRt);
         mockGet.mockResolvedValueOnce({
             exists: true,
@@ -91,7 +106,7 @@ describe('authController - refresh', () => {
     });
 
     it('should fail for non-existent token (Potential Fraud)', async () => {
-        (db.collection('refreshTokens').doc('old-refresh-token').get as any).mockResolvedValue({ exists: false });
+        mockGet.mockResolvedValue({ exists: false });
 
         await refresh(req as Request, res as Response);
 

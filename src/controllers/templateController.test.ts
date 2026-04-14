@@ -20,8 +20,8 @@ vi.mock('../services/templateService.js', () => ({
     }
 }));
 
-vi.mock('../services/geminiAI.js', () => ({
-    GeminiAI: {
+vi.mock('../services/ai-utility.js', () => ({
+    AIUtilityService: {
         spinMessage: vi.fn()
     }
 }));
