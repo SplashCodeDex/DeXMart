@@ -20,7 +20,7 @@
 - [x] Task 2.7: Fix `src/services/flowEngine.skill.test.ts` — update skill interface expectations [9830fe1]
 - [x] Task 2.8: Fix `src/routes/channelLifecycle.test.ts` — update `deleteChannel` parameter expectations [84a54b4]
 - [x] Task 2.9: Fix `src/controllers/` test files — update authController test expectations [1b73603]
-- [ ] Task 2.10: Run Category C+D tests (green) + verify no regressions
+- [x] Task 2.10: Run Category C+D tests (green) + verify no regressions
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Fix DeXMart-Relevant Tests' (Protocol in workflow.md)
 
 ---
