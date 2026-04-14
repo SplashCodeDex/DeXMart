@@ -9,7 +9,7 @@
 
 ---
 
-## Phase 2: Fix DeXMart-Relevant Tests (Categories C & D)
+## Phase 2: Fix DeXMart-Relevant Tests (Categories C & D) [checkpoint: b284ae7]
 
 - [x] Task 2.1: Fix `test/mocks/baileys.ts` — use real EventEmitter for `ev` so session.ts event handlers fire + update `getLastSocket()` to handle object-type socket [dc53b0e]
 - [x] Task 2.2: Fix `src/web/session.test.ts` — all 8 tests pass after baileys mock fix [dc53b0e]
