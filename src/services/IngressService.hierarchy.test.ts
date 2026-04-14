@@ -30,13 +30,46 @@ vi.mock('../utils/createChannelContext.js', () => ({
   })
 }));
 
+vi.mock('./deduplicationService.js', () => ({
+  deduplicationService: {
+    shouldProcess: vi.fn().mockReturnValue(true)
+  }
+}));
+
+vi.mock('../utils/messageNormalizer.js', () => ({
+  MessageNormalizer: {
+    getId: vi.fn().mockReturnValue('msg-1'),
+    getTimestamp: vi.fn().mockReturnValue(Date.now())
+  }
+}));
+
+vi.mock('./automationService.js', () => ({
+  automationService: {
+    listAutomations: vi.fn().mockResolvedValue({ success: true, data: [] }),
+    executeAutomation: vi.fn()
+  }
+}));
+
+vi.mock('./flowService.js', () => ({
+  flowService: {
+    listActiveFlows: vi.fn().mockResolvedValue({ success: true, data: [] })
+  }
+}));
+
+vi.mock('./flowEngine.js', () => ({
+  flowEngine: {
+    executeFlow: vi.fn().mockResolvedValue(false)
+  }
+}));
+
+vi.mock('./analytics.js', () => ({
+  default: {
+    trackMessage: vi.fn()
+  }
+}));
+
 describe('IngressService Hierarchy', () => {
   let service: IngressService;
-  const mockContext: any = {
-    unifiedAI: {
-      processMessage: vi.fn().mockResolvedValue({ success: true })
-    }
-  };
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -54,10 +87,15 @@ describe('IngressService Hierarchy', () => {
       data: { id: agentId, name: 'Path Agent' } as any
     });
 
+    // handleMessage dispatches via webhook (not unifiedAI.processMessage directly)
     // @ts-ignore - testing new parameter
-    await service.handleMessage(tenantId, channelId, {} as any, mockContext, fullPath);
+    await service.handleMessage(tenantId, channelId, {} as any, {} as any, fullPath);
 
     expect(agentService.getAgent).toHaveBeenCalledWith(tenantId, agentId);
-    expect(mockContext.unifiedAI.processMessage).toHaveBeenCalled();
+    expect(webhookService.dispatch).toHaveBeenCalledWith(
+      tenantId,
+      'message.received',
+      expect.objectContaining({ channelId })
+    );
   });
 });
