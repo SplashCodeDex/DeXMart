@@ -125,11 +125,14 @@ export function resetBaileysMocks() {
 }
 
 export function getLastSocket(): MockBaileysSocket {
-  const getter = (globalThis as Record<PropertyKey, unknown>)[Symbol.for("openclaw:lastSocket")];
-  if (typeof getter === "function") {
-    return (getter as () => MockBaileysSocket)();
+  const socketOrGetter = (globalThis as Record<PropertyKey, unknown>)[Symbol.for("openclaw:lastSocket")];
+  if (typeof socketOrGetter === "function") {
+    return (socketOrGetter as () => MockBaileysSocket)();
   }
-  if (!getter) {
+  if (socketOrGetter && typeof socketOrGetter === "object") {
+    return socketOrGetter as MockBaileysSocket;
+  }
+  if (!socketOrGetter) {
     throw new Error("Baileys mock not initialized");
   }
   throw new Error("Invalid Baileys socket getter");
