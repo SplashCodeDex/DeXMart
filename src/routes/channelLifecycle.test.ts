@@ -70,7 +70,7 @@ describe('Channel Lifecycle Routes', () => {
         .query({ archive: 'true' });
 
       expect(res.status).toBe(200);
-      expect(channelService.deleteChannel).toHaveBeenCalledWith('tenant-123', 'chan-789', 'agent-456', { archive: true });
+      expect(channelService.deleteChannel).toHaveBeenCalledWith('tenant-123', 'chan-789', 'agent-456', { archive: true }, undefined);
     });
   });
 });
