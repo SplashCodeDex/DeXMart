@@ -11,10 +11,10 @@
 
 ## Phase 2: Fix DeXMart-Relevant Tests (Categories C & D)
 
-- [ ] Task 2.1: Fix `src/web/test-helpers.ts` — update `getLastSocket()` to handle the new SaaS-mode socket creation path from Phase 5 session.ts changes
-- [ ] Task 2.2: Fix `src/web/session.test.ts` — verify all 8 tests pass after test-helpers fix
-- [ ] Task 2.3: Fix `src/services/IngressService.test.ts` — update mock to use `runEmbeddedPiAgent()` instead of `unifiedAI.processMessage()`
-- [ ] Task 2.4: Fix `src/services/IngressService.hierarchy.test.ts` and `IngressService.path.test.ts` — align with current routing behavior
+- [x] Task 2.1: Fix `test/mocks/baileys.ts` — use real EventEmitter for `ev` so session.ts event handlers fire + update `getLastSocket()` to handle object-type socket [dc53b0e]
+- [x] Task 2.2: Fix `src/web/session.test.ts` — all 8 tests pass after baileys mock fix [dc53b0e]
+- [x] Task 2.3: Fix `src/services/IngressService.test.ts` — updated mock expectation to use `handleCommonMessage` properly [389d8be]
+- [x] Task 2.4: Fix `src/services/IngressService.hierarchy.test.ts` and `IngressService.path.test.ts` — align with current routing behavior [2370a1e]
 - [ ] Task 2.5: Fix `src/middleware/authMiddleware.test.ts` — update expected status code (403 → 401) if prod code is correct, or fix prod code if 403 is intended
 - [ ] Task 2.6: Fix `src/jobs/index.test.ts` — resolve `vi.mock` hoisting issue (`Cannot access 'mockJobQueueService' before initialization`)
 - [ ] Task 2.7: Fix `src/services/flowEngine.skill.test.ts` — update skill interface expectations
