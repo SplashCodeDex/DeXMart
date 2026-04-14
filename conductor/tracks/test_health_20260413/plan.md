@@ -27,8 +27,8 @@
 
 ## Phase 3: Fix Telegram Module Tests (Category B)
 
-- [ ] Task 3.1: Diagnose `src/telegram/webhook.test.ts` — identify why all 8 tests timeout (likely async mock that never resolves)
-- [ ] Task 3.2: Fix webhook test async flow — update mock to properly resolve/reject
+- [x] Task 3.1: Diagnose `src/telegram/webhook.test.ts` — identify why all 8 tests timeout (likely async mock that never resolves)
+- [x] Task 3.2: Fix webhook test async flow — update mock to properly resolve/reject
 - [ ] Task 3.3: Fix `src/telegram/bot.test.ts` and `bot.create-telegram-bot.test.ts` — update `createTelegramBot` mock shape
 - [ ] Task 3.4: Fix `src/telegram/fetch.test.ts` — update `resolveTelegramFetch` undici dispatcher expectations
 - [ ] Task 3.5: Fix `src/telegram/bot.media.downloads-media-file-path-no-file-download.test.ts` — update forwarded burst / media group expectations

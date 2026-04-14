@@ -121,7 +121,81 @@ export async function startTelegramWebhook(opts: {
   }
 
   const server = createServer((req, res) => {
-    // ... (rest of server logic)
+    void (async () => {
+      const reqPath = (req.url ?? "/").split("?")[0];
+
+      // Health check endpoint
+      if (reqPath === healthPath) {
+        res.writeHead(200, { "content-type": "application/json" });
+        res.end(JSON.stringify({ status: "ok" }));
+        return;
+      }
+
+      // Telegram webhook endpoint
+      if (reqPath === path && req.method === "POST") {
+        const bodyResult = await readJsonBodyWithLimit(req, {
+          maxBytes: TELEGRAM_WEBHOOK_MAX_BODY_BYTES,
+          timeoutMs: TELEGRAM_WEBHOOK_BODY_TIMEOUT_MS,
+        });
+
+        if (!bodyResult.ok) {
+          try {
+            if (!res.headersSent) {
+              const status =
+                bodyResult.code === "PAYLOAD_TOO_LARGE" ? 413 :
+                bodyResult.code === "REQUEST_BODY_TIMEOUT" ? 408 : 400;
+              res.writeHead(status, { "content-type": "text/plain" });
+              res.end(bodyResult.error);
+            }
+          } catch {
+            // Socket may already be destroyed (req.destroy() on PAYLOAD_TOO_LARGE)
+          }
+          return;
+        }
+
+        const secretHeader = req.headers["x-telegram-bot-api-secret-token"] as string | undefined;
+        let replied = false;
+
+        const reply = async (json: string): Promise<void> => {
+          if (replied || res.headersSent) return;
+          replied = true;
+          res.writeHead(200, { "content-type": "application/json" });
+          res.end(json);
+        };
+
+        const unauthorized = async (): Promise<void> => {
+          if (replied || res.headersSent) return;
+          replied = true;
+          res.writeHead(401, { "content-type": "text/plain" });
+          res.end("Unauthorized");
+        };
+
+        try {
+          await handler(bodyResult.value, reply, secretHeader, unauthorized);
+        } catch (err) {
+          runtime.error?.(`Telegram webhook handler error: ${formatErrorMessage(err)}`);
+        }
+
+        if (!replied && !res.headersSent) {
+          replied = true;
+          res.writeHead(200, { "content-type": "application/json" });
+          res.end("{}");
+        }
+        return;
+      }
+
+      // Unknown path
+      res.writeHead(404, { "content-type": "text/plain" });
+      res.end("Not found");
+    })().catch((err) => {
+      runtime.error?.(`Telegram webhook server error: ${formatErrorMessage(err)}`);
+      if (!res.headersSent) {
+        try {
+          res.writeHead(500, { "content-type": "text/plain" });
+          res.end("Internal server error");
+        } catch { /* ignore */ }
+      }
+    });
   });
 
   await listenHttpServer({
