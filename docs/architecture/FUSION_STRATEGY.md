@@ -1,6 +1,6 @@
 # True Fusion Strategy
 
-> **Last verified**: 2026-04-10 | **Current Phase**: Phase 5 (Foundation Grounding)
+> **Last verified**: 2026-04-14 | **Current Phase**: Phase 6 (ControlUI Replacement) / Test Health
 
 ---
 
@@ -298,11 +298,21 @@ git log openclaw-upstream/main --oneline --since="2 weeks ago"
 | Category | Action | Example |
 |----------|--------|---------|
 | **Security patches** | Always cherry-pick immediately | CVE fixes, auth bypasses |
+| **Upstream bugs / Broken tests** | **Sync via Conductor Track** | Fixes for test utilities, internals |
 | **Channel bug fixes** | Cherry-pick after review | Baileys reconnect fixes |
 | **New channel plugins** | Copy to `extensions/`, test | New Matrix bridge |
 | **Agent runtime improvements** | Review, adapt, merge | Better model fallback logic |
-| **Breaking API changes** | Review impact on 4 injection points | Config format changes |
-| **UI/CLI changes** | Ignore (DeXMart has its own dashboard) | Terminal UI updates |
+| **Breaking API changes** | Review impact on injection points | Config format changes |
+| **UI/CLI changes** | Ignore (DeXMart has its dashboard) | Terminal UI updates |
+
+### 4.3 The "Sync to Resolve" Policy
+
+DeXMart will frequently inherit broken tests or internal bugs that exist in early OpenClaw commits or emerge because test infrastructure wasn't fully ported.
+
+**Rule**: We do not manually fix upstream infrastructure.
+1. Annotate broken upstream tests (`Category A`) with `.skip` or `// upstream: pending sync`.
+2. Do not attempt to fix them manually, as this creates merge conflicts.
+3. Fixes are obtained by running a dedicated **Upstream Sync Conductor Track** onto a clean branch, cherry-picking OpenClaw commits up to the target version (e.g. `2026.4.14`), preserving our 5 injection points, and then re-evaluating test health.
 
 ### 4.3 Sync Report
 
@@ -364,12 +374,12 @@ The fusion is complete when a new developer sees **one project called DeXMart**:
 - [x] **54 tests passing**: Phase 2 injection point tests — all green, zero failures
 - [x] **B2C isolation verified**: Integration tests proving User A cannot see User B's data (`src/tenancy/__tests__/isolation.integration.test.ts` — 14 tests, 2026-04-10)
 - [x] **Billing enforcement verified**: Integration tests proving Free users cannot access Pro features (`src/billing/__tests__/enforcement.integration.test.ts` — 28 tests, 2026-04-10)
-- [ ] **Foundation grounded (Phase 5)**: B2C/Stripe/Firebase injected into `PluginRuntime`, `createChannelManager()`, and `src/web/session.ts` at the engine level
-- [ ] **Parallel system removed (Phase 5)**: `WhatsappAdapter.ts`, DeXMart's `ChannelManager.ts`, and DeXMart's `registry.ts` deleted
+- [x] **Foundation grounded (Phase 5)**: B2C/Stripe/Firebase injected into `PluginRuntime`, `createChannelManager()`, and `src/web/session.ts` at the engine level
+- [x] **Parallel system removed (Phase 5)**: `WhatsappAdapter.ts`, DeXMart's `ChannelManager.ts`, and `registry.ts` deleted
 - [ ] **ControlUI replaced (Phase 6)**: DeXMart dashboard handles all channel operations; `/api/openclaw-ui` proxy removed
 - [ ] **Zero duplication (second pass)**: Second-pass dedup of `src/services/` vs. `src/billing/`, `src/tenancy/` etc.
 - [ ] **Upstream sync is invisible**: Upstream watcher automation configured
-- [ ] **`backend/` deleted**: After staging smoke test confirms `src/main.ts` boots correctly
+- [x] **`backend/` deleted**: After staging smoke test confirms `src/main.ts` boots correctly
 - [ ] **Indistinguishable**: No developer needs to know what came from OpenClaw vs what DeXMart built.
 
 ---

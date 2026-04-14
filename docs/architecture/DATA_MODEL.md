@@ -1,6 +1,6 @@
 # DeXMart Data Model & Persistence
 
-> **Last verified**: 2026-04-10 | **Current Phase**: Phase 5 (Foundation Grounding) | **Source of truth**: `src/persistence/firebase.ts` SchemaMap
+> **Last verified**: 2026-04-14 | **Current Phase**: Phase 6 / Test Health | **Source of truth**: `src/persistence/firebase.ts` SchemaMap
 
 ---
 
@@ -492,7 +492,7 @@ The codebase currently has both path patterns. The migration strategy:
 
 1. **Phase 2 (complete)**: New modules (`usage-tracker`, `channel-auth-state`, `user-config`) write to `users/{userId}/` paths
 2. **Phase 4 (complete)**: `backend/` source migrated to `src/` to share Zod schemas
-3. **Phase 5 (in progress)**: Engine foundation wired to use `users/{userId}/` for multi-tenancy
+3. **Phase 5 (complete)**: Engine foundation wired to use `users/{userId}/` for multi-tenancy
 4. **Post-migration**: Update `FirebaseService.SchemaMap` to use `users/` paths exclusively and remove `tenants/` paths
 
 **During transition**: Both paths coexist. New code reads from `users/` first, falls back to `tenants/` for backward compatibility.

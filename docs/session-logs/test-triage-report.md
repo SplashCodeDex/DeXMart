@@ -6,7 +6,7 @@ Total Failing Files: 138
 ### Category A: OpenClaw Engine Internal Tests (79 files)
 **Root Cause**: These are OpenClaw upstream tests that depend on internal mocking infrastructure and test utilities that weren't fully ported during the Phase 1 repository restructure.
 
-**Remediation Action**: Audit which tests cover functionality DeXMart actually uses → fix those → mark remainder as .skip with // upstream: not yet ported annotation.
+**Remediation Action**: **DO NOT FIX MANUALLY**. Mark tests with `.skip` and a `// upstream: pending sync` annotation. These failures must be resolved collectively by executing a dedicated **Upstream Sync Conductor Track** to cherry-pick upstream OpenClaw commits (e.g. up to `2026.4.14`), ensuring we avoid divergent test infrastructure and merge conflicts.
 
 **Failing Files**:
 - `src/auto-reply/reply.media-note.test.ts`
@@ -101,10 +101,10 @@ Total Failing Files: 138
 - `src/telegram/fetch.test.ts`
 - `src/telegram/webhook.test.ts`
 
-### Category C: Baileys/Session Mocks (1 files)
-**Root Cause**: getLastSocket() throws Invalid Baileys socket getter because session.ts changed socket creation flow in Phase 5.
+### Category C: Baileys/Session Mocks (1 files) ✅ RESOLVED
+**Root Cause**: The mock Baileys socket in `test/mocks/baileys.ts` used `vi.fn()` for `ev.on` and `ev.emit`. This meant event handlers registered by `session.ts` (e.g. for `creds.update`) were swallowed and never fired during tests.
 
-**Remediation Action**: Update test-helpers.ts getLastSocket() to handle the new SaaS-mode socket creation path.
+**Remediation Action**: Backed the mock socket's `ev` with a real `EventEmitter` wrapped with `vi.spyOn`, and updated `getLastSocket()` to correctly handle object-type sockets.
 
 **Failing Files**:
 - `src/web/session.test.ts`

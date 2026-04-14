@@ -96,7 +96,16 @@ describe('IngressService', () => {
       data: { id: 'agent-1', name: 'AI Assistant', memorySearch: true, boundChannels: [], skills: [], createdAt: new Date(), updatedAt: new Date() } as any
     });
 
-    await service.handleMessage(tenantId, channelId, {} as any, mockContext, fullPath);
+    const commonMsg: any = {
+      id: 'msg-2',
+      platform: 'telegram',
+      from: 'user-123',
+      to: channelId,
+      content: { text: 'hello' },
+      timestamp: Date.now()
+    };
+
+    await service.handleCommonMessage(tenantId, channelId, commonMsg, mockContext, fullPath);
 
     expect(agentService.getAgent).toHaveBeenCalledWith(tenantId, 'agent-1');
     expect(mockContext.unifiedAI.processMessage).toHaveBeenCalled();

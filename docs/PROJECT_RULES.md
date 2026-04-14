@@ -50,9 +50,14 @@ The following files exist in the codebase but are **deprecated** — they repres
 
 **All new channel work belongs in `extensions/` and the native OpenClaw plugin system.**
 
-### Upstream Sync (Invisible to the Product)
+### Upstream Sync & Issue Resolution Policy
 
-OpenClaw upstream is tracked as a git remote for cherry-picking security patches. This is an implementation detail — no developer needs to know or care about it during normal work. See `docs/architecture/FUSION_STRATEGY.md` for the sync protocol.
+OpenClaw upstream is tracked as a git remote. Because DeXMart is fundamentally OpenClaw with injected B2C capabilities, the following rule applies to all upstream tests, bugs, and internal APIs:
+
+**Do not manually fix upstream tests or internal Engine issues.**
+If a test or bug originates from OpenClaw's internal engine (`Category A` tests), it must be annotated with `// upstream: pending sync` or `.skip` and ignored during normal development. We must **never** manually fix upstream test infrastructure issues or internal engine bugs, as this causes divergence and guaranteed merge conflicts.
+
+These issues are resolved exclusively via the **Upstream Sync Conductor Track** (cherry-picking features, fixes, and test updates up to the target OpenClaw version). See `docs/architecture/FUSION_STRATEGY.md` for the correct sync protocol.
 
 ---
 

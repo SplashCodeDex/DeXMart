@@ -111,7 +111,7 @@ OpenClaw upstream tracked as git remote. Security patches cherry-picked. New fea
 
 ---
 
-## Phase 5: Foundation Grounding 🔄 IN PROGRESS
+## Phase 5: Foundation Grounding ✅ COMPLETE
 
 > **The core of the Master Plan.** B2C multi-tenancy, Stripe billing gates, and Firebase auth
 > are injected directly into OpenClaw's engine — specifically its `PluginRuntime`,
@@ -132,16 +132,16 @@ Phase 4 accidentally created a **parallel channel management system** alongside 
 Phase 5 corrects this by injecting DeXMart's B2C requirements directly into OpenClaw's engine.
 
 ### Tasks:
-- [ ] **5.1**: Inject `userId` / `TenantContext` into `PluginRuntime` — so `createChannelManager().startChannel()` knows which tenant it's operating for
-- [ ] **5.2**: Inject Firestore auth into `src/web/session.ts` as the **default** for SaaS mode — not just an opt-in `authStateFactory` parameter
-- [ ] **5.3**: Inject Stripe billing gates into `gateway/server-channels.ts` — so `startChannelInternal()` checks `assertCan('startChannel')` before booting any plugin
-- [ ] **5.4**: Make `ChannelService` orchestrate OpenClaw's native `createChannelManager()` — not reinvent it with a separate `AdapterClass` system
-- [ ] **5.5**: Delete the deprecated parallel system: `WhatsappAdapter.ts`, DeXMart's `ChannelManager.ts`, DeXMart's `registry.ts`
-- [ ] **5.6**: Wire `HybridMemoryAdapter` into `runEmbeddedPiAgent()` via optional `memoryManager` param
-- [ ] **5.7**: Verify all 40+ extensions automatically inherit B2C isolation, Stripe gating, and Firestore persistence
-- [ ] **5.8**: Delete the `backend/` directory, remove `backend` from `pnpm-workspace.yaml`, and update CI/CD scripts — source is fully migrated to `src/` since Phase 4
-- [ ] **5.9**: Complete `tenants/{tenantId}` → `users/{userId}` path migration — update `FirebaseService.SchemaMap`, Firestore security rules, and all service queries to use the canonical `users/` hierarchy (see `DATA_MODEL.md` Section 9)
-- [ ] **5.10**: Consolidate `SystemAuthorityService` (legacy, `src/services/`) into `auth-guard.ts` (Phase 2, `src/billing/`) — both perform plan-gated feature enforcement, only one should exist
+- [x] **5.1**: Inject `userId` / `TenantContext` into `PluginRuntime` — so `createChannelManager().startChannel()` knows which tenant it's operating for
+- [x] **5.2**: Inject Firestore auth into `src/web/session.ts` as the **default** for SaaS mode — not just an opt-in `authStateFactory` parameter
+- [x] **5.3**: Inject Stripe billing gates into `gateway/server-channels.ts` — so `startChannelInternal()` checks `assertCan('startChannel')` before booting any plugin
+- [x] **5.4**: Make `ChannelService` orchestrate OpenClaw's native `createChannelManager()` — not reinvent it with a separate `AdapterClass` system
+- [x] **5.5**: Delete the deprecated parallel system: `WhatsappAdapter.ts`, DeXMart's `ChannelManager.ts`, DeXMart's `registry.ts`
+- [x] **5.6**: Wire `HybridMemoryAdapter` into `runEmbeddedPiAgent()` via optional `memoryManager` param
+- [x] **5.7**: Verify all 40+ extensions automatically inherit B2C isolation, Stripe gating, and Firestore persistence
+- [x] **5.8**: Delete the `backend/` directory, remove `backend` from `pnpm-workspace.yaml`, and update CI/CD scripts — source is fully migrated to `src/` since Phase 4
+- [x] **5.9**: Complete `tenants/{tenantId}` → `users/{userId}` path migration — update `FirebaseService.SchemaMap`, Firestore security rules, and all service queries to use the canonical `users/` hierarchy (see `DATA_MODEL.md` Section 9)
+- [x] **5.10**: Consolidate `SystemAuthorityService` (legacy, `src/services/`) into `auth-guard.ts` (Phase 2, `src/billing/`) — both perform plan-gated feature enforcement, only one should exist
 
 ---
 
