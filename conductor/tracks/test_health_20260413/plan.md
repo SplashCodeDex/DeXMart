@@ -2,7 +2,7 @@
 
 ## Phase 1: Triage & Documentation
 
-- [ ] Task 1.1: Run full test suite and capture all 131 failing test file paths with error summaries
+- [~] Task 1.1: Run full test suite and capture all 131 failing test file paths with error summaries
 - [ ] Task 1.2: Categorize every failing file into Categories A–F, creating a triage document at `docs/session-logs/test-triage-report.md`
 - [ ] Task 1.3: For each category, document the exact root cause and specific remediation action
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Triage & Documentation' (Protocol in workflow.md)
