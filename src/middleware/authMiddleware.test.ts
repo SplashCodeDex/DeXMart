@@ -78,14 +78,14 @@ describe('authMiddleware', () => {
     expect(res.status).toHaveBeenCalledWith(401);
   });
 
-  it('should return 403 if token verification fails', async () => {
+  it('should return 401 if token verification fails', async () => {
     req.headers['authorization'] = 'Bearer invalid-token';
     vi.mocked(jwt.verify).mockImplementation(() => {
       throw new Error('Invalid token');
     });
 
     await authenticateToken(req, res, next);
-    expect(res.status).toHaveBeenCalledWith(403);
+    expect(res.status).toHaveBeenCalledWith(401);
   });
 
   it('should return 401 if token is expired', async () => {
