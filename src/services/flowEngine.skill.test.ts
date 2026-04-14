@@ -18,6 +18,8 @@ describe('FlowEngine Skill Execution', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     engine = FlowEngine.getInstance();
+    // Stub Firestore-backed tracking to avoid real DB calls in unit tests
+    vi.spyOn(engine as any, 'trackNodeExecution').mockResolvedValue(undefined);
     mockContext = {
       tenantId: 'tenant-123',
       bot: { id: 'bot-1' },
