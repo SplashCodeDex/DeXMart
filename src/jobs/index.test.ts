@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import JobRegistry from './index.js';
 
-// Mock dependencies
-const mockJobQueueService = {
+// Hoist mock object so it's available inside vi.mock factory (which is hoisted to top of file)
+const mockJobQueueService = vi.hoisted(() => ({
   process: vi.fn(),
-};
+}));
 
 vi.mock('../services/jobQueue.js', () => {
   return {
@@ -12,6 +12,7 @@ vi.mock('../services/jobQueue.js', () => {
       return mockJobQueueService;
     }),
     jobQueueService: mockJobQueueService,
+    default: mockJobQueueService,
   };
 });
 
