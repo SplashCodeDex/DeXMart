@@ -8,6 +8,9 @@ export type CommandFlagKey = {
 }[keyof CommandsConfig];
 
 function resolveAutoDefault(providerId?: ChannelId): boolean {
+  if (providerId === "discord" || providerId === "telegram") return true;
+  if (providerId === "slack") return false;
+
   const id = normalizeChannelId(providerId);
   if (!id) {
     return false;

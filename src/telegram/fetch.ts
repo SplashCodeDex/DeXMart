@@ -190,31 +190,40 @@ export function resolveTelegramFetch(
   proxyFetch?: typeof fetch,
   options?: { network?: TelegramNetworkConfig },
 ): typeof fetch | undefined {
-  const localDispatcher = applyTelegramNetworkWorkarounds(options?.network);
+  // Create a factory for localFetch so we can get a fresh one after fallback updates the dispatcher
+  let currentLocalDispatcher = applyTelegramNetworkWorkarounds(options?.network);
   const sourceFetch = proxyFetch ? resolveFetch(proxyFetch) : resolveFetch();
   if (!sourceFetch) {
     throw new Error("fetch is not available; set channels.telegram.proxy in config");
   }
-
-  // Bind the local dispatcher to avoid breaking global outbound requests (DeXMart fix)
-  const localFetch = localDispatcher 
-    ? (input: RequestInfo | URL, init?: RequestInit) => {
-        return (sourceFetch as any)(input, { ...init, dispatcher: localDispatcher });
-      }
-    : sourceFetch;
+  
+  const createLocalFetch = (dispatcher: any) => {
+    return dispatcher 
+      ? (input: RequestInfo | URL, init?: RequestInit) => {
+          return (sourceFetch as any)(input, { ...init, dispatcher });
+        }
+      : sourceFetch;
+  };
 
   if (proxyFetch) {
-    return localFetch as typeof fetch;
+    return createLocalFetch(currentLocalDispatcher) as typeof fetch;
   }
   
   // Apply upstream API's IPv4 fallback
   return (async (input: RequestInfo | URL, init?: RequestInit) => {
+    let activeFetch = createLocalFetch(currentLocalDispatcher);
     try {
-      return await localFetch(input, init);
+      return await activeFetch(input, init);
     } catch (err) {
       if (shouldRetryWithIpv4Fallback(err)) {
         applyTelegramIpv4Fallback();
-        return localFetch(input, init);
+        // applyTelegramIpv4Fallback globally forced the values. Now re-evaluating returns the new dispatcher.
+        currentLocalDispatcher = applyTelegramNetworkWorkarounds({
+          autoSelectFamily: false,
+          dnsResultOrder: "ipv4first",
+        });
+        activeFetch = createLocalFetch(currentLocalDispatcher);
+        return activeFetch(input, init);
       }
       throw err;
     }

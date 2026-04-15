@@ -104,13 +104,14 @@ describe("resolveTelegramFetch", () => {
     expect(removeEventListener).toHaveBeenCalledTimes(1);
   });
 
-  it("does not double-wrap an already wrapped proxy fetch", async () => {
+  it("wraps already wrapped proxy fetch to inject local dispatcher", async () => {
+    vi.stubEnv("OPENCLAW_TELEGRAM_DISABLE_AUTO_SELECT_FAMILY", "1");
     const proxyFetch = vi.fn(async () => ({ ok: true }) as Response) as unknown as typeof fetch;
     const alreadyWrapped = resolveFetch(proxyFetch);
 
     const resolved = resolveTelegramFetch(alreadyWrapped);
 
-    expect(resolved).toBe(alreadyWrapped);
+    expect(resolved).not.toBe(alreadyWrapped);
   });
 
   it("honors env enable override", async () => {
@@ -152,11 +153,11 @@ describe("resolveTelegramFetch", () => {
     expect(setDefaultResultOrder).toHaveBeenCalledTimes(2);
   });
 
-  it("replaces global undici dispatcher with proxy-aware EnvHttpProxyAgent", async () => {
+  it("uses local proxy-aware EnvHttpProxyAgent instead of global dispatcher", async () => {
     globalThis.fetch = vi.fn(async () => ({})) as unknown as typeof fetch;
     resolveTelegramFetch(undefined, { network: { autoSelectFamily: true } });
 
-    expect(setGlobalDispatcher).toHaveBeenCalledTimes(1);
+    expect(setGlobalDispatcher).not.toHaveBeenCalled();
     expect(EnvHttpProxyAgentCtor).toHaveBeenCalledWith({
       connect: {
         autoSelectFamily: true,
@@ -165,45 +166,33 @@ describe("resolveTelegramFetch", () => {
     });
   });
 
-  it("keeps an existing proxy-like global dispatcher", async () => {
-    getGlobalDispatcherState.value = {
-      constructor: { name: "ProxyAgent" },
-    };
+
+
+  it("updates local dispatcher when proxy env is configured", async () => {
+    vi.stubEnv("HTTPS_PROXY", "http://127.0.0.1:7890");
     globalThis.fetch = vi.fn(async () => ({})) as unknown as typeof fetch;
 
     resolveTelegramFetch(undefined, { network: { autoSelectFamily: true } });
 
     expect(setGlobalDispatcher).not.toHaveBeenCalled();
-    expect(EnvHttpProxyAgentCtor).not.toHaveBeenCalled();
-  });
-
-  it("updates proxy-like dispatcher when proxy env is configured", async () => {
-    vi.stubEnv("HTTPS_PROXY", "http://127.0.0.1:7890");
-    getGlobalDispatcherState.value = {
-      constructor: { name: "ProxyAgent" },
-    };
-    globalThis.fetch = vi.fn(async () => ({})) as unknown as typeof fetch;
-
-    resolveTelegramFetch(undefined, { network: { autoSelectFamily: true } });
-
-    expect(setGlobalDispatcher).toHaveBeenCalledTimes(1);
     expect(EnvHttpProxyAgentCtor).toHaveBeenCalledTimes(1);
   });
 
-  it("sets global dispatcher only once across repeated equal decisions", async () => {
+  it("sets local dispatcher only once across repeated equal decisions", async () => {
     globalThis.fetch = vi.fn(async () => ({})) as unknown as typeof fetch;
     resolveTelegramFetch(undefined, { network: { autoSelectFamily: true } });
     resolveTelegramFetch(undefined, { network: { autoSelectFamily: true } });
 
-    expect(setGlobalDispatcher).toHaveBeenCalledTimes(1);
+    expect(setGlobalDispatcher).not.toHaveBeenCalled();
+    expect(EnvHttpProxyAgentCtor).toHaveBeenCalledTimes(1);
   });
 
-  it("updates global dispatcher when autoSelectFamily decision changes", async () => {
+  it("updates local dispatcher when autoSelectFamily decision changes", async () => {
     globalThis.fetch = vi.fn(async () => ({})) as unknown as typeof fetch;
     resolveTelegramFetch(undefined, { network: { autoSelectFamily: true } });
     resolveTelegramFetch(undefined, { network: { autoSelectFamily: false } });
 
-    expect(setGlobalDispatcher).toHaveBeenCalledTimes(2);
+    expect(setGlobalDispatcher).not.toHaveBeenCalled();
     expect(EnvHttpProxyAgentCtor).toHaveBeenNthCalledWith(1, {
       connect: {
         autoSelectFamily: true,
@@ -239,7 +228,7 @@ describe("resolveTelegramFetch", () => {
       .mockResolvedValueOnce({ ok: true } as Response);
     globalThis.fetch = fetchMock as unknown as typeof fetch;
 
-    const resolved = resolveTelegramFetch();
+    const resolved = resolveTelegramFetch(undefined, { network: { autoSelectFamily: true } });
     if (!resolved) {
       throw new Error("expected resolved fetch");
     }
@@ -247,7 +236,7 @@ describe("resolveTelegramFetch", () => {
     await resolved("https://api.telegram.org/file/botx/photos/file_1.jpg");
 
     expect(fetchMock).toHaveBeenCalledTimes(2);
-    expect(setGlobalDispatcher).toHaveBeenCalledTimes(2);
+    expect(setGlobalDispatcher).not.toHaveBeenCalled();
     expect(EnvHttpProxyAgentCtor).toHaveBeenNthCalledWith(1, {
       connect: {
         autoSelectFamily: true,
