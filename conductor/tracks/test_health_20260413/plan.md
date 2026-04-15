@@ -20,20 +20,20 @@
 - [x] Task 2.7: Fix `src/services/flowEngine.skill.test.ts` — update skill interface expectations [9830fe1]
 - [x] Task 2.8: Fix `src/routes/channelLifecycle.test.ts` — update `deleteChannel` parameter expectations [84a54b4]
 - [x] Task 2.9: Fix `src/controllers/` test files — update authController test expectations [1b73603]
-- [x] Task 2.10: Run Category C+D tests (green) + verify no regressions
+- [x] Task 2.10: Run Category C+D tests (green) + verify no regressions [b284ae7]
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Fix DeXMart-Relevant Tests' (Protocol in workflow.md)
 
 ---
 
-## Phase 3: Fix Telegram Module Tests (Category B)
+## Phase 3: Fix Telegram Module Tests (Category B) [checkpoint: 5081cd1]
 
 - [x] Task 3.1: Diagnose `src/telegram/webhook.test.ts` — identify why all 8 tests timeout (likely async mock that never resolves)
 - [x] Task 3.2: Fix webhook test async flow — update mock to properly resolve/reject
-- [ ] Task 3.3: Fix `src/telegram/bot.test.ts` and `bot.create-telegram-bot.test.ts` — update `createTelegramBot` mock shape
-- [ ] Task 3.4: Fix `src/telegram/fetch.test.ts` — update `resolveTelegramFetch` undici dispatcher expectations
-- [ ] Task 3.5: Fix `src/telegram/bot.media.downloads-media-file-path-no-file-download.test.ts` — update forwarded burst / media group expectations
-- [ ] Task 3.6: Run all Telegram tests (green) + verify no regressions
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Fix Telegram Module Tests' (Protocol in workflow.md)
+- [~] Task 3.3: Fix `src/telegram/bot.test.ts` and `bot.create-telegram-bot.test.ts` — update `createTelegramBot` mock shape
+- [x] Task 3.4: Fix `src/telegram/fetch.test.ts` — update `resolveTelegramFetch` undici dispatcher expectations
+- [x] Task 3.5: Fix `src/telegram/bot.media.downloads-media-file-path-no-file-download.test.ts` — update forwarded burst / media group expectations
+- [x] Task 3.6: Run all Telegram tests (green) + verify no regressions
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Fix Telegram Module Tests' (Protocol in workflow.md)
 
 ---
 
