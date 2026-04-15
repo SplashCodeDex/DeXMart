@@ -1,6 +1,6 @@
 # Plan: Upstream Sync — OpenClaw v2026.3.2 → v2026.4.14
 
-## Phase 0: Pre-Sync Preparation
+## Phase 0: Pre-Sync Preparation [checkpoint: bf9f60f]
 
 - [x] Task 0.1: Create dedicated sync branch `upstream/sync-v2026.4.14` from current HEAD [5d0cba5]
 - [x] Task 0.2: Add OpenClaw upstream remote (`git remote add openclaw https://github.com/openclaw/openclaw.git`)
