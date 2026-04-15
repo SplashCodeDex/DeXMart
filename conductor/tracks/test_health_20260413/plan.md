@@ -39,13 +39,13 @@
 
 ## Phase 4: Skip/Annotate OpenClaw Engine Tests (Categories A, E, F)
 
-- [ ] Task 4.1: Write a script `scripts/annotate-upstream-tests.ts` to batch-skip tests with standardized annotation format: `it.skip('test name', /* upstream: relies on unported OpenClaw test infrastructure */ ...)`
-- [ ] Task 4.2: Apply skip annotations to Category A tests (~85 files in `src/agents/`, `src/cron/`, `src/auto-reply/`, `src/browser/`, `src/infra/`, `src/commands/`, `src/config/`, `src/gateway/`)
-- [ ] Task 4.3: Apply skip annotations to Category E tests (~12 files in `src/security/`)
-- [ ] Task 4.4: Apply skip annotations to Category F tests (~8 files in `src/signal/`, `src/slack/`, `src/line/`, `src/discord/`, `src/facebook/`, `src/wizard/`, misc)
-- [ ] Task 4.5: Fix `src/auto-reply/reply/reply-plumbing.test.ts` and `session.test.ts` — investigate if these test DeXMart-relevant reply logic (fix if yes, skip if upstream-only)
-- [ ] Task 4.6: Fix `src/tools/cmd.test.ts` — 3 translate tests failing (likely GeminiService mock issue — investigate if DeXMart-relevant)
-- [ ] Task 4.7: Fix `src/analytics/` and `src/hooks/` failures — investigate root cause and fix or skip
+- [x] Task 4.1: Write a script `scripts/annotate-upstream-tests.ts` to batch-skip tests with standardized annotation format: `it.skip('test name', /* upstream: relies on unported OpenClaw test infrastructure */ ...)`
+- [x] Task 4.2: Apply skip annotations to Category A tests (~85 files in `src/agents/`, `src/cron/`, `src/auto-reply/`, `src/browser/`, `src/infra/`, `src/commands/`, `src/config/`, `src/gateway/`)
+- [x] Task 4.3: Apply skip annotations to Category E tests (~12 files in `src/security/`)
+- [x] Task 4.4: Apply skip annotations to Category F tests (~8 files in `src/signal/`, `src/slack/`, `src/line/`, `src/discord/`, `src/facebook/`, `src/wizard/`, misc)
+- [x] Task 4.5: Fix `src/auto-reply/reply/reply-plumbing.test.ts` and `session.test.ts` — investigate if these test DeXMart-relevant reply logic (fix if yes, skip if upstream-only)
+- [x] Task 4.6: Fix `src/tools/cmd.test.ts` — 3 translate tests failing (likely GeminiService mock issue — investigate if DeXMart-relevant)
+- [x] Task 4.7: Fix `src/analytics/` and `src/hooks/` failures — investigate root cause and fix or skip
 - [ ] Task 4.8: Run full test suite — confirm zero failures
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Skip/Annotate OpenClaw Engine Tests' (Protocol in workflow.md)
 

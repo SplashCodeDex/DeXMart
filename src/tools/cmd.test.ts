@@ -16,7 +16,10 @@ describe('translate', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        mockGetChatCompletion = vi.spyOn(GeminiService.prototype, 'getChatCompletion');
+        mockGetChatCompletion = vi.fn();
+        vi.spyOn(AIUtilityService, 'getInstance').mockReturnValue({
+            getChatCompletion: mockGetChatCompletion
+        } as any);
     });
 
     it('should translate text using GeminiService', async () => {

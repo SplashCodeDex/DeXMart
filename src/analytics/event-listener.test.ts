@@ -12,9 +12,13 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 // ── Mocks ──────────────────────────────────────────────────────────────────────
 
-vi.mock('../infra/agent-events.js', () => ({
-  onAgentEvent: vi.fn(),
-}));
+vi.mock('../infra/agent-events.js', async (importOriginal) => {
+  const actual = await importOriginal<any>();
+  return {
+    ...actual,
+    onAgentEvent: vi.fn(),
+  };
+});
 
 vi.mock('../services/MastermindStreamService.js', () => ({
   mastermindStreamService: {
