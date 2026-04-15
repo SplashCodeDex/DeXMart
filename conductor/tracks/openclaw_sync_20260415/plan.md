@@ -2,10 +2,10 @@
 
 ## Phase 0: Pre-Sync Preparation
 
-- [ ] Task 0.1: Create dedicated sync branch `upstream/sync-v2026.4.14` from current HEAD
-- [ ] Task 0.2: Add OpenClaw upstream remote (`git remote add openclaw https://github.com/openclaw/openclaw.git`)
-- [ ] Task 0.3: Fetch all upstream tags (`git fetch openclaw --tags`)
-- [ ] Task 0.4: Verify gap analysis report accuracy — confirm `v2026.3.2` is last synced, `v2026.4.14` is target
+- [x] Task 0.1: Create dedicated sync branch `upstream/sync-v2026.4.14` from current HEAD [5d0cba5]
+- [x] Task 0.2: Add OpenClaw upstream remote (`git remote add openclaw https://github.com/openclaw/openclaw.git`)
+- [x] Task 0.3: Fetch all upstream tags (`git fetch openclaw --tags`)
+- [x] Task 0.4: Verify gap analysis report accuracy — confirm `v2026.3.2` is last synced, `v2026.4.14` is target
 - [ ] Task: Conductor - User Manual Verification 'Phase 0: Pre-Sync Preparation' (Protocol in workflow.md)
 
 ---
