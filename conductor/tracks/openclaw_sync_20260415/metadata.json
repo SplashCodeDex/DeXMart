@@ -1,0 +1,8 @@
+{
+  "track_id": "openclaw_sync_20260415",
+  "type": "chore",
+  "status": "new",
+  "created_at": "2026-04-15T01:15:00Z",
+  "updated_at": "2026-04-15T01:15:00Z",
+  "description": "Upstream Sync — Cherry-pick OpenClaw v2026.3.2 → v2026.4.14 (19 stable releases, 31 breaking changes, 4 injection-point conflicts)"
+}
