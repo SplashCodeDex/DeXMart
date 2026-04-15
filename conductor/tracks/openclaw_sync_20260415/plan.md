@@ -16,17 +16,17 @@ These versions contain only features and fixes with zero breaking changes and no
 
 **Versions:** v2026.3.8, v2026.3.12, v2026.3.23, v2026.3.24, v2026.4.1, v2026.4.7, v2026.4.8, v2026.4.9, v2026.4.10, v2026.4.11, v2026.4.12
 
-- [ ] Task 1.1: Subtree merge `v2026.3.8` (11 changes, 46 fixes) — resolve any conflicts, run `pnpm build`
-- [ ] Task 1.2: Subtree merge `v2026.3.12` (7 changes, 67 fixes) — resolve any conflicts, run `pnpm build`
-- [ ] Task 1.3: Subtree merge `v2026.3.23` (3 changes, 47 fixes) — resolve any conflicts, run `pnpm build`
-- [ ] Task 1.4: Subtree merge `v2026.3.24` (18 changes, 15 fixes) — resolve any conflicts, run `pnpm build`
-- [ ] Task 1.5: Subtree merge `v2026.4.1` (14 changes, 40 fixes) — resolve any conflicts, run `pnpm build`
-- [ ] Task 1.6: Subtree merge `v2026.4.7` (18 changes, 71 fixes) — resolve any conflicts, run `pnpm build`
-- [ ] Task 1.7: Subtree merge `v2026.4.8` (0 changes, 8 fixes) — resolve any conflicts, run `pnpm build`
-- [ ] Task 1.8: Subtree merge `v2026.4.9` (5 changes, 34 fixes) — resolve any conflicts, run `pnpm build`
-- [ ] Task 1.9: Subtree merge `v2026.4.10` (17 changes, 99 fixes) — resolve any conflicts, run `pnpm build`
-- [ ] Task 1.10: Subtree merge `v2026.4.11` (9 changes, 16 fixes) — resolve any conflicts, run `pnpm build`
-- [ ] Task 1.11: Subtree merge `v2026.4.12` (broad quality release) — resolve any conflicts, run `pnpm build`
+- [ ] Task 1.1: Git merge `v2026.3.8` (11 changes, 46 fixes) — resolve conflicts (ACCEPT upstream additions for `ui/` and `apps/` to restore them for Phase 6 comparison), run `pnpm build`
+- [ ] Task 1.2: Git merge `v2026.3.12` (7 changes, 67 fixes) — resolve conflicts, run `pnpm build`
+- [ ] Task 1.3: Git merge `v2026.3.23` (3 changes, 47 fixes) — resolve conflicts, run `pnpm build`
+- [ ] Task 1.4: Git merge `v2026.3.24` (18 changes, 15 fixes) — resolve conflicts, run `pnpm build`
+- [ ] Task 1.5: Git merge `v2026.4.1` (14 changes, 40 fixes) — resolve conflicts, run `pnpm build`
+- [ ] Task 1.6: Git merge `v2026.4.7` (18 changes, 71 fixes) — resolve conflicts, run `pnpm build`
+- [ ] Task 1.7: Git merge `v2026.4.8` (0 changes, 8 fixes) — resolve conflicts, run `pnpm build`
+- [ ] Task 1.8: Git merge `v2026.4.9` (5 changes, 34 fixes) — resolve conflicts, run `pnpm build`
+- [ ] Task 1.9: Git merge `v2026.4.10` (17 changes, 99 fixes) — resolve conflicts, run `pnpm build`
+- [ ] Task 1.10: Git merge `v2026.4.11` (9 changes, 16 fixes) — resolve conflicts, run `pnpm build`
+- [ ] Task 1.11: Git merge `v2026.4.12` (broad quality release) — resolve conflicts, run `pnpm build`
 - [ ] Task 1.12: Run full test suite (`CI=true pnpm test`) — document baseline after Phase 1
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Low-Risk Versions' (Protocol in workflow.md)
 
@@ -41,14 +41,14 @@ These versions have breaking changes but do NOT directly touch DeXMart's injecti
 - [ ] Task 2.1: Review breaking change: `gateway.auth.mode` now required — verify DeXMart's gateway config
 - [ ] Task 2.2: Review injection alert: `loadConfig` keyword in changelog — verify `src/config/io.ts` and `src/config/user-config.ts` are unaffected
 - [ ] Task 2.3: Review injection alert: `registerPlugin` keyword — verify `src/plugins/registry.ts` compatibility
-- [ ] Task 2.4: Subtree merge `v2026.3.7` (27 changes, 313 fixes) — resolve conflicts at injection points
+- [ ] Task 2.4: Git merge `v2026.3.7` (27 changes, 313 fixes) — resolve conflicts at injection points
 - [ ] Task 2.5: Run `pnpm build` — verify zero TypeScript errors
 - [ ] Task 2.6: Run DeXMart-specific tests (`pnpm test -- src/config/ src/web/ src/ingress/`)
 
 ### v2026.3.28 — Qwen Provider + Doctor (2 BREAKING)
 
 - [ ] Task 2.7: Review breaking changes: Qwen portal-auth removed, old config migrations dropped
-- [ ] Task 2.8: Subtree merge `v2026.3.28` (21 changes, 97 fixes) — resolve any conflicts, run `pnpm build`
+- [ ] Task 2.8: Git merge `v2026.3.28` (21 changes, 97 fixes) — resolve any conflicts, run `pnpm build`
 
 ### v2026.3.31 — Plugin SDK + Exec Policy (6 BREAKING)
 
@@ -59,18 +59,18 @@ These versions have breaking changes but do NOT directly touch DeXMart's injecti
     - [ ] `trusted-proxy` auth rejects mixed shared-token configs
     - [ ] Node commands disabled until pairing approved
     - [ ] Node-originated runs on reduced trusted surface
-- [ ] Task 2.10: Subtree merge `v2026.3.31` (29 changes, 60 fixes) — resolve any conflicts
+- [ ] Task 2.10: Git merge `v2026.3.31` (29 changes, 60 fixes) — resolve any conflicts
 - [ ] Task 2.11: Run `pnpm build` — verify zero TypeScript errors
 
 ### v2026.4.2 — Plugin Config Migration (2 BREAKING)
 
 - [ ] Task 2.12: Review breaking changes: `x_search` + `web_fetch` config path moves — check if DeXMart references either
-- [ ] Task 2.13: Subtree merge `v2026.4.2` (15 changes, 50 fixes) — resolve any conflicts, run `pnpm build`
+- [ ] Task 2.13: Git merge `v2026.4.2` (15 changes, 50 fixes) — resolve any conflicts, run `pnpm build`
 
 ### v2026.4.5 — Legacy Config Aliases Removed (1 BREAKING)
 
 - [ ] Task 2.14: Review breaking change: legacy public config aliases removed — scan DeXMart code for any usage
-- [ ] Task 2.15: Subtree merge `v2026.4.5` (38 changes, 188 fixes) — resolve any conflicts, run `pnpm build`
+- [ ] Task 2.15: Git merge `v2026.4.5` (38 changes, 188 fixes) — resolve any conflicts, run `pnpm build`
 
 - [ ] Task 2.16: Run full test suite (`CI=true pnpm test`) — document baseline after Phase 2
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Medium-Risk Breaking Versions' (Protocol in workflow.md)
@@ -85,7 +85,7 @@ These versions directly touch DeXMart's modified files. **Manual conflict resolu
 
 - [ ] Task 3.1: Pre-merge: snapshot current `src/ingress/ingress-service.ts` for diff comparison
 - [ ] Task 3.2: Review changelog for `runEmbeddedPiAgent` context — determine if upstream changed the function signature or just referenced it
-- [ ] Task 3.3: Subtree merge `v2026.3.11` (15 changes, 92 fixes) — manually resolve `ingress-service.ts` conflicts
+- [ ] Task 3.3: Git merge `v2026.3.11` (15 changes, 92 fixes) — manually resolve `ingress-service.ts` conflicts
 - [ ] Task 3.4: Verify `runEmbeddedPiAgent()` call in DeXMart's ingress pipeline still compiles and works
 - [ ] Task 3.5: Run `pnpm build` + DeXMart ingress tests
 
@@ -100,7 +100,7 @@ These versions directly touch DeXMart's modified files. **Manual conflict resolu
     - [ ] `ChannelMessageActionAdapter.describeMessageTool(...)` — check if DeXMart implements any channel message adapters
     - [ ] Legacy env name removal (`CLAWDBOT_*`, `MOLTBOT_*`) — scan `.env` files and config loaders
     - [ ] Chrome extension relay removed — verify DeXMart doesn't reference `browser.relayBindHost`
-- [ ] Task 3.8: Subtree merge `v2026.3.22` (74 changes, 220 fixes) — manually resolve conflicts at BOTH injection points
+- [ ] Task 3.8: Git merge `v2026.3.22` (74 changes, 220 fixes) — manually resolve conflicts at BOTH injection points
 - [ ] Task 3.9: Verify `src/web/session.ts` preserves `WaAuthStateFactory` type and `authStateFactory` option
 - [ ] Task 3.10: Verify `src/ingress/ingress-service.ts` preserves `runEmbeddedPiAgent()` pipeline wiring
 - [ ] Task 3.11: Run `pnpm build` — fix any TypeScript errors from Plugin SDK restructure
@@ -110,7 +110,7 @@ These versions directly touch DeXMart's modified files. **Manual conflict resolu
 
 - [ ] Task 3.13: Pre-merge: snapshot `src/web/session.ts`
 - [ ] Task 3.14: Review Baileys media encryption patch — determine if it conflicts with `authStateFactory`
-- [ ] Task 3.15: Subtree merge `v2026.4.14` (latest) — resolve `session.ts` conflicts
+- [ ] Task 3.15: Git merge `v2026.4.14` (latest) — resolve `session.ts` conflicts
 - [ ] Task 3.16: Verify `src/web/session.ts` preserves DeXMart's `WaAuthStateFactory` + `authStateFactory`
 - [ ] Task 3.17: Run `pnpm build` — zero TypeScript errors
 
