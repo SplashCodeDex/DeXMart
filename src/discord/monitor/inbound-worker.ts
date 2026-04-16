@@ -1,6 +1,6 @@
 import { createRunStateMachine } from "../../channels/run-state-machine.js";
 import { danger } from "../../globals.js";
-import { formatDurationSeconds } from "../../infra/format-time/format-duration.ts";
+import { formatDurationSeconds } from "../../infra/format-time/format-duration.js";
 import { KeyedAsyncQueue } from "../../plugin-sdk/keyed-async-queue.js";
 import { materializeDiscordInboundJob, type DiscordInboundJob } from "./inbound-job.js";
 import type { RuntimeEnv } from "./message-handler.preflight.types.js";

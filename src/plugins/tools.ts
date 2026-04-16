@@ -64,7 +64,6 @@ export function resolvePluginTools(params: {
     config: effectiveConfig,
     workspaceDir: params.context.workspaceDir,
     logger: createPluginLoaderLogger(log),
-    memoryManager: params.memoryManager,
   });
 
   const tools: AnyAgentTool[] = [];

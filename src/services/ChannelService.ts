@@ -48,7 +48,7 @@ export class ChannelService {
     const existing = this.nativeManagers.get(userId);
     if (existing) return existing;
     const { channelLogs, channelRuntimeEnvs } = this.buildManagerOptions();
-    const manager = createChannelManager({ loadConfig, channelLogs, channelRuntimeEnvs, userId });
+    const manager = createChannelManager({ loadConfig, channelLogs, channelRuntimeEnvs });
     this.nativeManagers.set(userId, manager);
     return manager;
   }

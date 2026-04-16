@@ -150,6 +150,7 @@ class MemoryWorkerClient {
       return;
     }
 
+    if (!id) return;
     const pending = this.pending.get(id);
     if (!pending) return;
 

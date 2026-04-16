@@ -34,7 +34,7 @@ export type MemoryInitProgress = z.infer<typeof MemoryInitProgressSchema>;
 export const MemoryStatusSchema = z.object({
   initialized: z.boolean(),
   modelLoaded: z.boolean(),
-  memoriesInDB: z.number().int().nonneg(),
+  memoriesInDB: z.number().int().min(0),
   maxLocalItems: z.number().int().positive(),
   userId: z.string().nullable(),
 });

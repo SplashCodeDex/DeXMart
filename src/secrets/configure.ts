@@ -130,7 +130,7 @@ function providerHint(provider: SecretProviderConfig): string {
   if (provider.source === "exec") {
     return `exec (${provider.jsonOnly === false ? "json+text" : "json"})`;
   }
-  return String(provider.source);
+  return "unknown";
 }
 
 function toSourceChoices(config: OpenClawConfig): Array<{ value: SecretRefSource; label: string }> {

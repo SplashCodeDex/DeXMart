@@ -89,9 +89,9 @@ function cosineSimilarity(a: Float32Array, b: Float32Array): number {
   let normA = 0;
   let normB = 0;
   for (let i = 0; i < a.length; i++) {
-    dot += a[i] * b[i];
-    normA += a[i] * a[i];
-    normB += b[i] * b[i];
+    dot += a[i]! * b[i]!;
+    normA += a[i]! * a[i]!;
+    normB += b[i]! * b[i]!;
   }
   return dot / (Math.sqrt(normA) * Math.sqrt(normB));
 }
@@ -172,6 +172,7 @@ async function loadModel(onProgress: (pct: number) => void): Promise<void> {
   try {
     // Dynamic import — model loaded only when needed, cached by browser
     const module = await import(
+      // @ts-expect-error — CDN URL import has no type declarations
       /* webpackIgnore: true */ 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2/dist/transformers.min.js'
     );
     const { pipeline: createPipeline, env } = module as { pipeline: Function, env: any };
@@ -256,6 +257,7 @@ async function handleInit(payload: Record<string, unknown>, msgId: string): Prom
       const docs = [...firestoreDocs].reverse(); // Oldest first
       for (let i = 0; i < docs.length; i++) {
         const doc = docs[i];
+        if (!doc) continue;
         const text = doc['text'] as string | undefined;
         if (!text) continue;
         const embedding = await embed(text);
@@ -372,13 +374,14 @@ self.addEventListener('message', async (rawEvent: MessageEvent) => {
 
   const msgId = id || 'unknown';
 
+  const safePayload = payload ?? {};
   try {
     switch (type) {
-      case 'init':     await handleInit(payload, msgId); break;
-      case 'remember': await handleRemember(payload, msgId); break;
-      case 'search':   await handleSearch(payload, msgId); break;
-      case 'status':   await handleStatus(payload, msgId); break;
-      case 'clear':    await handleClear(payload, msgId); break;
+      case 'init':     await handleInit(safePayload, msgId); break;
+      case 'remember': await handleRemember(safePayload, msgId); break;
+      case 'search':   await handleSearch(safePayload, msgId); break;
+      case 'status':   await handleStatus(safePayload, msgId); break;
+      case 'clear':    await handleClear(safePayload, msgId); break;
       default:
         send({ type: 'error', id: msgId, payload: `Unknown message type` });
     }
