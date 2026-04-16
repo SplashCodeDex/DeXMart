@@ -78,6 +78,7 @@ export default defineConfig({
       "scripts/**/*.test.ts",
       "ui/src/ui/app-chat.test.ts",
       "ui/src/ui/views/agents-utils.test.ts",
+      "ui/src/ui/views/channels.test.ts",
       "ui/src/ui/views/chat.test.ts",
       "ui/src/ui/views/nodes.devices.test.ts",
       "ui/src/ui/views/usage-render-details.test.ts",
