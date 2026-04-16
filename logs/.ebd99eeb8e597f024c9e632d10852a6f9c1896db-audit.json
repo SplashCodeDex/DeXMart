@@ -1,0 +1,60 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/home/codedex/projects/DeXMart/logs/.ebd99eeb8e597f024c9e632d10852a6f9c1896db-audit.json",
+    "files": [
+        {
+            "date": 1775268503166,
+            "name": "/home/codedex/projects/DeXMart/logs/error-2026-04-04.log",
+            "hash": "6e053ee791bb009d49274ae22b5a7cbc1c34e0e318245f120958032a4b0eeee5"
+        },
+        {
+            "date": 1775512571596,
+            "name": "/home/codedex/projects/DeXMart/logs/error-2026-04-06.log",
+            "hash": "0ece0784b302624852645305f71ceaea000ef77236164d70e4600cf9aa7747a1"
+        },
+        {
+            "date": 1775585491777,
+            "name": "/home/codedex/projects/DeXMart/logs/error-2026-04-07.log",
+            "hash": "207ec75293810402d359289274e7fe8553e67b03421717880c0f1a590c15285c"
+        },
+        {
+            "date": 1775673959108,
+            "name": "/home/codedex/projects/DeXMart/logs/error-2026-04-08.log",
+            "hash": "ec28073f07ad6a7cec9d0acb5bb9a5028c2405fee81fad4837404c34ca92c1d3"
+        },
+        {
+            "date": 1775696964270,
+            "name": "/home/codedex/projects/DeXMart/logs/error-2026-04-09.log",
+            "hash": "338cd3951a786cafb65977ddfb0cbb043ec2d9b9209e1b6e64c2702716fb3d67"
+        },
+        {
+            "date": 1775784618171,
+            "name": "/home/codedex/projects/DeXMart/logs/error-2026-04-10.log",
+            "hash": "5b72822f45e729e52d44c4830397a0424bda9db91e0c9eec3ea6274881983be1"
+        },
+        {
+            "date": 1776032482814,
+            "name": "/home/codedex/projects/DeXMart/logs/error-2026-04-12.log",
+            "hash": "0c1df574292e3909bf51c94d44e1ba158af68fe6f4790ca6017f08bf7f2fd50c"
+        },
+        {
+            "date": 1776041707950,
+            "name": "/home/codedex/projects/DeXMart/logs/error-2026-04-13.log",
+            "hash": "3b784b430ced7372680028fb76c4a63bf61a5ecfda15a9affb87aa060fb12d6a"
+        },
+        {
+            "date": 1776124800775,
+            "name": "/home/codedex/projects/DeXMart/logs/error-2026-04-14.log",
+            "hash": "869acc12d59c765b64fb8d8fe989f2ff120a0f82b4702fa39cc8509ecd3cfc2e"
+        },
+        {
+            "date": 1776213998885,
+            "name": "/home/codedex/projects/DeXMart/logs/error-2026-04-15.log",
+            "hash": "42ce999419afd26dad9914973859da10148fb609b400332be8276a71d3cc4dc4"
+        }
+    ],
+    "hashType": "sha256"
+}

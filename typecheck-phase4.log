@@ -1,0 +1,107 @@
+
+> DeXMart-root@1.0.0 typecheck /home/codedex/projects/DeXMart
+> NODE_OPTIONS='--max-old-space-size=4096' tsc --noEmit
+
+src/agents/anthropic-payload-log.ts(145,18): error TS2554: Expected 2 arguments, but got 1.
+src/agents/auth-profiles/oauth.ts(2,3): error TS2305: Module '"@mariozechner/pi-ai"' has no exported member 'getOAuthApiKey'.
+src/agents/auth-profiles/oauth.ts(3,3): error TS2724: '"@mariozechner/pi-ai"' has no exported member named 'getOAuthProviders'. Did you mean 'OAuthProvider'?
+src/agents/auth-profiles/oauth.ts(20,69): error TS7006: Parameter 'provider' implicitly has an 'any' type.
+src/agents/models-config.e2e-harness.ts(2,50): error TS2307: Cannot find module '../../test-utils/temp-home.js' or its corresponding type declarations.
+src/agents/openai-ws-stream.ts(584,16): error TS2554: Expected 2 arguments, but got 1.
+src/agents/pi-embedded-runner/extra-params.ts(311,9): error TS2554: Expected 2 arguments, but got 1.
+src/agents/pi-embedded-runner/extra-params.ts(505,9): error TS2554: Expected 2 arguments, but got 1.
+src/agents/pi-embedded-runner/extra-params.ts(557,9): error TS2554: Expected 2 arguments, but got 1.
+src/agents/pi-embedded-runner/extra-params.ts(617,9): error TS2554: Expected 2 arguments, but got 1.
+src/agents/pi-embedded-runner/extra-params.ts(706,9): error TS2554: Expected 2 arguments, but got 1.
+src/agents/pi-embedded-runner/extra-params.ts(739,9): error TS2554: Expected 2 arguments, but got 1.
+src/agents/pi-embedded-runner/run/attempt.ts(218,20): error TS2554: Expected 2 arguments, but got 1.
+src/agents/pi-embedded-runner/run/attempt.ts(226,18): error TS2554: Expected 2 arguments, but got 1.
+src/analytics/mastermind-stream.ts(1,31): error TS2307: Cannot find module './socketService.js' or its corresponding type declarations.
+src/auth/auth-system.ts(8,26): error TS2307: Cannot find module './errorHandler.js' or its corresponding type declarations.
+src/auto-reply/reply.directive.directive-behavior.e2e-harness.ts(3,50): error TS2307: Cannot find module '../../test-utils/temp-home.js' or its corresponding type declarations.
+src/auto-reply/reply.directive.directive-behavior.e2e-harness.ts(55,12): error TS7006: Parameter 'home' implicitly has an 'any' type.
+src/auto-reply/reply.directive.directive-behavior.e2e-harness.ts(60,30): error TS7006: Parameter 'home' implicitly has an 'any' type.
+src/auto-reply/reply.directive.directive-behavior.e2e-harness.ts(61,31): error TS7006: Parameter 'home' implicitly has an 'any' type.
+src/auto-reply/reply.triggers.trigger-handling.filters-usage-summary-current-model-provider.cases.ts(4,35): error TS2307: Cannot find module '../../test/helpers/normalize-text.js' or its corresponding type declarations.
+src/auto-reply/stage-sandbox-media.test-harness.ts(2,50): error TS2307: Cannot find module '../../test-utils/temp-home.js' or its corresponding type declarations.
+src/auto-reply/stage-sandbox-media.test-harness.ts(10,34): error TS7006: Parameter 'home' implicitly has an 'any' type.
+src/billing/billing-service.ts(11,10): error TS2305: Module '"../types/contracts.js"' has no exported member 'PlanLimits'.
+src/billing/billing-service.ts(13,10): error TS2305: Module '"@DeXMart/shared"' has no exported member 'WebhookEvent'.
+src/billing/billing-service.ts(14,8): error TS2300: Duplicate identifier 'ConfigService'.
+src/billing/billing-service.ts(25,10): error TS2300: Duplicate identifier 'ConfigService'.
+src/billing/billing-service.ts(25,31): error TS2307: Cannot find module './ConfigService.js' or its corresponding type declarations.
+src/billing/billing-service.ts(93,36): error TS2576: Property 'getInstance' does not exist on type 'ConfigService'. Did you mean to access the static member 'ConfigService.getInstance' instead?
+src/billing/stripe.ts(2,31): error TS2307: Cannot find module './ConfigService.js' or its corresponding type declarations.
+src/campaigns/campaign-service.ts(1,33): error TS2307: Cannot find module './FirebaseService.js' or its corresponding type declarations.
+src/campaigns/campaign-service.ts(2,30): error TS2307: Cannot find module './queueService.js' or its corresponding type declarations.
+src/commands/ai-chat/gemini.ts(3,27): error TS2307: Cannot find module '../../services/gemini.js' or its corresponding type declarations.
+src/commands/doctor-config-flow.test-utils.ts(3,30): error TS2307: Cannot find module '../../test-utils/temp-home.js' or its corresponding type declarations.
+src/commands/doctor-config-flow.test-utils.ts(13,30): error TS7006: Parameter 'home' implicitly has an 'any' type.
+src/commands/openai-codex-oauth.ts(2,10): error TS2305: Module '"@mariozechner/pi-ai"' has no exported member 'loginOpenAICodex'.
+src/commands/openai-codex-oauth.ts(45,20): error TS7006: Parameter 'msg' implicitly has an 'any' type.
+src/config/test-helpers.ts(3,50): error TS2307: Cannot find module '../../test-utils/temp-home.js' or its corresponding type declarations.
+src/controllers/messageController.ts(79,19): error TS2722: Cannot invoke an object which is possibly 'undefined'.
+src/controllers/messageController.ts(109,19): error TS2722: Cannot invoke an object which is possibly 'undefined'.
+src/controllers/omnichannelController.ts(449,19): error TS2722: Cannot invoke an object which is possibly 'undefined'.
+src/controllers/omnichannelController.ts(464,52): error TS2307: Cannot find module '../services/skillsManager.js' or its corresponding type declarations.
+src/controllers/omnichannelController.ts(473,51): error TS2307: Cannot find module '../services/skillsManager.js' or its corresponding type declarations.
+src/controllers/omnichannelController.ts(475,65): error TS7006: Parameter 'skill' implicitly has an 'any' type.
+src/controllers/omnichannelController.ts(476,56): error TS2307: Cannot find module '../services/skillsManager.js' or its corresponding type declarations.
+src/controllers/omnichannelController.ts(537,52): error TS2307: Cannot find module '../services/skillsManager.js' or its corresponding type declarations.
+src/cron/isolated-agent.test-harness.ts(3,50): error TS2307: Cannot find module '../../test-utils/temp-home.js' or its corresponding type declarations.
+src/ingress/ingress-service.ts(150,33): error TS2351: This expression is not constructable.
+  Type 'typeof import("/home/codedex/projects/DeXMart/node_modules/.pnpm/ioredis@5.9.3/node_modules/ioredis/built/index")' has no construct signatures.
+src/ingress/ingress-service.ts(184,32): error TS2339: Property 'text' does not exist on type '{ id: string; platform: string; from: string; to: string; content: { text?: string | undefined; attachments?: { type: "image" | "audio" | "document" | "sticker" | "video" | "contact" | "location"; ... 8 more ...; vcard?: string | undefined; }[] | undefined; poll?: { ...; } | undefined; }; timestamp: number; channelI...'.
+src/ingress/ingress-service.ts(184,48): error TS2339: Property 'caption' does not exist on type '{ id: string; platform: string; from: string; to: string; content: { text?: string | undefined; attachments?: { type: "image" | "audio" | "document" | "sticker" | "video" | "contact" | "location"; ... 8 more ...; vcard?: string | undefined; }[] | undefined; poll?: { ...; } | undefined; }; timestamp: number; channelI...'.
+src/ingress/ingress-service.ts(220,29): error TS2339: Property 'senderId' does not exist on type '{ id: string; platform: string; from: string; to: string; content: { text?: string | undefined; attachments?: { type: "image" | "audio" | "document" | "sticker" | "video" | "contact" | "location"; ... 8 more ...; vcard?: string | undefined; }[] | undefined; poll?: { ...; } | undefined; }; timestamp: number; channelI...'.
+src/ingress/ingress-service.ts(221,31): error TS2339: Property 'senderName' does not exist on type '{ id: string; platform: string; from: string; to: string; content: { text?: string | undefined; attachments?: { type: "image" | "audio" | "document" | "sticker" | "video" | "contact" | "location"; ... 8 more ...; vcard?: string | undefined; }[] | undefined; poll?: { ...; } | undefined; }; timestamp: number; channelI...'.
+src/ingress/ingress-service.ts(223,11): error TS2322: Type '{ [x: string]: unknown; agents?: { defaults?: { models?: Record<string, unknown> | undefined; } | undefined; } | undefined; }' is not assignable to type 'OpenClawConfig'.
+  Types of property 'agents' are incompatible.
+    Type '{ defaults?: { models?: Record<string, unknown> | undefined; } | undefined; } | undefined' is not assignable to type 'AgentsConfig | undefined'.
+      Type '{ defaults?: { models?: Record<string, unknown> | undefined; } | undefined; }' is not assignable to type 'AgentsConfig'.
+        Types of property 'defaults' are incompatible.
+          Type '{ models?: Record<string, unknown> | undefined; } | undefined' is not assignable to type 'AgentDefaultsConfig | undefined'.
+            Type '{ models?: Record<string, unknown> | undefined; }' is not assignable to type 'AgentDefaultsConfig'.
+              Types of property 'models' are incompatible.
+                Type 'Record<string, unknown> | undefined' is not assignable to type 'Record<string, AgentModelEntryConfig> | undefined'.
+                  Type 'Record<string, unknown>' is not assignable to type 'Record<string, AgentModelEntryConfig>'.
+                    'string' index signatures are incompatible.
+                      Type 'unknown' is not assignable to type 'AgentModelEntryConfig'.
+src/ingress/ingress-service.ts(227,30): error TS2339: Property 'senderId' does not exist on type '{ id: string; platform: string; from: string; to: string; content: { text?: string | undefined; attachments?: { type: "image" | "audio" | "document" | "sticker" | "video" | "contact" | "location"; ... 8 more ...; vcard?: string | undefined; }[] | undefined; poll?: { ...; } | undefined; }; timestamp: number; channelI...'.
+src/ingress/ingress-service.ts(333,35): error TS2339: Property 'processMessage' does not exist on type 'never'.
+src/jobs/aiProcessor.ts(253,35): error TS2339: Property 'score' does not exist on type 'ModerationResult'.
+src/jobs/aiProcessor.ts(265,35): error TS2339: Property 'score' does not exist on type 'ModerationResult'.
+src/jobs/campaignWorker.ts(169,23): error TS2722: Cannot invoke an object which is possibly 'undefined'.
+src/jobs/campaignWorker.ts(286,37): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/lib/index.ts(14,35): error TS2307: Cannot find module './simple.js' or its corresponding type declarations.
+src/memory/hybrid-adapter.ts(144,22): error TS2352: Conversion of type 'Record<string, unknown>' to type 'FirestoreMemoryDoc' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'Record<string, unknown>' is missing the following properties from type 'FirestoreMemoryDoc': text, createdAt
+src/persistence/channel-auth-state.ts(100,25): error TS2352: Conversion of type 'AppStateSyncKeyData' to type 'SignalDataTypeMap[T]' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'AppStateSyncKeyData' is not comparable to type 'Uint8Array<ArrayBufferLike> & KeyPair & { [jid: string]: boolean; } & IAppStateSyncKeyData & LTHashState & string & string[] & { ...; }'.
+    Type 'AppStateSyncKeyData' is missing the following properties from type 'Uint8Array<ArrayBufferLike>': BYTES_PER_ELEMENT, buffer, byteLength, byteOffset, and 32 more.
+src/plugins/types.ts(88,26): error TS2307: Cannot find module './memory/types.js' or its corresponding type declarations.
+src/providers/google-shared.test-helpers.ts(1,28): error TS2307: Cannot find module '@mariozechner/pi-ai/dist/types.js' or its corresponding type declarations.
+src/safety/anti-ban.ts(5,31): error TS2307: Cannot find module './socketService.js' or its corresponding type declarations.
+src/safety/anti-ban.ts(6,33): error TS2307: Cannot find module './FirebaseService.js' or its corresponding type declarations.
+src/services/DeXMartToolBridge.ts(1,46): error TS2307: Cannot find module './toolRegistry.js' or its corresponding type declarations.
+src/services/DeXMartToolBridge.ts(54,23): error TS7006: Parameter 'args' implicitly has an 'any' type.
+src/services/DeXMartToolBridge.ts(54,29): error TS7006: Parameter 'context' implicitly has an 'any' type.
+src/services/IngressService.ts(211,35): error TS2339: Property 'processMessage' does not exist on type 'never'.
+src/services/MastermindSkillBridge.ts(1,30): error TS2307: Cannot find module './toolRegistry.js' or its corresponding type declarations.
+src/services/TreeIndexService.ts(73,37): error TS2339: Property 'success' does not exist on type 'string'.
+src/services/TreeIndexService.ts(73,61): error TS2339: Property 'data' does not exist on type 'string'.
+src/services/channels/whatsapp/WhatsappAdapter.ts(341,46): error TS2307: Cannot find module '../../services/jobQueue.js' or its corresponding type declarations.
+src/services/researchSkill.ts(1,46): error TS2307: Cannot find module './toolRegistry.js' or its corresponding type declarations.
+src/shared/database.ts(3,33): error TS2307: Cannot find module './FirebaseService.js' or its corresponding type declarations.
+src/shared/socket-service.ts(6,31): error TS2307: Cannot find module './ConfigService.js' or its corresponding type declarations.
+src/tenancy/context-resolver.ts(17,29): error TS2709: Cannot use namespace 'Redis' as a type.
+src/tenancy/tenant-service.ts(104,47): error TS2307: Cannot find module './AgentService.js' or its corresponding type declarations.
+src/tenancy/tenant-service.ts(236,47): error TS2307: Cannot find module './ChannelService.js' or its corresponding type declarations.
+src/utils/createChannelContext.ts(271,44): error TS2307: Cannot find module '../services/memoryService.js' or its corresponding type declarations.
+src/utils/resilienceHarness.ts(41,25): error TS2739: Type '{ statusCode: number; }' is missing the following properties from type 'Output': headers, payload
+src/web/test-helpers.ts(2,40): error TS2307: Cannot find module '../../test/mocks/baileys.js' or its corresponding type declarations.
+src/web/test-helpers.ts(3,35): error TS2307: Cannot find module '../../test/mocks/baileys.js' or its corresponding type declarations.
+src/workers/whatsappQueueWorker.ts(25,29): error TS2352: Conversion of type 'ChannelAdapter | undefined' to type 'WhatsappAdapter' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'ChannelAdapter' is missing the following properties from type 'WhatsappAdapter': userId, channelId, fullPath, config, and 21 more.
+ ELIFECYCLE  Command failed with exit code 2.

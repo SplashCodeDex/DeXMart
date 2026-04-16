@@ -22,15 +22,47 @@ All version changelogs are captured in `docs/OPENCLAW_UPSTREAM_REPORT.md`, gener
 
 ## DeXMart Injection Points (Modified OpenClaw Files)
 
-These 5 files are the ONLY files DeXMart modified from OpenClaw's originals. Any upstream changes to these files require manual conflict resolution:
+> ⚠️ **Inventory updated 2026-04-16.** The prior inventory ("5 files") reflected the state through Phase 4. Phase 5 ("Foundation Grounding") introduced a second tier of in-flight injection points that are **partially implemented** (RED tests exist, implementation is incomplete — see [`FUSION_STRATEGY.md` §8](../../../docs/architecture/FUSION_STRATEGY.md) and archived track [`data_path_migration_20260413`](../../archive/data_path_migration_20260413/spec.md)). Sync MUST preserve both sets.
+
+### Stable Set — Phase 1–4 Injection Points (confirmed, locked in)
+
+Any upstream change to these files requires manual conflict resolution and preservation of DeXMart's modification:
 
 | File | DeXMart Modification | Versions Affected |
 |------|---------------------|-------------------|
-| `src/web/session.ts` | Added `WaAuthStateFactory` type + `authStateFactory` option to `createWaSocket()` | v2026.3.22, v2026.4.14 |
+| `src/web/session.ts` | Added `WaAuthStateFactory` type + `authStateFactory` option + `resolveWaAuthStateFactory()` resolver to `createWaSocket()` | v2026.3.22, v2026.4.14 |
 | `src/types/index.ts` | Removed dead `GlobalContext.unifiedAI: GeminiAI` reference | None detected |
 | `src/ingress/ingress-service.ts` | Replaced `context.unifiedAI.processMessage()` with `runEmbeddedPiAgent()` | v2026.3.11, v2026.3.22 |
-| Root `tsconfig.json` | Added `@dexmart/*` and `@/*` path aliases | None detected |
-| `src/config/io.ts` | `loadConfigForUser()` extracted to separate file (additive) | v2026.3.7 (keyword match) |
+| Root `tsconfig.json` | Added `@dexmart/*` and `@/*` path aliases → `src/*` | None detected (but **must be re-verified every merge**; see NFR-4) |
+| `src/config/io.ts` | `loadConfigForUser()` extracted to separate file (additive — no direct modification) | v2026.3.7 (keyword match) |
+
+### In-Flight Set — Phase 5 Foundation Grounding (partial, active work)
+
+These files are the target of Phase 5 engine-grounding work. Implementation is **partial** and tracked in separate conductor tracks. Sync MUST NOT overwrite in-flight DeXMart additions, and any new upstream edits to these files must be flagged for coordination with the owning Phase 5 sub-track:
+
+| File | Phase 5 Task | Current State (verified 2026-04-16) | Versions At Risk |
+|------|-------------|---------|------------------|
+| `src/plugins/runtime.ts` | 5.1 — inject `userId` / `TenantContext` into `PluginRuntime` | ❌ Not implemented (no `userId` references in file) | v2026.3.22 (Plugin SDK restructure) |
+| `src/gateway/server-channels.ts` | 5.3 — inject Stripe billing gate (`assertCan('startChannel')`) before plugin boot | ❌ Not implemented (no `assertCan` / `userId` in file); RED tests exist: `server-channels.billing-gate.test.ts`, `server-channels.tenant-context.test.ts`, `server-channels.b2c-inheritance.test.ts` | v2026.3.7, v2026.3.11, v2026.3.31 |
+| `src/web/session.ts` (default-vs-opt-in) | 5.2 — make Firestore auth the default in SaaS mode | ⚠️ Partial — `authStateFactory` is opt-in via options; not yet a SaaS default | v2026.3.22, v2026.4.14 |
+| `src/persistence/firebase.ts` + `src/types/firestore.ts` + `src/services/FirebaseService.ts` | 5.9 — `tenants/{tenantId}` → `users/{userId}` schema migration | ❌ Partial — ~22 service files still import the legacy `services/FirebaseService.ts` with `tenants/{tenantId}` `SchemaMap`; see archived track `data_path_migration_20260413` | None direct, but upstream changes to `FirebaseService` call-sites can conflict |
+| `src/services/ChannelManagerService.ts`, `src/services/channels/platform-metadata.ts` | 5.5 residual — delete parallel channel system | ⚠️ Partial — `WhatsappAdapter.ts` / `ChannelManager.ts` / `registry.ts` deleted; these 2 residuals remain | None (DeXMart-only files) |
+
+### Verification Before Each Merge
+
+```bash
+# Stable Set integrity check (must all return non-zero after merge)
+grep -n "WaAuthStateFactory\|authStateFactory" src/web/session.ts
+grep -n "runEmbeddedPiAgent" src/ingress/ingress-service.ts
+grep -n "@dexmart/\*\|@/\*" tsconfig.json
+
+# In-Flight Set status tracking (compare against documented state above)
+grep -cn "userId\|TenantContext" src/plugins/runtime.ts        # trending up over Phase 5
+grep -cn "assertCan\|userId" src/gateway/server-channels.ts    # trending up over Phase 5
+grep -rn "tenants/{tenantId}" src/types/firestore.ts           # trending toward zero
+```
+
+If a merge changes Stable Set behavior, **stop and resolve before continuing**. If a merge touches an In-Flight Set file, **coordinate with the owning Phase 5 sub-track before proceeding** — do not silently absorb upstream code that conflicts with in-flight grounding work.
 
 ## Critical Breaking Changes
 
@@ -70,7 +102,7 @@ These 5 files are the ONLY files DeXMart modified from OpenClaw's originals. Any
 2. **FR-2: Injection Point Conflict Resolution** — For versions flagged with injection point alerts (v2026.3.7, v2026.3.11, v2026.3.22, v2026.4.14), manually review and resolve conflicts while preserving DeXMart's modifications.
 3. **FR-3: Breaking Change Adaptation** — For each breaking change, verify DeXMart's code doesn't rely on the removed/changed API. Apply necessary adaptations.
 4. **FR-4: Test Validation** — After each phase, run `CI=true pnpm test` to ensure no new regressions beyond previously-skipped upstream tests.
-5. **FR-5: Category A Test Auto-Resolution** — After sync completes, un-skip Category A tests (79 files tagged `// upstream: pending sync`) and verify they pass with updated upstream infrastructure.
+5. **FR-5: Category A Test Auto-Resolution** — After sync completes, un-skip Category A tests (79 files tagged `// upstream: pending sync`) and run them to verify which pre-existing upstream bugs have been fixed by the updated codebase. Tests that still fail must be re-skipped with updated annotations.
 
 ## Non-Functional Requirements
 

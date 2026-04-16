@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1776117117010,
+  "lastScanned": 1776364479963,
   "projectRoot": "/home/codedex/projects/DeXMart",
   "techStack": {
     "languages": [
@@ -74,6 +74,7 @@
     "isMonorepo": true,
     "workspaces": [],
     "mainDirectories": [
+      "assets",
       "docs",
       "scripts",
       "src",
@@ -91,18 +92,32 @@
       "path": "Expiremental",
       "purpose": null,
       "fileCount": 3,
-      "lastAccessed": 1776117116963,
+      "lastAccessed": 1776364479905,
       "keyFiles": [
         "SwitchToggle.css",
         "SwitchToggle.html",
         "SwitchToggle.js"
       ]
     },
+    "apps": {
+      "path": "apps",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1776364479905,
+      "keyFiles": []
+    },
+    "assets": {
+      "path": "assets",
+      "purpose": "Static assets",
+      "fileCount": 0,
+      "lastAccessed": 1776364479924,
+      "keyFiles": []
+    },
     "conductor": {
       "path": "conductor",
       "purpose": null,
       "fileCount": 6,
-      "lastAccessed": 1776117116981,
+      "lastAccessed": 1776364479933,
       "keyFiles": [
         "product-guidelines.md",
         "product.md",
@@ -115,7 +130,7 @@
       "path": "coverage",
       "purpose": null,
       "fileCount": 9,
-      "lastAccessed": 1776117116985,
+      "lastAccessed": 1776364479936,
       "keyFiles": [
         "base.css",
         "block-navigation.js",
@@ -128,32 +143,34 @@
       "path": "dist",
       "purpose": "Distribution/build output",
       "fileCount": 0,
-      "lastAccessed": 1776117116990,
+      "lastAccessed": 1776364479936,
       "keyFiles": []
     },
     "docs": {
       "path": "docs",
       "purpose": "Documentation",
-      "fileCount": 3,
-      "lastAccessed": 1776117116993,
+      "fileCount": 10,
+      "lastAccessed": 1776364479940,
       "keyFiles": [
         "OPENCLAW_UPSTREAM_REPORT.md",
         "PROJECT_RULES.md",
-        "TrueFusionPlan.md"
+        "TrueFusionPlan.md",
+        "auth-credential-semantics.md",
+        "brave-search.md"
       ]
     },
     "extensions": {
       "path": "extensions",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1776117116993,
+      "lastAccessed": 1776364479942,
       "keyFiles": []
     },
     "frontend": {
       "path": "frontend",
       "purpose": null,
       "fileCount": 15,
-      "lastAccessed": 1776117116993,
+      "lastAccessed": 1776364479946,
       "keyFiles": [
         "components.json",
         "eslint.config.mjs",
@@ -165,8 +182,8 @@
     "logs": {
       "path": "logs",
       "purpose": null,
-      "fileCount": 21,
-      "lastAccessed": 1776117116994,
+      "fileCount": 27,
+      "lastAccessed": 1776364479947,
       "keyFiles": [
         "app-2026-04-07.log",
         "app-2026-04-08.log",
@@ -179,95 +196,136 @@
       "path": "processed",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1776117116994,
+      "lastAccessed": 1776364479947,
       "keyFiles": []
     },
     "research-reports": {
       "path": "research-reports",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1776117116996,
+      "lastAccessed": 1776364479947,
       "keyFiles": []
     },
     "scripts": {
       "path": "scripts",
       "purpose": "Build/utility scripts",
-      "fileCount": 1,
-      "lastAccessed": 1776117116997,
+      "fileCount": 43,
+      "lastAccessed": 1776364479947,
       "keyFiles": [
-        "migrate-tenants-to-users.ts"
+        "annotate-upstream-tests.ts",
+        "check-channel-agnostic-boundaries.mjs",
+        "check-ingress-agent-owner-context.mjs",
+        "check-no-monolithic-plugin-sdk-entry-imports.ts",
+        "check-no-pairing-store-group-auth.mjs"
       ]
     },
     "shared": {
       "path": "shared",
       "purpose": null,
       "fileCount": 3,
-      "lastAccessed": 1776117116997,
+      "lastAccessed": 1776364479948,
       "keyFiles": [
         "fieldAliases.ts",
         "package.json",
         "tsconfig.json"
       ]
     },
+    "skills": {
+      "path": "skills",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1776364479951,
+      "keyFiles": []
+    },
     "src": {
       "path": "src",
       "purpose": "Source code",
-      "fileCount": 20,
-      "lastAccessed": 1776117116999,
+      "fileCount": 25,
+      "lastAccessed": 1776364479951,
       "keyFiles": [
         "channel-web.ts",
+        "docker-build-cache.test.ts",
         "docker-image-digests.test.ts",
-        "docker-setup.test.ts",
-        "dockerfile.test.ts",
-        "entry.ts"
+        "docker-setup.e2e.test.ts",
+        "dockerfile.test.ts"
       ]
     },
     "temp": {
       "path": "temp",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1776117116999,
+      "lastAccessed": 1776364479951,
       "keyFiles": []
     },
     "test": {
       "path": "test",
       "purpose": "Test files",
-      "fileCount": 0,
-      "lastAccessed": 1776117117000,
-      "keyFiles": []
+      "fileCount": 4,
+      "lastAccessed": 1776364479951,
+      "keyFiles": [
+        "appcast.test.ts",
+        "git-hooks-pre-commit.test.ts",
+        "release-check.test.ts",
+        "setup.ts"
+      ]
+    },
+    "test-fixtures": {
+      "path": "test-fixtures",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1776364479952,
+      "keyFiles": [
+        "talk-config-contract.json"
+      ]
     },
     "tests": {
       "path": "tests",
       "purpose": "Test files",
       "fileCount": 1,
-      "lastAccessed": 1776117117000,
+      "lastAccessed": 1776364479952,
       "keyFiles": [
         "ApiKeyManager.test.ts"
+      ]
+    },
+    "ui": {
+      "path": "ui",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1776364479952,
+      "keyFiles": [
+        "package.json"
       ]
     },
     "uploads": {
       "path": "uploads",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1776117117002,
+      "lastAccessed": 1776364479952,
       "keyFiles": []
     },
     "coverage/src": {
       "path": "coverage/src",
       "purpose": "Source code",
       "fileCount": 7,
-      "lastAccessed": 1776117117005,
+      "lastAccessed": 1776364479953,
       "keyFiles": [
         "globals.ts.html",
         "index.html",
         "logger.ts.html"
       ]
     },
+    "docs/assets": {
+      "path": "docs/assets",
+      "purpose": "Static assets",
+      "fileCount": 0,
+      "lastAccessed": 1776364479956,
+      "keyFiles": []
+    },
     "scripts/__tests__": {
       "path": "scripts/__tests__",
       "purpose": "Test files",
       "fileCount": 1,
-      "lastAccessed": 1776117117006,
+      "lastAccessed": 1776364479957,
       "keyFiles": [
         "migrate-tenants-to-users.test.ts"
       ]
@@ -276,7 +334,7 @@
       "path": "shared/dist",
       "purpose": "Distribution/build output",
       "fileCount": 2,
-      "lastAccessed": 1776117117007,
+      "lastAccessed": 1776364479957,
       "keyFiles": [
         "index.d.ts",
         "index.js"
@@ -286,35 +344,60 @@
       "path": "shared/node_modules",
       "purpose": "Dependencies",
       "fileCount": 0,
-      "lastAccessed": 1776117117009,
+      "lastAccessed": 1776364479957,
       "keyFiles": []
     },
     "shared/src": {
       "path": "shared/src",
       "purpose": "Source code",
       "fileCount": 1,
-      "lastAccessed": 1776117117009,
+      "lastAccessed": 1776364479957,
       "keyFiles": [
         "index.ts"
       ]
     },
+    "test/fixtures": {
+      "path": "test/fixtures",
+      "purpose": "Test fixtures",
+      "fileCount": 0,
+      "lastAccessed": 1776364479962,
+      "keyFiles": []
+    },
     "test/helpers": {
       "path": "test/helpers",
       "purpose": "Helper functions",
-      "fileCount": 1,
-      "lastAccessed": 1776117117010,
+      "fileCount": 5,
+      "lastAccessed": 1776364479963,
       "keyFiles": [
-        "normalize-text.ts"
+        "envelope-timestamp.ts",
+        "gateway-e2e-harness.ts",
+        "inbound-contract.ts"
       ]
     },
     "test/mocks": {
       "path": "test/mocks",
       "purpose": "Mock data",
       "fileCount": 1,
-      "lastAccessed": 1776117117010,
+      "lastAccessed": 1776364479963,
       "keyFiles": [
         "baileys.ts"
       ]
+    },
+    "test/scripts": {
+      "path": "test/scripts",
+      "purpose": "Build/utility scripts",
+      "fileCount": 1,
+      "lastAccessed": 1776364479963,
+      "keyFiles": [
+        "ios-team-id.test.ts"
+      ]
+    },
+    "ui/src": {
+      "path": "ui/src",
+      "purpose": "Source code",
+      "fileCount": 0,
+      "lastAccessed": 1776364479963,
+      "keyFiles": []
     }
   },
   "hotPaths": [
@@ -326,20 +409,20 @@
     },
     {
       "path": "conductor/tracks.md",
-      "accessCount": 37,
-      "lastAccessed": 1776198613921,
+      "accessCount": 38,
+      "lastAccessed": 1776364551704,
+      "type": "file"
+    },
+    {
+      "path": "conductor/workflow.md",
+      "accessCount": 18,
+      "lastAccessed": 1776365143241,
       "type": "file"
     },
     {
       "path": "src/billing/auth-guard.ts",
       "accessCount": 17,
       "lastAccessed": 1776103408434,
-      "type": "file"
-    },
-    {
-      "path": "conductor/workflow.md",
-      "accessCount": 17,
-      "lastAccessed": 1776198624715,
       "type": "file"
     },
     {

@@ -1,0 +1,28 @@
+On branch master
+Your branch is ahead of 'origin/master' by 3 commits.
+  (use "git push" to publish your local commits)
+
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	deleted:    frontend/public/assets/flyforward4.png:Zone.Identifier
+	deleted:    frontend/public/assets/videos/Whisk_ijmjfwnmvmn3qwzm1cmymjytqwn5qtl1yjzw0sz.mp4:Zone.Identifier
+	deleted:    frontend/public/assets/videos/Whisk_yjnyqwozqjmljtyl1szlnwytm2myqtlxctz30so.mp4:Zone.Identifier
+	modified:   openclaw/CLAUDE.md
+	modified:   openclaw/src/gateway/server-methods/CLAUDE.md
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.claude/settings.local.json
+	backend/src/reproduce_import_error.ts
+	backend/test-baileys.ts
+	backend/test-esbuild.mjs
+	backend/test-import-session.ts
+	backend/test-import.ts
+	backend/test-import2.ts
+	backend/test-import3.ts
+	"frontend/public/assets/flyforward4.png\357\200\272Zone.Identifier"
+	"frontend/public/assets/videos/Whisk_ijmjfwnmvmn3qwzm1cmymjytqwn5qtl1yjzw0sz.mp4\357\200\272Zone.Identifier"
+	"frontend/public/assets/videos/Whisk_yjnyqwozqjmljtyl1szlnwytm2myqtlxctz30so.mp4\357\200\272Zone.Identifier"
+
+no changes added to commit (use "git add" and/or "git commit -a")
