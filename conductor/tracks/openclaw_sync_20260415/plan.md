@@ -18,8 +18,8 @@ These versions contain only features and fixes with zero breaking changes and no
 
 - [x] Task 1.1: Git merge `v2026.3.8` (11 changes, 46 fixes) — resolve conflicts (ACCEPT upstream additions for `ui/` and `apps/` to restore them for Phase 6 comparison), run `pnpm build` [66a4165]
 - [x] Task 1.2: Git merge `v2026.3.12` (7 changes, 67 fixes) — resolve conflicts, run `pnpm build` [dac92f6]
-- [~] Task 1.3: Git merge `v2026.3.23` (3 changes, 47 fixes) — resolve conflicts, run `pnpm build`
-- [ ] Task 1.4: Git merge `v2026.3.24` (18 changes, 15 fixes) — resolve conflicts, run `pnpm build`
+- [x] Task 1.3: Git merge `v2026.3.23` (3 changes, 47 fixes) — resolve conflicts, run `pnpm build` [b48d5eb]
+- [x] Task 1.4: Git merge `v2026.3.24` (18 changes, 15 fixes) — resolve conflicts, run `pnpm build` [794e3f7]
 - [ ] Task 1.5: Git merge `v2026.4.1` (14 changes, 40 fixes) — resolve conflicts, run `pnpm build`
 - [ ] Task 1.6: Git merge `v2026.4.7` (18 changes, 71 fixes) — resolve conflicts, run `pnpm build`
 - [ ] Task 1.7: Git merge `v2026.4.8` (0 changes, 8 fixes) — resolve conflicts, run `pnpm build`
