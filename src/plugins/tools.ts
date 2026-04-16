@@ -47,14 +47,12 @@ export function resolvePluginTools(params: {
   existingToolNames?: Set<string>;
   toolAllowlist?: string[];
   suppressNameConflicts?: boolean;
-  /** Optional per-user memory manager (e.g. HybridMemoryAdapter).
-   *  Forwarded to loadOpenClawPlugins → createPluginRuntime so memory tools
-   *  use per-user Firestore-backed memory instead of the file-based default. */
-  memoryManager?: import("../memory/types.js").MemorySearchManager;
+  env?: NodeJS.ProcessEnv;
 }): AnyAgentTool[] {
   // Fast path: when plugins are effectively disabled, avoid discovery/jiti entirely.
   // This matters a lot for unit tests and for tool construction hot paths.
-  const effectiveConfig = applyTestPluginDefaults(params.context.config ?? {}, process.env);
+  const env = params.env ?? process.env;
+  const effectiveConfig = applyTestPluginDefaults(params.context.config ?? {}, env);
   const normalized = normalizePluginsConfig(effectiveConfig.plugins);
   if (!normalized.enabled) {
     return [];
@@ -63,6 +61,7 @@ export function resolvePluginTools(params: {
   const registry = loadOpenClawPlugins({
     config: effectiveConfig,
     workspaceDir: params.context.workspaceDir,
+    env,
     logger: createPluginLoaderLogger(log),
   });
 
