@@ -5,6 +5,7 @@ import type { AuthConfig } from "./types.auth.js";
 import type { DiagnosticsConfig, LoggingConfig, SessionConfig, WebConfig } from "./types.base.js";
 import type { BrowserConfig } from "./types.browser.js";
 import type { ChannelsConfig } from "./types.channels.js";
+import type { CliConfig } from "./types.cli.js";
 import type { CronConfig } from "./types.cron.js";
 import type {
   CanvasHostConfig,
@@ -63,6 +64,7 @@ export type OpenClawConfig = {
   };
   diagnostics?: DiagnosticsConfig;
   logging?: LoggingConfig;
+  cli?: CliConfig;
   update?: {
     /** Update channel for git + npm installs ("stable", "beta", or "dev"). */
     channel?: "stable" | "beta" | "dev";
@@ -101,6 +103,12 @@ export type OpenClawConfig = {
   bindings?: AgentBinding[];
   broadcast?: BroadcastConfig;
   audio?: AudioConfig;
+  media?: {
+    /** Preserve original uploaded filenames when storing inbound media. */
+    preserveFilenames?: boolean;
+    /** Optional retention window for persisted inbound media cleanup. */
+    ttlHours?: number;
+  };
   messages?: MessagesConfig;
   commands?: CommandsConfig;
   approvals?: ApprovalsConfig;
@@ -119,6 +127,8 @@ export type OpenClawConfig = {
 export type ConfigValidationIssue = {
   path: string;
   message: string;
+  allowedValues?: string[];
+  allowedValuesHiddenCount?: number;
 };
 
 export type LegacyConfigIssue = {

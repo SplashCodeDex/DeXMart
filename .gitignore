@@ -1,165 +1,123 @@
-# Git worktrees
-.worktrees/
-
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pids
-*.pid
-*.seed
-*.pid.lock
-# auth/
-
-# Dependency directories
-node_modules/
-jspm_packages/
-
-# Optional npm cache directory
-.npm
-
-# Optional eslint cache
-.eslintcache
-
-# Optional REPL history
-.node_repl_history
-
-# Environment variables
+node_modules
+**/node_modules/
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env.parcel
-.env.*
-database.json
-.DeXMart-learning.json
-.DeXMart-profile.json
-eslint-report.json
-eslint-report.txt
-
-# WhatsApp Session Data (sensitive)
-state/
-sessions/
-auth_info/
-*.data.json
-backend/service-account.json
-service-account.json
-# Coverage directory
-coverage
-.nyc_output
-
-# Build outputs
+docker-compose.extra.yml
 dist
-build
-.next
-.nuxt
-.out
-.storybook-out
-eslint-report.json
-eslint-report.txt
-
-# Test outputs
-test-results/
-playwright-report/
-
-# parcel-bundler cache
-.cache
-.parcel-cache
-
-# Gatsby files
-.cache/
-
-
-# Microbundle cache
-.rpt2_cache/
-.rts2_cache_cjs/
-.rts2_cache_es/
-.rts2_cache_umd/
-
-# Temporary folders
-tmp/
-temp/
-tmp_*
-temp_*
-
-# Editor directories and files
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# OS generated files
+pnpm-lock.yaml
+bun.lock
+bun.lockb
+coverage
+__pycache__/
+*.pyc
+.tsbuildinfo
+.pnpm-store
+.worktrees/
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
+**/.DS_Store
+ui/src/ui/__screenshots__/
+ui/playwright-report/
+ui/test-results/
+packages/dashboard-next/.next/
+packages/dashboard-next/out/
 
-# Windows NTFS alternate data stream metadata (Zone.Identifier, etc.)
-*:Zone.Identifier
-*.Zone.Identifier
+# Mise configuration files
+mise.toml
 
-# Stray scratch files
-image copy.png
-image*.png
+# Android build artifacts
+apps/android/.gradle/
+apps/android/app/build/
+apps/android/.cxx/
+apps/android/.kotlin/
 
-# Docker
-docker-compose.override.yml
+# Bun build artifacts
+*.bun-build
+apps/macos/.build/
+apps/shared/MoltbotKit/.build/
+apps/shared/OpenClawKit/.build/
+apps/shared/OpenClawKit/Package.resolved
+**/ModuleCache/
+bin/
+bin/clawdbot-mac
+bin/docs-list
+apps/macos/.build-local/
+apps/macos/.swiftpm/
+apps/shared/MoltbotKit/.swiftpm/
+apps/shared/OpenClawKit/.swiftpm/
+Core/
+apps/ios/*.xcodeproj/
+apps/ios/*.xcworkspace/
+apps/ios/.swiftpm/
+apps/ios/.derivedData/
+apps/ios/.local-signing.xcconfig
+vendor/
+apps/ios/Clawdbot.xcodeproj/
+apps/ios/Clawdbot.xcodeproj/**
+apps/macos/.build/**
+**/*.bun-build
+apps/ios/*.xcfilelist
 
-# Database
-*.db
-*.sqlite
-*.sqlite3
+# Vendor build artifacts
+vendor/a2ui/renderers/lit/dist/
+src/canvas-host/a2ui/*.bundle.js
+src/canvas-host/a2ui/*.map
+.bundle.hash
 
-# Output of 'npm pack'
-*.tgz
+# fastlane (iOS)
+apps/ios/fastlane/README.md
+apps/ios/fastlane/report.xml
+apps/ios/fastlane/Preview.html
+apps/ios/fastlane/screenshots/
+apps/ios/fastlane/test_output/
+apps/ios/fastlane/logs/
+apps/ios/fastlane/.env
 
-# Yarn Integrity file
-.yarn-integrity
+# fastlane build artifacts (local)
+apps/ios/*.ipa
+apps/ios/*.dSYM.zip
 
-# Monitoring data
-prometheus-data/
-grafana-data/
-loki-data/
-alertmanager-data/
+# provisioning profiles (local)
+apps/ios/*.mobileprovision
 
-# Uploads
-uploads/*
-!uploads/.gitkeep
+# Local untracked files
+.local/
+docs/.local/
+IDENTITY.md
+USER.md
+.tgz
+.idea
 
-# Backups
-backups/*
-!backups/.gitkeep
+# local tooling
+.serena/
 
-# SSL certificates (keep templates only)
-deployment/ssl/*.crt
-deployment/ssl/*.key
-deployment/ssl/*.pem
-deployment/ssl/certbot/
-
-
-#Backup folders
-_legacy_archive
-frontend/build_output*.txt
-frontend/lint_final*.txt
-frontend/lint_results*.txt
-lint*.txt
-backend/backend_typecheck_log.txt
-*.log
-*.txt
-!frontend/src/features/auth/
-openclaw_backup/
-backend/*
-backend/MAX_NAME_LENGTH)
-
-# Claude settings & Windows Artifacts
+# Agent credentials and memory (NEVER COMMIT)
+/memory/
+.agent/*.json
+!.agent/workflows/
+/local/
+package-lock.json
 .claude/
-*\357\200\272Zone.Identifier
-*.Identifier
-UserPasted.logs
+.agents/
+.agents
+.agent/
+skills-lock.json
+
+# Local iOS signing overrides
+apps/ios/LocalSigning.xcconfig
+
+# Xcode build directories (xcodebuild output)
+apps/ios/build/
+apps/shared/OpenClawKit/build/
+Swabble/build/
+
+# Generated protocol schema (produced via pnpm protocol:gen)
+dist/protocol.schema.json
+.ant-colony/
+
+# Eclipse
+**/.project
+**/.classpath
+**/.settings/
+**/.gradle/
+
+# Synthing
+**/.stfolder/

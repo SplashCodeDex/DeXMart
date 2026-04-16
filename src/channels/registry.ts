@@ -107,6 +107,16 @@ const CHAT_CHANNEL_META: Record<ChatChannelId, ChannelMeta> = {
     blurb: "this is still a work in progress.",
     systemImage: "message.fill",
   },
+  line: {
+    id: "line",
+    label: "LINE",
+    selectionLabel: "LINE (Messaging API)",
+    detailLabel: "LINE Bot",
+    docsPath: "/channels/line",
+    docsLabel: "line",
+    blurb: "LINE Messaging API webhook bot.",
+    systemImage: "message",
+  },
 };
 
 export function listChatChannels(): ChatChannelMeta[] {
