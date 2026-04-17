@@ -40,6 +40,9 @@ importers:
       '@agentclientprotocol/sdk':
         specifier: 0.18.2
         version: 0.18.2(zod@4.3.6)
+      '@anthropic-ai/sdk':
+        specifier: 0.81.0
+        version: 0.81.0(zod@4.3.6)
       '@anthropic-ai/vertex-sdk':
         specifier: ^0.15.0
         version: 0.15.0(zod@4.3.6)
@@ -257,6 +260,9 @@ importers:
       '@grammyjs/types':
         specifier: ^3.26.0
         version: 3.26.0
+      '@line/bot-sdk':
+        specifier: 11.0.0
+        version: 11.0.0
       '@lit-labs/signals':
         specifier: ^0.2.0
         version: 0.2.0
@@ -323,6 +329,9 @@ importers:
       vitest:
         specifier: ^4.1.4
         version: 4.1.4(@opentelemetry/api@1.9.1)(@types/node@25.6.0)(@vitest/browser-playwright@4.1.4)(@vitest/coverage-v8@4.1.4)(jsdom@29.0.2(@noble/hashes@2.0.1))(vite@8.0.8(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
+      zca-js:
+        specifier: 2.1.2
+        version: 2.1.2
     optionalDependencies:
       '@discordjs/opus':
         specifier: ^0.10.0
@@ -535,19 +544,19 @@ importers:
         specifier: 0.15.0
         version: 0.15.0(@discordjs/opus@0.10.0)(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(hono@4.12.14)(opusscript@0.1.1)
       '@discordjs/voice':
-        specifier: ^0.19.2
+        specifier: 0.19.2
         version: 0.19.2(@discordjs/opus@0.10.0)(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(opusscript@0.1.1)
       '@snazzah/davey':
-        specifier: ^0.1.11
+        specifier: 0.1.11
         version: 0.1.11(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)
       discord-api-types:
-        specifier: ^0.38.45
+        specifier: 0.38.45
         version: 0.38.45
       https-proxy-agent:
-        specifier: ^9.0.0
+        specifier: 9.0.0
         version: 9.0.0
       opusscript:
-        specifier: ^0.1.1
+        specifier: 0.1.1
         version: 0.1.1
     devDependencies:
       '@openclaw/plugin-sdk':
@@ -558,7 +567,7 @@ importers:
         version: link:../..
     optionalDependencies:
       '@discordjs/opus':
-        specifier: ^0.10.0
+        specifier: 0.10.0
         version: 0.10.0
 
   extensions/duckduckgo:

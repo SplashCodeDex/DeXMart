@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"git stash --include-untracked && git merge --abort && echo \\\"ABORTED OK\\\"\",\"description\":\"Stash all changes then abort merge\"}",
+  "error": "Exit code 128\nSaved working directory and index state WIP on upstream/sync-v2026.4.14: 633631b459 conductor(plan): Mark task 1.5 'Git merge v2026.4.1' as complete\nfatal: There is no merge to abort (MERGE_HEAD missing).",
+  "timestamp": "2026-04-17T01:01:37.931Z",
+  "retry_count": 1
+}

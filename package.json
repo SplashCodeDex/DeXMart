@@ -1379,6 +1379,7 @@
   },
   "dependencies": {
     "@agentclientprotocol/sdk": "0.18.2",
+    "@anthropic-ai/sdk": "0.81.0",
     "@anthropic-ai/vertex-sdk": "^0.15.0",
     "@aws-sdk/client-bedrock": "3.1028.0",
     "@aws-sdk/client-bedrock-runtime": "3.1028.0",
@@ -1451,6 +1452,7 @@
   },
   "devDependencies": {
     "@grammyjs/types": "^3.26.0",
+    "@line/bot-sdk": "11.0.0",
     "@lit-labs/signals": "^0.2.0",
     "@lit/context": "^1.1.6",
     "@types/express": "^5.0.6",
@@ -1472,7 +1474,8 @@
     "tsdown": "0.21.7",
     "tsx": "^4.21.0",
     "typescript": "^6.0.2",
-    "vitest": "^4.1.4"
+    "vitest": "^4.1.4",
+    "zca-js": "2.1.2"
   },
   "peerDependencies": {
     "@napi-rs/canvas": "^0.1.89",
