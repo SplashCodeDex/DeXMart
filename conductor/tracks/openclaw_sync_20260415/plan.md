@@ -25,11 +25,11 @@
 - [x] Task 1.4: Git merge `v2026.3.24` (18 changes, 15 fixes) [794e3f7]
 - [x] Task 1.5: Git merge `v2026.4.1` (14 changes, 40 fixes) [0fcea3f]
 
-### Direct Merge to v2026.4.15
+### Direct Merge to v2026.4.15 [checkpoint: 4cc90bb]
 
 - [x] Task 1.6: Git merge `v2026.4.15` — single merge absorbing all remaining versions (v2026.4.2 through v2026.4.15, plus any earlier tags not yet reachable from current merge-base) [8fb8ffc]
 - [x] Task 1.7: Capture and document all merge conflicts (file list + conflict type) before resolving any — save as `docs/session-logs/sync-conflict-inventory.md` [8fb8ffc]
-- [~] Task: Conductor - User Manual Verification 'Phase 1: Merge to Latest Stable' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Merge to Latest Stable' (Protocol in workflow.md) [4cc90bb]
 
 ---
 
