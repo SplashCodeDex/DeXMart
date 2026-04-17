@@ -8,7 +8,6 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { collectStatusIssuesFromLastError } from "../plugin-sdk/status-helpers.js";
 import { setActivePluginRegistry } from "../plugins/runtime.js";
 import { createChannelTestPluginBase, createTestRegistry } from "../test-utils/channel-plugins.js";
-import { createIMessageTestPlugin } from "../test-utils/imessage-test-plugin.js";
 import { formatGatewayChannelsStatusLines } from "./channels/status.js";
 
 const signalPlugin = {
@@ -16,6 +15,14 @@ const signalPlugin = {
   status: {
     collectStatusIssues: (accounts: Parameters<typeof collectStatusIssuesFromLastError>[1]) =>
       collectStatusIssuesFromLastError("signal", accounts),
+  },
+};
+
+const imessagePlugin = {
+  ...createChannelTestPluginBase({ id: "imessage" }),
+  status: {
+    collectStatusIssues: (accounts: Parameters<typeof collectStatusIssuesFromLastError>[1]) =>
+      collectStatusIssuesFromLastError("imessage", accounts),
   },
 };
 
@@ -55,7 +62,7 @@ describe("channels command", () => {
         {
           pluginId: "imessage",
           source: "test",
-          plugin: createIMessageTestPlugin(),
+          plugin: imessagePlugin,
         },
       ]),
     );

@@ -32,7 +32,7 @@ BUILD_LOCK_DIR="${TMPDIR:-/tmp}/openclaw-parallels-build.lock"
 
 TIMEOUT_SNAPSHOT_S=180
 TIMEOUT_BOOTSTRAP_S=600
-TIMEOUT_INSTALL_S=1200
+TIMEOUT_INSTALL_S=420
 TIMEOUT_VERIFY_S=90
 TIMEOUT_ONBOARD_S=180
 TIMEOUT_AGENT_S=180
@@ -228,6 +228,7 @@ resolve_vm_name() {
 import difflib
 import json
 import os
+import re
 import sys
 
 payload = json.loads(os.environ["PRL_VM_JSON"])
@@ -235,6 +236,18 @@ requested = os.environ["REQUESTED_VM_NAME"].strip()
 requested_lower = requested.lower()
 explicit = os.environ["VM_NAME_EXPLICIT"] == "1"
 names = [str(item.get("name", "")).strip() for item in payload if str(item.get("name", "")).strip()]
+
+def parse_ubuntu_version(name: str) -> tuple[int, ...] | None:
+    match = re.search(r"ubuntu\s+(\d+(?:\.\d+)*)", name, re.IGNORECASE)
+    if not match:
+        return None
+    return tuple(int(part) for part in match.group(1).split("."))
+
+def version_distance(version: tuple[int, ...], target: tuple[int, ...]) -> tuple[int, ...]:
+    width = max(len(version), len(target))
+    padded_version = version + (0,) * (width - len(version))
+    padded_target = target + (0,) * (width - len(target))
+    return tuple(abs(a - b) for a, b in zip(padded_version, padded_target))
 
 if requested in names:
     print(requested)
@@ -246,6 +259,27 @@ if explicit:
 ubuntu_names = [name for name in names if "ubuntu" in name.lower()]
 if not ubuntu_names:
     sys.exit(f"default vm not found and no Ubuntu fallback available: {requested}")
+
+requested_version = parse_ubuntu_version(requested) or (24,)
+ubuntu_with_versions = [
+    (name, parse_ubuntu_version(name)) for name in ubuntu_names
+]
+ubuntu_ge_24 = [
+    (name, version)
+    for name, version in ubuntu_with_versions
+    if version and version[0] >= 24
+]
+if ubuntu_ge_24:
+    best_name = min(
+        ubuntu_ge_24,
+        key=lambda item: (
+            version_distance(item[1], requested_version),
+            -len(item[1]),
+            item[0].lower(),
+        ),
+    )[0]
+    print(best_name)
+    raise SystemExit(0)
 
 best_name = max(
     ubuntu_names,
@@ -367,6 +401,12 @@ resolve_host_port() {
 
 guest_exec() {
   prlctl exec "$VM_NAME" /usr/bin/env HOME=/root "$@"
+}
+
+guest_bash_script() {
+  local encoded
+  encoded="$(base64 | tr -d '\n')"
+  guest_exec bash -lc "printf '%s' '$encoded' | base64 -d | bash"
 }
 
 wait_for_vm_status() {
@@ -590,6 +630,74 @@ run_ref_onboard() {
     --json
 }
 
+inject_bad_plugin_fixture() {
+  guest_bash_script <<'EOF'
+set -euo pipefail
+plugin_dir=/root/.openclaw/test-bad-plugin
+mkdir -p "$plugin_dir"
+cat >"$plugin_dir/package.json" <<'JSON'
+{
+  "name": "@openclaw/test-bad-plugin",
+  "version": "1.0.0",
+  "openclaw": {
+    "extensions": ["./index.cjs"],
+    "setupEntry": "./setup-entry.cjs"
+  }
+}
+JSON
+cat >"$plugin_dir/openclaw.plugin.json" <<'JSON'
+{
+  "id": "test-bad-plugin",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {}
+  },
+  "channels": ["test-bad-plugin"]
+}
+JSON
+cat >"$plugin_dir/index.cjs" <<'JS'
+module.exports = { id: "test-bad-plugin", register() {} };
+JS
+cat >"$plugin_dir/setup-entry.cjs" <<'JS'
+module.exports = {
+  kind: "bundled-channel-setup-entry",
+  loadSetupPlugin() {
+    throw new Error("boom: bad plugin smoke fixture");
+  },
+};
+JS
+python3 - <<'PY'
+import json
+from pathlib import Path
+
+config_path = Path("/root/.openclaw/openclaw.json")
+config = {}
+if config_path.exists():
+    config = json.loads(config_path.read_text())
+
+plugins = config.setdefault("plugins", {})
+load = plugins.setdefault("load", {})
+paths = load.setdefault("paths", [])
+plugin_dir = "/root/.openclaw/test-bad-plugin"
+if plugin_dir not in paths:
+    paths.append(plugin_dir)
+
+allow = plugins.get("allow")
+if isinstance(allow, list) and "test-bad-plugin" not in allow:
+    allow.append("test-bad-plugin")
+
+config_path.write_text(json.dumps(config, indent=2) + "\n")
+PY
+EOF
+}
+
+verify_bad_plugin_diagnostic() {
+  guest_bash_script <<'EOF'
+grep -F "failed to load setup entry" /tmp/openclaw-parallels-linux-gateway.log
+EOF
+}
+
 start_gateway_background() {
   local cmd api_key_value_q
   api_key_value_q="$(shell_quote "$API_KEY_VALUE")"
@@ -600,6 +708,20 @@ setsid sh -lc 'exec env OPENCLAW_HOME=/root OPENCLAW_STATE_DIR=/root/.openclaw O
 EOF
 )"
   guest_exec bash -lc "$cmd"
+
+  # On the Ubuntu guest the backgrounded process can bind a few seconds after
+  # the launch command returns. Keep the race inside gateway-start instead of
+  # failing the next phase with a false-negative RPC probe.
+  local deadline
+  deadline=$((SECONDS + TIMEOUT_GATEWAY_S))
+  while (( SECONDS < deadline )); do
+    if show_gateway_status_compat >/dev/null 2>&1; then
+      return 0
+    fi
+    sleep 2
+  done
+
+  return 1
 }
 
 show_gateway_status_compat() {
@@ -738,8 +860,10 @@ run_fresh_main_lane() {
   phase_run "fresh.install-main" "$TIMEOUT_INSTALL_S" install_main_tgz "$host_ip" "openclaw-main-fresh.tgz"
   FRESH_MAIN_VERSION="$(extract_last_version "$(phase_log_path fresh.install-main)")"
   phase_run "fresh.verify-main-version" "$TIMEOUT_VERIFY_S" verify_target_version
+  phase_run "fresh.inject-bad-plugin" "$TIMEOUT_VERIFY_S" inject_bad_plugin_fixture
   phase_run "fresh.onboard-ref" "$TIMEOUT_ONBOARD_S" run_ref_onboard
   phase_run "fresh.gateway-start" "$TIMEOUT_GATEWAY_S" start_gateway_background
+  phase_run "fresh.bad-plugin-diagnostic" "$TIMEOUT_VERIFY_S" verify_bad_plugin_diagnostic
   phase_run "fresh.gateway-status" "$TIMEOUT_VERIFY_S" show_gateway_status_compat
   FRESH_GATEWAY_STATUS="pass"
   phase_run "fresh.first-local-agent-turn" "$TIMEOUT_AGENT_S" verify_local_turn
@@ -757,8 +881,10 @@ run_upgrade_lane() {
   phase_run "upgrade.install-main" "$TIMEOUT_INSTALL_S" install_main_tgz "$host_ip" "openclaw-main-upgrade.tgz"
   UPGRADE_MAIN_VERSION="$(extract_last_version "$(phase_log_path upgrade.install-main)")"
   phase_run "upgrade.verify-main-version" "$TIMEOUT_VERIFY_S" verify_target_version
+  phase_run "upgrade.inject-bad-plugin" "$TIMEOUT_VERIFY_S" inject_bad_plugin_fixture
   phase_run "upgrade.onboard-ref" "$TIMEOUT_ONBOARD_S" run_ref_onboard
   phase_run "upgrade.gateway-start" "$TIMEOUT_GATEWAY_S" start_gateway_background
+  phase_run "upgrade.bad-plugin-diagnostic" "$TIMEOUT_VERIFY_S" verify_bad_plugin_diagnostic
   phase_run "upgrade.gateway-status" "$TIMEOUT_VERIFY_S" show_gateway_status_compat
   UPGRADE_GATEWAY_STATUS="pass"
   phase_run "upgrade.first-local-agent-turn" "$TIMEOUT_AGENT_S" verify_local_turn

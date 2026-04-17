@@ -56,6 +56,7 @@ These are frequently reported but are typically closed with no code change:
 - Authorized user-triggered local actions presented as privilege escalation. Example: an allowlisted/owner sender running `/export-session /absolute/path.html` to write on the host. In this trust model, authorized user actions are trusted host actions unless you demonstrate an auth/sandbox/boundary bypass.
 - Reports that only show a malicious plugin executing privileged actions after a trusted operator installs/enables it.
 - Reports that assume per-user multi-tenant authorization on a shared gateway host/config.
+- Reports that only show quoted/replied/thread/forwarded supplemental context from non-allowlisted senders being visible to the model, without demonstrating an auth, policy, approval, or sandbox boundary bypass.
 - Reports that treat the Gateway HTTP compatibility endpoints (`POST /v1/chat/completions`, `POST /v1/responses`) as if they implemented scoped operator auth (`operator.write` vs `operator.admin`). These endpoints authenticate the shared Gateway bearer secret/password and are documented full operator-access surfaces, not per-user/per-scope boundaries.
 - Reports that assume `x-openclaw-scopes` can reduce or redefine shared-secret bearer auth on the OpenAI-compatible HTTP endpoints. For shared-secret auth (`gateway.auth.mode="token"` or `"password"`), those endpoints ignore narrower bearer-declared scopes and restore the full default operator scope set plus owner semantics.
 - Reports that treat `POST /tools/invoke` under shared-secret bearer auth (`gateway.auth.mode="token"` or `"password"`) as a narrower per-request/per-scope authorization surface. That endpoint is designed as the same trusted-operator HTTP boundary: shared-secret bearer auth is full operator access there, narrower `x-openclaw-scopes` values do not reduce that path, and owner-only tool policy follows the shared-secret operator contract.
@@ -66,6 +67,7 @@ These are frequently reported but are typically closed with no code change:
 - Reports that depend on replacing or rewriting an already-approved executable path on a trusted host (same-path inode/content swap) without showing an untrusted path to perform that write.
 - Reports that depend on pre-existing symlinked skill/workspace filesystem state (for example symlink chains involving `skills/*/SKILL.md`) without showing an untrusted path that can create/control that state.
 - Missing HSTS findings on default local/loopback deployments.
+- Reports against test-only harnesses, QA Lab, QE Lab, E2E fixtures, benchmark rigs, or maintainer-only debugging tools when the vulnerable code is not shipped as a supported production surface.
 - Slack webhook signature findings when HTTP mode already uses signing-secret verification.
 - Discord inbound webhook signature findings for paths not used by this repo's Discord integration.
 - Claims that Microsoft Teams `fileConsent/invoke` `uploadInfo.uploadUrl` is attacker-controlled without demonstrating one of: auth boundary bypass, a real authenticated Teams/Bot Framework event carrying attacker-chosen URL, or compromise of the Microsoft/Bot trust path.
@@ -96,6 +98,7 @@ When patching a GHSA via `gh api`, include `X-GitHub-Api-Version: 2022-11-28` (o
 OpenClaw does **not** model one gateway as a multi-tenant, adversarial user boundary.
 
 - Authenticated Gateway callers are treated as trusted operators for that gateway instance.
+- Direct localhost/loopback Control UI and Gateway WebSocket sessions authenticated with the shared gateway secret (`token` / `password`) are in that same trusted-operator bucket. Local auto-paired device sessions on that path are expected to retain full localhost operator capability; they do not create a separate `operator.write` vs `operator.admin` security boundary.
 - The HTTP compatibility endpoints (`POST /v1/chat/completions`, `POST /v1/responses`) and direct tool endpoint (`POST /tools/invoke`) are in that same trusted-operator bucket. Passing Gateway bearer auth there is equivalent to operator access for that gateway; they do not implement a narrower `operator.write` vs `operator.admin` trust split.
 - Concretely, on the OpenAI-compatible HTTP surface:
   - shared-secret bearer auth (`token` / `password`) authenticates possession of the gateway operator secret
@@ -127,6 +130,7 @@ Plugins/extensions are part of OpenClaw's trusted computing base for a gateway.
 
 - Public Internet Exposure
 - Using OpenClaw in ways that the docs recommend not to
+- Test-only code and maintainer harnesses, including QA Lab, QE Lab, E2E fixtures, benchmark rigs, smoke-test containers, and local debugging proxies, unless the report demonstrates that the same vulnerable behavior is reachable from shipped OpenClaw production code or a published package artifact intended for users.
 - Deployments where mutually untrusted/adversarial operators share one gateway host and config (for example, reports expecting per-operator isolation for `sessions.list`, `sessions.preview`, `chat.history`, or similar control-plane reads)
 - Prompt-injection-only attacks (without a policy/auth/sandbox boundary bypass)
 - Reports that require write access to trusted local state (`~/.openclaw`, workspace files like `MEMORY.md` / `memory/*.md`)
@@ -166,6 +170,24 @@ OpenClaw's security model is "personal assistant" (one trusted operator, potenti
 - A company-shared agent can be a valid setup when users are in the same trust boundary and the agent is strictly business-only.
 - For company-shared setups, use a dedicated machine/VM/container and dedicated accounts; avoid mixing personal data on that runtime.
 - If that host/browser profile is logged into personal accounts (for example Apple/Google/personal password manager), you have collapsed the boundary and increased personal-data exposure risk.
+
+## Context Visibility and Allowlists
+
+OpenClaw distinguishes:
+
+- **Trigger authorization**: who can trigger the agent (`dmPolicy`, `groupPolicy`, allowlists, mention gates)
+- **Context visibility**: what supplemental context is provided to the model (reply body, quoted text, thread history, forwarded metadata)
+
+In current releases, allowlists primarily gate triggering and owner-style command access. They do not guarantee universal supplemental-context redaction across every channel/surface.
+
+Current channel behavior is not fully uniform:
+
+- some channels already filter parts of supplemental context by sender allowlist
+- other channels still pass supplemental context as received
+
+Reports that only show supplemental-context visibility differences are typically hardening/consistency findings unless they also demonstrate a documented boundary bypass (auth, policy, approvals, sandbox, or equivalent).
+
+Hardening roadmap may add explicit visibility modes (for example `all`, `allowlist`, `allowlist_quote`) so operators can opt into stricter context filtering with predictable tradeoffs.
 
 ## Agent and Model Assumptions
 

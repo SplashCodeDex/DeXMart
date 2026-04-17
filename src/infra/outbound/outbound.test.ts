@@ -1,9 +1,3 @@
-import { test } from "vitest";
-
-test.skip("UPSTREAM PENDING SYNC: src/infra/outbound/outbound.test.ts", () => {});
-
-/* ORIGINAL TEST CODE COMMENTED OUT TO PREVENT IMPORT/INIT ERRORS */
-/*
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { OpenClawConfig } from "../../config/config.js";
 import { setActivePluginRegistry } from "../../plugins/runtime.js";
@@ -12,7 +6,6 @@ import { typedCases } from "../../test-utils/typed-cases.js";
 import { DirectoryCache } from "./directory-cache.js";
 import { buildOutboundResultEnvelope } from "./envelope.js";
 import type { OutboundDeliveryJson } from "./format.js";
-import { runResolveOutboundTargetCoreTests } from "./targets.shared-test.js";
 
 beforeEach(() => {
   setActivePluginRegistry(createTestRegistry([]));
@@ -132,7 +125,3 @@ describe("buildOutboundResultEnvelope", () => {
     expect(buildOutboundResultEnvelope(input)).toEqual(expected);
   });
 });
-
-runResolveOutboundTargetCoreTests();
-
-*/

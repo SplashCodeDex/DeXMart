@@ -10,6 +10,7 @@ import type { OpenClawConfig } from "../config/config.js";
 import { runHeartbeatOnce, type HeartbeatDeps } from "./heartbeat-runner.js";
 import { installHeartbeatRunnerTestRuntime } from "./heartbeat-runner.test-harness.js";
 import {
+  type HeartbeatReplySpy,
   seedMainSessionStore,
   withTempHeartbeatSandbox,
   withTempTelegramHeartbeatSandbox,
@@ -84,7 +85,7 @@ describe("runHeartbeatOnce ack handling", () => {
   async function runTelegramHeartbeatWithDefaults(params: {
     tmpDir: string;
     storePath: string;
-    replySpy: ReturnType<typeof vi.spyOn>;
+    replySpy: HeartbeatReplySpy;
     replyText: string;
     messages?: Record<string, unknown>;
     telegramOverrides?: Record<string, unknown>;
@@ -114,7 +115,10 @@ describe("runHeartbeatOnce ack handling", () => {
     const sendTelegram = createMessageSendSpy();
     await runHeartbeatOnce({
       cfg,
-      deps: makeTelegramDeps({ sendTelegram }),
+      deps: {
+        ...makeTelegramDeps({ sendTelegram }),
+        getReplyFromConfig: params.replySpy,
+      },
     });
     return sendTelegram;
   }
@@ -176,7 +180,10 @@ describe("runHeartbeatOnce ack handling", () => {
 
       await runHeartbeatOnce({
         cfg,
-        deps: makeWhatsAppDeps({ sendWhatsApp }),
+        deps: {
+          ...makeWhatsAppDeps({ sendWhatsApp }),
+          getReplyFromConfig: replySpy,
+        },
       });
 
       expect(sendWhatsApp).toHaveBeenCalled();
@@ -202,7 +209,10 @@ describe("runHeartbeatOnce ack handling", () => {
 
       await runHeartbeatOnce({
         cfg,
-        deps: makeWhatsAppDeps({ sendWhatsApp }),
+        deps: {
+          ...makeWhatsAppDeps({ sendWhatsApp }),
+          getReplyFromConfig: replySpy,
+        },
       });
 
       expect(sendWhatsApp).toHaveBeenCalledTimes(1);
@@ -264,7 +274,10 @@ describe("runHeartbeatOnce ack handling", () => {
 
       const result = await runHeartbeatOnce({
         cfg,
-        deps: makeWhatsAppDeps({ sendWhatsApp }),
+        deps: {
+          ...makeWhatsAppDeps({ sendWhatsApp }),
+          getReplyFromConfig: replySpy,
+        },
       });
 
       expect(replySpy).not.toHaveBeenCalled();
@@ -285,7 +298,10 @@ describe("runHeartbeatOnce ack handling", () => {
 
       await runHeartbeatOnce({
         cfg,
-        deps: makeWhatsAppDeps({ sendWhatsApp }),
+        deps: {
+          ...makeWhatsAppDeps({ sendWhatsApp }),
+          getReplyFromConfig: replySpy,
+        },
       });
 
       expect(sendWhatsApp).not.toHaveBeenCalled();
@@ -323,7 +339,10 @@ describe("runHeartbeatOnce ack handling", () => {
 
       await runHeartbeatOnce({
         cfg,
-        deps: makeWhatsAppDeps(),
+        deps: {
+          ...makeWhatsAppDeps(),
+          getReplyFromConfig: replySpy,
+        },
       });
 
       const finalStore = JSON.parse(await fs.readFile(storePath, "utf-8")) as Record<
@@ -346,11 +365,14 @@ describe("runHeartbeatOnce ack handling", () => {
 
       const res = await runHeartbeatOnce({
         cfg,
-        deps: makeWhatsAppDeps({
-          sendWhatsApp,
-          webAuthExists: async () => false,
-          hasActiveWebListener: () => false,
-        }),
+        deps: {
+          ...makeWhatsAppDeps({
+            sendWhatsApp,
+            webAuthExists: async () => false,
+            hasActiveWebListener: () => false,
+          }),
+          getReplyFromConfig: replySpy,
+        },
       });
 
       expect(res.status).toBe("skipped");
@@ -382,7 +404,10 @@ describe("runHeartbeatOnce ack handling", () => {
 
       await runHeartbeatOnce({
         cfg,
-        deps: makeTelegramDeps({ sendTelegram }),
+        deps: {
+          ...makeTelegramDeps({ sendTelegram }),
+          getReplyFromConfig: replySpy,
+        },
       });
 
       expect(sendTelegram).toHaveBeenCalledTimes(1);
