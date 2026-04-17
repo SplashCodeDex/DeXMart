@@ -44,10 +44,7 @@ async function loadQrTerminal() {
   return mod.default ?? mod;
 }
 
-export async function writeCredsJsonAtomically(
-  authDir: string,
-  creds: unknown,
-): Promise<void> {
+export async function writeCredsJsonAtomically(authDir: string, creds: unknown): Promise<void> {
   const credsPath = resolveWebCredsPath(authDir);
   const tempPath = path.join(authDir, `.creds.${process.pid}.${Date.now()}.tmp`);
   try {
@@ -119,6 +116,25 @@ async function safeSaveCreds(
   }
 }
 
+// ── DeXMart Fusion: Injectable Auth State (FR-2) ─────────────────────────────
+// authStateFactory lets callers inject Firestore-backed auth instead of the
+// default file-based auth. OpenClaw CLI mode uses useMultiFileAuthState unchanged.
+export type WaAuthStateFactory = () => Promise<{
+  state: import("@whiskeysockets/baileys").AuthenticationState;
+  saveCreds: () => Promise<void>;
+}>;
+
+export type WaSocketOpts = {
+  authDir?: string;
+  onQr?: (qr: string) => void;
+  authStateFactory?: WaAuthStateFactory;
+  /** DeXMart B2C: Firebase UID — triggers Firestore auth when SAAS_MODE=true */
+  userId?: string;
+  /** DeXMart B2C: Channel ID — used as Firestore auth path segment in SaaS mode */
+  channelId?: string;
+};
+// ─────────────────────────────────────────────────────────────────────────────
+
 /**
  * Create a Baileys socket backed by the multi-file auth store we keep on disk.
  * Consumers can opt into QR printing for interactive login flows.
@@ -126,7 +142,7 @@ async function safeSaveCreds(
 export async function createWaSocket(
   printQr: boolean,
   verbose: boolean,
-  opts: { authDir?: string; onQr?: (qr: string) => void } = {},
+  opts: WaSocketOpts = {},
 ): Promise<ReturnType<typeof makeWASocket>> {
   const baseLogger = getChildLogger(
     { module: "baileys" },
@@ -136,13 +152,21 @@ export async function createWaSocket(
   );
   const logger = toPinoLikeLogger(baseLogger, verbose ? "info" : "silent");
   const authDir = resolveUserPath(opts.authDir ?? resolveDefaultWebAuthDir());
-  await ensureDir(authDir);
   const sessionLogger = getChildLogger({ module: "web-session" });
-  maybeRestoreCredsFromBackup(authDir);
-  const { state } = await useMultiFileAuthState(authDir);
-  const saveCreds = async () => {
-    await writeCredsJsonAtomically(authDir, state.creds);
-  };
+
+  // Resolve auth: explicit factory > CLI file-based.
+  let state: import("@whiskeysockets/baileys").AuthenticationState;
+  let saveCreds: () => Promise<void>;
+  if (opts.authStateFactory) {
+    ({ state, saveCreds } = await opts.authStateFactory());
+  } else {
+    await ensureDir(authDir);
+    maybeRestoreCredsFromBackup(authDir);
+    ({ state } = await useMultiFileAuthState(authDir));
+    saveCreds = async () => {
+      await writeCredsJsonAtomically(authDir, state.creds);
+    };
+  }
   const { version } = await fetchLatestBaileysVersion();
   const agent = await resolveEnvProxyAgent(sessionLogger);
   const fetchAgent = await resolveEnvFetchDispatcher(sessionLogger, agent);
