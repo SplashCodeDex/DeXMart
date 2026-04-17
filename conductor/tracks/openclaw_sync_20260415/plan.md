@@ -1,142 +1,165 @@
-# Plan: Upstream Sync — OpenClaw v2026.3.2 → v2026.4.14
+# Plan: Upstream Sync — OpenClaw v2026.3.2 → v2026.4.15
 
-## Phase 0: Pre-Sync Preparation [checkpoint: bf9f60f]
+> **Strategy**: Merge directly to latest stable, then categorize and resolve all issues once against the final API surface.
+> **Pivot date**: 2026-04-17 — replaced version-by-version approach after 5 incremental merges.
 
-- [x] Task 0.1: Create dedicated sync branch `upstream/sync-v2026.4.14` from current HEAD [5d0cba5]
+## Phase 0: Pre-Sync Preparation [checkpoint: bf9f60f] ✅
+
+- [x] Task 0.1: Create dedicated sync branch `upstream/sync-v2026.4.15` from current HEAD [5d0cba5]
 - [x] Task 0.2: Add OpenClaw upstream remote (`git remote add openclaw https://github.com/openclaw/openclaw.git`)
 - [x] Task 0.3: Fetch all upstream tags (`git fetch openclaw --tags`)
-- [x] Task 0.4: Verify gap analysis report accuracy — confirm `v2026.3.2` is last synced, `v2026.4.14` is target
-- [ ] Task: Conductor - User Manual Verification 'Phase 0: Pre-Sync Preparation' (Protocol in workflow.md)
+- [x] Task 0.4: Verify gap analysis report accuracy — confirm `v2026.3.2` is last synced, `v2026.4.15` is target
+- [x] Task: Conductor - User Manual Verification 'Phase 0: Pre-Sync Preparation' (Protocol in workflow.md)
 
 ---
 
-## Phase 1: Low-Risk Versions (No Breaking Changes, No Injection Conflicts)
+## Phase 1: Merge to Latest Stable
 
-These versions contain only features and fixes with zero breaking changes and no injection point conflicts. They should merge cleanly.
+### Completed Incremental Merges (v2026.3.8 → v2026.4.1)
 
-**Versions:** v2026.3.8, v2026.3.12, v2026.3.23, v2026.3.24, v2026.4.1, v2026.4.7, v2026.4.8, v2026.4.9, v2026.4.10, v2026.4.11, v2026.4.12
+> These were merged during the initial version-by-version phase before the strategy pivot.
 
-- [x] Task 1.1: Git merge `v2026.3.8` (11 changes, 46 fixes) — resolve conflicts (ACCEPT upstream additions for `ui/` and `apps/` to restore them for Phase 6 comparison), run `pnpm build` [66a4165]
-- [x] Task 1.2: Git merge `v2026.3.12` (7 changes, 67 fixes) — resolve conflicts, run `pnpm build` [dac92f6]
-- [x] Task 1.3: Git merge `v2026.3.23` (3 changes, 47 fixes) — resolve conflicts, run `pnpm build` [b48d5eb]
-- [x] Task 1.4: Git merge `v2026.3.24` (18 changes, 15 fixes) — resolve conflicts, run `pnpm build` [794e3f7]
-- [x] Task 1.5: Git merge `v2026.4.1` (14 changes, 40 fixes) — resolve conflicts, run `pnpm build` [0fcea3f]
-- [ ] Task 1.6: Git merge `v2026.4.7` (18 changes, 71 fixes) — resolve conflicts, run `pnpm build`
-- [ ] Task 1.7: Git merge `v2026.4.8` (0 changes, 8 fixes) — resolve conflicts, run `pnpm build`
-- [ ] Task 1.8: Git merge `v2026.4.9` (5 changes, 34 fixes) — resolve conflicts, run `pnpm build`
-- [ ] Task 1.9: Git merge `v2026.4.10` (17 changes, 99 fixes) — resolve conflicts, run `pnpm build`
-- [ ] Task 1.10: Git merge `v2026.4.11` (9 changes, 16 fixes) — resolve conflicts, run `pnpm build`
-- [ ] Task 1.11: Git merge `v2026.4.12` (broad quality release) — resolve conflicts, run `pnpm build`
-- [ ] Task 1.12: Run full test suite (`CI=true pnpm test`) — document baseline after Phase 1
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Low-Risk Versions' (Protocol in workflow.md)
+- [x] Task 1.1: Git merge `v2026.3.8` (11 changes, 46 fixes) [66a4165]
+- [x] Task 1.2: Git merge `v2026.3.12` (7 changes, 67 fixes) [dac92f6]
+- [x] Task 1.3: Git merge `v2026.3.23` (3 changes, 47 fixes) [b48d5eb]
+- [x] Task 1.4: Git merge `v2026.3.24` (18 changes, 15 fixes) [794e3f7]
+- [x] Task 1.5: Git merge `v2026.4.1` (14 changes, 40 fixes) [0fcea3f]
+
+### Direct Merge to v2026.4.15
+
+- [~] Task 1.6: Git merge `v2026.4.15` — single merge absorbing all remaining versions (v2026.4.2 through v2026.4.15, plus any earlier tags not yet reachable from current merge-base)
+- [ ] Task 1.7: Capture and document all merge conflicts (file list + conflict type) before resolving any — save as `docs/session-logs/sync-conflict-inventory.md`
+- [ ] Task: Conductor - User Manual Verification 'Phase 1: Merge to Latest Stable' (Protocol in workflow.md)
 
 ---
 
-## Phase 2: Medium-Risk Breaking Versions (Breaking Changes, No Injection Conflicts)
+## Phase 2: Conflict Resolution (by category)
 
-These versions have breaking changes but do NOT directly touch DeXMart's injection points. They require careful review of breaking change impact.
+Resolve all merge conflicts from the v2026.4.15 merge. Conflicts are resolved per-file, ONCE, against the final state.
 
-### v2026.3.7 — Gateway Auth + Config Loading (1 BREAKING, Injection: `src/config/io.ts`)
+### Category A: Injection Point Conflicts (HIGHEST PRIORITY)
 
-- [ ] Task 2.1: Review breaking change: `gateway.auth.mode` now required — verify DeXMart's gateway config
-- [ ] Task 2.2: Review injection alert: `loadConfig` keyword in changelog — verify `src/config/io.ts` and `src/config/user-config.ts` are unaffected
-- [ ] Task 2.3: Review injection alert: `registerPlugin` keyword — verify `src/plugins/registry.ts` compatibility
-- [ ] Task 2.4: Git merge `v2026.3.7` (27 changes, 313 fixes) — resolve conflicts at injection points
-- [ ] Task 2.5: Run `pnpm build` — verify zero TypeScript errors
-- [ ] Task 2.6: Run DeXMart-specific tests (`pnpm test -- src/config/ src/web/ src/ingress/`)
+These are DeXMart's modified OpenClaw files. Conflicts MUST preserve DeXMart's modifications while absorbing upstream evolution.
 
-### v2026.3.28 — Qwen Provider + Doctor (2 BREAKING)
+- [ ] Task 2.1: Resolve `src/web/session.ts` — preserve `WaAuthStateFactory` type + `authStateFactory` option + `resolveWaAuthStateFactory()`. Absorb upstream Baileys media encryption + SDK restructure changes.
+- [ ] Task 2.2: Resolve `src/ingress/ingress-service.ts` — preserve `runEmbeddedPiAgent()` pipeline wiring. Absorb upstream IngressService + cron doctor changes.
+- [ ] Task 2.3: Resolve root `tsconfig.json` — preserve `@dexmart/*` and `@/*` path aliases. Absorb any upstream compiler option changes.
+- [ ] Task 2.4: Resolve `src/types/index.ts` — preserve dead `GeminiAI` reference removal. Absorb upstream type additions.
+- [ ] Task 2.5: Resolve `src/config/io.ts` — verify `loadConfigForUser()` extraction is unaffected. Absorb upstream config loading changes.
 
-- [ ] Task 2.7: Review breaking changes: Qwen portal-auth removed, old config migrations dropped
-- [ ] Task 2.8: Git merge `v2026.3.28` (21 changes, 97 fixes) — resolve any conflicts, run `pnpm build`
+### Category B: In-Flight Phase 5 Conflicts
 
-### v2026.3.31 — Plugin SDK + Exec Policy (6 BREAKING)
+Files targeted by Phase 5 Foundation Grounding work. Resolve without overwriting in-flight DeXMart additions.
 
-- [ ] Task 2.9: Review 6 breaking changes — assess impact on DeXMart plugin integration layer
-    - [ ] `nodes.run` shell wrapper removal
-    - [ ] Plugin SDK legacy compat subpaths deprecated
-    - [ ] `critical` findings fail closed on plugin installs
-    - [ ] `trusted-proxy` auth rejects mixed shared-token configs
-    - [ ] Node commands disabled until pairing approved
-    - [ ] Node-originated runs on reduced trusted surface
-- [ ] Task 2.10: Git merge `v2026.3.31` (29 changes, 60 fixes) — resolve any conflicts
-- [ ] Task 2.11: Run `pnpm build` — verify zero TypeScript errors
+- [ ] Task 2.6: Check `src/plugins/runtime.ts` — if conflicted, preserve any Phase 5.1 userId/TenantContext additions
+- [ ] Task 2.7: Check `src/gateway/server-channels.ts` — if conflicted, preserve any Phase 5.3 billing gate additions
+- [ ] Task 2.8: Check `src/persistence/firebase.ts` + `src/types/firestore.ts` — if conflicted, preserve `users/{userId}` schema
 
-### v2026.4.2 — Plugin Config Migration (2 BREAKING)
+### Category C: Standard Upstream Evolution
 
-- [ ] Task 2.12: Review breaking changes: `x_search` + `web_fetch` config path moves — check if DeXMart references either
-- [ ] Task 2.13: Git merge `v2026.4.2` (15 changes, 50 fixes) — resolve any conflicts, run `pnpm build`
-
-### v2026.4.5 — Legacy Config Aliases Removed (1 BREAKING)
-
-- [ ] Task 2.14: Review breaking change: legacy public config aliases removed — scan DeXMart code for any usage
-- [ ] Task 2.15: Git merge `v2026.4.5` (38 changes, 188 fixes) — resolve any conflicts, run `pnpm build`
-
-- [ ] Task 2.16: Run full test suite (`CI=true pnpm test`) — document baseline after Phase 2
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Medium-Risk Breaking Versions' (Protocol in workflow.md)
+- [ ] Task 2.9: Resolve all remaining conflicted files — accept upstream for non-injection-point files
+- [ ] Task 2.10: Run injection point verification commands:
+    ```bash
+    grep -n "WaAuthStateFactory\|authStateFactory" src/web/session.ts
+    grep -n "runEmbeddedPiAgent" src/ingress/ingress-service.ts
+    grep -n "@dexmart/\*\|@/\*" tsconfig.json
+    ```
+- [ ] Task: Conductor - User Manual Verification 'Phase 2: Conflict Resolution' (Protocol in workflow.md)
 
 ---
 
-## Phase 3: High-Risk Injection Point Versions
+## Phase 3: Build & Type Error Resolution (by root cause)
 
-These versions directly touch DeXMart's modified files. **Manual conflict resolution is mandatory.**
+After conflict resolution, run `pnpm build` and fix all TypeScript errors. Each error is fixed ONCE against the final v2026.4.15 API surface — no intermediate states that will break again.
 
-### v2026.3.11 — IngressService + Cron Doctor (1 BREAKING, Injection: `ingress-service.ts`)
+### 3A: Plugin SDK Import Migration
 
-- [ ] Task 3.1: Pre-merge: snapshot current `src/ingress/ingress-service.ts` for diff comparison
-- [ ] Task 3.2: Review changelog for `runEmbeddedPiAgent` context — determine if upstream changed the function signature or just referenced it
-- [ ] Task 3.3: Git merge `v2026.3.11` (15 changes, 92 fixes) — manually resolve `ingress-service.ts` conflicts
-- [ ] Task 3.4: Verify `runEmbeddedPiAgent()` call in DeXMart's ingress pipeline still compiles and works
-- [ ] Task 3.5: Run `pnpm build` + DeXMart ingress tests
+- [ ] Task 3.1: Scan for `openclaw/extension-api` imports → migrate to `openclaw/plugin-sdk/*` subpaths
+- [ ] Task 3.2: Scan for deprecated Plugin SDK legacy compat subpaths → update to current v2026.4.15 paths
+- [ ] Task 3.3: Verify `api.runtime.agent.runEmbeddedPiAgent` import path resolves correctly
 
-### v2026.3.22 — Plugin SDK + Baileys + IngressService (18 BREAKING, Injection: `session.ts` + `ingress-service.ts`)
+### 3B: Config & Legacy Removal
 
-> ⚠️ **HIGHEST RISK VERSION** — This is the single most dangerous sync step.
+- [ ] Task 3.4: Scan for `CLAWDBOT_*` or `MOLTBOT_*` env references → remove or update
+- [ ] Task 3.5: Scan for legacy public config aliases (`talk.voiceId`, etc.) → update to current paths
+- [ ] Task 3.6: Scan for `x_search` and `web_fetch` config references → update to plugin-owned config paths
+- [ ] Task 3.7: Verify `gateway.auth.mode` is explicitly configured in DeXMart's gateway config
+- [ ] Task 3.8: Scan for `browser.relayBindHost` (Chrome extension relay) → remove references
 
-- [ ] Task 3.6: Pre-merge: snapshot `src/web/session.ts` and `src/ingress/ingress-service.ts`
-- [ ] Task 3.7: Deep-review all 18 breaking changes against DeXMart codebase:
-    - [ ] Plugin SDK migration: `openclaw/extension-api` → `openclaw/plugin-sdk/*` — scan all imports
-    - [ ] `api.runtime.agent.runEmbeddedPiAgent` — verify DeXMart's direct import path still resolves
-    - [ ] `ChannelMessageActionAdapter.describeMessageTool(...)` — check if DeXMart implements any channel message adapters
-    - [ ] Legacy env name removal (`CLAWDBOT_*`, `MOLTBOT_*`) — scan `.env` files and config loaders
-    - [ ] Chrome extension relay removed — verify DeXMart doesn't reference `browser.relayBindHost`
-- [ ] Task 3.8: Git merge `v2026.3.22` (74 changes, 220 fixes) — manually resolve conflicts at BOTH injection points
-- [ ] Task 3.9: Verify `src/web/session.ts` preserves `WaAuthStateFactory` type and `authStateFactory` option
-- [ ] Task 3.10: Verify `src/ingress/ingress-service.ts` preserves `runEmbeddedPiAgent()` pipeline wiring
-- [ ] Task 3.11: Run `pnpm build` — fix any TypeScript errors from Plugin SDK restructure
-- [ ] Task 3.12: Run full test suite — document Phase 3 checkpoint
+### 3C: Channel & Runtime API Changes
 
-### v2026.4.14 — Baileys Media Encryption (Injection: `session.ts`)
+- [ ] Task 3.9: Verify `ChannelMessageActionAdapter.describeMessageTool(...)` — check if DeXMart implements any channel message adapters
+- [ ] Task 3.10: Verify `nodes.run` shell wrapper removal doesn't affect DeXMart
+- [ ] Task 3.11: Verify cron doctor / isolated cron delivery changes are compatible
 
-- [ ] Task 3.13: Pre-merge: snapshot `src/web/session.ts`
-- [ ] Task 3.14: Review Baileys media encryption patch — determine if it conflicts with `authStateFactory`
-- [ ] Task 3.15: Git merge `v2026.4.14` (latest) — resolve `session.ts` conflicts
-- [ ] Task 3.16: Verify `src/web/session.ts` preserves DeXMart's `WaAuthStateFactory` + `authStateFactory`
-- [ ] Task 3.17: Run `pnpm build` — zero TypeScript errors
+### 3D: General Type Evolution
 
-- [ ] Task 3.18: Run full test suite (`CI=true pnpm test`) — document comprehensive baseline
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: High-Risk Injection Point Versions' (Protocol in workflow.md)
+- [ ] Task 3.12: Fix remaining TypeScript errors from `pnpm build` — address by module
+- [ ] Task 3.13: Run `pnpm build` — zero TypeScript errors
+- [ ] Task: Conductor - User Manual Verification 'Phase 3: Build & Type Error Resolution' (Protocol in workflow.md)
 
 ---
 
-## Phase 4: Post-Sync Validation & Category A Test Recovery
+## Phase 4: Breaking Change Verification
 
-- [ ] Task 4.1: Un-skip all Category A upstream tests (79 files) — remove `// upstream: pending sync` annotations
-- [ ] Task 4.2: Run un-skipped Category A tests — document which now pass vs. still fail
-- [ ] Task 4.3: For tests that still fail, investigate and classify:
+Systematic verification that all 31 breaking changes across the absorbed versions are addressed. Each item is checked against the final codebase state — verified once.
+
+### Plugin SDK & Extension System (8 items)
+
+- [ ] Task 4.1: ✅ Verify `openclaw/extension-api` → `openclaw/plugin-sdk/*` — all imports updated (v2026.3.22)
+- [ ] Task 4.2: ✅ Verify Plugin SDK legacy compat subpaths — no deprecated usage remaining (v2026.3.31)
+- [ ] Task 4.3: ✅ Verify `critical` findings fail closed — DeXMart plugin install flow handles it (v2026.3.31)
+- [ ] Task 4.4: ✅ Verify `x_search` settings → plugin-owned config path — no stale references (v2026.4.2)
+- [ ] Task 4.5: ✅ Verify `web_fetch` Firecrawl config → plugin-owned path — no stale references (v2026.4.2)
+- [ ] Task 4.6: ✅ Verify `ChannelMessageActionAdapter.describeMessageTool(...)` compliance (v2026.3.22)
+- [ ] Task 4.7: ✅ Verify `api.runtime.agent.runEmbeddedPiAgent` import resolves (v2026.3.22)
+- [ ] Task 4.8: ✅ Verify `nodes.run` shell wrapper — no usage (v2026.3.31)
+
+### Gateway & Auth (4 items)
+
+- [ ] Task 4.9: ✅ Verify `gateway.auth.mode` explicitly configured (v2026.3.7)
+- [ ] Task 4.10: ✅ Verify `trusted-proxy` config — no mixed shared-token usage (v2026.3.31)
+- [ ] Task 4.11: ✅ Verify node commands / pairing approval — no impact (v2026.3.31)
+- [ ] Task 4.12: ✅ Verify node-originated runs / reduced trusted surface — no impact (v2026.3.31)
+
+### Config & Legacy Cleanup (5 items)
+
+- [ ] Task 4.13: ✅ Verify `CLAWDBOT_*` / `MOLTBOT_*` — zero references (v2026.3.22)
+- [ ] Task 4.14: ✅ Verify Chrome extension relay — zero `browser.relayBindHost` references (v2026.3.22)
+- [ ] Task 4.15: ✅ Verify Qwen portal-auth removal — no impact (v2026.3.28)
+- [ ] Task 4.16: ✅ Verify doctor config migration drop — no impact (v2026.3.28)
+- [ ] Task 4.17: ✅ Verify legacy public config aliases — zero stale usage (v2026.4.5)
+
+### Runtime & Channels (2 items)
+
+- [ ] Task 4.18: ✅ Verify cron doctor isolated cron delivery — compatible (v2026.3.11)
+- [ ] Task 4.19: ✅ Verify Baileys media encryption — `authStateFactory` compatible (v2026.4.15)
+
+### Final Gate
+
+- [ ] Task 4.20: Run `pnpm build` — confirm zero errors after all verifications
+- [ ] Task: Conductor - User Manual Verification 'Phase 4: Breaking Change Verification' (Protocol in workflow.md)
+
+---
+
+## Phase 5: Post-Sync Test Recovery
+
+- [ ] Task 5.1: Un-skip all Category A upstream tests (79 files) — remove `// upstream: pending sync` annotations
+- [ ] Task 5.2: Run un-skipped Category A tests — document which now pass vs. still fail
+- [ ] Task 5.3: For tests that still fail, investigate and classify:
     - [ ] Tests fixed by sync → mark as passing
     - [ ] Tests still failing → re-annotate with specific upstream issue reference
-- [ ] Task 4.4: Run full test suite — capture final test counts (total, passing, skipped, failed)
-- [ ] Task 4.5: Update `docs/session-logs/test-health-baseline.md` with post-sync numbers
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Post-Sync Validation' (Protocol in workflow.md)
+- [ ] Task 5.4: Run full test suite — capture final test counts (total, passing, skipped, failed)
+- [ ] Task 5.5: Update `docs/session-logs/test-health-baseline.md` with post-sync numbers
+- [ ] Task: Conductor - User Manual Verification 'Phase 5: Post-Sync Test Recovery' (Protocol in workflow.md)
 
 ---
 
-## Phase 5: Documentation & Finalization
+## Phase 6: Documentation & Finalization
 
-- [ ] Task 5.1: Update `docs/OPENCLAW_UPSTREAM_REPORT.md` — set "Last Synced Version" to `v2026.4.14`
-- [ ] Task 5.2: Update `docs/architecture/FUSION_STRATEGY.md` Section 4.3 — record sync version and date
-- [ ] Task 5.3: Run `scripts/automation/upstream-watcher.ts` (incremental mode) — verify no new upstream activity missed
-- [ ] Task 5.4: Squash-merge sync branch into main development branch
-- [ ] Task 5.5: Clean up temporary snapshots and triage files
-- [ ] Task: Conductor - User Manual Verification 'Phase 5: Documentation & Finalization' (Protocol in workflow.md)
+- [ ] Task 6.1: Update `docs/OPENCLAW_UPSTREAM_REPORT.md` — set "Last Synced Version" to `v2026.4.15`
+- [ ] Task 6.2: Update `docs/architecture/FUSION_STRATEGY.md` Section 4.3 — record sync version, date, and strategy
+- [ ] Task 6.3: Run `scripts/automation/upstream-watcher.ts` (incremental mode) — verify no new upstream activity missed
+- [ ] Task 6.4: Squash-merge sync branch into main development branch
+- [ ] Task 6.5: Clean up temporary snapshots and triage files
+- [ ] Task: Conductor - User Manual Verification 'Phase 6: Documentation & Finalization' (Protocol in workflow.md)

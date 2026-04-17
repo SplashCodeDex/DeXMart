@@ -312,9 +312,25 @@ DeXMart will frequently inherit broken tests or internal bugs that exist in earl
 **Rule**: We do not manually fix upstream infrastructure.
 1. Annotate broken upstream tests (`Category A`) with `.skip` or `// upstream: pending sync`.
 2. Do not attempt to fix them manually, as this creates merge conflicts.
-3. Fixes are obtained by running a dedicated **Upstream Sync Conductor Track** onto a clean branch, cherry-picking OpenClaw commits up to the target version (e.g. `2026.4.14`), preserving our 5 injection points, and then re-evaluating test health.
+3. Fixes are obtained by running a dedicated **Upstream Sync Conductor Track** onto a clean branch, merging directly to the latest stable upstream version, preserving our injection points, and then re-evaluating test health.
 
-### 4.3 Sync Report
+### 4.4 Sync Execution Strategy — Merge to Latest, Fix Once
+
+> **Established**: 2026-04-17 — replaces the original version-by-version approach.
+
+When syncing across multiple upstream releases, **do not merge each version sequentially**. Instead:
+
+1. **Merge directly to the latest stable tag** (`git merge <latest-tag>`) in a single operation.
+2. **Categorize all resulting conflicts** by type: injection point conflicts (highest priority), in-flight Phase 5 conflicts, and standard upstream evolution.
+3. **Fix each conflict once** against the final API surface — no intermediate throwaway resolutions.
+4. **Verify breaking changes by domain** (Plugin SDK, Gateway/Auth, Config/Legacy, Runtime/Channels), not by version.
+5. **Run build + test gates** once after all fixes are applied.
+
+**Why not version-by-version?** Files at injection points (e.g., `session.ts`, `ingress-service.ts`, `server-channels.ts`) are touched across multiple intermediate versions. Sequential merging forces re-resolution of the same files at each step — work that is immediately invalidated by the next version touching that file. Breaking changes also compound: one version restructures an API, the next deprecates the compat paths from that restructure. Fixing against an intermediate state wastes effort.
+
+**Details**: See the active Conductor track at `conductor/tracks/openclaw_sync_20260415/` for the full plan, breaking change catalog, and injection point inventory.
+
+### 4.5 Sync Report
 
 The `scripts/upstream-watcher.ts` automation runs every 12 hours and commits a report to `docs/OPENCLAW_UPSTREAM_REPORT.md` tracking:
 - New commits since last sync

@@ -16,5 +16,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Upstream Sync — OpenClaw v2026.3.2 → v2026.4.14**
+- [~] **Track: Upstream Sync — OpenClaw v2026.3.2 → v2026.4.15**
 *Link: [./tracks/openclaw_sync_20260415/](./tracks/openclaw_sync_20260415/)*

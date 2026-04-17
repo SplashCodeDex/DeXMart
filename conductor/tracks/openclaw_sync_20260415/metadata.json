@@ -3,6 +3,12 @@
   "type": "chore",
   "status": "in_progress",
   "created_at": "2026-04-15T01:15:00Z",
-  "updated_at": "2026-04-16T19:25:46Z",
-  "description": "Upstream Sync — Cherry-pick OpenClaw v2026.3.2 → v2026.4.14 (19 stable releases, 31 breaking changes, 4 injection-point conflicts)"
+  "updated_at": "2026-04-17T01:22:00Z",
+  "description": "Upstream Sync — Direct merge to OpenClaw v2026.4.15 (19 releases, 31 breaking changes). Strategy: merge-to-latest then categorized resolution. 5/19 versions already merged incrementally (v2026.3.8→v2026.4.1); remaining absorbed in single v2026.4.15 merge.",
+  "strategy_pivot": {
+    "date": "2026-04-17",
+    "from": "version-by-version sequential merge (19 cycles)",
+    "to": "direct merge to latest stable, categorized fix-once resolution",
+    "reason": "Files touched across multiple versions caused redundant conflict resolution at injection points"
+  }
 }

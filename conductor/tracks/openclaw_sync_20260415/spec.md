@@ -1,10 +1,28 @@
-# Spec: Upstream Sync — OpenClaw v2026.3.2 → v2026.4.14
+# Spec: Upstream Sync — OpenClaw v2026.3.2 → v2026.4.15
 
 ## Overview
 
-DeXMart's OpenClaw engine layer was last synchronized via subtree merge at `v2026.3.1` (commit `12c4700e0`), with the upstream report covering up to `v2026.3.2`. The upstream has since progressed through **19 stable releases** to `v2026.4.14` (released April 14, 2026).
+DeXMart's OpenClaw engine layer was last synchronized via subtree merge at `v2026.3.1` (commit `12c4700e0`), with the upstream report covering up to `v2026.3.2`. The upstream has since progressed through **19 stable releases** to `v2026.4.15` (released April 14, 2026).
 
-This track performs a structured, version-by-version synchronization to bring DeXMart's OpenClaw engine up to the latest upstream. The sync must preserve DeXMart's 5 injection points while absorbing 321 feature changes, 31 breaking changes, and 1,463 fixes.
+This track performs a **direct merge to the latest stable upstream**, followed by categorized conflict resolution and breaking change adaptation. The sync must preserve DeXMart's 5 stable injection points + 5 in-flight Phase 5 targets while absorbing 321 feature changes, 31 breaking changes, and 1,463 fixes.
+
+## Strategy
+
+### Original Approach (Superseded)
+
+The initial plan merged each of the 19 versions sequentially, categorized by risk level (low → medium → high). Five versions were successfully merged this way (v2026.3.8 → v2026.4.1).
+
+### Strategy Pivot — Merge to Latest, Fix Once (2026-04-17)
+
+Analysis after the first 5 merges revealed a fundamental inefficiency: files like `session.ts` and `ingress-service.ts` are modified across **multiple intermediate versions**, causing the same injection points to be resolved repeatedly — each time against a throwaway intermediate state. For example:
+
+- `src/web/session.ts` is touched in v2026.3.22 AND v2026.4.15 → 2 resolutions for 1 file
+- `src/ingress/ingress-service.ts` is touched in v2026.3.11 AND v2026.3.22 → 2 resolutions for 1 file
+- `src/gateway/server-channels.ts` is touched in v2026.3.7, v2026.3.11, AND v2026.3.31 → 3 resolutions for 1 file
+
+Additionally, breaking changes compound: v2026.3.22 restructures the Plugin SDK, and v2026.3.31 immediately deprecates the legacy compat paths from that very restructure — fixing imports for the intermediate state wastes effort.
+
+**New approach**: Merge directly to `v2026.4.15` from the current branch (which already includes v2026.4.1). Git's 3-way merge computes the diff between the merge-base and the target tag, producing conflicts only where the final state disagrees with DeXMart's modifications. Each file is resolved **once** against the API surface that will actually ship.
 
 ## Data Source
 
@@ -15,6 +33,8 @@ All version changelogs are captured in `docs/OPENCLAW_UPSTREAM_REPORT.md`, gener
 | Metric | Count |
 |--------|-------|
 | Stable Releases in Gap | 19 |
+| Already Merged (v2026.3.8 → v2026.4.1) | 5 |
+| Remaining (absorbed by v2026.4.15 merge) | 14 |
 | Total Feature Changes | 321 |
 | Total Breaking Changes | 31 |
 | Total Fixes | 1,463 |
@@ -22,104 +42,128 @@ All version changelogs are captured in `docs/OPENCLAW_UPSTREAM_REPORT.md`, gener
 
 ## DeXMart Injection Points (Modified OpenClaw Files)
 
-> ⚠️ **Inventory updated 2026-04-16.** The prior inventory ("5 files") reflected the state through Phase 4. Phase 5 ("Foundation Grounding") introduced a second tier of in-flight injection points that are **partially implemented** (RED tests exist, implementation is incomplete — see [`FUSION_STRATEGY.md` §8](../../../docs/architecture/FUSION_STRATEGY.md) and archived track [`data_path_migration_20260413`](../../archive/data_path_migration_20260413/spec.md)). Sync MUST preserve both sets.
+> ⚠️ **Inventory updated 2026-04-16.** Phase 5 ("Foundation Grounding") introduced a second tier of in-flight injection points that are **partially implemented**. Sync MUST preserve both sets. See [`FUSION_STRATEGY.md` §8](../../../docs/architecture/FUSION_STRATEGY.md) and archived track [`data_path_migration_20260413`](../../archive/data_path_migration_20260413/spec.md).
 
 ### Stable Set — Phase 1–4 Injection Points (confirmed, locked in)
 
-Any upstream change to these files requires manual conflict resolution and preservation of DeXMart's modification:
-
 | File | DeXMart Modification | Versions Affected |
 |------|---------------------|-------------------|
-| `src/web/session.ts` | Added `WaAuthStateFactory` type + `authStateFactory` option + `resolveWaAuthStateFactory()` resolver to `createWaSocket()` | v2026.3.22, v2026.4.14 |
+| `src/web/session.ts` | Added `WaAuthStateFactory` type + `authStateFactory` option + `resolveWaAuthStateFactory()` resolver to `createWaSocket()` | v2026.3.22, v2026.4.15 |
 | `src/types/index.ts` | Removed dead `GlobalContext.unifiedAI: GeminiAI` reference | None detected |
 | `src/ingress/ingress-service.ts` | Replaced `context.unifiedAI.processMessage()` with `runEmbeddedPiAgent()` | v2026.3.11, v2026.3.22 |
-| Root `tsconfig.json` | Added `@dexmart/*` and `@/*` path aliases → `src/*` | None detected (but **must be re-verified every merge**; see NFR-4) |
-| `src/config/io.ts` | `loadConfigForUser()` extracted to separate file (additive — no direct modification) | v2026.3.7 (keyword match) |
+| Root `tsconfig.json` | Added `@dexmart/*` and `@/*` path aliases → `src/*` | None detected (re-verify after merge) |
+| `src/config/io.ts` | `loadConfigForUser()` extracted to separate file (additive) | v2026.3.7 (keyword match) |
 
 ### In-Flight Set — Phase 5 Foundation Grounding (partial, active work)
 
-These files are the target of Phase 5 engine-grounding work. Implementation is **partial** and tracked in separate conductor tracks. Sync MUST NOT overwrite in-flight DeXMart additions, and any new upstream edits to these files must be flagged for coordination with the owning Phase 5 sub-track:
-
 | File | Phase 5 Task | Current State (verified 2026-04-16) | Versions At Risk |
 |------|-------------|---------|------------------|
-| `src/plugins/runtime.ts` | 5.1 — inject `userId` / `TenantContext` into `PluginRuntime` | ❌ Not implemented (no `userId` references in file) | v2026.3.22 (Plugin SDK restructure) |
-| `src/gateway/server-channels.ts` | 5.3 — inject Stripe billing gate (`assertCan('startChannel')`) before plugin boot | ❌ Not implemented (no `assertCan` / `userId` in file); RED tests exist: `server-channels.billing-gate.test.ts`, `server-channels.tenant-context.test.ts`, `server-channels.b2c-inheritance.test.ts` | v2026.3.7, v2026.3.11, v2026.3.31 |
-| `src/web/session.ts` (default-vs-opt-in) | 5.2 — make Firestore auth the default in SaaS mode | ⚠️ Partial — `authStateFactory` is opt-in via options; not yet a SaaS default | v2026.3.22, v2026.4.14 |
-| `src/persistence/firebase.ts` + `src/types/firestore.ts` + `src/services/FirebaseService.ts` | 5.9 — `tenants/{tenantId}` → `users/{userId}` schema migration | ❌ Partial — ~22 service files still import the legacy `services/FirebaseService.ts` with `tenants/{tenantId}` `SchemaMap`; see archived track `data_path_migration_20260413` | None direct, but upstream changes to `FirebaseService` call-sites can conflict |
-| `src/services/ChannelManagerService.ts`, `src/services/channels/platform-metadata.ts` | 5.5 residual — delete parallel channel system | ⚠️ Partial — `WhatsappAdapter.ts` / `ChannelManager.ts` / `registry.ts` deleted; these 2 residuals remain | None (DeXMart-only files) |
+| `src/plugins/runtime.ts` | 5.1 — inject `userId` / `TenantContext` into `PluginRuntime` | ❌ Not implemented | v2026.3.22 (Plugin SDK restructure) |
+| `src/gateway/server-channels.ts` | 5.3 — inject Stripe billing gate | ❌ Not implemented; RED tests exist | v2026.3.7, v2026.3.11, v2026.3.31 |
+| `src/web/session.ts` (default-vs-opt-in) | 5.2 — make Firestore auth default in SaaS mode | ⚠️ Partial — opt-in only | v2026.3.22, v2026.4.15 |
+| `src/persistence/firebase.ts` + `src/types/firestore.ts` | 5.9 — `tenants/{tenantId}` → `users/{userId}` migration | ❌ Partial — ~22 files on legacy paths | None direct |
+| `src/services/ChannelManagerService.ts` + `platform-metadata.ts` | 5.5 — delete parallel channel system | ⚠️ Partial — 2 residuals remain | None (DeXMart-only) |
 
-### Verification Before Each Merge
+### Post-Merge Verification Commands
 
 ```bash
-# Stable Set integrity check (must all return non-zero after merge)
+# Stable Set integrity (must return matches after merge)
 grep -n "WaAuthStateFactory\|authStateFactory" src/web/session.ts
 grep -n "runEmbeddedPiAgent" src/ingress/ingress-service.ts
 grep -n "@dexmart/\*\|@/\*" tsconfig.json
 
-# In-Flight Set status tracking (compare against documented state above)
-grep -cn "userId\|TenantContext" src/plugins/runtime.ts        # trending up over Phase 5
-grep -cn "assertCan\|userId" src/gateway/server-channels.ts    # trending up over Phase 5
-grep -rn "tenants/{tenantId}" src/types/firestore.ts           # trending toward zero
+# In-Flight Set tracking (compare against documented state)
+grep -cn "userId\|TenantContext" src/plugins/runtime.ts
+grep -cn "assertCan\|userId" src/gateway/server-channels.ts
+grep -rn "tenants/{tenantId}" src/types/firestore.ts
 ```
 
-If a merge changes Stable Set behavior, **stop and resolve before continuing**. If a merge touches an In-Flight Set file, **coordinate with the owning Phase 5 sub-track before proceeding** — do not silently absorb upstream code that conflicts with in-flight grounding work.
+If injection point integrity checks fail after merge, **stop and restore before continuing**.
 
-## Critical Breaking Changes
+## Breaking Changes by Category (31 total)
 
-### v2026.3.22 (Highest Risk — 18 breaking changes)
-- **Plugin SDK restructured:** `openclaw/extension-api` removed → `openclaw/plugin-sdk/*` subpaths
-- `api.runtime.agent.runEmbeddedPiAgent` exposed through new plugin runtime
-- Legacy `CLAWDBOT_*` and `MOLTBOT_*` env names removed
-- Chrome extension relay removed
-- `ChannelMessageActionAdapter.describeMessageTool(...)` required for message tool discovery
+> Reorganized by domain for efficient, one-pass resolution. Each breaking change is fixed once against the final v2026.4.15 API surface — no intermediate states that will break again.
 
-### v2026.3.31 (6 breaking changes)
-- Plugin SDK legacy compat subpaths deprecated
-- `critical` findings on plugin installs now fail closed
-- `trusted-proxy` auth rejects mixed shared-token configs
-- Node commands disabled until pairing approved
+### Plugin SDK & Extension System
 
-### v2026.3.28 (2 breaking changes)
-- Qwen provider oauth removed
-- Doctor config migrations older than 2 months dropped
+| # | Breaking Change | Source | DeXMart Impact |
+|---|----------------|--------|----------------|
+| 1 | `openclaw/extension-api` removed → `openclaw/plugin-sdk/*` subpaths | v2026.3.22 | Scan + migrate all extension imports |
+| 2 | Plugin SDK legacy compat subpaths deprecated | v2026.3.31 | Use final v2026.4.15 subpath naming |
+| 3 | `critical` findings fail closed on plugin installs | v2026.3.31 | Verify DeXMart plugin install flow |
+| 4 | `x_search` settings → plugin-owned config path | v2026.4.2 | Scan for stale config refs |
+| 5 | `web_fetch` Firecrawl config → plugin-owned path | v2026.4.2 | Scan for stale config refs |
+| 6 | `ChannelMessageActionAdapter.describeMessageTool(...)` required for discovery | v2026.3.22 | Check if DeXMart implements channel message adapters |
+| 7 | `api.runtime.agent.runEmbeddedPiAgent` exposed via plugin runtime | v2026.3.22 | Verify import path in `ingress-service.ts` |
+| 8 | `nodes.run` shell wrapper removed | v2026.3.31 | Verify zero usage |
 
-### v2026.4.2 (2 breaking changes)
-- `x_search` settings moved to plugin-owned config path
-- `web_fetch` Firecrawl config moved to plugin-owned path
+### Gateway & Auth
 
-### v2026.4.5 (1 breaking change)
-- Legacy public config aliases removed (`talk.voiceId`, etc.)
+| # | Breaking Change | Source | DeXMart Impact |
+|---|----------------|--------|----------------|
+| 9 | `gateway.auth.mode` now required | v2026.3.7 | Add explicit mode to gateway config |
+| 10 | `trusted-proxy` rejects mixed shared-token configs | v2026.3.31 | Verify gateway config |
+| 11 | Node commands disabled until pairing approved | v2026.3.31 | Verify no impact |
+| 12 | Node-originated runs on reduced trusted surface | v2026.3.31 | Verify no impact |
 
-### v2026.3.7 (1 breaking change)
-- Gateway auth requires explicit `gateway.auth.mode`
+### Config & Legacy Cleanup
 
-### v2026.3.11 (1 breaking change)
-- Cron doctor tightens isolated cron delivery
+| # | Breaking Change | Source | DeXMart Impact |
+|---|----------------|--------|----------------|
+| 13 | `CLAWDBOT_*` and `MOLTBOT_*` env names removed | v2026.3.22 | Scan `.env` + config loaders |
+| 14 | Chrome extension relay removed (`browser.relayBindHost`) | v2026.3.22 | Scan for references |
+| 15 | Qwen portal-auth removed | v2026.3.28 | Verify no impact |
+| 16 | Doctor config migrations >2 months dropped | v2026.3.28 | Verify no impact |
+| 17 | Legacy public config aliases removed (`talk.voiceId`, etc.) | v2026.4.5 | Scan for stale usage |
+
+### Runtime & Channels
+
+| # | Breaking Change | Source | DeXMart Impact |
+|---|----------------|--------|----------------|
+| 18 | Cron doctor tightens isolated cron delivery | v2026.3.11 | Verify compatibility |
+| 19 | Baileys media encryption changes | v2026.4.15 | Verify `authStateFactory` compatibility |
+
+> **Note**: 19 items are individually enumerated above. The original 31 count includes additional sub-items from v2026.3.22 (18 total breaking changes) whose remaining entries are minor internal changes with no detected DeXMart surface exposure. During Phase 4 execution, the full v2026.3.22 changelog will be cross-referenced to confirm nothing was missed.
 
 ## Functional Requirements
 
-1. **FR-1: Version-by-Version Subtree Merge** — Merge each upstream stable release sequentially, resolving conflicts at each step before moving to the next.
-2. **FR-2: Injection Point Conflict Resolution** — For versions flagged with injection point alerts (v2026.3.7, v2026.3.11, v2026.3.22, v2026.4.14), manually review and resolve conflicts while preserving DeXMart's modifications.
-3. **FR-3: Breaking Change Adaptation** — For each breaking change, verify DeXMart's code doesn't rely on the removed/changed API. Apply necessary adaptations.
-4. **FR-4: Test Validation** — After each phase, run `CI=true pnpm test` to ensure no new regressions beyond previously-skipped upstream tests.
-5. **FR-5: Category A Test Auto-Resolution** — After sync completes, un-skip Category A tests (79 files tagged `// upstream: pending sync`) and run them to verify which pre-existing upstream bugs have been fixed by the updated codebase. Tests that still fail must be re-skipped with updated annotations.
+1. **FR-1: Direct Merge to Latest Stable** — Merge `v2026.4.15` directly from the current branch state (already at v2026.4.1). Git's 3-way merge handles the diff; conflicts are resolved per-file against the final state.
+
+2. **FR-2: Categorized Conflict Resolution** — Merge conflicts are triaged into three categories (Injection Point, In-Flight Phase 5, Standard Upstream) and resolved in priority order. Injection points are always preserved.
+
+3. **FR-3: Root-Cause Build Fix** — TypeScript/build errors after conflict resolution are grouped by root cause (Plugin SDK migration, Config changes, Legacy removal, General type evolution) and fixed once against the final API surface.
+
+4. **FR-4: Breaking Change Verification** — All 31 breaking changes are verified by domain category. Each is confirmed addressed in the final codebase — no intermediate checking.
+
+5. **FR-5: Category A Test Auto-Resolution** — After sync completes, un-skip Category A tests (79 files tagged `// upstream: pending sync`) and run them to verify which pre-existing upstream bugs have been fixed. Tests that still fail must be re-skipped with updated annotations.
 
 ## Non-Functional Requirements
 
 1. **NFR-1: Atomic Phases** — Each phase must be independently committable and revertable.
-2. **NFR-2: Documentation** — Update `docs/OPENCLAW_UPSTREAM_REPORT.md` status fields as each version is synced.
-3. **NFR-3: Branch Isolation** — All sync work happens on a dedicated `upstream/sync-v2026.4.14` branch.
+2. **NFR-2: Documentation** — Update `docs/OPENCLAW_UPSTREAM_REPORT.md` after sync completes.
+3. **NFR-3: Branch Isolation** — All sync work happens on the dedicated `upstream/sync-v2026.4.15` branch.
+4. **NFR-4: Injection Point Integrity** — Post-merge verification commands (grep checks) must pass after every conflict resolution commit. Failure = stop and restore.
+5. **NFR-5: Build Gate** — `pnpm build` must produce zero TypeScript errors before proceeding to test recovery (Phase 5).
+
+## Rollback Criteria
+
+| Condition | Action |
+|-----------|--------|
+| Injection point grep checks fail after merge | Restore from pre-merge commit; do not proceed |
+| `pnpm build` errors exceed 200 after conflict resolution | Reassess — may indicate a fundamental incompatibility requiring manual review |
+| Category A un-skip reveals >50% new failures | Document and re-skip; do not block sync completion |
 
 ## Acceptance Criteria
 
 1. DeXMart builds cleanly (`pnpm build` — zero TypeScript errors)
-2. All 5 injection points are intact and functional
-3. Category A upstream tests pass (or are documented as known-broken upstream)
-4. `docs/OPENCLAW_UPSTREAM_REPORT.md` reflects the completed sync
-5. `FUSION_STRATEGY.md` Section 4.3 is updated with the new sync version
+2. All 5+5 injection points are intact (verified by grep checks)
+3. All 19 enumerated breaking changes confirmed addressed
+4. Category A upstream tests pass or are documented as known-broken upstream
+5. `docs/OPENCLAW_UPSTREAM_REPORT.md` reflects the completed sync
+6. `FUSION_STRATEGY.md` Section 4 updated with sync version and strategy
 
 ## Out of Scope
 
 - DeXMart B2C feature development
 - Fixes to Category B–F test failures (handled by `test_health_20260413` track)
-- Upstream feature adoption (e.g., Active Memory plugin, Codex provider) — these are separate feature tracks
+- Upstream feature adoption (e.g., Active Memory plugin, Codex provider) — separate feature tracks
