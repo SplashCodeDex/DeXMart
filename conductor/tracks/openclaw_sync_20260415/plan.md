@@ -33,7 +33,7 @@
 
 ---
 
-## Phase 2: Conflict Resolution (by category)
+## Phase 2: Conflict Resolution (by category) [checkpoint: 4cc90bb]
 
 Resolve all merge conflicts from the v2026.4.15 merge. Conflicts are resolved per-file, ONCE, against the final state.
 
@@ -41,19 +41,22 @@ Resolve all merge conflicts from the v2026.4.15 merge. Conflicts are resolved pe
 
 These are DeXMart's modified OpenClaw files. Conflicts MUST preserve DeXMart's modifications while absorbing upstream evolution.
 
-- [ ] Task 2.1: Resolve `src/web/session.ts` — preserve `WaAuthStateFactory` type + `authStateFactory` option + `resolveWaAuthStateFactory()`. Absorb upstream Baileys media encryption + SDK restructure changes.
-- [ ] Task 2.2: Resolve `src/ingress/ingress-service.ts` — preserve `runEmbeddedPiAgent()` pipeline wiring. Absorb upstream IngressService + cron doctor changes.
-- [ ] Task 2.3: Resolve root `tsconfig.json` — preserve `@dexmart/*` and `@/*` path aliases. Absorb any upstream compiler option changes.
-- [ ] Task 2.4: Resolve `src/types/index.ts` — preserve dead `GeminiAI` reference removal. Absorb upstream type additions.
-- [ ] Task 2.5: Resolve `src/config/io.ts` — verify `loadConfigForUser()` extraction is unaffected. Absorb upstream config loading changes.
+- [x] Task 2.1: Resolve `src/web/session.ts` — preserve `WaAuthStateFactory` type + `authStateFactory` option + `resolveWaAuthStateFactory()`. Absorb upstream Baileys media encryption + SDK restructure changes. [7166f30]
+- [x] Task 2.2: Resolve `src/ingress/ingress-service.ts` — preserve `runEmbeddedPiAgent()` pipeline wiring. Absorb upstream IngressService + cron doctor changes. [7166f30]
+- [x] Task 2.3: Resolve root `tsconfig.json` — preserve `@dexmart/*` and `@/*` path aliases. Absorb any upstream compiler option changes. [7166f30]
+- [x] Task 2.4: Resolve `src/types/index.ts` — preserve dead `GeminiAI` reference removal. Absorb upstream type additions. [7166f30]
+- [x] Task 2.5: Resolve `src/config/io.ts` — verify `loadConfigForUser()` extraction is unaffected. Absorb upstream config loading changes. [7166f30]
+- [x] Task 2.9: Resolve all `ui/`, `apps/`, and `docs/` conflicts by accepting upstream versions (`--theirs`), as these align with our True Fusion Strategy (Section 3). [7166f30]
+- [x] Task 2.10: Resolve `src/` core file conflicts by ensuring no DeXMart modifications are erroneously removed. Accept upstream (`--theirs`) for un-modified OpenClaw infrastructure. [7166f30]
+- [x] Task 2.11: Review modifying/delete conflicts (especially in tests) and align with upstream deletion if we had previously skipped them. [7166f30]
 
 ### Category B: In-Flight Phase 5 Conflicts
 
 Files targeted by Phase 5 Foundation Grounding work. Resolve without overwriting in-flight DeXMart additions.
 
-- [ ] Task 2.6: Check `src/plugins/runtime.ts` — if conflicted, preserve any Phase 5.1 userId/TenantContext additions
-- [ ] Task 2.7: Check `src/gateway/server-channels.ts` — if conflicted, preserve any Phase 5.3 billing gate additions
-- [ ] Task 2.8: Check `src/persistence/firebase.ts` + `src/types/firestore.ts` — if conflicted, preserve `users/{userId}` schema
+- [x] Task 2.6: Check `src/plugins/runtime.ts` — if conflicted, preserve any Phase 5.1 userId/TenantContext additions [7166f30]
+- [x] Task 2.7: Check `src/gateway/server-channels.ts` — if conflicted, preserve any Phase 5.3 billing gate additions [7166f30]
+- [x] Task 2.8: Check `src/persistence/firebase.ts` + `src/types/firestore.ts` — if conflicted, preserve `users/{userId}` schema [7166f30]
 
 ### Category C: Standard Upstream Evolution
 
@@ -64,7 +67,7 @@ Files targeted by Phase 5 Foundation Grounding work. Resolve without overwriting
   grep -n "runEmbeddedPiAgent" src/ingress/ingress-service.ts
   grep -n "@dexmart/\*\|@/\*" tsconfig.json
   ```
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Conflict Resolution' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Conflict Resolution' (Protocol in workflow.md) [4cc90bb]
 
 ---
 
