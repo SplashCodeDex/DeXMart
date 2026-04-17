@@ -27,9 +27,10 @@
       ],
       "@/*": [
         "./src/*"
-      ]
+      ],
+      "@openclaw/*": ["./extensions/*"]
     }
   },
-  "include": ["src/**/*", "ui/**/*", "extensions/**/*"],
+  "include": ["src/**/*", "ui/**/*", "extensions/**/*", "packages/**/*"],
   "exclude": ["node_modules", "dist"]
 }
