@@ -77,28 +77,28 @@ After conflict resolution, run `pnpm build` and fix all TypeScript errors. Each 
 
 ### 3A: Plugin SDK Import Migration
 
-- [ ] Task 3.1: Scan for `openclaw/extension-api` imports → migrate to `openclaw/plugin-sdk/*` subpaths
-- [ ] Task 3.2: Scan for deprecated Plugin SDK legacy compat subpaths → update to current v2026.4.15 paths
-- [ ] Task 3.3: Verify `api.runtime.agent.runEmbeddedPiAgent` import path resolves correctly
+- [x] Task 3.1: Scan for `openclaw/extension-api` imports → migrate to `openclaw/plugin-sdk/*` subpaths — No DeXMart code imports it directly; openclaw compat shims handle the redirect [843aa53]
+- [x] Task 3.2: Scan for deprecated Plugin SDK legacy compat subpaths → update to current v2026.4.15 paths — No DeXMart code uses deprecated subpaths [843aa53]
+- [x] Task 3.3: Verify `api.runtime.agent.runEmbeddedPiAgent` import path resolves correctly — `@/agents/pi-embedded-runner/run.js` resolves via `@/*` alias ✅ [843aa53]
 
 ### 3B: Config & Legacy Removal
 
-- [ ] Task 3.4: Scan for `CLAWDBOT_*` or `MOLTBOT_*` env references → remove or update
-- [ ] Task 3.5: Scan for legacy public config aliases (`talk.voiceId`, etc.) → update to current paths
-- [ ] Task 3.6: Scan for `x_search` and `web_fetch` config references → update to plugin-owned config paths
-- [ ] Task 3.7: Verify `gateway.auth.mode` is explicitly configured in DeXMart's gateway config
-- [ ] Task 3.8: Scan for `browser.relayBindHost` (Chrome extension relay) → remove references
+- [x] Task 3.4: Scan for `CLAWDBOT_*` or `MOLTBOT_*` env references → remove or update — Zero DeXMart-specific references; CHANGELOG/openclaw compat only [843aa53]
+- [x] Task 3.5: Scan for legacy public config aliases (`talk.voiceId`, etc.) → update to current paths — No DeXMart code uses stale aliases [843aa53]
+- [x] Task 3.6: Scan for `x_search` and `web_fetch` config references → update to plugin-owned config paths — No stale DeXMart references [843aa53]
+- [x] Task 3.7: Verify `gateway.auth.mode` is explicitly configured in DeXMart's gateway config — No explicit config needed; openclaw auto-defaults to `token` mode with key auto-generation [843aa53]
+- [x] Task 3.8: Scan for `browser.relayBindHost` (Chrome extension relay) → remove references — Only found in openclaw doctor migration (removal code itself) ✅ [843aa53]
 
 ### 3C: Channel & Runtime API Changes
 
-- [ ] Task 3.9: Verify `ChannelMessageActionAdapter.describeMessageTool(...)` — check if DeXMart implements any channel message adapters
-- [ ] Task 3.10: Verify `nodes.run` shell wrapper removal doesn't affect DeXMart
-- [ ] Task 3.11: Verify cron doctor / isolated cron delivery changes are compatible
+- [x] Task 3.9: Verify `ChannelMessageActionAdapter.describeMessageTool(...)` — check if DeXMart implements any channel message adapters — No DeXMart channel adapters; only openclaw extensions (bluebubbles etc) [843aa53]
+- [x] Task 3.10: Verify `nodes.run` shell wrapper removal doesn't affect DeXMart — Zero matches in codebase ✅ [843aa53]
+- [x] Task 3.11: Verify cron doctor / isolated cron delivery changes are compatible — All in openclaw infrastructure, no DeXMart surface exposure [843aa53]
 
 ### 3D: General Type Evolution
 
-- [ ] Task 3.12: Fix remaining TypeScript errors from `pnpm build` — address by module
-- [ ] Task 3.13: Run `pnpm build` — zero TypeScript errors
+- [x] Task 3.12: Fix remaining TypeScript errors from `pnpm build` — address by module — Fixed by stabilization commit [843aa53]
+- [x] Task 3.13: Run `pnpm build` — zero TypeScript errors — EXIT:0 confirmed [843aa53]
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Build & Type Error Resolution' (Protocol in workflow.md)
 
 ---
