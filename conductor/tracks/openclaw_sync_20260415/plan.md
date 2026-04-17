@@ -27,9 +27,9 @@
 
 ### Direct Merge to v2026.4.15
 
-- [~] Task 1.6: Git merge `v2026.4.15` — single merge absorbing all remaining versions (v2026.4.2 through v2026.4.15, plus any earlier tags not yet reachable from current merge-base)
-- [ ] Task 1.7: Capture and document all merge conflicts (file list + conflict type) before resolving any — save as `docs/session-logs/sync-conflict-inventory.md`
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Merge to Latest Stable' (Protocol in workflow.md)
+- [x] Task 1.6: Git merge `v2026.4.15` — single merge absorbing all remaining versions (v2026.4.2 through v2026.4.15, plus any earlier tags not yet reachable from current merge-base) [8fb8ffc]
+- [x] Task 1.7: Capture and document all merge conflicts (file list + conflict type) before resolving any — save as `docs/session-logs/sync-conflict-inventory.md` [8fb8ffc]
+- [~] Task: Conductor - User Manual Verification 'Phase 1: Merge to Latest Stable' (Protocol in workflow.md)
 
 ---
 
@@ -59,11 +59,11 @@ Files targeted by Phase 5 Foundation Grounding work. Resolve without overwriting
 
 - [ ] Task 2.9: Resolve all remaining conflicted files — accept upstream for non-injection-point files
 - [ ] Task 2.10: Run injection point verification commands:
-    ```bash
-    grep -n "WaAuthStateFactory\|authStateFactory" src/web/session.ts
-    grep -n "runEmbeddedPiAgent" src/ingress/ingress-service.ts
-    grep -n "@dexmart/\*\|@/\*" tsconfig.json
-    ```
+  ```bash
+  grep -n "WaAuthStateFactory\|authStateFactory" src/web/session.ts
+  grep -n "runEmbeddedPiAgent" src/ingress/ingress-service.ts
+  grep -n "@dexmart/\*\|@/\*" tsconfig.json
+  ```
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Conflict Resolution' (Protocol in workflow.md)
 
 ---
@@ -147,8 +147,8 @@ Systematic verification that all 31 breaking changes across the absorbed version
 - [ ] Task 5.1: Un-skip all Category A upstream tests (79 files) — remove `// upstream: pending sync` annotations
 - [ ] Task 5.2: Run un-skipped Category A tests — document which now pass vs. still fail
 - [ ] Task 5.3: For tests that still fail, investigate and classify:
-    - [ ] Tests fixed by sync → mark as passing
-    - [ ] Tests still failing → re-annotate with specific upstream issue reference
+  - [ ] Tests fixed by sync → mark as passing
+  - [ ] Tests still failing → re-annotate with specific upstream issue reference
 - [ ] Task 5.4: Run full test suite — capture final test counts (total, passing, skipped, failed)
 - [ ] Task 5.5: Update `docs/session-logs/test-health-baseline.md` with post-sync numbers
 - [ ] Task: Conductor - User Manual Verification 'Phase 5: Post-Sync Test Recovery' (Protocol in workflow.md)
