@@ -109,38 +109,38 @@ Systematic verification that all 31 breaking changes across the absorbed version
 
 ### Plugin SDK & Extension System (8 items)
 
-- [ ] Task 4.1: ✅ Verify `openclaw/extension-api` → `openclaw/plugin-sdk/*` — all imports updated (v2026.3.22)
-- [ ] Task 4.2: ✅ Verify Plugin SDK legacy compat subpaths — no deprecated usage remaining (v2026.3.31)
-- [ ] Task 4.3: ✅ Verify `critical` findings fail closed — DeXMart plugin install flow handles it (v2026.3.31)
-- [ ] Task 4.4: ✅ Verify `x_search` settings → plugin-owned config path — no stale references (v2026.4.2)
-- [ ] Task 4.5: ✅ Verify `web_fetch` Firecrawl config → plugin-owned path — no stale references (v2026.4.2)
-- [ ] Task 4.6: ✅ Verify `ChannelMessageActionAdapter.describeMessageTool(...)` compliance (v2026.3.22)
-- [ ] Task 4.7: ✅ Verify `api.runtime.agent.runEmbeddedPiAgent` import resolves (v2026.3.22)
-- [ ] Task 4.8: ✅ Verify `nodes.run` shell wrapper — no usage (v2026.3.31)
+- [x] Task 4.1: ✅ Verify `openclaw/extension-api` → `openclaw/plugin-sdk/*` — no DeXMart code imports directly; openclaw compat shims handle redirect [843aa53]
+- [x] Task 4.2: ✅ Verify Plugin SDK legacy compat subpaths — no deprecated subpath usage in DeXMart code [843aa53]
+- [x] Task 4.3: ✅ Verify `critical` findings fail closed — openclaw install.ts handles internally; DeXMart doesn't override plugin install flow [843aa53]
+- [x] Task 4.4: ✅ Verify `x_search` settings → plugin-owned config path — zero stale DeXMart references [843aa53]
+- [x] Task 4.5: ✅ Verify `web_fetch` Firecrawl config → plugin-owned path — zero stale DeXMart references [843aa53]
+- [x] Task 4.6: ✅ Verify `ChannelMessageActionAdapter.describeMessageTool(...)` compliance — no DeXMart channel message adapters [843aa53]
+- [x] Task 4.7: ✅ Verify `api.runtime.agent.runEmbeddedPiAgent` import resolves — `@/agents/pi-embedded-runner/run.js` resolves via `@/*` alias [843aa53]
+- [x] Task 4.8: ✅ Verify `nodes.run` shell wrapper — zero matches in codebase [843aa53]
 
 ### Gateway & Auth (4 items)
 
-- [ ] Task 4.9: ✅ Verify `gateway.auth.mode` explicitly configured (v2026.3.7)
-- [ ] Task 4.10: ✅ Verify `trusted-proxy` config — no mixed shared-token usage (v2026.3.31)
-- [ ] Task 4.11: ✅ Verify node commands / pairing approval — no impact (v2026.3.31)
-- [ ] Task 4.12: ✅ Verify node-originated runs / reduced trusted surface — no impact (v2026.3.31)
+- [x] Task 4.9: ✅ Verify `gateway.auth.mode` explicitly configured — no explicit config needed; auto-defaults to `token` with key auto-generation [843aa53]
+- [x] Task 4.10: ✅ Verify `trusted-proxy` config — no DeXMart gateway config file; no mixed shared-token usage [843aa53]
+- [x] Task 4.11: ✅ Verify node commands / pairing approval — no DeXMart impact [843aa53]
+- [x] Task 4.12: ✅ Verify node-originated runs / reduced trusted surface — no DeXMart impact [843aa53]
 
 ### Config & Legacy Cleanup (5 items)
 
-- [ ] Task 4.13: ✅ Verify `CLAWDBOT_*` / `MOLTBOT_*` — zero references (v2026.3.22)
-- [ ] Task 4.14: ✅ Verify Chrome extension relay — zero `browser.relayBindHost` references (v2026.3.22)
-- [ ] Task 4.15: ✅ Verify Qwen portal-auth removal — no impact (v2026.3.28)
-- [ ] Task 4.16: ✅ Verify doctor config migration drop — no impact (v2026.3.28)
-- [ ] Task 4.17: ✅ Verify legacy public config aliases — zero stale usage (v2026.4.5)
+- [x] Task 4.13: ✅ Verify `CLAWDBOT_*` / `MOLTBOT_*` — zero DeXMart-specific references [843aa53]
+- [x] Task 4.14: ✅ Verify Chrome extension relay — zero `browser.relayBindHost` DeXMart references [843aa53]
+- [x] Task 4.15: ✅ Verify Qwen portal-auth removal — no DeXMart impact [843aa53]
+- [x] Task 4.16: ✅ Verify doctor config migration drop — no DeXMart impact [843aa53]
+- [x] Task 4.17: ✅ Verify legacy public config aliases — zero stale DeXMart usage [843aa53]
 
 ### Runtime & Channels (2 items)
 
-- [ ] Task 4.18: ✅ Verify cron doctor isolated cron delivery — compatible (v2026.3.11)
-- [ ] Task 4.19: ✅ Verify Baileys media encryption — `authStateFactory` compatible (v2026.4.15)
+- [x] Task 4.18: ✅ Verify cron doctor isolated cron delivery — all in openclaw infrastructure; no DeXMart surface exposure [843aa53]
+- [x] Task 4.19: ✅ Verify Baileys media encryption — `authStateFactory` injection re-applied to `extensions/whatsapp/src/session.ts` after upstream file move [68a09b4]
 
 ### Final Gate
 
-- [ ] Task 4.20: Run `pnpm build` — confirm zero errors after all verifications
+- [x] Task 4.20: Run `pnpm build` — confirmed EXIT:0 after all verifications [68a09b4]
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Breaking Change Verification' (Protocol in workflow.md)
 
 ---
