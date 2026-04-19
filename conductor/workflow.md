@@ -3,11 +3,13 @@
 ## Guiding Principles
 
 1. **The Plan is the Source of Truth:** All work must be tracked in `plan.md`
-2. **The Tech Stack is Deliberate:** Changes to the tech stack must be documented in `tech-stack.md` *before* implementation
+2. **The Tech Stack is Deliberate:** Changes to the tech stack must be documented in `tech-stack.md` _before_ implementation
 3. **Test-Driven Development:** Write unit tests before implementing functionality
 4. **High Code Coverage:** Aim for >80% code coverage for all modules
 5. **User Experience First:** Every decision should prioritize user experience
 6. **Non-Interactive & CI-Aware:** Prefer non-interactive commands. Use `CI=true` for watch-mode tools (tests, linters) to ensure single execution.
+7. **Upstream Leverage (No Duplication):** Before implementing any new module/service/utility, search `src/` + `extensions/` + `CHANGELOG.md` for existing OpenClaw upstream capability. If upstream provides it → leverage it directly. If upstream partially provides it → extend via injection points. NEVER duplicate upstream logic — this ensures automatic changelog adaptation. See `docs/architecture/UPSTREAM_LEVERAGE_POLICY.md`.
+8. **DeXMart-Exclusive Feature Embedding:** Features confirmed (via critical investigation) to be truly DeXMart-exclusive MUST be embedded into the unified project's core natively in `src/` — not as plugins, sidecars, or secondary citizens. Follow the investigation protocol in `docs/architecture/UPSTREAM_LEVERAGE_POLICY.md` §2 before classifying any feature as exclusive.
 
 ## Task Workflow
 
@@ -33,11 +35,13 @@ All tasks follow a strict lifecycle:
    - Rerun tests to ensure they still pass after refactoring.
 
 6. **Verify Coverage:** Run coverage reports using the project's chosen tools (Vitest with v8 coverage):
+
    ```bash
    pnpm --filter backend vitest run --coverage
    # OR
    pnpm --filter frontend vitest run --coverage
    ```
+
    Target: >80% coverage for new code (enforced by Vitest config).
 
 7. **Document Deviations:** If implementation differs from tech stack:
@@ -52,7 +56,7 @@ All tasks follow a strict lifecycle:
    - Perform the commit.
 
 9. **Attach Task Summary with Git Notes:**
-   - **Step 9.1: Get Commit Hash:** Obtain the hash of the *just-completed commit* (`git log -1 --format="%H"`).
+   - **Step 9.1: Get Commit Hash:** Obtain the hash of the _just-completed commit_ (`git log -1 --format="%H"`).
    - **Step 9.2: Draft Note Content:** Create a detailed summary for the completed task. This should include the task name, a summary of changes, a list of all created/modified files, and the core "why" for the change.
    - **Step 9.3: Attach Note:** Use the `git notes` command to attach the summary to the commit.
      ```bash
@@ -61,7 +65,7 @@ All tasks follow a strict lifecycle:
      ```
 
 10. **Get and Record Task Commit SHA:**
-    - **Step 10.1: Update Plan:** Read `plan.md`, find the line for the completed task, update its status from `[~]` to `[x]`, and append the first 7 characters of the *just-completed commit's* commit hash.
+    - **Step 10.1: Update Plan:** Read `plan.md`, find the line for the completed task, update its status from `[~]` to `[x]`, and append the first 7 characters of the _just-completed commit's_ commit hash.
     - **Step 10.2: Write Plan:** Write the updated content back to `plan.md`.
 
 11. **Commit Plan Update:**
@@ -75,66 +79,68 @@ All tasks follow a strict lifecycle:
 1.  **Announce Protocol Start:** Inform the user that the phase is complete and the verification and checkpointing protocol has begun.
 
 2.  **Ensure Test Coverage for Phase Changes:**
-    -   **Step 2.1: Determine Phase Scope:** To identify the files changed in this phase, you must first find the starting point. Read `plan.md` to find the Git commit SHA of the *previous* phase's checkpoint. If no previous checkpoint exists, the scope is all changes since the first commit.
-    -   **Step 2.2: List Changed Files:** Execute `git diff --name-only <previous_checkpoint_sha> HEAD` to get a precise list of all files modified during this phase.
-    -   **Step 2.3: Verify and Create Tests:** For each file in the list:
-        -   **CRITICAL:** First, check its extension. Exclude non-code files (e.g., `.json`, `.md`, `.yaml`).
-        -   For each remaining code file, verify a corresponding test file exists.
-        -   If a test file is missing, you **must** create one. Before writing the test, **first, analyze other test files in the repository to determine the correct naming convention and testing style.** The new tests **must** validate the functionality described in this phase's tasks (`plan.md`).
+    - **Step 2.1: Determine Phase Scope:** To identify the files changed in this phase, you must first find the starting point. Read `plan.md` to find the Git commit SHA of the _previous_ phase's checkpoint. If no previous checkpoint exists, the scope is all changes since the first commit.
+    - **Step 2.2: List Changed Files:** Execute `git diff --name-only <previous_checkpoint_sha> HEAD` to get a precise list of all files modified during this phase.
+    - **Step 2.3: Verify and Create Tests:** For each file in the list:
+      - **CRITICAL:** First, check its extension. Exclude non-code files (e.g., `.json`, `.md`, `.yaml`).
+      - For each remaining code file, verify a corresponding test file exists.
+      - If a test file is missing, you **must** create one. Before writing the test, **first, analyze other test files in the repository to determine the correct naming convention and testing style.** The new tests **must** validate the functionality described in this phase's tasks (`plan.md`).
 
 3.  **Execute Automated Tests with Proactive Debugging:**
-    -   Before execution, you **must** announce the exact shell command you will use to run the tests.
-    -   **Example Announcement:** "I will now run the automated test suite to verify the phase. **Command:** `CI=true npm test`"
-    -   Execute the announced command.
-    -   If tests fail, you **must** inform the user and begin debugging. You may attempt to propose a fix a **maximum of two times**. If the tests still fail after your second proposed fix, you **must stop**, report the persistent failure, and ask the user for guidance.
+    - Before execution, you **must** announce the exact shell command you will use to run the tests.
+    - **Example Announcement:** "I will now run the automated test suite to verify the phase. **Command:** `CI=true npm test`"
+    - Execute the announced command.
+    - If tests fail, you **must** inform the user and begin debugging. You may attempt to propose a fix a **maximum of two times**. If the tests still fail after your second proposed fix, you **must stop**, report the persistent failure, and ask the user for guidance.
 
 4.  **Propose a Detailed, Actionable Manual Verification Plan:**
-    -   **CRITICAL:** To generate the plan, first analyze `product.md`, `product-guidelines.md`, and `plan.md` to determine the user-facing goals of the completed phase.
-    -   You **must** generate a step-by-step plan that walks the user through the verification process, including any necessary commands and specific, expected outcomes.
-    -   The plan you present to the user **must** follow this format:
+    - **CRITICAL:** To generate the plan, first analyze `product.md`, `product-guidelines.md`, and `plan.md` to determine the user-facing goals of the completed phase.
+    - You **must** generate a step-by-step plan that walks the user through the verification process, including any necessary commands and specific, expected outcomes.
+    - The plan you present to the user **must** follow this format:
 
-        **For a Frontend Change:**
-        ```
-        The automated tests have passed. For manual verification, please follow these steps:
+      **For a Frontend Change:**
 
-        **Manual Verification Steps:**
-        1.  **Start the development server with the command:** `npm run dev`
-        2.  **Open your browser to:** `http://localhost:3000`
-        3.  **Confirm that you see:** The new user profile page, with the user's name and email displayed correctly.
-        ```
+      ```
+      The automated tests have passed. For manual verification, please follow these steps:
 
-        **For a Backend Change:**
-        ```
-        The automated tests have passed. For manual verification, please follow these steps:
+      **Manual Verification Steps:**
+      1.  **Start the development server with the command:** `npm run dev`
+      2.  **Open your browser to:** `http://localhost:3000`
+      3.  **Confirm that you see:** The new user profile page, with the user's name and email displayed correctly.
+      ```
 
-        **Manual Verification Steps:**
-        1.  **Ensure the server is running.**
-        2.  **Execute the following command in your terminal:** `curl -X POST http://localhost:8080/api/v1/users -d '{"name": "test"}'`
-        3.  **Confirm that you receive:** A JSON response with a status of `201 Created`.
-        ```
+      **For a Backend Change:**
+
+      ```
+      The automated tests have passed. For manual verification, please follow these steps:
+
+      **Manual Verification Steps:**
+      1.  **Ensure the server is running.**
+      2.  **Execute the following command in your terminal:** `curl -X POST http://localhost:8080/api/v1/users -d '{"name": "test"}'`
+      3.  **Confirm that you receive:** A JSON response with a status of `201 Created`.
+      ```
 
 5.  **Await Explicit User Feedback:**
-    -   After presenting the detailed plan, ask the user for confirmation: "**Does this meet your expectations? Please confirm with yes or provide feedback on what needs to be changed.**"
-    -   **PAUSE** and await the user's response. Do not proceed without an explicit yes or confirmation.
+    - After presenting the detailed plan, ask the user for confirmation: "**Does this meet your expectations? Please confirm with yes or provide feedback on what needs to be changed.**"
+    - **PAUSE** and await the user's response. Do not proceed without an explicit yes or confirmation.
 
 6.  **Create Checkpoint Commit:**
-    -   Stage all changes. If no changes occurred in this step, proceed with an empty commit.
-    -   Perform the commit with a clear and concise message (e.g., `conductor(checkpoint): Checkpoint end of Phase X`).
+    - Stage all changes. If no changes occurred in this step, proceed with an empty commit.
+    - Perform the commit with a clear and concise message (e.g., `conductor(checkpoint): Checkpoint end of Phase X`).
 
 7.  **Attach Auditable Verification Report using Git Notes:**
-    -   **Step 8.1: Draft Note Content:** Create a detailed verification report including the automated test command, the manual verification steps, and the user's confirmation.
-    -   **Step 8.2: Attach Note:** Use the `git notes` command and the full commit hash from the previous step to attach the full report to the checkpoint commit.
+    - **Step 8.1: Draft Note Content:** Create a detailed verification report including the automated test command, the manual verification steps, and the user's confirmation.
+    - **Step 8.2: Attach Note:** Use the `git notes` command and the full commit hash from the previous step to attach the full report to the checkpoint commit.
 
 8.  **Get and Record Phase Checkpoint SHA:**
-    -   **Step 7.1: Get Commit Hash:** Obtain the hash of the *just-created checkpoint commit* (`git log -1 --format="%H"`).
-    -   **Step 7.2: Update Plan:** Read `plan.md`, find the heading for the completed phase, and append the first 7 characters of the commit hash in the format `[checkpoint: <sha>]`.
-    -   **Step 7.3: Write Plan:** Write the updated content back to `plan.md`.
+    - **Step 7.1: Get Commit Hash:** Obtain the hash of the _just-created checkpoint commit_ (`git log -1 --format="%H"`).
+    - **Step 7.2: Update Plan:** Read `plan.md`, find the heading for the completed phase, and append the first 7 characters of the commit hash in the format `[checkpoint: <sha>]`.
+    - **Step 7.3: Write Plan:** Write the updated content back to `plan.md`.
 
-9. **Commit Plan Update:**
+9.  **Commit Plan Update:**
     - **Action:** Stage the modified `plan.md` file.
     - **Action:** Commit this change with a descriptive message following the format `conductor(plan): Mark phase '<PHASE NAME>' as complete`.
 
-10.  **Announce Completion:** Inform the user that the phase is complete and the checkpoint has been created, with the detailed verification report attached as a git note.
+10. **Announce Completion:** Inform the user that the phase is complete and the checkpoint has been created, with the detailed verification report attached as a git note.
 
 ### Quality Gates
 
@@ -153,11 +159,13 @@ Before marking any task complete, verify:
 ## Development Commands
 
 ### Setup
+
 ```bash
 pnpm install
 ```
 
 ### Daily Development
+
 ```bash
 pnpm --filter frontend dev     # Next.js dashboard (port 3000)
 pnpm --filter backend dev      # Express API (port 3001) — NOTE: backend/ pending deletion
@@ -170,6 +178,7 @@ CI=true pnpm test                    # All tests (non-interactive)
 ```
 
 ### Before Committing
+
 ```bash
 pnpm typecheck                 # TypeScript strict mode
 pnpm lint                      # ESLint zero-warnings
@@ -179,18 +188,21 @@ CI=true pnpm test              # Full test suite
 ## Testing Requirements
 
 ### Unit Testing
+
 - Every module must have corresponding tests.
 - Use appropriate test setup/teardown mechanisms (e.g., fixtures, beforeEach/afterEach).
 - Mock external dependencies.
 - Test both success and failure cases.
 
 ### Integration Testing
+
 - Test complete user flows
 - Verify database transactions
 - Test authentication and authorization
 - Check form submissions
 
 ### Responsive Web Testing
+
 - Verify dashboard layout at mobile breakpoints (Tailwind `sm`, `md`)
 - Check Chrome/Safari developer tools device simulation
 - Ensure forms and tables remain usable on small screens
@@ -199,6 +211,7 @@ CI=true pnpm test              # Full test suite
 ## Code Review Process
 
 ### Self-Review Checklist
+
 Before requesting review:
 
 1. **Functionality**
@@ -236,6 +249,7 @@ Before requesting review:
 ## Commit Guidelines
 
 ### Message Format
+
 ```
 <type>(<scope>): <description>
 
@@ -245,6 +259,7 @@ Before requesting review:
 ```
 
 ### Types
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation only
@@ -254,6 +269,7 @@ Before requesting review:
 - `chore`: Maintenance tasks
 
 ### Examples
+
 ```bash
 git commit -m "feat(auth): Add remember me functionality"
 git commit -m "fix(posts): Correct excerpt generation for short posts"
@@ -278,6 +294,7 @@ A task is complete when:
 ## Emergency Procedures
 
 ### Critical Bug in Production
+
 1. Create hotfix branch from main
 2. Write failing test for bug
 3. Implement minimal fix
@@ -286,6 +303,7 @@ A task is complete when:
 6. Document in plan.md
 
 ### Data Loss
+
 1. Stop all write operations
 2. Restore from latest backup
 3. Verify data integrity
@@ -293,6 +311,7 @@ A task is complete when:
 5. Update backup procedures
 
 ### Security Breach
+
 1. Rotate all secrets immediately
 2. Review access logs
 3. Patch vulnerability
@@ -302,6 +321,7 @@ A task is complete when:
 ## Deployment Workflow
 
 ### Pre-Deployment Checklist
+
 - [ ] All tests passing
 - [ ] Coverage >80%
 - [ ] No linting errors
@@ -311,6 +331,7 @@ A task is complete when:
 - [ ] Backup created
 
 ### Deployment Steps
+
 1. Merge feature branch to main
 2. Tag release with version
 3. Push to deployment service
@@ -320,6 +341,7 @@ A task is complete when:
 7. Monitor for errors
 
 ### Post-Deployment
+
 1. Monitor analytics
 2. Check error logs
 3. Gather user feedback

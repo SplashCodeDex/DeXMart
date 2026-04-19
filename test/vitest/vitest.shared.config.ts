@@ -107,6 +107,15 @@ export const sharedVitestConfig = {
         find: "openclaw/plugin-sdk",
         replacement: path.join(repoRoot, "src", "plugin-sdk", "index.ts"),
       },
+      // DeXMart fusion: @/ and @dexmart/ both map to src/ per tsconfig.json and tech_standards.md
+      {
+        find: /^@\/(.*)/,
+        replacement: path.join(repoRoot, "src", "$1"),
+      },
+      {
+        find: /^@dexmart\/(.*)/,
+        replacement: path.join(repoRoot, "src", "$1"),
+      },
     ],
   },
   test: {

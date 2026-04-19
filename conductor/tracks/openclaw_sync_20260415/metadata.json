@@ -10,5 +10,11 @@
     "from": "version-by-version sequential merge (19 cycles)",
     "to": "direct merge to latest stable, categorized fix-once resolution",
     "reason": "Files touched across multiple versions caused redundant conflict resolution at injection points"
+  },
+  "fusion_guardrails": {
+    "canonical_reference": "docs/architecture/UPSTREAM_LEVERAGE_POLICY.md",
+    "principle_1": "Upstream Leverage: DeXMart MUST NOT duplicate logic that OpenClaw provides. Leverage upstream to ensure automatic changelog adaptation.",
+    "principle_2": "Exclusive Feature Embedding: DeXMart-exclusive features (confirmed via investigation protocol) MUST be embedded natively in src/ as core modules, not as plugins or secondary citizens.",
+    "enforcement": "Anti-duplication check during conflict resolution (Phase 2). Compliance audit in Phase 6 (Task 6.6)."
   }
 }

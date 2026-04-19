@@ -1,6 +1,9 @@
 # DeXMart Product Guidelines
 
 ## The Fusion Principle — One Project
+
+- **Upstream leverage (no duplication)**: NEVER duplicate logic/features/code that OpenClaw already provides — leverage and utilize upstream. Search `src/` + `extensions/` + `CHANGELOG.md` before building anything new. This ensures automatic changelog adaptation. See `docs/architecture/UPSTREAM_LEVERAGE_POLICY.md`.
+- **DeXMart-exclusive features are core**: Features confirmed exclusive to DeXMart (via investigation protocol) MUST be embedded natively in `src/` as first-class modules — not plugins or secondary citizens.
 - Zero duplication: every function exists exactly once
 - No bridges: no wrappers, adapters, or shims — code calls code directly via `@dexmart/*`
 - Extensions are canonical: channel features live in `extensions/`, never duplicated
@@ -8,6 +11,7 @@
 - Frontend dominates: Next.js dashboard is THE UI; ControlUI is dev-only
 
 ## Code Quality
+
 - TypeScript strict mode — no `any` without justification
 - ESLint zero-warnings policy (`--max-warnings 0`)
 - Result pattern: `{ success: true; data: T } | { success: false; error: AppError }`
@@ -15,6 +19,7 @@
 - Strict ESM: all relative imports must include `.js` extension
 
 ## Frontend Standards
+
 - Server Components by default; `'use client'` only at interaction leaves
 - Thin page pattern: `app/**/page.tsx` renders feature components only, no logic
 - No `useEffect` for data fetching — use Server Components or React Query
@@ -22,6 +27,7 @@
 - No emojis in UI — SVG icons from `lucide-react` only
 
 ## Testing Strategy
+
 - TDD mandate: Red → Green → Refactor
 - 80%+ coverage minimum; co-located test files (`*.test.ts` next to source)
 - Mock external I/O (Firebase, Baileys, Stripe, Redis); never mock internal logic

@@ -1,6 +1,12 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
+// callGatewayTool waits 130 s for an absent gateway — reject immediately so the
+// approval-required test completes without hitting the 60 s vitest timeout.
+vi.mock("../agents/tools/gateway.js", () => ({
+  callGatewayTool: vi.fn().mockRejectedValue(new Error("Gateway not available")),
+}));
 import type { AnyAgentTool } from "../agents/tools/common.js";
 import {
   initializeGlobalHookRunner,

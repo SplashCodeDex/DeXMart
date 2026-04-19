@@ -30,15 +30,15 @@ All version changelogs are captured in `docs/OPENCLAW_UPSTREAM_REPORT.md`, gener
 
 ## Gap Summary
 
-| Metric | Count |
-|--------|-------|
-| Stable Releases in Gap | 19 |
-| Already Merged (v2026.3.8 → v2026.4.1) | 5 |
-| Remaining (absorbed by v2026.4.15 merge) | 14 |
-| Total Feature Changes | 321 |
-| Total Breaking Changes | 31 |
-| Total Fixes | 1,463 |
-| Versions Touching Injection Points | 4 |
+| Metric                                   | Count |
+| ---------------------------------------- | ----- |
+| Stable Releases in Gap                   | 19    |
+| Already Merged (v2026.3.8 → v2026.4.1)   | 5     |
+| Remaining (absorbed by v2026.4.15 merge) | 14    |
+| Total Feature Changes                    | 321   |
+| Total Breaking Changes                   | 31    |
+| Total Fixes                              | 1,463 |
+| Versions Touching Injection Points       | 4     |
 
 ## DeXMart Injection Points (Modified OpenClaw Files)
 
@@ -46,23 +46,23 @@ All version changelogs are captured in `docs/OPENCLAW_UPSTREAM_REPORT.md`, gener
 
 ### Stable Set — Phase 1–4 Injection Points (confirmed, locked in)
 
-| File | DeXMart Modification | Versions Affected |
-|------|---------------------|-------------------|
-| `src/web/session.ts` | Added `WaAuthStateFactory` type + `authStateFactory` option + `resolveWaAuthStateFactory()` resolver to `createWaSocket()` | v2026.3.22, v2026.4.15 |
-| `src/types/index.ts` | Removed dead `GlobalContext.unifiedAI: GeminiAI` reference | None detected |
-| `src/ingress/ingress-service.ts` | Replaced `context.unifiedAI.processMessage()` with `runEmbeddedPiAgent()` | v2026.3.11, v2026.3.22 |
-| Root `tsconfig.json` | Added `@dexmart/*` and `@/*` path aliases → `src/*` | None detected (re-verify after merge) |
-| `src/config/io.ts` | `loadConfigForUser()` extracted to separate file (additive) | v2026.3.7 (keyword match) |
+| File                             | DeXMart Modification                                                                                                       | Versions Affected                     |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| `src/web/session.ts`             | Added `WaAuthStateFactory` type + `authStateFactory` option + `resolveWaAuthStateFactory()` resolver to `createWaSocket()` | v2026.3.22, v2026.4.15                |
+| `src/types/index.ts`             | Removed dead `GlobalContext.unifiedAI: GeminiAI` reference                                                                 | None detected                         |
+| `src/ingress/ingress-service.ts` | Replaced `context.unifiedAI.processMessage()` with `runEmbeddedPiAgent()`                                                  | v2026.3.11, v2026.3.22                |
+| Root `tsconfig.json`             | Added `@dexmart/*` and `@/*` path aliases → `src/*`                                                                        | None detected (re-verify after merge) |
+| `src/config/io.ts`               | `loadConfigForUser()` extracted to separate file (additive)                                                                | v2026.3.7 (keyword match)             |
 
 ### In-Flight Set — Phase 5 Foundation Grounding (partial, active work)
 
-| File | Phase 5 Task | Current State (verified 2026-04-16) | Versions At Risk |
-|------|-------------|---------|------------------|
-| `src/plugins/runtime.ts` | 5.1 — inject `userId` / `TenantContext` into `PluginRuntime` | ❌ Not implemented | v2026.3.22 (Plugin SDK restructure) |
-| `src/gateway/server-channels.ts` | 5.3 — inject Stripe billing gate | ❌ Not implemented; RED tests exist | v2026.3.7, v2026.3.11, v2026.3.31 |
-| `src/web/session.ts` (default-vs-opt-in) | 5.2 — make Firestore auth default in SaaS mode | ⚠️ Partial — opt-in only | v2026.3.22, v2026.4.15 |
-| `src/persistence/firebase.ts` + `src/types/firestore.ts` | 5.9 — `tenants/{tenantId}` → `users/{userId}` migration | ❌ Partial — ~22 files on legacy paths | None direct |
-| `src/services/ChannelManagerService.ts` + `platform-metadata.ts` | 5.5 — delete parallel channel system | ⚠️ Partial — 2 residuals remain | None (DeXMart-only) |
+| File                                                             | Phase 5 Task                                                 | Current State (verified 2026-04-16)    | Versions At Risk                    |
+| ---------------------------------------------------------------- | ------------------------------------------------------------ | -------------------------------------- | ----------------------------------- |
+| `src/plugins/runtime.ts`                                         | 5.1 — inject `userId` / `TenantContext` into `PluginRuntime` | ❌ Not implemented                     | v2026.3.22 (Plugin SDK restructure) |
+| `src/gateway/server-channels.ts`                                 | 5.3 — inject Stripe billing gate                             | ❌ Not implemented; RED tests exist    | v2026.3.7, v2026.3.11, v2026.3.31   |
+| `src/web/session.ts` (default-vs-opt-in)                         | 5.2 — make Firestore auth default in SaaS mode               | ⚠️ Partial — opt-in only               | v2026.3.22, v2026.4.15              |
+| `src/persistence/firebase.ts` + `src/types/firestore.ts`         | 5.9 — `tenants/{tenantId}` → `users/{userId}` migration      | ❌ Partial — ~22 files on legacy paths | None direct                         |
+| `src/services/ChannelManagerService.ts` + `platform-metadata.ts` | 5.5 — delete parallel channel system                         | ⚠️ Partial — 2 residuals remain        | None (DeXMart-only)                 |
 
 ### Post-Merge Verification Commands
 
@@ -86,42 +86,42 @@ If injection point integrity checks fail after merge, **stop and restore before 
 
 ### Plugin SDK & Extension System
 
-| # | Breaking Change | Source | DeXMart Impact |
-|---|----------------|--------|----------------|
-| 1 | `openclaw/extension-api` removed → `openclaw/plugin-sdk/*` subpaths | v2026.3.22 | Scan + migrate all extension imports |
-| 2 | Plugin SDK legacy compat subpaths deprecated | v2026.3.31 | Use final v2026.4.15 subpath naming |
-| 3 | `critical` findings fail closed on plugin installs | v2026.3.31 | Verify DeXMart plugin install flow |
-| 4 | `x_search` settings → plugin-owned config path | v2026.4.2 | Scan for stale config refs |
-| 5 | `web_fetch` Firecrawl config → plugin-owned path | v2026.4.2 | Scan for stale config refs |
-| 6 | `ChannelMessageActionAdapter.describeMessageTool(...)` required for discovery | v2026.3.22 | Check if DeXMart implements channel message adapters |
-| 7 | `api.runtime.agent.runEmbeddedPiAgent` exposed via plugin runtime | v2026.3.22 | Verify import path in `ingress-service.ts` |
-| 8 | `nodes.run` shell wrapper removed | v2026.3.31 | Verify zero usage |
+| #   | Breaking Change                                                               | Source     | DeXMart Impact                                       |
+| --- | ----------------------------------------------------------------------------- | ---------- | ---------------------------------------------------- |
+| 1   | `openclaw/extension-api` removed → `openclaw/plugin-sdk/*` subpaths           | v2026.3.22 | Scan + migrate all extension imports                 |
+| 2   | Plugin SDK legacy compat subpaths deprecated                                  | v2026.3.31 | Use final v2026.4.15 subpath naming                  |
+| 3   | `critical` findings fail closed on plugin installs                            | v2026.3.31 | Verify DeXMart plugin install flow                   |
+| 4   | `x_search` settings → plugin-owned config path                                | v2026.4.2  | Scan for stale config refs                           |
+| 5   | `web_fetch` Firecrawl config → plugin-owned path                              | v2026.4.2  | Scan for stale config refs                           |
+| 6   | `ChannelMessageActionAdapter.describeMessageTool(...)` required for discovery | v2026.3.22 | Check if DeXMart implements channel message adapters |
+| 7   | `api.runtime.agent.runEmbeddedPiAgent` exposed via plugin runtime             | v2026.3.22 | Verify import path in `ingress-service.ts`           |
+| 8   | `nodes.run` shell wrapper removed                                             | v2026.3.31 | Verify zero usage                                    |
 
 ### Gateway & Auth
 
-| # | Breaking Change | Source | DeXMart Impact |
-|---|----------------|--------|----------------|
-| 9 | `gateway.auth.mode` now required | v2026.3.7 | Add explicit mode to gateway config |
-| 10 | `trusted-proxy` rejects mixed shared-token configs | v2026.3.31 | Verify gateway config |
-| 11 | Node commands disabled until pairing approved | v2026.3.31 | Verify no impact |
-| 12 | Node-originated runs on reduced trusted surface | v2026.3.31 | Verify no impact |
+| #   | Breaking Change                                    | Source     | DeXMart Impact                      |
+| --- | -------------------------------------------------- | ---------- | ----------------------------------- |
+| 9   | `gateway.auth.mode` now required                   | v2026.3.7  | Add explicit mode to gateway config |
+| 10  | `trusted-proxy` rejects mixed shared-token configs | v2026.3.31 | Verify gateway config               |
+| 11  | Node commands disabled until pairing approved      | v2026.3.31 | Verify no impact                    |
+| 12  | Node-originated runs on reduced trusted surface    | v2026.3.31 | Verify no impact                    |
 
 ### Config & Legacy Cleanup
 
-| # | Breaking Change | Source | DeXMart Impact |
-|---|----------------|--------|----------------|
-| 13 | `CLAWDBOT_*` and `MOLTBOT_*` env names removed | v2026.3.22 | Scan `.env` + config loaders |
-| 14 | Chrome extension relay removed (`browser.relayBindHost`) | v2026.3.22 | Scan for references |
-| 15 | Qwen portal-auth removed | v2026.3.28 | Verify no impact |
-| 16 | Doctor config migrations >2 months dropped | v2026.3.28 | Verify no impact |
-| 17 | Legacy public config aliases removed (`talk.voiceId`, etc.) | v2026.4.5 | Scan for stale usage |
+| #   | Breaking Change                                             | Source     | DeXMart Impact               |
+| --- | ----------------------------------------------------------- | ---------- | ---------------------------- |
+| 13  | `CLAWDBOT_*` and `MOLTBOT_*` env names removed              | v2026.3.22 | Scan `.env` + config loaders |
+| 14  | Chrome extension relay removed (`browser.relayBindHost`)    | v2026.3.22 | Scan for references          |
+| 15  | Qwen portal-auth removed                                    | v2026.3.28 | Verify no impact             |
+| 16  | Doctor config migrations >2 months dropped                  | v2026.3.28 | Verify no impact             |
+| 17  | Legacy public config aliases removed (`talk.voiceId`, etc.) | v2026.4.5  | Scan for stale usage         |
 
 ### Runtime & Channels
 
-| # | Breaking Change | Source | DeXMart Impact |
-|---|----------------|--------|----------------|
-| 18 | Cron doctor tightens isolated cron delivery | v2026.3.11 | Verify compatibility |
-| 19 | Baileys media encryption changes | v2026.4.15 | Verify `authStateFactory` compatibility |
+| #   | Breaking Change                             | Source     | DeXMart Impact                          |
+| --- | ------------------------------------------- | ---------- | --------------------------------------- |
+| 18  | Cron doctor tightens isolated cron delivery | v2026.3.11 | Verify compatibility                    |
+| 19  | Baileys media encryption changes            | v2026.4.15 | Verify `authStateFactory` compatibility |
 
 > **Note**: 19 items are individually enumerated above. The original 31 count includes additional sub-items from v2026.3.22 (18 total breaking changes) whose remaining entries are minor internal changes with no detected DeXMart surface exposure. During Phase 4 execution, the full v2026.3.22 changelog will be cross-referenced to confirm nothing was missed.
 
@@ -147,11 +147,11 @@ If injection point integrity checks fail after merge, **stop and restore before 
 
 ## Rollback Criteria
 
-| Condition | Action |
-|-----------|--------|
-| Injection point grep checks fail after merge | Restore from pre-merge commit; do not proceed |
+| Condition                                                | Action                                                                        |
+| -------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Injection point grep checks fail after merge             | Restore from pre-merge commit; do not proceed                                 |
 | `pnpm build` errors exceed 200 after conflict resolution | Reassess — may indicate a fundamental incompatibility requiring manual review |
-| Category A un-skip reveals >50% new failures | Document and re-skip; do not block sync completion |
+| Category A un-skip reveals >50% new failures             | Document and re-skip; do not block sync completion                            |
 
 ## Acceptance Criteria
 
@@ -161,6 +161,20 @@ If injection point integrity checks fail after merge, **stop and restore before 
 4. Category A upstream tests pass or are documented as known-broken upstream
 5. `docs/OPENCLAW_UPSTREAM_REPORT.md` reflects the completed sync
 6. `FUSION_STRATEGY.md` Section 4 updated with sync version and strategy
+
+## Fusion Guardrails
+
+> **Canonical reference**: `docs/architecture/UPSTREAM_LEVERAGE_POLICY.md`
+
+This upstream sync track is the operational embodiment of DeXMart's **Upstream Leverage Principle**. The sync exists BECAUSE DeXMart leverages OpenClaw's codebase rather than duplicating it:
+
+1. **By leveraging upstream, DeXMart inherits all changelog improvements automatically** — bug fixes, security patches, new features, performance improvements, and new channel plugins. This sync track is the mechanism that delivers those benefits.
+
+2. **If DeXMart duplicated upstream logic, this sync would be pointless** — duplicated code would NOT receive upstream fixes and would diverge into unmaintainability. The sync is only valuable because DeXMart uses upstream code directly.
+
+3. **DeXMart-exclusive features are unaffected by sync** — Features that are confirmed DeXMart-exclusive (billing, tenancy, analytics, etc.) live in separate `src/` modules and are injected at well-defined points. They do not conflict with upstream changes because they do not duplicate upstream logic.
+
+4. **Anti-duplication check during sync** — During conflict resolution (Phase 2), any DeXMart code discovered to be duplicating upstream logic MUST be flagged for removal and replacement with the upstream equivalent. This is a Severe Violation of the fusion strategy.
 
 ## Out of Scope
 

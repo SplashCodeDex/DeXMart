@@ -1,56 +1,56 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { ChannelService } from './ChannelService.js';
-import { firebaseService } from '@/persistence/firebase.js';
-import { userContextResolver } from '../tenancy/resolver-instance.js';
-import { createAuthGuard } from '../tenancy/tenant-context.js';
-import { assertCan, systemAuthorityService } from '../billing/auth-guard.js';
-import { trackUsage } from '../billing/usage-tracker.js';
-import { createChannelManager } from '../gateway/server-channels.js';
-import type { ChannelManager } from '../gateway/server-channels.js';
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { firebaseService } from "@/persistence/firebase.js";
+import { assertCan } from "../billing/auth-guard.js";
+import { trackUsage } from "../billing/usage-tracker.js";
+import { createChannelManager } from "../gateway/server-channels.js";
+import type { ChannelManager } from "../gateway/server-channels.js";
+import { userContextResolver } from "../tenancy/resolver-instance.js";
+import { createAuthGuard } from "../tenancy/tenant-context.js";
+import { ChannelService } from "./ChannelService.js";
 
 // Mock dependencies
-vi.mock('@/persistence/firebase.js', () => ({
+vi.mock("@/persistence/firebase.js", () => ({
   firebaseService: {
     getDoc: vi.fn(),
     setDoc: vi.fn(),
     getCollection: vi.fn(),
     deleteDoc: vi.fn(),
-    deleteCollection: vi.fn()
-  }
+    deleteCollection: vi.fn(),
+  },
 }));
 
-vi.mock('../billing/auth-guard.js', () => ({
+vi.mock("../billing/auth-guard.js", () => ({
   assertCan: vi.fn(),
   systemAuthorityService: {
     checkAuthority: vi.fn(),
     recordUsage: vi.fn(),
-    getCapabilities: vi.fn()
-  }
+    getCapabilities: vi.fn(),
+  },
 }));
 
-vi.mock('../billing/usage-tracker.js', () => ({
-  trackUsage: vi.fn()
+vi.mock("../billing/usage-tracker.js", () => ({
+  trackUsage: vi.fn(),
 }));
 
-vi.mock('../tenancy/resolver-instance.js', () => ({
+vi.mock("../tenancy/resolver-instance.js", () => ({
   userContextResolver: {
-    fromUserId: vi.fn()
-  }
+    fromUserId: vi.fn(),
+  },
 }));
 
-vi.mock('../tenancy/tenant-context.js', () => ({
-  createAuthGuard: vi.fn()
+vi.mock("../tenancy/tenant-context.js", () => ({
+  createAuthGuard: vi.fn(),
 }));
 
-vi.mock('../gateway/server-channels.js', () => ({
-  createChannelManager: vi.fn()
+vi.mock("../gateway/server-channels.js", () => ({
+  createChannelManager: vi.fn(),
 }));
 
-describe('ChannelService', () => {
+describe("ChannelService", () => {
   let service: ChannelService;
-  const tenantId = 'tenant-123';
-  const userId = 'user-abc123';
-  const systemPath = 'agents/system_default/channels';
+  const tenantId = "tenant-123";
+  const userId = "user-abc123";
+  const systemPath = "agents/system_default/channels";
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -59,54 +59,69 @@ describe('ChannelService', () => {
     service = ChannelService.getInstance();
   });
 
-  describe('createChannel', () => {
-    it('should create a new channel under system_default by default', async () => {
+  describe("createChannel", () => {
+    it("should create a new channel under system_default by default", async () => {
       vi.mocked(userContextResolver.fromUserId).mockResolvedValue({ userId } as any);
       vi.mocked(createAuthGuard).mockReturnValue({ canStartChannel: () => true } as any);
       vi.mocked(assertCan).mockReturnValue(undefined);
       vi.mocked(firebaseService.setDoc).mockResolvedValue(undefined);
 
-      const result = await service.createChannel(tenantId, { name: 'Test Channel', type: 'whatsapp' }, 'system_default', userId);
+      const result = await service.createChannel(
+        tenantId,
+        { name: "Test Channel", type: "whatsapp" },
+        "system_default",
+        userId,
+      );
 
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data.name).toBe('Test Channel');
-        expect(result.data.assignedAgentId).toBe('system_default');
-        expect(firebaseService.setDoc).toHaveBeenCalledWith(systemPath, result.data.id, expect.any(Object), tenantId);
-        expect(trackUsage).toHaveBeenCalledWith(userId, 'channels', 1);
+        expect(result.data.name).toBe("Test Channel");
+        expect(result.data.assignedAgentId).toBe("system_default");
+        expect(firebaseService.setDoc).toHaveBeenCalledWith(
+          systemPath,
+          result.data.id,
+          expect.any(Object),
+          tenantId,
+        );
+        expect(trackUsage).toHaveBeenCalledWith(userId, "channels", 1);
       }
     });
 
-    it('should create a new channel under a specific agent', async () => {
+    it("should create a new channel under a specific agent", async () => {
       vi.mocked(userContextResolver.fromUserId).mockResolvedValue({ userId: tenantId } as any);
       vi.mocked(createAuthGuard).mockReturnValue({ canStartChannel: () => true } as any);
       vi.mocked(assertCan).mockReturnValue(undefined);
-      
-      const agentId = 'custom-agent';
-      const result = await service.createChannel(tenantId, { name: 'Agent Bot' }, agentId);
+
+      const agentId = "custom-agent";
+      const result = await service.createChannel(tenantId, { name: "Agent Bot" }, agentId);
 
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data.assignedAgentId).toBe(agentId);
-        expect(firebaseService.setDoc).toHaveBeenCalledWith(`agents/${agentId}/channels`, expect.any(String), expect.any(Object), tenantId);
+        expect(firebaseService.setDoc).toHaveBeenCalledWith(
+          `agents/${agentId}/channels`,
+          expect.any(String),
+          expect.any(Object),
+          tenantId,
+        );
       }
     });
   });
 
-  describe('getChannel', () => {
-    it('should return channel data from system_default path by default', async () => {
-      const mockChannel = { id: 'chan-1', name: 'Existing' };
+  describe("getChannel", () => {
+    it("should return channel data from system_default path by default", async () => {
+      const mockChannel = { id: "chan-1", name: "Existing" };
       vi.mocked(firebaseService.getDoc).mockResolvedValue(mockChannel);
 
-      const result = await service.getChannel(tenantId, 'chan-1');
+      const result = await service.getChannel(tenantId, "chan-1");
 
       expect(result.success).toBe(true);
-      expect(firebaseService.getDoc).toHaveBeenCalledWith(systemPath, 'chan-1', tenantId);
+      expect(firebaseService.getDoc).toHaveBeenCalledWith(systemPath, "chan-1", tenantId);
     });
   });
 
-  describe('deleteChannel', () => {
-    it('should delete channel from nested path', async () => {
+  describe("deleteChannel", () => {
+    it("should delete channel from nested path", async () => {
       // Provide a mock native manager so deleteChannel can call stopChannel()
       vi.mocked(createChannelManager).mockReturnValue({
         stopChannel: vi.fn().mockResolvedValue(undefined),
@@ -117,15 +132,19 @@ describe('ChannelService', () => {
         isManuallyStopped: vi.fn().mockReturnValue(false),
         resetRestartAttempts: vi.fn(),
       });
-      vi.mocked(firebaseService.getDoc).mockResolvedValue({ id: 'chan-1', name: 'Test', type: 'whatsapp' });
+      vi.mocked(firebaseService.getDoc).mockResolvedValue({
+        id: "chan-1",
+        name: "Test",
+        type: "whatsapp",
+      });
       vi.mocked(firebaseService.deleteDoc).mockResolvedValue(undefined);
       vi.mocked(firebaseService.deleteCollection).mockResolvedValue(undefined);
 
-      const result = await service.deleteChannel(tenantId, 'chan-1', 'system_default', {}, userId);
+      const result = await service.deleteChannel(tenantId, "chan-1", "system_default", {}, userId);
 
       expect(result.success).toBe(true);
-      expect(firebaseService.deleteDoc).toHaveBeenCalledWith(systemPath, 'chan-1', tenantId);
-      expect(trackUsage).toHaveBeenCalledWith(userId, 'channels', -1);
+      expect(firebaseService.deleteDoc).toHaveBeenCalledWith(systemPath, "chan-1", tenantId);
+      expect(trackUsage).toHaveBeenCalledWith(userId, "channels", -1);
     });
   });
 });
@@ -145,10 +164,10 @@ function makeMockManager(overrides: Partial<ChannelManager> = {}): ChannelManage
   };
 }
 
-describe('ChannelService — native createChannelManager() delegation (Task 5.4)', () => {
+describe("ChannelService — native createChannelManager() delegation (Task 5.4)", () => {
   let service: ChannelService;
-  const tenantId = 'tenant-123';
-  const agentId = 'system_default';
+  const tenantId = "tenant-123";
+  const agentId = "system_default";
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -157,78 +176,75 @@ describe('ChannelService — native createChannelManager() delegation (Task 5.4)
     service = ChannelService.getInstance();
   });
 
-  describe('startChannel', () => {
-    it('creates a channel manager scoped to the userId and delegates startChannel()', async () => {
+  describe("startChannel", () => {
+    it("creates a channel manager scoped to the userId and delegates startChannel()", async () => {
       const mockManager = makeMockManager();
       vi.mocked(createChannelManager).mockReturnValue(mockManager);
       vi.mocked(firebaseService.getDoc).mockResolvedValue({
-        id: 'chan-wa-1',
-        type: 'whatsapp',
-        status: 'disconnected',
+        id: "chan-wa-1",
+        type: "whatsapp",
+        status: "disconnected",
         assignedAgentId: agentId,
       });
       vi.mocked(firebaseService.setDoc).mockResolvedValue(undefined);
 
-      const result = await service.startChannel(tenantId, 'chan-wa-1', agentId);
+      const result = await service.startChannel(tenantId, "chan-wa-1", agentId);
 
       expect(result.success).toBe(true);
       expect(createChannelManager).toHaveBeenCalledWith(
-        expect.objectContaining({ userId: tenantId })
+        expect.objectContaining({ loadConfig: expect.any(Function) }),
       );
-      expect(mockManager.startChannel).toHaveBeenCalledWith(
-        'whatsapp',
-        expect.any(String)
-      );
+      expect(mockManager.startChannel).toHaveBeenCalledWith("whatsapp", expect.any(String));
     });
 
-    it('does NOT instantiate any AdapterClass from the deprecated registry', async () => {
+    it("does NOT instantiate any AdapterClass from the deprecated registry", async () => {
       const mockManager = makeMockManager();
       vi.mocked(createChannelManager).mockReturnValue(mockManager);
       vi.mocked(firebaseService.getDoc).mockResolvedValue({
-        id: 'chan-tg-1',
-        type: 'telegram',
-        status: 'disconnected',
+        id: "chan-tg-1",
+        type: "telegram",
+        status: "disconnected",
         assignedAgentId: agentId,
       });
       vi.mocked(firebaseService.setDoc).mockResolvedValue(undefined);
 
-      await service.startChannel(tenantId, 'chan-tg-1', agentId);
+      await service.startChannel(tenantId, "chan-tg-1", agentId);
 
       // Verify delegation happened — no direct adapter construction
-      expect(mockManager.startChannel).toHaveBeenCalledWith('telegram', expect.any(String));
+      expect(mockManager.startChannel).toHaveBeenCalledWith("telegram", expect.any(String));
     });
 
-    it('returns success: false when channel not found in Firestore', async () => {
+    it("returns success: false when channel not found in Firestore", async () => {
       vi.mocked(createChannelManager).mockReturnValue(makeMockManager());
       vi.mocked(firebaseService.getDoc).mockResolvedValue(null);
 
-      const result = await service.startChannel(tenantId, 'chan-missing', agentId);
+      const result = await service.startChannel(tenantId, "chan-missing", agentId);
 
       expect(result.success).toBe(false);
     });
   });
 
-  describe('stopChannel', () => {
-    it('delegates to native manager stopChannel() with correct plugin type', async () => {
+  describe("stopChannel", () => {
+    it("delegates to native manager stopChannel() with correct plugin type", async () => {
       const mockManager = makeMockManager();
       vi.mocked(createChannelManager).mockReturnValue(mockManager);
       vi.mocked(firebaseService.getDoc).mockResolvedValue({
-        id: 'chan-wa-2',
-        type: 'whatsapp',
-        status: 'connected',
+        id: "chan-wa-2",
+        type: "whatsapp",
+        status: "connected",
         assignedAgentId: agentId,
       });
       vi.mocked(firebaseService.setDoc).mockResolvedValue(undefined);
 
-      const result = await service.stopChannel('chan-wa-2', tenantId, agentId);
+      const result = await service.stopChannel("chan-wa-2", tenantId, agentId);
 
       expect(result.success).toBe(true);
-      expect(mockManager.stopChannel).toHaveBeenCalledWith('whatsapp', expect.any(String));
+      expect(mockManager.stopChannel).toHaveBeenCalledWith("whatsapp", expect.any(String));
     });
   });
 
-  describe('getGlobalStats', () => {
-    it('derives active channel count from getRuntimeSnapshot() instead of deprecated channelManager', () => {
+  describe("getGlobalStats", () => {
+    it("derives active channel count from getRuntimeSnapshot() instead of deprecated channelManager", () => {
       const mockManager = makeMockManager({
         getRuntimeSnapshot: vi.fn().mockReturnValue({
           channels: { whatsapp: { running: true }, telegram: { running: false } },

@@ -21,7 +21,7 @@
 - [x] Task 2.8: Fix `src/routes/channelLifecycle.test.ts` — update `deleteChannel` parameter expectations [84a54b4]
 - [x] Task 2.9: Fix `src/controllers/` test files — update authController test expectations [1b73603]
 - [x] Task 2.10: Run Category C+D tests (green) + verify no regressions [b284ae7]
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Fix DeXMart-Relevant Tests' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Fix DeXMart-Relevant Tests' (Protocol in workflow.md)
 
 ---
 
@@ -29,7 +29,7 @@
 
 - [x] Task 3.1: Diagnose `src/telegram/webhook.test.ts` — identify why all 8 tests timeout (likely async mock that never resolves)
 - [x] Task 3.2: Fix webhook test async flow — update mock to properly resolve/reject
-- [~] Task 3.3: Fix `src/telegram/bot.test.ts` and `bot.create-telegram-bot.test.ts` — update `createTelegramBot` mock shape
+- [x] Task 3.3: Fix `src/telegram/bot.test.ts` and `bot.create-telegram-bot.test.ts` — update `createTelegramBot` mock shape
 - [x] Task 3.4: Fix `src/telegram/fetch.test.ts` — update `resolveTelegramFetch` undici dispatcher expectations
 - [x] Task 3.5: Fix `src/telegram/bot.media.downloads-media-file-path-no-file-download.test.ts` — update forwarded burst / media group expectations
 - [x] Task 3.6: Run all Telegram tests (green) + verify no regressions
@@ -46,7 +46,7 @@
 - [x] Task 4.5: Fix `src/auto-reply/reply/reply-plumbing.test.ts` and `session.test.ts` — investigate if these test DeXMart-relevant reply logic (fix if yes, skip if upstream-only)
 - [x] Task 4.6: Fix `src/tools/cmd.test.ts` — 3 translate tests failing (likely GeminiService mock issue — investigate if DeXMart-relevant)
 - [x] Task 4.7: Fix `src/analytics/` and `src/hooks/` failures — investigate root cause and fix or skip
-- [ ] Task 4.8: Run full test suite — confirm zero failures
+- [x] Task 4.8: Run full test suite — confirm zero failures
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Skip/Annotate OpenClaw Engine Tests' (Protocol in workflow.md)
 
 ---

@@ -30,14 +30,14 @@ All code lives in the unified `src/` tree. Use path aliases:
 
 ```typescript
 // ✅ CORRECT — unified src/ imports
-import { AgentService } from '@dexmart/services/AgentService.js';
-import { useChannelAuthState } from '@dexmart/persistence/channel-auth-state.js';
-import { filterModelsForUser } from '@dexmart/billing/auth-guard.js';
+import { AgentService } from "@dexmart/services/AgentService.js";
+import { useChannelAuthState } from "@dexmart/persistence/channel-auth-state.js";
+import { filterModelsForUser } from "@dexmart/billing/auth-guard.js";
 
 // ❌ WRONG — these are dead patterns from pre-fusion era
-import { something } from 'openclaw';                    // Package doesn't exist at runtime
-import { something } from '@/utils/openclawImports.js';  // Deleted in Phase 1
-import { something } from '../../../openclaw/src/...';   // Relative paths to openclaw/
+import { something } from "openclaw"; // Package doesn't exist at runtime
+import { something } from "@/utils/openclawImports.js"; // Deleted in Phase 1
+import { something } from "../../../openclaw/src/..."; // Relative paths to openclaw/
 ```
 
 ### ⚠️ Deprecated Dead-End Code (DO NOT EXTEND)
@@ -58,6 +58,39 @@ OpenClaw upstream is tracked as a git remote. Because DeXMart is fundamentally O
 If a test or bug originates from OpenClaw's internal engine (`Category A` tests), it must be annotated with `// upstream: pending sync` or `.skip` and ignored during normal development. We must **never** manually fix upstream test infrastructure issues or internal engine bugs, as this causes divergence and guaranteed merge conflicts.
 
 These issues are resolved exclusively via the **Upstream Sync Conductor Track** (cherry-picking features, fixes, and test updates up to the target OpenClaw version). See `docs/architecture/FUSION_STRATEGY.md` for the correct sync protocol.
+
+### §0.1 Upstream Leverage Mandate
+
+> **Canonical reference**: `docs/architecture/UPSTREAM_LEVERAGE_POLICY.md`
+
+**CRITICAL RULE**: DeXMart MUST NOT duplicate logic, features, code, or capabilities that OpenClaw upstream already provides. Instead, DeXMart **leverages and utilizes** what upstream offers. Because OpenClaw owns the majority of the codebase (4,040+ files, 40+ extensions, full agent runtime), this approach ensures DeXMart automatically adapts to OpenClaw's changelogs — bug fixes, security patches, new features, and performance improvements are inherited through the sync process with zero rework.
+
+**Before implementing ANY new module/service/utility**:
+
+1. Search `src/` and `extensions/` for existing upstream implementation
+2. Check `CHANGELOG.md` and `docs/OPENCLAW_UPSTREAM_REPORT.md` for upstream capabilities
+3. If upstream provides it → **STOP and leverage it directly**. Do NOT create a parallel implementation.
+4. If upstream partially provides it → Extend via injection points. Do NOT fork or wrap.
+
+**The guarantee**: Every OpenClaw update automatically benefits DeXMart. If DeXMart duplicates upstream logic, this guarantee breaks — the duplicate will NOT receive upstream fixes and will drift into unmaintainable divergence.
+
+### §0.2 DeXMart-Exclusive Feature Embedding
+
+Since OpenClaw and DeXMart are **one unified project**, any feature confirmed (via critical investigation) to be truly DeXMart-exclusive MUST be embedded into the unified project's core **natively** — in `src/` as a first-class module — not as a plugin, sidecar, or secondary citizen. This is how top-tier companies (Google, Apple, Stripe) handle core product capabilities.
+
+**Investigation protocol** — A feature is DeXMart-exclusive ONLY if ALL of the following are true:
+
+1. It does NOT exist in upstream (confirmed by searching `src/`, `extensions/`, and `CHANGELOG.md`)
+2. It is fundamentally tied to DeXMart's B2C/SaaS identity (multi-tenancy, billing, cloud persistence, platform analytics)
+3. It would NOT make sense in OpenClaw's single-user, self-hosted mode
+
+**Embedding rules** (once confirmed exclusive):
+
+- Lives in `src/` as a first-class module (e.g., `src/billing/`, `src/tenancy/`)
+- Injects at foundation level via well-defined injection points if it touches the engine
+- Ships with full TDD test coverage (co-located `*.test.ts`)
+- Documented in `docs/TrueFusionPlan.md` (DeXMart-Exclusive Features table)
+- Indistinguishable from the rest of the codebase — no developer can tell "this was added later"
 
 ---
 
@@ -185,8 +218,6 @@ These issues are resolved exclusively via the **Upstream Sync Conductor Track** 
 
 **Mandate**: We follow a **Hybrid Feature-Sliced Design**. Code is organized by **Domain**, not by Technology.
 
-
-
 ### Strict Rules
 
 1.  **"Thin Page" Pattern**: `app/**/page.tsx` should ONLY fetch initial data and render a Feature Component. No logic allowed in `page.tsx`.
@@ -202,7 +233,7 @@ These issues are resolved exclusively via the **Upstream Sync Conductor Track** 
     - Use strict Tailwind spacing tokens (e.g., `gap-4` not `gap-[15px]`).
     - All interactive elements must have: Hover, Active, and Focus-Visible states.
 7.  **No Emojis in UI**: NEVER use emojis in the UI. Always use proper SVG icons from `lucide-react` or custom icons from `components/ui/icons.tsx`. Emojis are only permitted if explicitly requested by the user.
-8. NO ASSUMPTIONS, NO GUESSING, JUST PURE INVESTIGATIONS
+8.  NO ASSUMPTIONS, NO GUESSING, JUST PURE INVESTIGATIONS
 
 ### State Management Hierarchy
 
@@ -215,15 +246,18 @@ These issues are resolved exclusively via the **Upstream Sync Conductor Track** 
 | Optimistic   | `useOptimistic`   | Pending mutations   |
 
 ---
+
 ## 9. Agentic Workflow Patterns (2026 Mastermind)
 
 **Mandate**: All autonomous agents must follow iterative reasoning and self-correction loops.
 
 ### Core Patterns
+
 1.  **Reflection**: After completing a complex task (e.g., refactoring or feature logic), the agent MUST perform a "Critic" phase to identify flaws in its own implementation before reporting to the user.
 2.  **Tool-Based Verification**: Whenever possible, use specialized tools (linters, test runners, custom scripts) to verify the output of a thought process rather than relying on LLM intuition alone.
 3.  **Dynamic Planning**: For ambiguous requests, the agent MUST generate a multi-step plan, present it to the user, and update the plan dynamically as new information is gathered during tool execution.
 
 ### Error Handling & Self-Correction
+
 - **Generator-Critic Loop**: If a command fails, the agent must analyze the error, hypothesize a fix, and retry WITH a modified approach.
 - **Structured Failure**: If an agent cannot resolve an error after 2 attempts, it MUST halt and provide a structured report of what it tried, what failed, and why it's stuck.

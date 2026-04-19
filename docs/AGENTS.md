@@ -16,6 +16,13 @@ This directory owns docs authoring, Mintlify link rules, and docs i18n policy.
 - For docs, UI copy, and picker lists, order services/providers alphabetically unless the section is explicitly describing runtime order or auto-detection order.
 - Keep bundled plugin naming consistent with the repo-wide plugin terminology rules in the root `AGENTS.md`.
 
+## Fusion Strategy Compliance
+
+- All docs must reflect the **Upstream Leverage Principle**: DeXMart does NOT duplicate logic that OpenClaw provides. Docs must never describe a DeXMart module as a "replacement" or "alternative" to an upstream module — if upstream provides it, DeXMart leverages it.
+- When documenting new features, verify whether the feature is upstream-provided (leveraged) or DeXMart-exclusive (embedded natively). Use the investigation protocol in `docs/architecture/UPSTREAM_LEVERAGE_POLICY.md` §2.
+- DeXMart-exclusive features must be documented as core first-class capabilities, not as add-ons or plugins.
+- Reference the canonical policy: `docs/architecture/UPSTREAM_LEVERAGE_POLICY.md`
+
 ## Docs i18n
 
 - Foreign-language docs are not maintained in this repo. The generated publish output lives in the separate `openclaw/docs` repo (often cloned locally as `../openclaw-docs`).

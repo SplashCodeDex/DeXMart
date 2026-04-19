@@ -351,6 +351,26 @@ DeXMart already has the vast majority of its logic, features, and files implemen
 - Re-implementing anti-ban logic outside of `antiBanService`.
 
 
+### Upstream Leverage & Fusion Strategy (MANDATORY)
+
+DeXMart and OpenClaw are **one unified project**. OpenClaw owns the majority of the codebase (4,040+ files, 40+ extensions, full agent runtime). DeXMart's value-add is the B2C/SaaS layer. Two non-negotiable principles govern all work:
+
+**Principle 1 — Upstream Leverage (No Duplication)**:
+DeXMart MUST NOT duplicate logic, features, code, or capabilities that OpenClaw upstream already provides. Instead, **leverage and utilize** what upstream offers. This ensures DeXMart automatically adapts to OpenClaw's changelogs — bug fixes, security patches, new features, and performance improvements are inherited through the sync process with zero rework.
+
+Before implementing ANY new module/service/utility:
+1. Search `src/` and `extensions/` for existing upstream implementation
+2. Check `CHANGELOG.md` and `docs/OPENCLAW_UPSTREAM_REPORT.md` for upcoming features
+3. If upstream provides it → **STOP and use it**. Do NOT create a parallel implementation.
+4. If upstream partially provides it → Extend via injection points. Do NOT fork or wrap.
+
+**Principle 2 — DeXMart-Exclusive Feature Embedding**:
+Features confirmed (via critical investigation) to be truly DeXMart-exclusive MUST be embedded into the unified project's core natively — in `src/` as first-class modules — not as plugins, sidecars, or secondary citizens. This is how top-tier companies handle core product capabilities. A feature is DeXMart-exclusive ONLY if it doesn't exist in upstream AND is fundamentally tied to B2C/SaaS identity (billing, tenancy, cloud persistence) AND would NOT make sense in OpenClaw's single-user mode.
+
+**Violations** — Reimplementing upstream logic, creating bridges/wrappers around upstream modules, forking upstream files instead of injecting, or treating exclusive features as secondary are **Severe Violations**.
+
+**Canonical reference**: `docs/architecture/UPSTREAM_LEVERAGE_POLICY.md`
+
 ### TDD Mandate
 All feature work follows Red → Green → Refactor:
 1. **Red**: Write a failing test first — before any implementation code.

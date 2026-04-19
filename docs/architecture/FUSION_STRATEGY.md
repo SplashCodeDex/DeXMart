@@ -10,15 +10,15 @@ True Fusion is the process of making **one project called DeXMart** from two ori
 
 **The non-negotiable rules:**
 
-| Rule | What it means |
-|------|---------------|
-| **One project** | After fusion, there is only DeXMart. OpenClaw is the upstream heritage, not a visible boundary. |
-| **Zero duplication** | Every function, feature, and service exists exactly once. No mirrors, no copies. |
-| **No bridges** | No wrappers, adapters, or bridge files. Code calls code directly. |
-| **Extensions are canonical** | `extensions/` contains the rich, battle-tested channel plugins. Channel logic is never duplicated in `src/services/channels/`. |
-| **One channel engine** | OpenClaw's `createChannelManager()` + `PluginRegistry` is the single channel management system. |
-| **Frontend replaces ControlUI** | The DeXMart Next.js dashboard is THE UI. ControlUI is upstream heritage, not user-facing. |
-| **Centralized elevation** | B2C tenancy, Stripe billing, Firebase auth, and Firestore persistence are injected into OpenClaw's engine foundation — not wrapped around it. |
+| Rule                            | What it means                                                                                                                                 |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| **One project**                 | After fusion, there is only DeXMart. OpenClaw is the upstream heritage, not a visible boundary.                                               |
+| **Zero duplication**            | Every function, feature, and service exists exactly once. No mirrors, no copies.                                                              |
+| **No bridges**                  | No wrappers, adapters, or bridge files. Code calls code directly.                                                                             |
+| **Extensions are canonical**    | `extensions/` contains the rich, battle-tested channel plugins. Channel logic is never duplicated in `src/services/channels/`.                |
+| **One channel engine**          | OpenClaw's `createChannelManager()` + `PluginRegistry` is the single channel management system.                                               |
+| **Frontend replaces ControlUI** | The DeXMart Next.js dashboard is THE UI. ControlUI is upstream heritage, not user-facing.                                                     |
+| **Centralized elevation**       | B2C tenancy, Stripe billing, Firebase auth, and Firestore persistence are injected into OpenClaw's engine foundation — not wrapped around it. |
 
 **The analogy:** OpenClaw is to DeXMart what the Linux kernel is to Ubuntu. Ubuntu IS the product. The kernel is the heritage. Nobody opens Ubuntu and sees "the Linux part" and "the Ubuntu part" -- they see one operating system. That's True Fusion.
 
@@ -30,12 +30,12 @@ The result is a single `src/` tree. All modules coexist without boundaries. Open
 
 ### 2.1 Alternatives Considered and Rejected
 
-| Approach | Why Rejected |
-|----------|-------------|
-| **OpenClaw as npm dependency** | Cannot inject UserContext into config loading, session persistence, or model selection. Plugin SDK doesn't expose these. |
-| **Full fork (modify OpenClaw internals)** | Creates permanent upstream divergence. Every OpenClaw update requires manual merge of modified internals. Unmaintainable. |
-| **Microservices (DeXMart calls OpenClaw via HTTP)** | Adds latency to every message. Session state split across services. Deployment complexity multiplied. |
-| **Bridge/adapter pattern** | Already tried -- created 8,318 lines of dead wrapper code. Import path chaos. "Which version?" confusion. |
+| Approach                                            | Why Rejected                                                                                                              |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **OpenClaw as npm dependency**                      | Cannot inject UserContext into config loading, session persistence, or model selection. Plugin SDK doesn't expose these.  |
+| **Full fork (modify OpenClaw internals)**           | Creates permanent upstream divergence. Every OpenClaw update requires manual merge of modified internals. Unmaintainable. |
+| **Microservices (DeXMart calls OpenClaw via HTTP)** | Adds latency to every message. Session state split across services. Deployment complexity multiplied.                     |
+| **Bridge/adapter pattern**                          | Already tried -- created 8,318 lines of dead wrapper code. Import path chaos. "Which version?" confusion.                 |
 
 ### 2.2 Why Managed Fork Works
 
@@ -59,6 +59,7 @@ The result is a single `src/` tree. All modules coexist without boundaries. Open
 2. **Copied extensions**: All 40 OpenClaw extensions from `openclaw/extensions/` to root `extensions/`.
 
 3. **Organized DeXMart modules**: Enterprise services moved from scattered locations into clean `src/` modules:
+
    ```
    src/tenancy/          -- UserContext, AuthGuard, context resolver
    src/billing/          -- Stripe, plan gating, usage tracking
@@ -100,15 +101,16 @@ Four injection points were implemented:
 
 #### 2.1 User-Scoped Config Resolution (FR-1)
 
-| Detail | Value |
-|--------|-------|
-| **File** | `src/config/user-config.ts` |
-| **Test** | `src/config/io.user-config.test.ts` (8/8 passing) |
-| **What it does** | Resolves config per-user from Firestore instead of a single file |
+| Detail             | Value                                                            |
+| ------------------ | ---------------------------------------------------------------- |
+| **File**           | `src/config/user-config.ts`                                      |
+| **Test**           | `src/config/io.user-config.test.ts` (8/8 passing)                |
+| **What it does**   | Resolves config per-user from Firestore instead of a single file |
 | **Cache strategy** | In-memory -> Redis (5-min TTL) -> Firestore -> platform defaults |
-| **Non-breaking** | OpenClaw's `loadConfig()` still works for single-user/CLI mode |
+| **Non-breaking**   | OpenClaw's `loadConfig()` still works for single-user/CLI mode   |
 
 **How it works:**
+
 ```
 loadConfigForUser(userId)
   1. Check in-memory cache -> return if hit
@@ -120,40 +122,43 @@ loadConfigForUser(userId)
 
 #### 2.2 Universal Firestore Session Persistence (FR-2)
 
-| Detail | Value |
-|--------|-------|
-| **File** | `src/persistence/channel-auth-state.ts` |
-| **Test** | `src/persistence/channel-auth-state.test.ts` (12/12 passing) |
-| **What it does** | Replaces `useMultiFileAuthState(authDir)` with cloud-backed session storage |
-| **Firestore path** | `/users/{userId}/channels/{channelId}/auth` |
-| **Applies to** | ALL channels (WhatsApp, Telegram, Discord, Slack, Signal, etc.) |
+| Detail              | Value                                                                        |
+| ------------------- | ---------------------------------------------------------------------------- |
+| **File**            | `src/persistence/channel-auth-state.ts`                                      |
+| **Test**            | `src/persistence/channel-auth-state.test.ts` (12/12 passing)                 |
+| **What it does**    | Replaces `useMultiFileAuthState(authDir)` with cloud-backed session storage  |
+| **Firestore path**  | `/users/{userId}/channels/{channelId}/auth`                                  |
+| **Applies to**      | ALL channels (WhatsApp, Telegram, Discord, Slack, Signal, etc.)              |
 | **Injection point** | `src/web/session.ts` -- `createWaSocket()` accepts `authStateFactory` option |
 
 **Why this matters:**
+
 - File-based sessions don't survive container restarts or horizontal scaling
 - Firestore sessions are durable, user-scoped, and queryable
 - The `authStateFactory` pattern is opt-in -- single-user mode still uses files
 
 #### 2.3 Billing-Gated Operations (FR-3)
 
-| Detail | Value |
-|--------|-------|
-| **Files** | `src/billing/auth-guard.ts`, `src/billing/usage-tracker.ts` |
-| **Tests** | `src/billing/auth-guard.test.ts` (20/20), `src/billing/usage-tracker.test.ts` (9/9) |
-| **Gate points** | Model selection, channel start, agent creation, message send, feature access |
-| **Denial** | HTTP 402 "Upgrade Required" with `buildGateDeniedMessage()` |
-| **Grace period** | 10% overage allowed before hard block on message quotas |
+| Detail           | Value                                                                               |
+| ---------------- | ----------------------------------------------------------------------------------- |
+| **Files**        | `src/billing/auth-guard.ts`, `src/billing/usage-tracker.ts`                         |
+| **Tests**        | `src/billing/auth-guard.test.ts` (20/20), `src/billing/usage-tracker.test.ts` (9/9) |
+| **Gate points**  | Model selection, channel start, agent creation, message send, feature access        |
+| **Denial**       | HTTP 402 "Upgrade Required" with `buildGateDeniedMessage()`                         |
+| **Grace period** | 10% overage allowed before hard block on message quotas                             |
 
 **Key functions:**
+
 ```typescript
-filterModelsForUser(ctx, models)   // Intersect available models with plan
-assertCan(ctx, 'startChannel')     // Check against maxChannels
-assertCan(ctx, 'sendMessage')      // Check against monthly quota
-assertCan(ctx, 'createAgent')      // Check against maxAgents
-assertCan(ctx, 'feature:campaigns') // Check feature flags
+filterModelsForUser(ctx, models); // Intersect available models with plan
+assertCan(ctx, "startChannel"); // Check against maxChannels
+assertCan(ctx, "sendMessage"); // Check against monthly quota
+assertCan(ctx, "createAgent"); // Check against maxAgents
+assertCan(ctx, "feature:campaigns"); // Check feature flags
 ```
 
 **Usage tracking:**
+
 - In-memory counters incremented on each operation
 - Batched Firestore flush every 10 seconds OR when threshold (50 operations) reached
 - Non-blocking, fire-and-forget -- never slows down the request
@@ -161,34 +166,36 @@ assertCan(ctx, 'feature:campaigns') // Check feature flags
 
 #### 2.4 UserContext Resolution Pipeline (FR-4)
 
-| Detail | Value |
-|--------|-------|
-| **File** | `src/tenancy/context-resolver.ts` |
-| **Test** | `src/tenancy/__tests__/context-resolver.test.ts` (5/5 passing) |
+| Detail           | Value                                                               |
+| ---------------- | ------------------------------------------------------------------- |
+| **File**         | `src/tenancy/context-resolver.ts`                                   |
+| **Test**         | `src/tenancy/__tests__/context-resolver.test.ts` (5/5 passing)      |
 | **What it does** | Resolves UserContext from multiple sources (JWT, userId, channelId) |
-| **Cache** | 5-min TTL for context, 24-hour TTL for channel-to-user mappings |
+| **Cache**        | 5-min TTL for context, 24-hour TTL for channel-to-user mappings     |
 
 **Resolution sources (in priority order):**
+
 1. **JWT token** -> decode, extract userId, look up profile + plan in Firestore
 2. **Direct userId** -> look up profile + plan in Firestore
 3. **Channel ID** -> look up channel-to-user mapping, then resolve userId
 
 **The UserContext shape:**
+
 ```typescript
 interface UserContext {
   userId: string;
-  plan: 'free' | 'starter' | 'pro' | 'enterprise';
+  plan: "free" | "starter" | "pro" | "enterprise";
   capabilities: {
     maxChannels: number;
     maxAgents: number;
     messagesPerMonth: number;
-    models: string[];           // Allowed model IDs
-    features: string[];         // Enabled feature flags
+    models: string[]; // Allowed model IDs
+    features: string[]; // Enabled feature flags
   };
   metadata: {
     email: string;
     createdAt: Date;
-    subscriptionStatus: 'active' | 'past_due' | 'cancelled';
+    subscriptionStatus: "active" | "past_due" | "cancelled";
   };
 }
 ```
@@ -230,19 +237,19 @@ interface UserContext {
 
 All `backend/src/` directories moved directly into `src/` with no `dexmart-*` prefixes:
 
-| Component | From | To | Notes |
-|-----------|------|-----|-------|
-| Services (65 files) | `backend/src/services/` | `src/services/` | Merged with existing `src/services/ApiKeyManager.ts` |
-| Routes (25 files) | `backend/src/routes/` | `src/routes/` | |
-| Middleware (12 files) | `backend/src/middleware/` | `src/middleware/` | |
-| Lib (16 files) | `backend/src/lib/` | `src/lib/` | Firebase, Redis, context init |
-| Jobs (10 files) | `backend/src/jobs/` | `src/jobs/` | BullMQ workers |
-| Server | `backend/src/server/` | `src/server/` | |
-| Utils | `backend/src/utils/` | `src/utils/` | No filename conflicts with OpenClaw utils |
-| Types | `backend/src/types/` | `src/types/` | No filename conflicts with OpenClaw types |
-| Commands | `backend/src/commands/` | `src/commands/` | DeXMart command subdirs added alongside OpenClaw commands |
-| Events, Tools, Workers, Webhooks, Controllers | `backend/src/*/` | `src/*/` | Direct move |
-| Config (conflict) | `backend/src/config/config.ts` | `src/dexmart-config/config.ts` | Renamed to avoid conflict with OpenClaw's `src/config/config.ts` |
+| Component                                     | From                           | To                             | Notes                                                            |
+| --------------------------------------------- | ------------------------------ | ------------------------------ | ---------------------------------------------------------------- |
+| Services (65 files)                           | `backend/src/services/`        | `src/services/`                | Merged with existing `src/services/ApiKeyManager.ts`             |
+| Routes (25 files)                             | `backend/src/routes/`          | `src/routes/`                  |                                                                  |
+| Middleware (12 files)                         | `backend/src/middleware/`      | `src/middleware/`              |                                                                  |
+| Lib (16 files)                                | `backend/src/lib/`             | `src/lib/`                     | Firebase, Redis, context init                                    |
+| Jobs (10 files)                               | `backend/src/jobs/`            | `src/jobs/`                    | BullMQ workers                                                   |
+| Server                                        | `backend/src/server/`          | `src/server/`                  |                                                                  |
+| Utils                                         | `backend/src/utils/`           | `src/utils/`                   | No filename conflicts with OpenClaw utils                        |
+| Types                                         | `backend/src/types/`           | `src/types/`                   | No filename conflicts with OpenClaw types                        |
+| Commands                                      | `backend/src/commands/`        | `src/commands/`                | DeXMart command subdirs added alongside OpenClaw commands        |
+| Events, Tools, Workers, Webhooks, Controllers | `backend/src/*/`               | `src/*/`                       | Direct move                                                      |
+| Config (conflict)                             | `backend/src/config/config.ts` | `src/dexmart-config/config.ts` | Renamed to avoid conflict with OpenClaw's `src/config/config.ts` |
 
 #### Key additional changes
 
@@ -258,7 +265,9 @@ All `backend/src/` directories moved directly into `src/` with no `dexmart-*` pr
   - `src/services/channels/whatsapp/WhatsappAdapter.ts` — wraps OpenClaw's `createWaSocket()` with Firestore auth
 
 > [!WARNING]
+>
 > ### ⚠️ DEPRECATED — Parallel Channel System (Dead End)
+>
 > The three files above (`ChannelManager.ts`, `registry.ts`, `WhatsappAdapter.ts`) were recreated as a temporary measure but represent a **dead-end architecture**. They duplicate OpenClaw's native `createChannelManager()` + `extensions/` plugin infrastructure. They are **pending removal in Phase 5**.
 >
 > **DO NOT extend these files.** All new channel work belongs in `extensions/` and the native plugin system.
@@ -271,6 +280,7 @@ All `backend/src/` directories moved directly into `src/` with no `dexmart-*` pr
 The `backend/` directory still exists (source migrated, `dist/` untouched). It should be deleted once the app is verified booting from `src/main.ts` in a staging environment.
 
 Next step before deletion:
+
 1. Smoke test `src/main.ts` in staging — confirm the server starts, channels reconnect, and agent processing works end-to-end
 2. Delete `backend/` directory
 3. Update `pnpm-workspace.yaml` to remove `backend`
@@ -295,21 +305,22 @@ git log openclaw-upstream/main --oneline --since="2 weeks ago"
 
 ### 4.2 What We Cherry-Pick
 
-| Category | Action | Example |
-|----------|--------|---------|
-| **Security patches** | Always cherry-pick immediately | CVE fixes, auth bypasses |
-| **Upstream bugs / Broken tests** | **Sync via Conductor Track** | Fixes for test utilities, internals |
-| **Channel bug fixes** | Cherry-pick after review | Baileys reconnect fixes |
-| **New channel plugins** | Copy to `extensions/`, test | New Matrix bridge |
-| **Agent runtime improvements** | Review, adapt, merge | Better model fallback logic |
-| **Breaking API changes** | Review impact on injection points | Config format changes |
-| **UI/CLI changes** | Ignore (DeXMart has its dashboard) | Terminal UI updates |
+| Category                         | Action                             | Example                             |
+| -------------------------------- | ---------------------------------- | ----------------------------------- |
+| **Security patches**             | Always cherry-pick immediately     | CVE fixes, auth bypasses            |
+| **Upstream bugs / Broken tests** | **Sync via Conductor Track**       | Fixes for test utilities, internals |
+| **Channel bug fixes**            | Cherry-pick after review           | Baileys reconnect fixes             |
+| **New channel plugins**          | Copy to `extensions/`, test        | New Matrix bridge                   |
+| **Agent runtime improvements**   | Review, adapt, merge               | Better model fallback logic         |
+| **Breaking API changes**         | Review impact on injection points  | Config format changes               |
+| **UI/CLI changes**               | Ignore (DeXMart has its dashboard) | Terminal UI updates                 |
 
 ### 4.3 The "Sync to Resolve" Policy
 
 DeXMart will frequently inherit broken tests or internal bugs that exist in early OpenClaw commits or emerge because test infrastructure wasn't fully ported.
 
 **Rule**: We do not manually fix upstream infrastructure.
+
 1. Annotate broken upstream tests (`Category A`) with `.skip` or `// upstream: pending sync`.
 2. Do not attempt to fix them manually, as this creates merge conflicts.
 3. Fixes are obtained by running a dedicated **Upstream Sync Conductor Track** onto a clean branch, merging directly to the latest stable upstream version, preserving our injection points, and then re-evaluating test health.
@@ -333,6 +344,7 @@ When syncing across multiple upstream releases, **do not merge each version sequ
 ### 4.5 Sync Report
 
 The `scripts/upstream-watcher.ts` automation runs every 12 hours and commits a report to `docs/OPENCLAW_UPSTREAM_REPORT.md` tracking:
+
 - New commits since last sync
 - Files changed that overlap with DeXMart's injection points
 - Recommended actions (cherry-pick, review, ignore)
@@ -343,39 +355,39 @@ The `scripts/upstream-watcher.ts` automation runs every 12 hours and commits a r
 
 **Only 5 files modified from OpenClaw's originals (through Phase 4):**
 
-| File | Change | Why |
-|------|--------|-----|
-| `src/web/session.ts` | Added `WaAuthStateFactory` type + `authStateFactory` option to `createWaSocket()` | Phase 2 FR-2: pluggable Firestore session persistence |
-| `src/types/index.ts` | Removed dead `GlobalContext.unifiedAI: GeminiAI` reference | Phase 4: GeminiAI deleted in Phase 1; replaced with OpenClaw agent runner |
-| `src/ingress/ingress-service.ts` | Replaced `context.unifiedAI.processMessage()` with `runEmbeddedPiAgent()` | Phase 4: core agent pipeline wiring |
-| Root `tsconfig.json` | Added `@dexmart/*` and `@/*` path aliases → `src/*` | Phase 1 + Phase 4: clean import paths |
-| `src/config/io.ts` | No changes — `loadConfigForUser()` extracted to `src/config/user-config.ts` (separate file, not a modification) | Phase 2 FR-1 |
+| File                             | Change                                                                                                          | Why                                                                       |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `src/web/session.ts`             | Added `WaAuthStateFactory` type + `authStateFactory` option to `createWaSocket()`                               | Phase 2 FR-2: pluggable Firestore session persistence                     |
+| `src/types/index.ts`             | Removed dead `GlobalContext.unifiedAI: GeminiAI` reference                                                      | Phase 4: GeminiAI deleted in Phase 1; replaced with OpenClaw agent runner |
+| `src/ingress/ingress-service.ts` | Replaced `context.unifiedAI.processMessage()` with `runEmbeddedPiAgent()`                                       | Phase 4: core agent pipeline wiring                                       |
+| Root `tsconfig.json`             | Added `@dexmart/*` and `@/*` path aliases → `src/*`                                                             | Phase 1 + Phase 4: clean import paths                                     |
+| `src/config/io.ts`               | No changes — `loadConfigForUser()` extracted to `src/config/user-config.ts` (separate file, not a modification) | Phase 2 FR-1                                                              |
 
 **Everything else is additive** — new files in new directories that OpenClaw doesn't know about and doesn't need to:
 
-| New file | Phase | What it adds |
-|----------|-------|--------------|
-| `src/config/user-config.ts` | 2 | User-scoped config (3-layer cache) |
-| `src/persistence/channel-auth-state.ts` | 2 | Universal Firestore auth state for all channels |
-| `src/billing/usage-tracker.ts` | 2 | Batched usage tracking |
-| `src/billing/auth-guard.ts` | 2 | Billing gate utilities (`filterModelsForUser`, `assertCan`) |
-| `src/services/channels/ChannelManager.ts` | 4 | ⚠️ **DEPRECATED** — parallel adapter registry, pending removal in Phase 5 |
-| `src/services/channels/registry.ts` | 4 | ⚠️ **DEPRECATED** — parallel platform registry, pending removal in Phase 5 |
-| `src/services/channels/whatsapp/WhatsappAdapter.ts` | 4 | ⚠️ **DEPRECATED** — parallel WhatsApp wrapper, pending removal in Phase 5 |
-| All of `src/services/`, `src/routes/`, `src/middleware/`, `src/lib/`, `src/jobs/`, `src/server/` etc. | 4 | DeXMart business logic migrated from `backend/src/` |
+| New file                                                                                              | Phase | What it adds                                                               |
+| ----------------------------------------------------------------------------------------------------- | ----- | -------------------------------------------------------------------------- |
+| `src/config/user-config.ts`                                                                           | 2     | User-scoped config (3-layer cache)                                         |
+| `src/persistence/channel-auth-state.ts`                                                               | 2     | Universal Firestore auth state for all channels                            |
+| `src/billing/usage-tracker.ts`                                                                        | 2     | Batched usage tracking                                                     |
+| `src/billing/auth-guard.ts`                                                                           | 2     | Billing gate utilities (`filterModelsForUser`, `assertCan`)                |
+| `src/services/channels/ChannelManager.ts`                                                             | 4     | ⚠️ **DEPRECATED** — parallel adapter registry, pending removal in Phase 5  |
+| `src/services/channels/registry.ts`                                                                   | 4     | ⚠️ **DEPRECATED** — parallel platform registry, pending removal in Phase 5 |
+| `src/services/channels/whatsapp/WhatsappAdapter.ts`                                                   | 4     | ⚠️ **DEPRECATED** — parallel WhatsApp wrapper, pending removal in Phase 5  |
+| All of `src/services/`, `src/routes/`, `src/middleware/`, `src/lib/`, `src/jobs/`, `src/server/` etc. | 4     | DeXMart business logic migrated from `backend/src/`                        |
 
 ---
 
 ## 6. Risk Register
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|-----------|--------|------------|
-| OpenClaw upstream breaks injection points | Low | High | Upstream watcher monitors changed files; injection points are stable APIs |
-| Firestore costs scale with users | Medium | Medium | Usage tracking with batched writes; Redis caching reduces reads |
-| Memory migration (sqlite-vec → Firestore) loses vector search | Medium | High | HybridMemoryAdapter: local sqlite-vec + Firestore text backup (Phase 3 complete) |
-| Phase 5 engine injection introduces regressions | Medium | Medium | TDD mandate; existing OpenClaw tests + DeXMart injection tests must all pass |
-| Session persistence adds Firestore latency | Low | Low | Auth state reads are cached; writes are batched |
-| Parallel channel system causes confusion | Medium | High | Deprecated with warnings in all docs; Phase 5 removes completely |
+| Risk                                                          | Likelihood | Impact | Mitigation                                                                       |
+| ------------------------------------------------------------- | ---------- | ------ | -------------------------------------------------------------------------------- |
+| OpenClaw upstream breaks injection points                     | Low        | High   | Upstream watcher monitors changed files; injection points are stable APIs        |
+| Firestore costs scale with users                              | Medium     | Medium | Usage tracking with batched writes; Redis caching reduces reads                  |
+| Memory migration (sqlite-vec → Firestore) loses vector search | Medium     | High   | HybridMemoryAdapter: local sqlite-vec + Firestore text backup (Phase 3 complete) |
+| Phase 5 engine injection introduces regressions               | Medium     | Medium | TDD mandate; existing OpenClaw tests + DeXMart injection tests must all pass     |
+| Session persistence adds Firestore latency                    | Low        | Low    | Auth state reads are cached; writes are batched                                  |
+| Parallel channel system causes confusion                      | Medium     | High   | Deprecated with warnings in all docs; Phase 5 removes completely                 |
 
 ---
 
@@ -411,10 +423,10 @@ During Phase 4, three channel files were recreated from compiled JavaScript: `Wh
 
 **The problem**: They created a **parallel channel management system** alongside OpenClaw's native one. The codebase now had:
 
-| System 1 (OpenClaw Native) | System 2 (Dead-End Parallel) |
-|---|---|
-| `gateway/server-channels.ts` → `createChannelManager()` | `src/services/ChannelManagerService.ts` |
-| `src/plugins/registry.ts` → `PluginRegistry` | `src/services/channels/registry.ts` |
+| System 1 (OpenClaw Native)                                                         | System 2 (Dead-End Parallel)                                       |
+| ---------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `gateway/server-channels.ts` → `createChannelManager()`                            | `src/services/ChannelManagerService.ts`                            |
+| `src/plugins/registry.ts` → `PluginRegistry`                                       | `src/services/channels/registry.ts`                                |
 | `extensions/whatsapp/` → rich plugin (polls, reactions, media, pairing, directory) | `src/services/channels/whatsapp/WhatsappAdapter.ts` → thin wrapper |
 
 ### The Correct Approach (Phase 5)
@@ -427,4 +439,74 @@ Instead of wrapping OpenClaw's engine with adapters, **inject B2C requirements i
 4. All 40+ extensions automatically inherit multi-tenancy, billing gates, and cloud persistence
 
 The parallel system files are **deprecated and pending removal**.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          q1i9kol.
+
+---
+
+## 9. Upstream Leverage & Feature Embedding Policy
+
+> **Canonical reference**: `docs/architecture/UPSTREAM_LEVERAGE_POLICY.md`
+
+### 9.1 Upstream Leverage (No Duplication)
+
+**FOUNDATIONAL RULE**: DeXMart MUST NOT duplicate logic, features, code, or capabilities that OpenClaw upstream already provides. Instead, DeXMart **leverages and utilizes** what upstream offers.
+
+**Why this exists**: OpenClaw owns the majority of the codebase — 4,040+ TypeScript files, 40+ channel extensions, a full plugin SDK, gateway infrastructure, agent runtime, and CLI tooling. By leveraging upstream instead of duplicating it:
+
+1. **Automatic changelog adaptation** — When OpenClaw releases updates, DeXMart inherits them through the sync process. Zero rework.
+2. **Minimal maintenance surface** — DeXMart only maintains its ~5 injection points and exclusive features.
+3. **Zero divergence risk** — Duplicated logic creates parallel implementations that drift apart.
+4. **Faster development** — Building on proven upstream code is faster than rebuilding.
+
+**The decision tree** — Before implementing any new feature:
+
+```
+Does OpenClaw upstream already provide this?
+├── YES → LEVERAGE IT. Import directly, inject if needed. Do NOT duplicate.
+├── PARTIALLY → Extend via injection points. Add only the delta. Do NOT fork.
+└── NO → Is it DeXMart-exclusive? (§9.2 investigation)
+    ├── YES (confirmed) → Embed into core natively
+    └── NO / UNCERTAIN → Research further or file a Conductor track
+```
+
+**Anti-duplication checklist** (mandatory before writing any new module):
+
+- [ ] Searched `src/` for existing implementation
+- [ ] Searched `extensions/` for existing plugin implementation
+- [ ] Checked `CHANGELOG.md` for recently added capabilities
+- [ ] Checked `docs/OPENCLAW_UPSTREAM_REPORT.md` for upcoming upstream features
+- [ ] Verified no bridge/wrapper/adapter is being created
+- [ ] Confirmed this is not reimplementing an upstream module with modifications
+
+### 9.2 DeXMart-Exclusive Feature Embedding
+
+Since OpenClaw and DeXMart are **one unified project**, any feature confirmed (via critical investigation) to be truly DeXMart-exclusive MUST be embedded into the project's core natively — not as a plugin, sidecar, or secondary citizen. This is how top-tier companies handle core product capabilities.
+
+**Investigation protocol** — A feature is DeXMart-exclusive ONLY if ALL of the following are true:
+
+1. It does NOT exist in upstream (confirmed by search)
+2. It is fundamentally tied to DeXMart's B2C/SaaS identity
+3. It would NOT make sense in OpenClaw's single-user, self-hosted mode
+
+**Embedding rules** (once confirmed exclusive):
+
+- Lives in `src/` as a first-class module
+- Injects at foundation level via well-defined injection points
+- Ships with full TDD test coverage
+- Documented in `docs/TrueFusionPlan.md` (DeXMart-Exclusive Features table)
+- Indistinguishable from the rest of the codebase
+
+### 9.3 Changelog Adaptation Guarantee
+
+By following the Upstream Leverage Principle, every OpenClaw update automatically benefits DeXMart:
+
+- **Bug fixes** → inherited through sync
+- **Security patches** → cherry-picked immediately
+- **New features** → available to evaluate and integrate
+- **Performance improvements** → applied globally
+- **New channel plugins** → work automatically via native plugin system
+
+**If DeXMart duplicates upstream logic, this guarantee breaks.** The duplicate will NOT receive upstream fixes and will drift into a maintenance burden.
+
+### 9.4 Enforcement
+
+These principles are enforced across all project surfaces — see `docs/architecture/UPSTREAM_LEVERAGE_POLICY.md` §4 for the complete enforcement matrix. Violations (reimplementing upstream logic, creating bridges/wrappers, forking upstream files, treating exclusives as secondary) are **Severe Violations** that must be remediated before proceeding.

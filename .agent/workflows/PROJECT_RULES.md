@@ -22,19 +22,36 @@ All code lives in the unified `src/` tree. Use path aliases:
 
 ```typescript
 // ✅ CORRECT — unified src/ imports
-import { AgentService } from '@dexmart/services/AgentService.js';
-import { useChannelAuthState } from '@dexmart/persistence/channel-auth-state.js';
-import { filterModelsForUser } from '@dexmart/billing/auth-guard.js';
+import { AgentService } from "@dexmart/services/AgentService.js";
+import { useChannelAuthState } from "@dexmart/persistence/channel-auth-state.js";
+import { filterModelsForUser } from "@dexmart/billing/auth-guard.js";
 
 // ❌ WRONG — these are dead patterns from pre-fusion era
-import { something } from 'openclaw';                    // Package doesn't exist at runtime
-import { something } from '@/utils/openclawImports.js';  // Deleted in Phase 1
-import { something } from '../../../openclaw/src/...';   // Relative paths to openclaw/
+import { something } from "openclaw"; // Package doesn't exist at runtime
+import { something } from "@/utils/openclawImports.js"; // Deleted in Phase 1
+import { something } from "../../../openclaw/src/..."; // Relative paths to openclaw/
 ```
 
 ### Upstream Sync (Invisible to the Product)
 
 OpenClaw upstream is tracked as a git remote for cherry-picking security patches. This is an implementation detail — no developer needs to know or care about it during normal work. See `docs/architecture/FUSION_STRATEGY.md` for the sync protocol.
+
+### Upstream Leverage Mandate
+
+> **Canonical reference**: `docs/architecture/UPSTREAM_LEVERAGE_POLICY.md`
+
+**CRITICAL**: DeXMart MUST NOT duplicate logic, features, code, or capabilities that OpenClaw upstream already provides. Instead, **leverage and utilize** what upstream offers. This ensures automatic adaptation to OpenClaw's changelogs — bug fixes, security patches, new features, and performance improvements are inherited through the sync process with zero rework.
+
+Before implementing ANY new module/service/utility:
+
+1. Search `src/` and `extensions/` for existing upstream implementation
+2. Check `CHANGELOG.md` and `docs/OPENCLAW_UPSTREAM_REPORT.md` for upstream capabilities
+3. If upstream provides it → **STOP and leverage it**. Do NOT create a parallel implementation.
+4. If upstream partially provides it → Extend via injection points. Do NOT fork or wrap.
+
+### DeXMart-Exclusive Feature Embedding
+
+Since OpenClaw and DeXMart are **one project**, features confirmed (via critical investigation) to be truly DeXMart-exclusive MUST be embedded natively in `src/` as first-class modules — not plugins, sidecars, or secondary citizens. A feature is DeXMart-exclusive ONLY if it does NOT exist upstream AND is fundamentally a B2C/SaaS concern AND would NOT make sense in single-user mode. Follow the investigation protocol in `docs/architecture/UPSTREAM_LEVERAGE_POLICY.md` §2.
 
 ---
 
@@ -162,8 +179,6 @@ OpenClaw upstream is tracked as a git remote for cherry-picking security patches
 
 **Mandate**: We follow a **Hybrid Feature-Sliced Design**. Code is organized by **Domain**, not by Technology.
 
-
-
 ### Strict Rules
 
 1.  **"Thin Page" Pattern**: `app/**/page.tsx` should ONLY fetch initial data and render a Feature Component. No logic allowed in `page.tsx`.
@@ -179,7 +194,7 @@ OpenClaw upstream is tracked as a git remote for cherry-picking security patches
     - Use strict Tailwind spacing tokens (e.g., `gap-4` not `gap-[15px]`).
     - All interactive elements must have: Hover, Active, and Focus-Visible states.
 7.  **No Emojis in UI**: NEVER use emojis in the UI. Always use proper SVG icons from `lucide-react` or custom icons from `components/ui/icons.tsx`. Emojis are only permitted if explicitly requested by the user.
-8. NO ASSUMPTIONS, NO GUESSING, JUST PURE INVESTIGATIONS
+8.  NO ASSUMPTIONS, NO GUESSING, JUST PURE INVESTIGATIONS
 
 ### State Management Hierarchy
 
@@ -192,15 +207,18 @@ OpenClaw upstream is tracked as a git remote for cherry-picking security patches
 | Optimistic   | `useOptimistic`   | Pending mutations   |
 
 ---
+
 ## 9. Agentic Workflow Patterns (2026 Mastermind)
 
 **Mandate**: All autonomous agents must follow iterative reasoning and self-correction loops.
 
 ### Core Patterns
+
 1.  **Reflection**: After completing a complex task (e.g., refactoring or feature logic), the agent MUST perform a "Critic" phase to identify flaws in its own implementation before reporting to the user.
 2.  **Tool-Based Verification**: Whenever possible, use specialized tools (linters, test runners, custom scripts) to verify the output of a thought process rather than relying on LLM intuition alone.
 3.  **Dynamic Planning**: For ambiguous requests, the agent MUST generate a multi-step plan, present it to the user, and update the plan dynamically as new information is gathered during tool execution.
 
 ### Error Handling & Self-Correction
+
 - **Generator-Critic Loop**: If a command fails, the agent must analyze the error, hypothesize a fix, and retry WITH a modified approach.
 - **Structured Failure**: If an agent cannot resolve an error after 2 attempts, it MUST halt and provide a structured report of what it tried, what failed, and why it's stuck.

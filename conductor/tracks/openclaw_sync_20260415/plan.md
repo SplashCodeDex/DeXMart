@@ -165,4 +165,5 @@ Systematic verification that all 31 breaking changes across the absorbed version
 - [ ] Task 6.3: Run `scripts/automation/upstream-watcher.ts` (incremental mode) — verify no new upstream activity missed
 - [ ] Task 6.4: Squash-merge sync branch into main development branch
 - [ ] Task 6.5: Clean up temporary snapshots and triage files
+- [ ] Task 6.6: **Upstream Leverage Compliance Audit** — Scan for any DeXMart code discovered during sync that duplicates upstream logic. Any duplication found must be flagged for removal per `docs/architecture/UPSTREAM_LEVERAGE_POLICY.md`. Verify all DeXMart-exclusive features remain natively embedded in `src/` as first-class modules.
 - [ ] Task: Conductor - User Manual Verification 'Phase 6: Documentation & Finalization' (Protocol in workflow.md)
