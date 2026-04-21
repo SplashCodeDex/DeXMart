@@ -57,9 +57,9 @@ _Lane — typed WS client + transport architecture decision. Everything after de
 
 ### Sub-Track 1.B — Gateway Client Core
 
-- [ ] Task 1.B.A.1: Write failing tests — `gateway-client.connection.test.ts` (connect, auth handshake, reconnect w/ exponential backoff, non-recoverable auth halt)
-- [ ] Task 1.B.A.2: Write failing tests — `gateway-client.frames.test.ts` (request→response, event subscribe, timeout, error propagation)
-- [ ] Task 1.B.B.1: Implement `frontend/src/lib/gateway/gateway-client.ts` — singleton WS client per transport decision, Firebase JWT auth, device identity from existing `ui/src/ui/device-identity.ts` pattern (port, don't duplicate — import if possible)
+- [x] Task 1.B.A.1: Write failing tests — `gateway-client.connection.test.ts` (connect, auth handshake, reconnect w/ exponential backoff, non-recoverable auth halt) 53f5a21
+- [x] Task 1.B.A.2: Write failing tests — `gateway-client.frames.test.ts` (request→response, event subscribe, timeout, error propagation) 53f5a21
+- [x] Task 1.B.B.1: Implement `frontend/src/lib/gateway/gateway-client.ts` — singleton WS client per transport decision, Firebase JWT auth, device identity from existing `ui/src/ui/device-identity.ts` pattern (port, don't duplicate — import if possible) 53f5a21
 - [x] Task 1.B.B.2: Implement `frontend/src/lib/gateway/gateway-rpc.ts` — `call<T>(method, params)` + `subscribe(event, handler)` + idempotency key support
 - [x] Task 1.B.C.1: Import Zod schemas directly from `src/gateway/server-methods/*` via workspace alias — NO duplicate schemas (PROJECT_RULES §0.1)
 - [x] Task 1.B.C.2: Create `frontend/src/lib/gateway/gateway-types.ts` — thin re-exports only, no redefinitions
