@@ -90,14 +90,14 @@ describe("Gateway Hooks", () => {
       });
 
       expect(result.current).toHaveLength(1);
-      expect(result.current[0].payload).toEqual({ data: 1 });
+      expect(result.current[0]!.payload).toEqual({ data: 1 });
 
       act(() => {
         callback({ data: 2 }, { seq: 2 });
       });
 
       expect(result.current).toHaveLength(2);
-      expect(result.current[1].payload).toEqual({ data: 2 });
+      expect(result.current[1]!.payload).toEqual({ data: 2 });
     });
 
     it("cleans up subscription on unmount", () => {

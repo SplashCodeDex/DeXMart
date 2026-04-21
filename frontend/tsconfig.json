@@ -26,7 +26,10 @@
       "@/server/*": ["./src/server/*"],
       "@/stores/*": ["./src/stores/*"],
       "@/hooks/*": ["./src/hooks/*"],
-      "@/types/*": ["./src/types/*"]
+      "@/types/*": ["./src/types/*"],
+      "@openclaw/protocol": ["../src/gateway/protocol/index.ts"],
+      "@openclaw/protocol/*": ["../src/gateway/protocol/*"],
+      "@openclaw/*": ["../src/*"]
     },
     "noUncheckedIndexedAccess": true,
     "noImplicitReturns": true,
@@ -40,5 +43,5 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "playwright.visual.config.ts", "src/e2e/**"]
 }

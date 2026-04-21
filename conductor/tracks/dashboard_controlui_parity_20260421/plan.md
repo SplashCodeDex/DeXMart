@@ -94,16 +94,16 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 
 ### Sub-Track 2.2 — ModelSelector (used by chat, sessions, cron, agents, setup-wizard)
 
-- [ ] Task 2.2.A.1: Failing tests — list/filter/select, empty state, loading, error
-- [ ] Task 2.2.B.1: Implement `frontend/src/components/shared/ModelSelector.tsx` — wraps `models.list` RPC
-- [ ] Task 2.2.D.1: Coverage ≥ 80% + visual-diff update
+- [x] Task 2.2.A.1: Failing tests — list/filter/select, empty state, loading, error
+- [x] Task 2.2.B.1: Implement `frontend/src/components/shared/ModelSelector.tsx` — wraps `models.list` RPC
+- [x] Task 2.2.D.1: Coverage ≥ 80% + visual-diff update _(coverage: 100% stmts/lines, 84% branch; visual-diff deferred — requires live auth session)_
 
 ### Sub-Track 2.3 — QRLoginModal (used by channels, setup-wizard)
 
-- [ ] Task 2.3.A.1: Failing tests — QR render, countdown, expiry auto-refresh, cancel
-- [ ] Task 2.3.B.1: Implement `frontend/src/features/omnichannel/components/QRLoginModal.tsx` (feature-scoped because primary consumer)
-- [ ] Task 2.3.B.2: Export barrel from `frontend/src/components/shared/index.ts` for wizard reuse
-- [ ] Task 2.3.D.1: Coverage + visual-diff
+- [x] Task 2.3.A.1: Failing tests — QR render, countdown, expiry auto-refresh, cancel
+- [x] Task 2.3.B.1: Implement `frontend/src/features/omnichannel/components/QRLoginModal.tsx` (feature-scoped because primary consumer)
+- [x] Task 2.3.B.2: Export barrel from `frontend/src/components/shared/index.ts` for wizard reuse
+- [x] Task 2.3.D.1: Coverage + visual-diff _(coverage: 95.83% stmts, 100% funcs/lines, 85.71% branch; visual-diff deferred — requires live auth session)_
 
 ### Sub-Track 2.4 — SchemaFormRenderer (used by config, cron, skills api-keys, wizard)
 

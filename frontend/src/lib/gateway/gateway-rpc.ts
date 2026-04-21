@@ -15,6 +15,7 @@ import type {
 import { ChatSendParamsSchema, ChatHistoryParamsSchema } from "@openclaw/protocol/index";
 import { z } from "zod";
 import { GatewayClient } from "./gateway-client";
+import type { ModelCatalogEntry } from "./models-types";
 
 export type ChatSendParams = z.infer<typeof ChatSendParamsSchema>;
 export type ChatHistoryParams = z.infer<typeof ChatHistoryParamsSchema>;
@@ -45,9 +46,15 @@ export interface MethodMap {
     };
   };
   "agents.list": {
-    params: Record<string, never>; // AgentsListParams has no fields usually
+    params: Record<string, never>;
     result: {
       agents: ReadonlyArray<AgentSummary>;
+    };
+  };
+  "models.list": {
+    params: Record<string, never>;
+    result: {
+      models: ReadonlyArray<ModelCatalogEntry>;
     };
   };
 }
