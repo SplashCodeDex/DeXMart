@@ -19,7 +19,7 @@ Every sub-track's D-group appends its scenarios to `frontend/src/e2e/controlui-p
 
 ---
 
-## Phase 0: Discovery & Matrix Maintenance [checkpoint: complete]
+## Phase 0: Discovery & Matrix Maintenance [checkpoint: 1dc623c]
 
 _Lane — evidence pipeline. Runs once up-front, then on every upstream sync._
 
