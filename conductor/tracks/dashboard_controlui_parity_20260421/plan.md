@@ -68,15 +68,15 @@ _Lane — typed WS client + transport architecture decision. Everything after de
 
 ### Sub-Track 1.C — React Hooks + Provider
 
-- [ ] Task 1.C.A.1: Failing tests for `useGateway()` — connected / error / reconnecting states
-- [ ] Task 1.C.A.2: Failing tests for `useRpcCall()` and `useGatewayStream()`
-- [ ] Task 1.C.B.1: Implement `frontend/src/lib/gateway/gateway-hooks.ts`
-- [ ] Task 1.C.B.2: Implement `frontend/src/components/providers/GatewayProvider.tsx`
-- [ ] Task 1.C.C.1: Wire `GatewayProvider` into `frontend/src/app/(dashboard)/layout.tsx`
-- [ ] Task 1.C.C.2: Add Gateway `ConnectionStatus` indicator to dashboard header (distinct from existing Socket.io indicator)
-- [ ] Task 1.C.D.1: Tests + typecheck green
-- [ ] Task 1.C.D.2: Commit — `feat(gateway): typed RPC bridge with Firebase auth and React hooks`
-- [ ] Task: Conductor - User Manual Verification 'Phase 1'
+- [x] Task 1.C.A.1: Failing tests for `useGateway()` — connected / error / reconnecting states
+- [x] Task 1.C.A.2: Failing tests for `useRpcCall()` and `useGatewayStream()`
+- [x] Task 1.C.B.1: Implement `frontend/src/lib/gateway/gateway-hooks.ts`
+- [x] Task 1.C.B.2: Implement `frontend/src/components/providers/GatewayProvider.tsx`
+- [x] Task 1.C.C.1: Wire `GatewayProvider` into `frontend/src/app/(dashboard)/layout.tsx`
+- [x] Task 1.C.C.2: Add Gateway `ConnectionStatus` indicator to dashboard header (distinct from existing Socket.io indicator)
+- [x] Task 1.C.D.1: Tests + typecheck green
+- [x] Task 1.C.D.2: Commit — `feat(gateway): typed RPC bridge with Firebase auth and React hooks`
+- [x] Task: Conductor - User Manual Verification 'Phase 1'
 
 ---
 

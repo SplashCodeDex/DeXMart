@@ -1,12 +1,17 @@
-import { DashboardShell } from '@/components/layouts/DashboardShell';
-import { requireAuth } from '@/server/auth/session';
+import { DashboardShell } from "@/components/layouts/DashboardShell";
+import { ClientGatewayProvider } from "@/components/providers/client-gateway-provider";
+import { requireAuth } from "@/server/auth/session";
 
 export default async function DashboardLayout({
-    children,
+  children,
 }: {
-    children: React.ReactNode;
+  children: React.ReactNode;
 }): Promise<React.JSX.Element> {
-    await requireAuth();
+  await requireAuth();
 
-    return <DashboardShell>{children}</DashboardShell>;
+  return (
+    <ClientGatewayProvider>
+      <DashboardShell>{children}</DashboardShell>
+    </ClientGatewayProvider>
+  );
 }
