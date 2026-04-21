@@ -1,0 +1,43 @@
+{
+  "_doc": "Manual overrides applied by controlui-parity-discover.ts. Strategy overrides + subtract reasons + label overrides.",
+  "subtract": [
+    {
+      "featureId": "connect-gate",
+      "reason": "Connect-command / gateway-url-confirmation / login-gate are ControlUI bootstrap flows. DeXMart uses Firebase Auth + backend-injected Gateway URL; user never enters gateway URL by hand."
+    }
+  ],
+  "strategyOverrides": {},
+  "featureMapping": {
+    "exec-approvals": { "route": "config" },
+    "update-runner": { "route": "config" },
+    "tts": { "route": "config" },
+    "dreaming": { "route": "agents" },
+    "devices": { "route": "nodes" },
+    "instances": { "route": "home" },
+    "message-actions": { "route": "messages" }
+  },
+  "weaveTargets": {
+    "channels": "/dashboard/omnichannel — Connect/Status/QR lives in channel cards",
+    "devices": "/dashboard/nodes — Devices tab",
+    "dreaming": "/dashboard/agents — Memory tab on agent detail",
+    "tts": "/dashboard/config — Voice section",
+    "exec-approvals": "/dashboard/config — Security tab",
+    "update-runner": "/dashboard/config — System tab",
+    "instances": "/dashboard/home — Presence card",
+    "message-actions": "/dashboard/messages or session transcript — react/edit/delete row actions"
+  },
+  "dexmartExclusiveAllowlist": {
+    "_doc": "DeXMart routes with no ControlUI parent. Each must match PROJECT_RULES §0.2 embedding rules (B2C/SaaS-exclusive).",
+    "routes": [
+      "/dashboard/billing",
+      "/dashboard/contacts",
+      "/dashboard/flows",
+      "/dashboard/messages",
+      "/dashboard/messages/campaigns/[id]",
+      "/dashboard/omnichannel/reasoning",
+      "/dashboard/settings",
+      "/dashboard/templates",
+      "/dashboard/webhooks"
+    ]
+  }
+}

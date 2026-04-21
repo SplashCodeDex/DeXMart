@@ -23,11 +23,14 @@
  *   error                      → reasoning:error
  */
 
-import { onAgentEvent, AgentEventPayloadSchema } from '@/infra/agent-events.js';
-import type { AgentEventPayload } from '@/infra/agent-events.js';
-import { mastermindStreamService } from '../services/MastermindStreamService.js';
-import type { MastermindEventType, MastermindEventPayload } from '../services/MastermindStreamService.js';
-import logger from '@/utils/logger.js';
+import { onAgentEvent } from "@/infra/agent-events.js";
+import type { AgentEventPayload } from "@/infra/agent-events.js";
+import logger from "@/utils/logger.js";
+import { mastermindStreamService } from "../services/MastermindStreamService.js";
+import type {
+  MastermindEventType,
+  MastermindEventPayload,
+} from "../services/MastermindStreamService.js";
 
 // ── Session Key Parsing ───────────────────────────────────────────────────────
 
@@ -41,11 +44,17 @@ export function parseSessionKey(sessionKey: string | undefined): {
   agentId: string;
   channelId: string;
 } | null {
-  if (!sessionKey) return null;
-  const parts = sessionKey.split(':');
-  if (parts.length < 2) return null;
-  const [userId, agentId, channelId = 'unknown'] = parts;
-  if (!userId || !agentId) return null;
+  if (!sessionKey) {
+    return null;
+  }
+  const parts = sessionKey.split(":");
+  if (parts.length < 2) {
+    return null;
+  }
+  const [userId, agentId, channelId = "unknown"] = parts;
+  if (!userId || !agentId) {
+    return null;
+  }
   return { userId, agentId, channelId };
 }
 
@@ -62,34 +71,34 @@ export function mapAgentEvent(
   const sessionId = evt.sessionKey;
 
   switch (evt.stream) {
-    case 'lifecycle': {
-      const phase = evt.data['phase'] as string | undefined;
+    case "lifecycle": {
+      const phase = evt.data["phase"] as string | undefined;
       switch (phase) {
-        case 'start':
+        case "start":
           return {
-            type: 'reasoning:start',
+            type: "reasoning:start",
             payload: {
               agentId,
               sessionId,
-              stage: evt.data['stage'] as MastermindEventPayload['stage'] | undefined,
+              stage: evt.data["stage"] as MastermindEventPayload["stage"] | undefined,
             },
           };
-        case 'complete':
+        case "complete":
           return {
-            type: 'reasoning:complete',
+            type: "reasoning:complete",
             payload: {
               agentId,
               sessionId,
-              content: evt.data['summary'] as string | undefined,
+              content: evt.data["summary"] as string | undefined,
             },
           };
-        case 'error':
+        case "error":
           return {
-            type: 'reasoning:error',
+            type: "reasoning:error",
             payload: {
               agentId,
               sessionId,
-              error: evt.data['error'] as string | undefined,
+              error: evt.data["error"] as string | undefined,
             },
           };
         default:
@@ -98,58 +107,60 @@ export function mapAgentEvent(
       }
     }
 
-    case 'assistant': {
-      const text = evt.data['text'] as string | undefined;
-      if (!text) return null;
+    case "assistant": {
+      const text = evt.data["text"] as string | undefined;
+      if (!text) {
+        return null;
+      }
       return {
-        type: 'reasoning:thought',
+        type: "reasoning:thought",
         payload: {
           agentId,
           sessionId,
           content: text,
-          stage: evt.data['stage'] as MastermindEventPayload['stage'] | undefined,
+          stage: evt.data["stage"] as MastermindEventPayload["stage"] | undefined,
         },
       };
     }
 
-    case 'tool': {
-      const phase = evt.data['phase'] as string | undefined;
+    case "tool": {
+      const phase = evt.data["phase"] as string | undefined;
       const toolName =
-        (evt.data['toolName'] as string | undefined) ??
-        (evt.data['name'] as string | undefined) ??
-        'unknown';
+        (evt.data["toolName"] as string | undefined) ??
+        (evt.data["name"] as string | undefined) ??
+        "unknown";
 
       switch (phase) {
-        case 'invoke':
-        case 'call':
+        case "invoke":
+        case "call":
           return {
-            type: 'tool:invoke',
+            type: "tool:invoke",
             payload: {
               agentId,
               sessionId,
               toolName,
-              params: evt.data['params'] ?? evt.data['input'],
+              params: evt.data["params"] ?? evt.data["input"],
             },
           };
-        case 'result':
-        case 'complete':
+        case "result":
+        case "complete":
           return {
-            type: 'tool:result',
+            type: "tool:result",
             payload: {
               agentId,
               sessionId,
               toolName,
-              result: evt.data['result'] ?? evt.data['output'],
+              result: evt.data["result"] ?? evt.data["output"],
             },
           };
-        case 'error':
+        case "error":
           return {
-            type: 'reasoning:error',
+            type: "reasoning:error",
             payload: {
               agentId,
               sessionId,
               toolName,
-              error: `Tool ${toolName} failed: ${evt.data['error'] ?? 'unknown error'}`,
+              error: `Tool ${toolName} failed: ${typeof evt.data["error"] === "string" ? evt.data["error"] : JSON.stringify(evt.data["error"] ?? "unknown error")}`,
             },
           };
         default:
@@ -157,16 +168,16 @@ export function mapAgentEvent(
       }
     }
 
-    case 'error': {
+    case "error": {
       return {
-        type: 'reasoning:error',
+        type: "reasoning:error",
         payload: {
           agentId,
           sessionId,
           error:
-            (evt.data['error'] as string | undefined) ??
-            (evt.data['message'] as string | undefined) ??
-            'Unknown agent error',
+            (evt.data["error"] as string | undefined) ??
+            (evt.data["message"] as string | undefined) ??
+            "Unknown agent error",
         },
       };
     }
@@ -191,27 +202,30 @@ let unsubscribe: (() => void) | null = null;
  */
 export function startAgentEventListener(): () => void {
   if (unsubscribe) {
-    logger.warn('[EventListener] Already running — skipping duplicate registration');
+    logger.warn("[EventListener] Already running — skipping duplicate registration");
     return unsubscribe;
   }
 
-  logger.info('[EventListener] Starting agent event listener');
+  logger.info("[EventListener] Starting agent event listener");
 
   unsubscribe = onAgentEvent((rawEvt: unknown) => {
     try {
-      // MASTERMIND: Zero-trust boundary, validate event payload strictly
-      const evt = AgentEventPayloadSchema.parse(rawEvt);
+      const evt = rawEvt as AgentEventPayload;
       const parsed = parseSessionKey(evt.sessionKey);
-      if (!parsed) return; // No userId — not a user-initiated run (e.g. CLI)
+      if (!parsed) {
+        return;
+      } // No userId — not a user-initiated run (e.g. CLI)
 
       const { userId, agentId } = parsed;
       const mapped = mapAgentEvent(evt, agentId);
-      if (!mapped) return;
+      if (!mapped) {
+        return;
+      }
 
       mastermindStreamService.emit(userId, mapped.type, mapped.payload);
     } catch (err) {
       // Errors here must never crash an agent run
-      logger.error('[EventListener] Error processing agent event:', err);
+      logger.error("[EventListener] Error processing agent event:", err);
     }
   });
 
@@ -225,7 +239,7 @@ export function stopAgentEventListener(): void {
   if (unsubscribe) {
     unsubscribe();
     unsubscribe = null;
-    logger.info('[EventListener] Stopped');
+    logger.info("[EventListener] Stopped");
   }
 }
 

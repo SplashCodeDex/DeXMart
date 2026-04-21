@@ -1,60 +1,60 @@
 {
-    "keep": {
-        "days": true,
-        "amount": 14
+  "keep": {
+    "days": true,
+    "amount": 14
+  },
+  "auditLog": "/home/codedex/projects/DeXMart/logs/.81d6bd1c2884f53029e682ec6114f6a767b2c65a-audit.json",
+  "files": [
+    {
+      "date": 1775512571594,
+      "name": "/home/codedex/projects/DeXMart/logs/app-2026-04-06.log",
+      "hash": "c2a613389a85b5ea43fecf70973cc93fed47f61a30050800aefd454a1a3bd4c0"
     },
-    "auditLog": "/home/codedex/projects/DeXMart/logs/.81d6bd1c2884f53029e682ec6114f6a767b2c65a-audit.json",
-    "files": [
-        {
-            "date": 1775268503164,
-            "name": "/home/codedex/projects/DeXMart/logs/app-2026-04-04.log",
-            "hash": "117b172aac932402e56d6164412229844586e5a516abe51bffccb01e4b97ad07"
-        },
-        {
-            "date": 1775512571594,
-            "name": "/home/codedex/projects/DeXMart/logs/app-2026-04-06.log",
-            "hash": "c2a613389a85b5ea43fecf70973cc93fed47f61a30050800aefd454a1a3bd4c0"
-        },
-        {
-            "date": 1775585491767,
-            "name": "/home/codedex/projects/DeXMart/logs/app-2026-04-07.log",
-            "hash": "1c613e5a95c5fb7f004794ecbd805a3fc4bd2b6619f602debb36a3727ce23ccf"
-        },
-        {
-            "date": 1775673959106,
-            "name": "/home/codedex/projects/DeXMart/logs/app-2026-04-08.log",
-            "hash": "9a2b3f9745c377a81dde7aa4ed385117cf314ce3327bef7207edae4d95484143"
-        },
-        {
-            "date": 1775696964268,
-            "name": "/home/codedex/projects/DeXMart/logs/app-2026-04-09.log",
-            "hash": "40faeeb51d7bae06b65c2a87fb4c4c789370f80b26fe84966c516c7d02e0d44f"
-        },
-        {
-            "date": 1775784618170,
-            "name": "/home/codedex/projects/DeXMart/logs/app-2026-04-10.log",
-            "hash": "65c4337d7ef91bcd1503fc05a998967687c214be18deeeb66a0953bcb7c50127"
-        },
-        {
-            "date": 1776032482812,
-            "name": "/home/codedex/projects/DeXMart/logs/app-2026-04-12.log",
-            "hash": "86addb26b8d9ac22265db6350a17bfe3f0df6f2307d149bf42efa756f2b50665"
-        },
-        {
-            "date": 1776041707947,
-            "name": "/home/codedex/projects/DeXMart/logs/app-2026-04-13.log",
-            "hash": "38739db841f3a2606d2e52035c72803af498cad63416384540ea81fd8f33b8d4"
-        },
-        {
-            "date": 1776124800774,
-            "name": "/home/codedex/projects/DeXMart/logs/app-2026-04-14.log",
-            "hash": "ae79e3142594375b2c0787b26a214416aa7c74244ac9dc67ee2e9efa95aedc55"
-        },
-        {
-            "date": 1776213998882,
-            "name": "/home/codedex/projects/DeXMart/logs/app-2026-04-15.log",
-            "hash": "e39be86443c591df1d07c2c3886cd7e7957ea4fc9f2980eaada2f7605330f7c0"
-        }
-    ],
-    "hashType": "sha256"
+    {
+      "date": 1775585491767,
+      "name": "/home/codedex/projects/DeXMart/logs/app-2026-04-07.log",
+      "hash": "1c613e5a95c5fb7f004794ecbd805a3fc4bd2b6619f602debb36a3727ce23ccf"
+    },
+    {
+      "date": 1775673959106,
+      "name": "/home/codedex/projects/DeXMart/logs/app-2026-04-08.log",
+      "hash": "9a2b3f9745c377a81dde7aa4ed385117cf314ce3327bef7207edae4d95484143"
+    },
+    {
+      "date": 1775696964268,
+      "name": "/home/codedex/projects/DeXMart/logs/app-2026-04-09.log",
+      "hash": "40faeeb51d7bae06b65c2a87fb4c4c789370f80b26fe84966c516c7d02e0d44f"
+    },
+    {
+      "date": 1775784618170,
+      "name": "/home/codedex/projects/DeXMart/logs/app-2026-04-10.log",
+      "hash": "65c4337d7ef91bcd1503fc05a998967687c214be18deeeb66a0953bcb7c50127"
+    },
+    {
+      "date": 1776032482812,
+      "name": "/home/codedex/projects/DeXMart/logs/app-2026-04-12.log",
+      "hash": "86addb26b8d9ac22265db6350a17bfe3f0df6f2307d149bf42efa756f2b50665"
+    },
+    {
+      "date": 1776041707947,
+      "name": "/home/codedex/projects/DeXMart/logs/app-2026-04-13.log",
+      "hash": "38739db841f3a2606d2e52035c72803af498cad63416384540ea81fd8f33b8d4"
+    },
+    {
+      "date": 1776124800774,
+      "name": "/home/codedex/projects/DeXMart/logs/app-2026-04-14.log",
+      "hash": "ae79e3142594375b2c0787b26a214416aa7c74244ac9dc67ee2e9efa95aedc55"
+    },
+    {
+      "date": 1776213998882,
+      "name": "/home/codedex/projects/DeXMart/logs/app-2026-04-15.log",
+      "hash": "e39be86443c591df1d07c2c3886cd7e7957ea4fc9f2980eaada2f7605330f7c0"
+    },
+    {
+      "date": 1776558690028,
+      "name": "/home/codedex/projects/DeXMart/logs/app-2026-04-19.log",
+      "hash": "34d824af447616ceab09cdcedc7e57e70f7fa6bcf9d088c24b1cfc05ad617d0c"
+    }
+  ],
+  "hashType": "sha256"
 }

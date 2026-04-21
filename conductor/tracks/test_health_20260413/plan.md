@@ -47,13 +47,13 @@
 - [x] Task 4.6: Fix `src/tools/cmd.test.ts` — 3 translate tests failing (likely GeminiService mock issue — investigate if DeXMart-relevant)
 - [x] Task 4.7: Fix `src/analytics/` and `src/hooks/` failures — investigate root cause and fix or skip
 - [x] Task 4.8: Run full test suite — confirm zero failures
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Skip/Annotate OpenClaw Engine Tests' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Skip/Annotate OpenClaw Engine Tests' (Protocol in workflow.md)
 
 ---
 
 ## Phase 5: Establish Test Health Baseline
 
-- [ ] Task 5.1: Run `CI=true pnpm test` and capture final test counts: total, passing, skipped, failed
+- [~] Task 5.1: Run `CI=true pnpm test` and capture final test counts: total, passing, skipped, failed
 - [ ] Task 5.2: Document baseline in `docs/session-logs/test-health-baseline.md` with breakdown by category
 - [ ] Task 5.3: Clean up temporary triage files and scripts
 - [ ] Task: Conductor - User Manual Verification 'Phase 5: Establish Test Health Baseline' (Protocol in workflow.md)

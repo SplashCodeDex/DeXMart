@@ -836,6 +836,9 @@ jobs:
           install-bun: "false"
           use-sticky-disk: "false"
 
+      - name: ControlUI parity matrix check
+        run: pnpm parity:check
+
       - name: Check types and lint and oxfmt
         env:
           OPENCLAW_LOCAL_CHECK: "0"

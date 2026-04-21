@@ -1,0 +1,1849 @@
+{
+  "generated_at": "2026-04-21T11:18:18.530Z",
+  "source_commit": "30bee400e6",
+  "summary": {
+    "rpc_method_count": 119,
+    "rpc_domain_count": 28,
+    "controlui_view_count": 58,
+    "controlui_controller_count": 28,
+    "dexmart_route_count": 17,
+    "dexmart_feature_count": 13,
+    "parity_feature_count": 22,
+    "coverage_pct": 73
+  },
+  "rpc_methods": [
+    {
+      "method": "agent.identity.get",
+      "domain": "agent",
+      "file": "src/gateway/server-methods/agent.ts",
+      "line": 898
+    },
+    {
+      "method": "agent.wait",
+      "domain": "agent",
+      "file": "src/gateway/server-methods/agent.ts",
+      "line": 952
+    },
+    {
+      "method": "agents.create",
+      "domain": "agents",
+      "file": "src/gateway/server-methods/agents.ts",
+      "line": 444
+    },
+    {
+      "method": "agents.delete",
+      "domain": "agents",
+      "file": "src/gateway/server-methods/agents.ts",
+      "line": 624
+    },
+    {
+      "method": "agents.files.get",
+      "domain": "agents",
+      "file": "src/gateway/server-methods/agents.ts",
+      "line": 693
+    },
+    {
+      "method": "agents.files.list",
+      "domain": "agents",
+      "file": "src/gateway/server-methods/agents.ts",
+      "line": 663
+    },
+    {
+      "method": "agents.files.set",
+      "domain": "agents",
+      "file": "src/gateway/server-methods/agents.ts",
+      "line": 740
+    },
+    {
+      "method": "agents.list",
+      "domain": "agents",
+      "file": "src/gateway/server-methods/agents.ts",
+      "line": 427
+    },
+    {
+      "method": "agents.update",
+      "domain": "agents",
+      "file": "src/gateway/server-methods/agents.ts",
+      "line": 536
+    },
+    {
+      "method": "channels.logout",
+      "domain": "channels",
+      "file": "src/gateway/server-methods/channels.ts",
+      "line": 243
+    },
+    {
+      "method": "channels.status",
+      "domain": "channels",
+      "file": "src/gateway/server-methods/channels.ts",
+      "line": 73
+    },
+    {
+      "method": "chat.abort",
+      "domain": "chat",
+      "file": "src/gateway/server-methods/chat.ts",
+      "line": 1680
+    },
+    {
+      "method": "chat.history",
+      "domain": "chat",
+      "file": "src/gateway/server-methods/chat.ts",
+      "line": 1607
+    },
+    {
+      "method": "chat.inject",
+      "domain": "chat",
+      "file": "src/gateway/server-methods/chat.ts",
+      "line": 2336
+    },
+    {
+      "method": "chat.send",
+      "domain": "chat",
+      "file": "src/gateway/server-methods/chat.ts",
+      "line": 1761
+    },
+    {
+      "method": "commands.list",
+      "domain": "commands",
+      "file": "src/gateway/server-methods/commands.ts",
+      "line": 242
+    },
+    {
+      "method": "config.apply",
+      "domain": "config",
+      "file": "src/gateway/server-methods/config.ts",
+      "line": 629
+    },
+    {
+      "method": "config.get",
+      "domain": "config",
+      "file": "src/gateway/server-methods/config.ts",
+      "line": 397
+    },
+    {
+      "method": "config.patch",
+      "domain": "config",
+      "file": "src/gateway/server-methods/config.ts",
+      "line": 471
+    },
+    {
+      "method": "config.schema",
+      "domain": "config",
+      "file": "src/gateway/server-methods/config.ts",
+      "line": 405
+    },
+    {
+      "method": "config.schema.lookup",
+      "domain": "config",
+      "file": "src/gateway/server-methods/config.ts",
+      "line": 411
+    },
+    {
+      "method": "config.set",
+      "domain": "config",
+      "file": "src/gateway/server-methods/config.ts",
+      "line": 444
+    },
+    {
+      "method": "cron.add",
+      "domain": "cron",
+      "file": "src/gateway/server-methods/cron.ts",
+      "line": 93
+    },
+    {
+      "method": "cron.list",
+      "domain": "cron",
+      "file": "src/gateway/server-methods/cron.ts",
+      "line": 46
+    },
+    {
+      "method": "cron.remove",
+      "domain": "cron",
+      "file": "src/gateway/server-methods/cron.ts",
+      "line": 200
+    },
+    {
+      "method": "cron.run",
+      "domain": "cron",
+      "file": "src/gateway/server-methods/cron.ts",
+      "line": 228
+    },
+    {
+      "method": "cron.runs",
+      "domain": "cron",
+      "file": "src/gateway/server-methods/cron.ts",
+      "line": 262
+    },
+    {
+      "method": "cron.status",
+      "domain": "cron",
+      "file": "src/gateway/server-methods/cron.ts",
+      "line": 78
+    },
+    {
+      "method": "cron.update",
+      "domain": "cron",
+      "file": "src/gateway/server-methods/cron.ts",
+      "line": 140
+    },
+    {
+      "method": "device.pair.approve",
+      "domain": "device",
+      "file": "src/gateway/server-methods/devices.ts",
+      "line": 141
+    },
+    {
+      "method": "device.pair.list",
+      "domain": "device",
+      "file": "src/gateway/server-methods/devices.ts",
+      "line": 117
+    },
+    {
+      "method": "device.pair.reject",
+      "domain": "device",
+      "file": "src/gateway/server-methods/devices.ts",
+      "line": 185
+    },
+    {
+      "method": "device.pair.remove",
+      "domain": "device",
+      "file": "src/gateway/server-methods/devices.ts",
+      "line": 217
+    },
+    {
+      "method": "device.token.revoke",
+      "domain": "device",
+      "file": "src/gateway/server-methods/devices.ts",
+      "line": 360
+    },
+    {
+      "method": "device.token.rotate",
+      "domain": "device",
+      "file": "src/gateway/server-methods/devices.ts",
+      "line": 255
+    },
+    {
+      "method": "doctor.memory.status",
+      "domain": "doctor",
+      "file": "src/gateway/server-methods/doctor.ts",
+      "line": 785
+    },
+    {
+      "method": "exec.approval.get",
+      "domain": "exec",
+      "file": "src/gateway/server-methods/exec-approval.ts",
+      "line": 55
+    },
+    {
+      "method": "exec.approval.list",
+      "domain": "exec",
+      "file": "src/gateway/server-methods/exec-approval.ts",
+      "line": 97
+    },
+    {
+      "method": "exec.approval.request",
+      "domain": "exec",
+      "file": "src/gateway/server-methods/exec-approval.ts",
+      "line": 109
+    },
+    {
+      "method": "exec.approval.resolve",
+      "domain": "exec",
+      "file": "src/gateway/server-methods/exec-approval.ts",
+      "line": 332
+    },
+    {
+      "method": "exec.approvals.get",
+      "domain": "exec",
+      "file": "src/gateway/server-methods/exec-approvals.ts",
+      "line": 99
+    },
+    {
+      "method": "exec.approvals.node.get",
+      "domain": "exec",
+      "file": "src/gateway/server-methods/exec-approvals.ts",
+      "line": 131
+    },
+    {
+      "method": "exec.approvals.node.set",
+      "domain": "exec",
+      "file": "src/gateway/server-methods/exec-approvals.ts",
+      "line": 160
+    },
+    {
+      "method": "exec.approvals.set",
+      "domain": "exec",
+      "file": "src/gateway/server-methods/exec-approvals.ts",
+      "line": 107
+    },
+    {
+      "method": "gateway.identity.get",
+      "domain": "gateway",
+      "file": "src/gateway/server-methods/system.ts",
+      "line": 20
+    },
+    {
+      "method": "logs.tail",
+      "domain": "logs",
+      "file": "src/gateway/server-methods/logs.ts",
+      "line": 11
+    },
+    {
+      "method": "message.action",
+      "domain": "message",
+      "file": "src/gateway/server-methods/send.ts",
+      "line": 188
+    },
+    {
+      "method": "models.list",
+      "domain": "models",
+      "file": "src/gateway/server-methods/models.ts",
+      "line": 13
+    },
+    {
+      "method": "node.canvas.capability.refresh",
+      "domain": "node",
+      "file": "src/gateway/server-methods/nodes.ts",
+      "line": 753
+    },
+    {
+      "method": "node.describe",
+      "domain": "node",
+      "file": "src/gateway/server-methods/nodes.ts",
+      "line": 720
+    },
+    {
+      "method": "node.event",
+      "domain": "node",
+      "file": "src/gateway/server-methods/nodes.ts",
+      "line": 1102
+    },
+    {
+      "method": "node.invoke",
+      "domain": "node",
+      "file": "src/gateway/server-methods/nodes.ts",
+      "line": 860
+    },
+    {
+      "method": "node.list",
+      "domain": "node",
+      "file": "src/gateway/server-methods/nodes.ts",
+      "line": 697
+    },
+    {
+      "method": "node.pair.approve",
+      "domain": "node",
+      "file": "src/gateway/server-methods/nodes.ts",
+      "line": 579
+    },
+    {
+      "method": "node.pair.list",
+      "domain": "node",
+      "file": "src/gateway/server-methods/nodes.ts",
+      "line": 565
+    },
+    {
+      "method": "node.pair.reject",
+      "domain": "node",
+      "file": "src/gateway/server-methods/nodes.ts",
+      "line": 623
+    },
+    {
+      "method": "node.pair.request",
+      "domain": "node",
+      "file": "src/gateway/server-methods/nodes.ts",
+      "line": 531
+    },
+    {
+      "method": "node.pair.verify",
+      "domain": "node",
+      "file": "src/gateway/server-methods/nodes.ts",
+      "line": 652
+    },
+    {
+      "method": "node.pending.ack",
+      "domain": "node",
+      "file": "src/gateway/server-methods/nodes.ts",
+      "line": 829
+    },
+    {
+      "method": "node.pending.drain",
+      "domain": "node",
+      "file": "src/gateway/server-methods/nodes-pending.ts",
+      "line": 32
+    },
+    {
+      "method": "node.pending.enqueue",
+      "domain": "node",
+      "file": "src/gateway/server-methods/nodes-pending.ts",
+      "line": 60
+    },
+    {
+      "method": "node.pending.pull",
+      "domain": "node",
+      "file": "src/gateway/server-methods/nodes.ts",
+      "line": 798
+    },
+    {
+      "method": "node.rename",
+      "domain": "node",
+      "file": "src/gateway/server-methods/nodes.ts",
+      "line": 670
+    },
+    {
+      "method": "plugin.approval.list",
+      "domain": "plugin",
+      "file": "src/gateway/server-methods/plugin-approval.ts",
+      "line": 31
+    },
+    {
+      "method": "plugin.approval.request",
+      "domain": "plugin",
+      "file": "src/gateway/server-methods/plugin-approval.ts",
+      "line": 43
+    },
+    {
+      "method": "plugin.approval.resolve",
+      "domain": "plugin",
+      "file": "src/gateway/server-methods/plugin-approval.ts",
+      "line": 149
+    },
+    {
+      "method": "push.test",
+      "domain": "push",
+      "file": "src/gateway/server-methods/push.ts",
+      "line": 18
+    },
+    {
+      "method": "secrets.reload",
+      "domain": "secrets",
+      "file": "src/gateway/server-methods/secrets.ts",
+      "line": 39
+    },
+    {
+      "method": "secrets.resolve",
+      "domain": "secrets",
+      "file": "src/gateway/server-methods/secrets.ts",
+      "line": 47
+    },
+    {
+      "method": "sessions.abort",
+      "domain": "sessions",
+      "file": "src/gateway/server-methods/sessions.ts",
+      "line": 1199
+    },
+    {
+      "method": "sessions.compact",
+      "domain": "sessions",
+      "file": "src/gateway/server-methods/sessions.ts",
+      "line": 1466
+    },
+    {
+      "method": "sessions.compaction.branch",
+      "domain": "sessions",
+      "file": "src/gateway/server-methods/sessions.ts",
+      "line": 953
+    },
+    {
+      "method": "sessions.compaction.get",
+      "domain": "sessions",
+      "file": "src/gateway/server-methods/sessions.ts",
+      "line": 733
+    },
+    {
+      "method": "sessions.compaction.list",
+      "domain": "sessions",
+      "file": "src/gateway/server-methods/sessions.ts",
+      "line": 707
+    },
+    {
+      "method": "sessions.compaction.restore",
+      "domain": "sessions",
+      "file": "src/gateway/server-methods/sessions.ts",
+      "line": 1058
+    },
+    {
+      "method": "sessions.create",
+      "domain": "sessions",
+      "file": "src/gateway/server-methods/sessions.ts",
+      "line": 774
+    },
+    {
+      "method": "sessions.delete",
+      "domain": "sessions",
+      "file": "src/gateway/server-methods/sessions.ts",
+      "line": 1350
+    },
+    {
+      "method": "sessions.get",
+      "domain": "sessions",
+      "file": "src/gateway/server-methods/sessions.ts",
+      "line": 1444
+    },
+    {
+      "method": "sessions.list",
+      "domain": "sessions",
+      "file": "src/gateway/server-methods/sessions.ts",
+      "line": 556
+    },
+    {
+      "method": "sessions.messages.subscribe",
+      "domain": "sessions",
+      "file": "src/gateway/server-methods/sessions.ts",
+      "line": 585
+    },
+    {
+      "method": "sessions.messages.unsubscribe",
+      "domain": "sessions",
+      "file": "src/gateway/server-methods/sessions.ts",
+      "line": 609
+    },
+    {
+      "method": "sessions.patch",
+      "domain": "sessions",
+      "file": "src/gateway/server-methods/sessions.ts",
+      "line": 1258
+    },
+    {
+      "method": "sessions.preview",
+      "domain": "sessions",
+      "file": "src/gateway/server-methods/sessions.ts",
+      "line": 631
+    },
+    {
+      "method": "sessions.reset",
+      "domain": "sessions",
+      "file": "src/gateway/server-methods/sessions.ts",
+      "line": 1323
+    },
+    {
+      "method": "sessions.resolve",
+      "domain": "sessions",
+      "file": "src/gateway/server-methods/sessions.ts",
+      "line": 693
+    },
+    {
+      "method": "sessions.send",
+      "domain": "sessions",
+      "file": "src/gateway/server-methods/sessions.ts",
+      "line": 1175
+    },
+    {
+      "method": "sessions.steer",
+      "domain": "sessions",
+      "file": "src/gateway/server-methods/sessions.ts",
+      "line": 1187
+    },
+    {
+      "method": "sessions.subscribe",
+      "domain": "sessions",
+      "file": "src/gateway/server-methods/sessions.ts",
+      "line": 571
+    },
+    {
+      "method": "sessions.unsubscribe",
+      "domain": "sessions",
+      "file": "src/gateway/server-methods/sessions.ts",
+      "line": 578
+    },
+    {
+      "method": "sessions.usage",
+      "domain": "sessions",
+      "file": "src/gateway/server-methods/usage.ts",
+      "line": 386
+    },
+    {
+      "method": "sessions.usage.logs",
+      "domain": "sessions",
+      "file": "src/gateway/server-methods/usage.ts",
+      "line": 865
+    },
+    {
+      "method": "sessions.usage.timeseries",
+      "domain": "sessions",
+      "file": "src/gateway/server-methods/usage.ts",
+      "line": 828
+    },
+    {
+      "method": "skills.bins",
+      "domain": "skills",
+      "file": "src/gateway/server-methods/skills.ts",
+      "line": 109
+    },
+    {
+      "method": "skills.detail",
+      "domain": "skills",
+      "file": "src/gateway/server-methods/skills.ts",
+      "line": 154
+    },
+    {
+      "method": "skills.install",
+      "domain": "skills",
+      "file": "src/gateway/server-methods/skills.ts",
+      "line": 175
+    },
+    {
+      "method": "skills.search",
+      "domain": "skills",
+      "file": "src/gateway/server-methods/skills.ts",
+      "line": 132
+    },
+    {
+      "method": "skills.status",
+      "domain": "skills",
+      "file": "src/gateway/server-methods/skills.ts",
+      "line": 69
+    },
+    {
+      "method": "skills.update",
+      "domain": "skills",
+      "file": "src/gateway/server-methods/skills.ts",
+      "line": 240
+    },
+    {
+      "method": "talk.config",
+      "domain": "talk",
+      "file": "src/gateway/server-methods/talk.ts",
+      "line": 289
+    },
+    {
+      "method": "talk.mode",
+      "domain": "talk",
+      "file": "src/gateway/server-methods/talk.ts",
+      "line": 434
+    },
+    {
+      "method": "talk.speak",
+      "domain": "talk",
+      "file": "src/gateway/server-methods/talk.ts",
+      "line": 337
+    },
+    {
+      "method": "tools.catalog",
+      "domain": "tools",
+      "file": "src/gateway/server-methods/tools-catalog.ts",
+      "line": 158
+    },
+    {
+      "method": "tools.effective",
+      "domain": "tools",
+      "file": "src/gateway/server-methods/tools-effective.ts",
+      "line": 114
+    },
+    {
+      "method": "tts.convert",
+      "domain": "tts",
+      "file": "src/gateway/server-methods/tts.ts",
+      "line": 81
+    },
+    {
+      "method": "tts.disable",
+      "domain": "tts",
+      "file": "src/gateway/server-methods/tts.ts",
+      "line": 70
+    },
+    {
+      "method": "tts.enable",
+      "domain": "tts",
+      "file": "src/gateway/server-methods/tts.ts",
+      "line": 59
+    },
+    {
+      "method": "tts.providers",
+      "domain": "tts",
+      "file": "src/gateway/server-methods/tts.ts",
+      "line": 160
+    },
+    {
+      "method": "tts.status",
+      "domain": "tts",
+      "file": "src/gateway/server-methods/tts.ts",
+      "line": 27
+    },
+    {
+      "method": "update.run",
+      "domain": "update",
+      "file": "src/gateway/server-methods/update.ts",
+      "line": 19
+    },
+    {
+      "method": "usage.cost",
+      "domain": "usage",
+      "file": "src/gateway/server-methods/usage.ts",
+      "line": 374
+    },
+    {
+      "method": "usage.status",
+      "domain": "usage",
+      "file": "src/gateway/server-methods/usage.ts",
+      "line": 370
+    },
+    {
+      "method": "voicewake.get",
+      "domain": "voicewake",
+      "file": "src/gateway/server-methods/voicewake.ts",
+      "line": 8
+    },
+    {
+      "method": "voicewake.set",
+      "domain": "voicewake",
+      "file": "src/gateway/server-methods/voicewake.ts",
+      "line": 16
+    },
+    {
+      "method": "web.login.start",
+      "domain": "web",
+      "file": "src/gateway/server-methods/web.ts",
+      "line": 42
+    },
+    {
+      "method": "web.login.wait",
+      "domain": "web",
+      "file": "src/gateway/server-methods/web.ts",
+      "line": 80
+    },
+    {
+      "method": "wizard.cancel",
+      "domain": "wizard",
+      "file": "src/gateway/server-methods/wizard.ts",
+      "line": 90
+    },
+    {
+      "method": "wizard.next",
+      "domain": "wizard",
+      "file": "src/gateway/server-methods/wizard.ts",
+      "line": 62
+    },
+    {
+      "method": "wizard.start",
+      "domain": "wizard",
+      "file": "src/gateway/server-methods/wizard.ts",
+      "line": 38
+    },
+    {
+      "method": "wizard.status",
+      "domain": "wizard",
+      "file": "src/gateway/server-methods/wizard.ts",
+      "line": 104
+    }
+  ],
+  "controlui_views": [
+    {
+      "name": "agents",
+      "file": "ui/src/ui/views/agents.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "agents-panels-overview",
+      "file": "ui/src/ui/views/agents-panels-overview.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "agents-panels-status-files",
+      "file": "ui/src/ui/views/agents-panels-status-files.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "agents-panels-tools-skills",
+      "file": "ui/src/ui/views/agents-panels-tools-skills.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "agents-utils",
+      "file": "ui/src/ui/views/agents-utils.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "agents.types",
+      "file": "ui/src/ui/views/agents.types.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "channel-config-extras",
+      "file": "ui/src/ui/views/channel-config-extras.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "channels",
+      "file": "ui/src/ui/views/channels.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "channels.config",
+      "file": "ui/src/ui/views/channels.config.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "channels.discord",
+      "file": "ui/src/ui/views/channels.discord.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "channels.googlechat",
+      "file": "ui/src/ui/views/channels.googlechat.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "channels.imessage",
+      "file": "ui/src/ui/views/channels.imessage.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "channels.nostr",
+      "file": "ui/src/ui/views/channels.nostr.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "channels.nostr-profile-form",
+      "file": "ui/src/ui/views/channels.nostr-profile-form.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "channels.shared",
+      "file": "ui/src/ui/views/channels.shared.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "channels.signal",
+      "file": "ui/src/ui/views/channels.signal.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "channels.slack",
+      "file": "ui/src/ui/views/channels.slack.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "channels.telegram",
+      "file": "ui/src/ui/views/channels.telegram.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "channels.types",
+      "file": "ui/src/ui/views/channels.types.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "channels.whatsapp",
+      "file": "ui/src/ui/views/channels.whatsapp.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "chat",
+      "file": "ui/src/ui/views/chat.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "command-palette",
+      "file": "ui/src/ui/views/command-palette.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "config",
+      "file": "ui/src/ui/views/config.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "config-form",
+      "file": "ui/src/ui/views/config-form.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "config-form.analyze",
+      "file": "ui/src/ui/views/config-form.analyze.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "config-form.node",
+      "file": "ui/src/ui/views/config-form.node.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "config-form.render",
+      "file": "ui/src/ui/views/config-form.render.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "config-form.shared",
+      "file": "ui/src/ui/views/config-form.shared.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "connect-command",
+      "file": "ui/src/ui/views/connect-command.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "cron",
+      "file": "ui/src/ui/views/cron.ts",
+      "methodsUsed": [],
+      "controllersReferenced": ["cron"]
+    },
+    {
+      "name": "debug",
+      "file": "ui/src/ui/views/debug.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "dreaming",
+      "file": "ui/src/ui/views/dreaming.ts",
+      "methodsUsed": [],
+      "controllersReferenced": ["dreaming"]
+    },
+    {
+      "name": "exec-approval",
+      "file": "ui/src/ui/views/exec-approval.ts",
+      "methodsUsed": [],
+      "controllersReferenced": ["exec-approval"]
+    },
+    {
+      "name": "gateway-url-confirmation",
+      "file": "ui/src/ui/views/gateway-url-confirmation.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "instances",
+      "file": "ui/src/ui/views/instances.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "login-gate",
+      "file": "ui/src/ui/views/login-gate.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "logs",
+      "file": "ui/src/ui/views/logs.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "markdown-sidebar",
+      "file": "ui/src/ui/views/markdown-sidebar.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "nodes",
+      "file": "ui/src/ui/views/nodes.ts",
+      "methodsUsed": [],
+      "controllersReferenced": ["devices"]
+    },
+    {
+      "name": "nodes-exec-approvals",
+      "file": "ui/src/ui/views/nodes-exec-approvals.ts",
+      "methodsUsed": [],
+      "controllersReferenced": ["exec-approvals"]
+    },
+    {
+      "name": "nodes-shared",
+      "file": "ui/src/ui/views/nodes-shared.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "nodes.types",
+      "file": "ui/src/ui/views/nodes.types.ts",
+      "methodsUsed": [],
+      "controllersReferenced": ["devices", "exec-approvals"]
+    },
+    {
+      "name": "overview",
+      "file": "ui/src/ui/views/overview.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "overview-attention",
+      "file": "ui/src/ui/views/overview-attention.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "overview-cards",
+      "file": "ui/src/ui/views/overview-cards.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "overview-event-log",
+      "file": "ui/src/ui/views/overview-event-log.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "overview-hints",
+      "file": "ui/src/ui/views/overview-hints.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "overview-log-tail",
+      "file": "ui/src/ui/views/overview-log-tail.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "sessions",
+      "file": "ui/src/ui/views/sessions.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "skills",
+      "file": "ui/src/ui/views/skills.ts",
+      "methodsUsed": [],
+      "controllersReferenced": ["skills"]
+    },
+    {
+      "name": "skills-grouping",
+      "file": "ui/src/ui/views/skills-grouping.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "skills-shared",
+      "file": "ui/src/ui/views/skills-shared.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "usage",
+      "file": "ui/src/ui/views/usage.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "usage-metrics",
+      "file": "ui/src/ui/views/usage-metrics.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "usage-query",
+      "file": "ui/src/ui/views/usage-query.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "usage-render-details",
+      "file": "ui/src/ui/views/usage-render-details.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "usage-render-overview",
+      "file": "ui/src/ui/views/usage-render-overview.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    },
+    {
+      "name": "usageTypes",
+      "file": "ui/src/ui/views/usageTypes.ts",
+      "methodsUsed": [],
+      "controllersReferenced": []
+    }
+  ],
+  "controlui_controllers": [
+    {
+      "name": "agent-files",
+      "file": "ui/src/ui/controllers/agent-files.ts",
+      "methodsUsed": []
+    },
+    {
+      "name": "agent-identity",
+      "file": "ui/src/ui/controllers/agent-identity.ts",
+      "methodsUsed": []
+    },
+    {
+      "name": "agent-skills",
+      "file": "ui/src/ui/controllers/agent-skills.ts",
+      "methodsUsed": ["skills.status"]
+    },
+    {
+      "name": "agents",
+      "file": "ui/src/ui/controllers/agents.ts",
+      "methodsUsed": []
+    },
+    {
+      "name": "assistant-identity",
+      "file": "ui/src/ui/controllers/assistant-identity.ts",
+      "methodsUsed": ["agent.identity.get"]
+    },
+    {
+      "name": "channels",
+      "file": "ui/src/ui/controllers/channels.ts",
+      "methodsUsed": ["channels.logout"]
+    },
+    {
+      "name": "channels.types",
+      "file": "ui/src/ui/controllers/channels.types.ts",
+      "methodsUsed": []
+    },
+    {
+      "name": "chat",
+      "file": "ui/src/ui/controllers/chat.ts",
+      "methodsUsed": ["chat.abort", "chat.send"]
+    },
+    {
+      "name": "config",
+      "file": "ui/src/ui/controllers/config.ts",
+      "methodsUsed": []
+    },
+    {
+      "name": "control-ui-bootstrap",
+      "file": "ui/src/ui/controllers/control-ui-bootstrap.ts",
+      "methodsUsed": []
+    },
+    {
+      "name": "cron",
+      "file": "ui/src/ui/controllers/cron.ts",
+      "methodsUsed": ["cron.add", "cron.remove", "cron.run", "cron.update", "models.list"]
+    },
+    {
+      "name": "debug",
+      "file": "ui/src/ui/controllers/debug.ts",
+      "methodsUsed": ["models.list"]
+    },
+    {
+      "name": "devices",
+      "file": "ui/src/ui/controllers/devices.ts",
+      "methodsUsed": ["device.pair.approve", "device.pair.reject", "device.token.revoke"]
+    },
+    {
+      "name": "dreaming",
+      "file": "ui/src/ui/controllers/dreaming.ts",
+      "methodsUsed": ["config.patch", "config.schema.lookup"]
+    },
+    {
+      "name": "exec-approval",
+      "file": "ui/src/ui/controllers/exec-approval.ts",
+      "methodsUsed": []
+    },
+    {
+      "name": "exec-approvals",
+      "file": "ui/src/ui/controllers/exec-approvals.ts",
+      "methodsUsed": []
+    },
+    {
+      "name": "form-coerce",
+      "file": "ui/src/ui/controllers/config/form-coerce.ts",
+      "methodsUsed": []
+    },
+    {
+      "name": "form-utils",
+      "file": "ui/src/ui/controllers/config/form-utils.ts",
+      "methodsUsed": []
+    },
+    {
+      "name": "health",
+      "file": "ui/src/ui/controllers/health.ts",
+      "methodsUsed": []
+    },
+    {
+      "name": "logs",
+      "file": "ui/src/ui/controllers/logs.ts",
+      "methodsUsed": ["logs.tail"]
+    },
+    {
+      "name": "model-auth-status",
+      "file": "ui/src/ui/controllers/model-auth-status.ts",
+      "methodsUsed": []
+    },
+    {
+      "name": "models",
+      "file": "ui/src/ui/controllers/models.ts",
+      "methodsUsed": []
+    },
+    {
+      "name": "nodes",
+      "file": "ui/src/ui/controllers/nodes.ts",
+      "methodsUsed": []
+    },
+    {
+      "name": "presence",
+      "file": "ui/src/ui/controllers/presence.ts",
+      "methodsUsed": []
+    },
+    {
+      "name": "scope-errors",
+      "file": "ui/src/ui/controllers/scope-errors.ts",
+      "methodsUsed": []
+    },
+    {
+      "name": "sessions",
+      "file": "ui/src/ui/controllers/sessions.ts",
+      "methodsUsed": ["sessions.delete", "sessions.patch", "sessions.subscribe"]
+    },
+    {
+      "name": "skills",
+      "file": "ui/src/ui/controllers/skills.ts",
+      "methodsUsed": ["skills.install", "skills.update"]
+    },
+    {
+      "name": "usage",
+      "file": "ui/src/ui/controllers/usage.ts",
+      "methodsUsed": [
+        "sessions.usage",
+        "sessions.usage.logs",
+        "sessions.usage.timeseries",
+        "usage.cost"
+      ]
+    }
+  ],
+  "dexmart_routes": [
+    {
+      "route": "/dashboard/agents",
+      "pageFile": "frontend/src/app/(dashboard)/dashboard/agents/page.tsx",
+      "featureDir": "frontend/src/features/agents"
+    },
+    {
+      "route": "/dashboard/billing",
+      "pageFile": "frontend/src/app/(dashboard)/dashboard/billing/page.tsx",
+      "featureDir": "frontend/src/features/billing"
+    },
+    {
+      "route": "/dashboard/config",
+      "pageFile": "frontend/src/app/(dashboard)/dashboard/config/page.tsx",
+      "featureDir": "frontend/src/features/config"
+    },
+    {
+      "route": "/dashboard/contacts",
+      "pageFile": "frontend/src/app/(dashboard)/dashboard/contacts/page.tsx",
+      "featureDir": "frontend/src/features/contacts"
+    },
+    {
+      "route": "/dashboard/cron",
+      "pageFile": "frontend/src/app/(dashboard)/dashboard/cron/page.tsx",
+      "featureDir": null
+    },
+    {
+      "route": "/dashboard/flows",
+      "pageFile": "frontend/src/app/(dashboard)/dashboard/flows/page.tsx",
+      "featureDir": "frontend/src/features/flows"
+    },
+    {
+      "route": "/dashboard/home",
+      "pageFile": "frontend/src/app/(dashboard)/dashboard/home/page.tsx",
+      "featureDir": null
+    },
+    {
+      "route": "/dashboard/messages",
+      "pageFile": "frontend/src/app/(dashboard)/dashboard/messages/page.tsx",
+      "featureDir": "frontend/src/features/messages"
+    },
+    {
+      "route": "/dashboard/messages/campaigns/[id]",
+      "pageFile": "frontend/src/app/(dashboard)/dashboard/messages/campaigns/[id]/page.tsx",
+      "featureDir": "frontend/src/features/messages"
+    },
+    {
+      "route": "/dashboard/nodes",
+      "pageFile": "frontend/src/app/(dashboard)/dashboard/nodes/page.tsx",
+      "featureDir": null
+    },
+    {
+      "route": "/dashboard/omnichannel",
+      "pageFile": "frontend/src/app/(dashboard)/dashboard/omnichannel/page.tsx",
+      "featureDir": "frontend/src/features/omnichannel"
+    },
+    {
+      "route": "/dashboard/omnichannel/reasoning",
+      "pageFile": "frontend/src/app/(dashboard)/dashboard/omnichannel/reasoning/page.tsx",
+      "featureDir": "frontend/src/features/omnichannel"
+    },
+    {
+      "route": "/dashboard/settings",
+      "pageFile": "frontend/src/app/(dashboard)/dashboard/settings/page.tsx",
+      "featureDir": "frontend/src/features/settings"
+    },
+    {
+      "route": "/dashboard/skills",
+      "pageFile": "frontend/src/app/(dashboard)/dashboard/skills/page.tsx",
+      "featureDir": null
+    },
+    {
+      "route": "/dashboard/templates",
+      "pageFile": "frontend/src/app/(dashboard)/dashboard/templates/page.tsx",
+      "featureDir": null
+    },
+    {
+      "route": "/dashboard/usage",
+      "pageFile": "frontend/src/app/(dashboard)/dashboard/usage/page.tsx",
+      "featureDir": null
+    },
+    {
+      "route": "/dashboard/webhooks",
+      "pageFile": "frontend/src/app/(dashboard)/dashboard/webhooks/page.tsx",
+      "featureDir": "frontend/src/features/webhooks"
+    }
+  ],
+  "dexmart_features": [
+    {
+      "name": "agents",
+      "file": "frontend/src/features/agents"
+    },
+    {
+      "name": "auth",
+      "file": "frontend/src/features/auth"
+    },
+    {
+      "name": "billing",
+      "file": "frontend/src/features/billing"
+    },
+    {
+      "name": "config",
+      "file": "frontend/src/features/config"
+    },
+    {
+      "name": "contacts",
+      "file": "frontend/src/features/contacts"
+    },
+    {
+      "name": "dashboard",
+      "file": "frontend/src/features/dashboard"
+    },
+    {
+      "name": "flows",
+      "file": "frontend/src/features/flows"
+    },
+    {
+      "name": "landing",
+      "file": "frontend/src/features/landing"
+    },
+    {
+      "name": "memory",
+      "file": "frontend/src/features/memory"
+    },
+    {
+      "name": "messages",
+      "file": "frontend/src/features/messages"
+    },
+    {
+      "name": "omnichannel",
+      "file": "frontend/src/features/omnichannel"
+    },
+    {
+      "name": "settings",
+      "file": "frontend/src/features/settings"
+    },
+    {
+      "name": "webhooks",
+      "file": "frontend/src/features/webhooks"
+    }
+  ],
+  "matrix": [
+    {
+      "featureId": "chat",
+      "label": "Mastermind Chat",
+      "controlUiViews": ["ui/src/ui/views/chat.ts"],
+      "controlUiControllers": ["ui/src/ui/controllers/chat.ts"],
+      "rpcMethods": ["chat.abort", "chat.history", "chat.inject", "chat.send"],
+      "dexmartRoute": null,
+      "dexmartFeatureDir": null,
+      "strategy": "add",
+      "status": "missing",
+      "notes": []
+    },
+    {
+      "featureId": "channels",
+      "label": "Channels + QR Login",
+      "controlUiViews": [
+        "ui/src/ui/views/channels.ts",
+        "ui/src/ui/views/channels.config.ts",
+        "ui/src/ui/views/channels.discord.ts",
+        "ui/src/ui/views/channels.googlechat.ts",
+        "ui/src/ui/views/channels.imessage.ts",
+        "ui/src/ui/views/channels.nostr.ts",
+        "ui/src/ui/views/channels.nostr-profile-form.ts",
+        "ui/src/ui/views/channels.shared.ts",
+        "ui/src/ui/views/channels.signal.ts",
+        "ui/src/ui/views/channels.slack.ts",
+        "ui/src/ui/views/channels.telegram.ts",
+        "ui/src/ui/views/channels.types.ts",
+        "ui/src/ui/views/channels.whatsapp.ts"
+      ],
+      "controlUiControllers": ["ui/src/ui/controllers/channels.ts"],
+      "rpcMethods": ["channels.logout", "channels.status", "web.login.start", "web.login.wait"],
+      "dexmartRoute": "/dashboard/omnichannel",
+      "dexmartFeatureDir": "frontend/src/features/omnichannel",
+      "strategy": "weave",
+      "status": "partial",
+      "notes": ["Weave target: /dashboard/omnichannel — Connect/Status/QR lives in channel cards"]
+    },
+    {
+      "featureId": "agents",
+      "label": "Agents CRUD + Files + Identity",
+      "controlUiViews": [
+        "ui/src/ui/views/agents.ts",
+        "ui/src/ui/views/agents-panels-overview.ts",
+        "ui/src/ui/views/agents-panels-status-files.ts",
+        "ui/src/ui/views/agents-panels-tools-skills.ts",
+        "ui/src/ui/views/agents-utils.ts",
+        "ui/src/ui/views/agents.types.ts"
+      ],
+      "controlUiControllers": [
+        "ui/src/ui/controllers/agent-files.ts",
+        "ui/src/ui/controllers/agent-identity.ts",
+        "ui/src/ui/controllers/agent-skills.ts",
+        "ui/src/ui/controllers/agents.ts",
+        "ui/src/ui/controllers/assistant-identity.ts"
+      ],
+      "rpcMethods": [
+        "agent.identity.get",
+        "agent.wait",
+        "agents.create",
+        "agents.delete",
+        "agents.files.get",
+        "agents.files.list",
+        "agents.files.set",
+        "agents.list",
+        "agents.update",
+        "skills.status"
+      ],
+      "dexmartRoute": "/dashboard/agents",
+      "dexmartFeatureDir": "frontend/src/features/agents",
+      "strategy": "enhance",
+      "status": "partial",
+      "notes": []
+    },
+    {
+      "featureId": "sessions",
+      "label": "Sessions List + Detail + Compaction",
+      "controlUiViews": ["ui/src/ui/views/sessions.ts"],
+      "controlUiControllers": ["ui/src/ui/controllers/sessions.ts"],
+      "rpcMethods": [
+        "sessions.abort",
+        "sessions.compact",
+        "sessions.compaction.branch",
+        "sessions.compaction.get",
+        "sessions.compaction.list",
+        "sessions.compaction.restore",
+        "sessions.create",
+        "sessions.delete",
+        "sessions.get",
+        "sessions.list",
+        "sessions.messages.subscribe",
+        "sessions.messages.unsubscribe",
+        "sessions.patch",
+        "sessions.preview",
+        "sessions.reset",
+        "sessions.resolve",
+        "sessions.send",
+        "sessions.steer",
+        "sessions.subscribe",
+        "sessions.unsubscribe",
+        "sessions.usage",
+        "sessions.usage.logs",
+        "sessions.usage.timeseries"
+      ],
+      "dexmartRoute": null,
+      "dexmartFeatureDir": null,
+      "strategy": "implement",
+      "status": "missing",
+      "notes": []
+    },
+    {
+      "featureId": "config",
+      "label": "Configuration Panel",
+      "controlUiViews": [
+        "ui/src/ui/views/config.ts",
+        "ui/src/ui/views/config-form.ts",
+        "ui/src/ui/views/config-form.analyze.ts",
+        "ui/src/ui/views/config-form.node.ts",
+        "ui/src/ui/views/config-form.render.ts",
+        "ui/src/ui/views/config-form.shared.ts"
+      ],
+      "controlUiControllers": ["ui/src/ui/controllers/config.ts"],
+      "rpcMethods": [
+        "config.apply",
+        "config.get",
+        "config.patch",
+        "config.schema",
+        "config.schema.lookup",
+        "config.set",
+        "secrets.reload",
+        "secrets.resolve"
+      ],
+      "dexmartRoute": "/dashboard/config",
+      "dexmartFeatureDir": "frontend/src/features/config",
+      "strategy": "enhance",
+      "status": "partial",
+      "notes": []
+    },
+    {
+      "featureId": "cron",
+      "label": "Cron Jobs",
+      "controlUiViews": ["ui/src/ui/views/cron.ts"],
+      "controlUiControllers": ["ui/src/ui/controllers/cron.ts"],
+      "rpcMethods": [
+        "cron.add",
+        "cron.list",
+        "cron.remove",
+        "cron.run",
+        "cron.runs",
+        "cron.status",
+        "cron.update",
+        "models.list"
+      ],
+      "dexmartRoute": "/dashboard/cron",
+      "dexmartFeatureDir": null,
+      "strategy": "enhance",
+      "status": "stub",
+      "notes": []
+    },
+    {
+      "featureId": "skills",
+      "label": "Skills + Plugins",
+      "controlUiViews": [
+        "ui/src/ui/views/skills.ts",
+        "ui/src/ui/views/skills-grouping.ts",
+        "ui/src/ui/views/skills-shared.ts"
+      ],
+      "controlUiControllers": ["ui/src/ui/controllers/skills.ts"],
+      "rpcMethods": [
+        "plugin.approval.list",
+        "plugin.approval.request",
+        "plugin.approval.resolve",
+        "skills.bins",
+        "skills.detail",
+        "skills.install",
+        "skills.search",
+        "skills.status",
+        "skills.update"
+      ],
+      "dexmartRoute": "/dashboard/skills",
+      "dexmartFeatureDir": null,
+      "strategy": "enhance",
+      "status": "stub",
+      "notes": []
+    },
+    {
+      "featureId": "nodes",
+      "label": "Nodes + Canvas + Pending Queue",
+      "controlUiViews": [
+        "ui/src/ui/views/nodes.ts",
+        "ui/src/ui/views/nodes-exec-approvals.ts",
+        "ui/src/ui/views/nodes-shared.ts",
+        "ui/src/ui/views/nodes.types.ts"
+      ],
+      "controlUiControllers": ["ui/src/ui/controllers/nodes.ts"],
+      "rpcMethods": [
+        "node.canvas.capability.refresh",
+        "node.describe",
+        "node.event",
+        "node.invoke",
+        "node.list",
+        "node.pair.approve",
+        "node.pair.list",
+        "node.pair.reject",
+        "node.pair.request",
+        "node.pair.verify",
+        "node.pending.ack",
+        "node.pending.drain",
+        "node.pending.enqueue",
+        "node.pending.pull",
+        "node.rename"
+      ],
+      "dexmartRoute": "/dashboard/nodes",
+      "dexmartFeatureDir": null,
+      "strategy": "enhance",
+      "status": "stub",
+      "notes": []
+    },
+    {
+      "featureId": "devices",
+      "label": "Device Pairing + Tokens",
+      "controlUiViews": [
+        "ui/src/ui/views/nodes.ts",
+        "ui/src/ui/views/nodes-exec-approvals.ts",
+        "ui/src/ui/views/nodes-shared.ts",
+        "ui/src/ui/views/nodes.types.ts"
+      ],
+      "controlUiControllers": ["ui/src/ui/controllers/devices.ts"],
+      "rpcMethods": [
+        "device.pair.approve",
+        "device.pair.list",
+        "device.pair.reject",
+        "device.pair.remove",
+        "device.token.revoke",
+        "device.token.rotate"
+      ],
+      "dexmartRoute": "/dashboard/nodes",
+      "dexmartFeatureDir": null,
+      "strategy": "weave",
+      "status": "stub",
+      "notes": ["Weave target: /dashboard/nodes — Devices tab"]
+    },
+    {
+      "featureId": "logs",
+      "label": "Live Logs Viewer",
+      "controlUiViews": ["ui/src/ui/views/logs.ts"],
+      "controlUiControllers": ["ui/src/ui/controllers/logs.ts"],
+      "rpcMethods": ["logs.tail"],
+      "dexmartRoute": null,
+      "dexmartFeatureDir": null,
+      "strategy": "implement",
+      "status": "missing",
+      "notes": []
+    },
+    {
+      "featureId": "debug",
+      "label": "Debug / Developer Panel",
+      "controlUiViews": ["ui/src/ui/views/debug.ts"],
+      "controlUiControllers": [
+        "ui/src/ui/controllers/debug.ts",
+        "ui/src/ui/controllers/health.ts",
+        "ui/src/ui/controllers/models.ts"
+      ],
+      "rpcMethods": [
+        "gateway.identity.get",
+        "models.list",
+        "push.test",
+        "tools.catalog",
+        "tools.effective"
+      ],
+      "dexmartRoute": null,
+      "dexmartFeatureDir": null,
+      "strategy": "add",
+      "status": "missing",
+      "notes": []
+    },
+    {
+      "featureId": "dreaming",
+      "label": "Doctor / Memory (Dream)",
+      "controlUiViews": ["ui/src/ui/views/dreaming.ts"],
+      "controlUiControllers": ["ui/src/ui/controllers/dreaming.ts"],
+      "rpcMethods": ["config.patch", "config.schema.lookup", "doctor.memory.status"],
+      "dexmartRoute": "/dashboard/agents",
+      "dexmartFeatureDir": null,
+      "strategy": "weave",
+      "status": "stub",
+      "notes": ["Weave target: /dashboard/agents — Memory tab on agent detail"]
+    },
+    {
+      "featureId": "tts",
+      "label": "TTS / Voice Settings",
+      "controlUiViews": [],
+      "controlUiControllers": [],
+      "rpcMethods": [
+        "talk.config",
+        "talk.mode",
+        "talk.speak",
+        "tts.convert",
+        "tts.disable",
+        "tts.enable",
+        "tts.providers",
+        "tts.status",
+        "voicewake.get",
+        "voicewake.set"
+      ],
+      "dexmartRoute": "/dashboard/config",
+      "dexmartFeatureDir": null,
+      "strategy": "weave",
+      "status": "stub",
+      "notes": ["Weave target: /dashboard/config — Voice section"]
+    },
+    {
+      "featureId": "instances",
+      "label": "Instances + Presence",
+      "controlUiViews": ["ui/src/ui/views/instances.ts"],
+      "controlUiControllers": ["ui/src/ui/controllers/presence.ts"],
+      "rpcMethods": [],
+      "dexmartRoute": "/dashboard/home",
+      "dexmartFeatureDir": null,
+      "strategy": "weave",
+      "status": "stub",
+      "notes": ["Weave target: /dashboard/home — Presence card"]
+    },
+    {
+      "featureId": "setup-wizard",
+      "label": "First-Run Setup Wizard",
+      "controlUiViews": [],
+      "controlUiControllers": [],
+      "rpcMethods": ["wizard.cancel", "wizard.next", "wizard.start", "wizard.status"],
+      "dexmartRoute": null,
+      "dexmartFeatureDir": null,
+      "strategy": "add",
+      "status": "missing",
+      "notes": []
+    },
+    {
+      "featureId": "usage",
+      "label": "Usage Time-Series + Cost",
+      "controlUiViews": [
+        "ui/src/ui/views/usage.ts",
+        "ui/src/ui/views/usage-metrics.ts",
+        "ui/src/ui/views/usage-query.ts",
+        "ui/src/ui/views/usage-render-details.ts",
+        "ui/src/ui/views/usage-render-overview.ts"
+      ],
+      "controlUiControllers": ["ui/src/ui/controllers/usage.ts"],
+      "rpcMethods": [
+        "sessions.usage",
+        "sessions.usage.logs",
+        "sessions.usage.timeseries",
+        "usage.cost",
+        "usage.status"
+      ],
+      "dexmartRoute": "/dashboard/usage",
+      "dexmartFeatureDir": null,
+      "strategy": "enhance",
+      "status": "stub",
+      "notes": []
+    },
+    {
+      "featureId": "exec-approvals",
+      "label": "Exec Approvals Allowlist",
+      "controlUiViews": [
+        "ui/src/ui/views/exec-approval.ts",
+        "ui/src/ui/views/nodes-exec-approvals.ts"
+      ],
+      "controlUiControllers": [
+        "ui/src/ui/controllers/exec-approval.ts",
+        "ui/src/ui/controllers/exec-approvals.ts"
+      ],
+      "rpcMethods": [
+        "exec.approval.get",
+        "exec.approval.list",
+        "exec.approval.request",
+        "exec.approval.resolve",
+        "exec.approvals.get",
+        "exec.approvals.node.get",
+        "exec.approvals.node.set",
+        "exec.approvals.set"
+      ],
+      "dexmartRoute": "/dashboard/config",
+      "dexmartFeatureDir": null,
+      "strategy": "weave",
+      "status": "stub",
+      "notes": ["Weave target: /dashboard/config — Security tab"]
+    },
+    {
+      "featureId": "update-runner",
+      "label": "Update Runner",
+      "controlUiViews": [],
+      "controlUiControllers": [],
+      "rpcMethods": ["update.run"],
+      "dexmartRoute": "/dashboard/config",
+      "dexmartFeatureDir": null,
+      "strategy": "weave",
+      "status": "stub",
+      "notes": ["Weave target: /dashboard/config — System tab"]
+    },
+    {
+      "featureId": "overview",
+      "label": "Home / Overview Cards",
+      "controlUiViews": [
+        "ui/src/ui/views/overview.ts",
+        "ui/src/ui/views/overview-attention.ts",
+        "ui/src/ui/views/overview-cards.ts",
+        "ui/src/ui/views/overview-event-log.ts",
+        "ui/src/ui/views/overview-hints.ts",
+        "ui/src/ui/views/overview-log-tail.ts"
+      ],
+      "controlUiControllers": [],
+      "rpcMethods": [],
+      "dexmartRoute": "/dashboard/home",
+      "dexmartFeatureDir": null,
+      "strategy": "enhance",
+      "status": "stub",
+      "notes": []
+    },
+    {
+      "featureId": "command-palette",
+      "label": "Command Palette",
+      "controlUiViews": ["ui/src/ui/views/command-palette.ts"],
+      "controlUiControllers": [],
+      "rpcMethods": ["commands.list"],
+      "dexmartRoute": null,
+      "dexmartFeatureDir": null,
+      "strategy": "add",
+      "status": "missing",
+      "notes": []
+    },
+    {
+      "featureId": "message-actions",
+      "label": "Message Actions (react/edit/delete)",
+      "controlUiViews": [],
+      "controlUiControllers": [],
+      "rpcMethods": ["message.action"],
+      "dexmartRoute": "/dashboard/messages",
+      "dexmartFeatureDir": null,
+      "strategy": "weave",
+      "status": "stub",
+      "notes": [
+        "Weave target: /dashboard/messages or session transcript — react/edit/delete row actions"
+      ]
+    },
+    {
+      "featureId": "connect-gate",
+      "label": "Connect / Gateway URL / Login Gate",
+      "controlUiViews": [
+        "ui/src/ui/views/connect-command.ts",
+        "ui/src/ui/views/gateway-url-confirmation.ts",
+        "ui/src/ui/views/login-gate.ts"
+      ],
+      "controlUiControllers": [],
+      "rpcMethods": [],
+      "dexmartRoute": null,
+      "dexmartFeatureDir": null,
+      "strategy": "subtract",
+      "status": "complete",
+      "notes": [
+        "SUBTRACT: Connect-command / gateway-url-confirmation / login-gate are ControlUI bootstrap flows. DeXMart uses Firebase Auth + backend-injected Gateway URL; user never enters gateway URL by hand."
+      ]
+    }
+  ],
+  "gaps": {
+    "unmappedRpcMethods": [],
+    "viewsWithoutFeature": [
+      "ui/src/ui/views/channel-config-extras.ts",
+      "ui/src/ui/views/markdown-sidebar.ts",
+      "ui/src/ui/views/usageTypes.ts"
+    ],
+    "routesWithoutControlUiParent": [
+      "/dashboard/billing",
+      "/dashboard/contacts",
+      "/dashboard/flows",
+      "/dashboard/messages/campaigns/[id]",
+      "/dashboard/omnichannel/reasoning",
+      "/dashboard/settings",
+      "/dashboard/templates",
+      "/dashboard/webhooks"
+    ]
+  }
+}

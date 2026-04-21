@@ -99,7 +99,7 @@ After conflict resolution, run `pnpm build` and fix all TypeScript errors. Each 
 
 - [x] Task 3.12: Fix remaining TypeScript errors from `pnpm build` — address by module — Fixed by stabilization commit [843aa53]
 - [x] Task 3.13: Run `pnpm build` — zero TypeScript errors — EXIT:0 confirmed [843aa53]
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Build & Type Error Resolution' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Build & Type Error Resolution' (Protocol in workflow.md)
 
 ---
 
@@ -141,7 +141,7 @@ Systematic verification that all 31 breaking changes across the absorbed version
 ### Final Gate
 
 - [x] Task 4.20: Run `pnpm build` — confirmed EXIT:0 after all verifications [68a09b4]
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Breaking Change Verification' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 4: Breaking Change Verification' (Protocol in workflow.md)
 
 ---
 
@@ -163,6 +163,7 @@ Systematic verification that all 31 breaking changes across the absorbed version
 - [ ] Task 6.1: Update `docs/OPENCLAW_UPSTREAM_REPORT.md` — set "Last Synced Version" to `v2026.4.15`
 - [ ] Task 6.2: Update `docs/architecture/FUSION_STRATEGY.md` Section 4.3 — record sync version, date, and strategy
 - [ ] Task 6.3: Run `scripts/automation/upstream-watcher.ts` (incremental mode) — verify no new upstream activity missed
+- [ ] Task 6.3b: Run `pnpm parity:check` — confirm ControlUI parity matrix is current before merge; if upstream added new RPC methods to `src/gateway/server-methods/*`, update `FEATURE_SEEDS` in `scripts/controlui-parity-discover.ts` and run `pnpm parity:generate` to regenerate matrix first
 - [ ] Task 6.4: Squash-merge sync branch into main development branch
 - [ ] Task 6.5: Clean up temporary snapshots and triage files
 - [ ] Task 6.6: **Upstream Leverage Compliance Audit** — Scan for any DeXMart code discovered during sync that duplicates upstream logic. Any duplication found must be flagged for removal per `docs/architecture/UPSTREAM_LEVERAGE_POLICY.md`. Verify all DeXMart-exclusive features remain natively embedded in `src/` as first-class modules.

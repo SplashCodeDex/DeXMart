@@ -1,0 +1,33 @@
+{
+  "track_id": "dashboard_controlui_parity_20260421",
+  "type": "feature",
+  "status": "in_progress",
+  "created_at": "2026-04-21T00:00:00Z",
+  "updated_at": "2026-04-21T00:00:00Z",
+  "description": "DeXMart dashboard reaches full ControlUI frontend parity via evidence-based parity matrix (22 features, 119 RPC methods). Strategy: Add/Subtract/Weave/Implement/Enhance. Flag-gated cutover + soak + permanent ControlUI deletion.",
+  "primary_artifact": "artifacts/parity-matrix.json",
+  "discovery_script": "scripts/controlui-parity-discover.ts",
+  "ci_gate": "pnpm parity:check",
+  "phase_count": 16,
+  "parity_feature_count": 22,
+  "starting_coverage_pct": 73,
+  "fusion_guardrails": {
+    "upstream_leverage": "All Gateway RPC Zod schemas imported from src/gateway/server-methods/* via workspace alias — never duplicated (PROJECT_RULES §0.1).",
+    "no_bridge_files": "One typed RPC client in frontend/src/lib/gateway/, reused everywhere. No per-feature adapter layer.",
+    "visual_language": "shadcn/ui primitives only, OKLCH tokens from frontend/src/app/globals.css, lucide-react icons, zero emojis (PROJECT_RULES §8.7). Screenshot-diff CI enforces.",
+    "deletion_gate": "Phase 15 ControlUI removal blocked until Phase 14 flag soaked ≥1 release cycle with zero P0/P1 regressions, Phase 13 rolling parity gate green, pnpm parity:check exits 0.",
+    "upstream_watcher": "pnpm parity:check runs in openclaw_sync_* pre-merge CI — new upstream RPC methods must land in matrix before sync merges."
+  },
+  "acceptance_criteria": [
+    "parity-matrix.json: every feature status ∈ {complete, subtract}",
+    "pnpm parity:check exits 0",
+    "frontend/src/e2e/controlui-parity.spec.ts covers every non-subtract feature",
+    "Unit coverage ≥ 80% on lib/gateway/*, features/*/hooks/*, components/shared/*",
+    "pnpm typecheck exits 0 (frontend + backend)",
+    "pnpm test exits 0 with 0 failures",
+    "DEXMART_DISABLE_CONTROLUI soaked in prod ≥1 release cycle, zero P0/P1",
+    "pnpm visual-diff exits 0",
+    "ui/, src/gateway/control-ui*, src/infra/control-ui-assets* deleted — zero grep references",
+    "Docs updated: PROJECT_RULES §0, FUSION_STRATEGY, OPENCLAW_UPSTREAM_REPORT, tracks.md"
+  ]
+}
