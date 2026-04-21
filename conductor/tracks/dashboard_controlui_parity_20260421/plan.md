@@ -90,7 +90,7 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [x] Task 2.1.B.1: Write `docs/DASHBOARD_STYLE_GUIDE.md` — tokens, spacing scale, motion curves, glassmorphism recipe, Don't-Use list (emojis, custom hex)
 - [x] Task 2.1.B.2: Add `pnpm visual-diff` script — Playwright-visual or Chromatic-equivalent, stores baselines under `frontend/__visuals__/`
 - [x] Task 2.1.D.1: Run `pnpm visual-diff --update` to capture baselines for all 17 existing routes _(deferred — requires live dev server + Firebase auth session; run `pnpm visual-diff:update` from `frontend/` once logged in)_
-- [~] Task 2.1.D.2: Commit — `docs(dashboard): style guide + visual-diff baseline`
+- [x] Task 2.1.D.2: Commit — `docs(dashboard): style guide + visual-diff baseline` 61d19bb
 
 ### Sub-Track 2.2 — ModelSelector (used by chat, sessions, cron, agents, setup-wizard)
 
