@@ -39,8 +39,8 @@ _Lane — evidence pipeline. Runs once up-front, then on every upstream sync._
 - [x] Task 0.2.A.3: Add `pnpm parity:check` to conductor `openclaw_sync_*` track's pre-merge gate — new upstream RPC methods MUST land in matrix before merge
 - [x] Task 0.2.A.4: Write `conductor/tracks/openclaw_sync_20260415/HANDOFF.md` addendum — document "when upstream adds RPC, update FEATURE_SEEDS in parity script"
 - [x] Task 0.2.D.1: Verify: intentionally add a fake RPC method → `--check` fails → remove → green again
-- [ ] Task 0.2.D.2: Commit — `chore(parity): CI gate for ControlUI parity matrix`
-- [ ] Task: Conductor - User Manual Verification 'Phase 0'
+- [x] Task 0.2.D.2: Commit — `chore(parity): CI gate for ControlUI parity matrix`
+- [~] Task: Conductor - User Manual Verification 'Phase 0'
 
 ---
 
@@ -50,10 +50,10 @@ _Lane — typed WS client + transport architecture decision. Everything after de
 
 ### Sub-Track 1.A — Transport Architecture Decision (NO CODE)
 
-- [ ] Task 1.A.1: Read `src/gateway/control-ui.ts`, `protocol/client-info.ts`, `protocol/connect-error-details.ts` — document frame shape (type: res/event, method, params, id, payload)
-- [ ] Task 1.A.2: Survey user's Gateway deployment topology — self-hosted? managed? per-tenant? (ask user)
-- [ ] Task 1.A.3: Write `docs/architecture/GATEWAY_TRANSPORT.md` — evaluate 3 options (direct WS, relay, tenant-mux), recommend one, capture tradeoffs
-- [ ] Task 1.A.4: User review + approval of transport decision (BLOCKING — no 1.B work until signed off)
+- [x] Task 1.A.1: Read `src/gateway/control-ui.ts`, `protocol/client-info.ts`, `protocol/connect-error-details.ts` — document frame shape (type: res/event, method, params, id, payload)
+- [x] Task 1.A.2: Survey user's Gateway deployment topology — self-hosted? managed? per-tenant? (ask user)
+- [x] Task 1.A.3: Write `docs/architecture/GATEWAY_TRANSPORT.md` — evaluate 3 options (direct WS, relay, tenant-mux), recommend one, capture tradeoffs
+- [x] Task 1.A.4: User review + approval of transport decision (BLOCKING — no 1.B work until signed off)
 
 ### Sub-Track 1.B — Gateway Client Core
 
