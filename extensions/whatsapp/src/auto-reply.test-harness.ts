@@ -24,6 +24,8 @@ type MockWebListener = {
   sendPoll: () => Promise<{ messageId: string }>;
   sendReaction: () => Promise<void>;
   sendComposingTo: () => Promise<void>;
+  sendPausedTo: () => Promise<void>;
+  sendPresenceUpdate: () => Promise<void>;
 };
 type UnknownMock = Mock<(...args: unknown[]) => unknown>;
 type AsyncUnknownMock = Mock<(...args: unknown[]) => Promise<unknown>>;
@@ -201,6 +203,8 @@ export function createMockWebListener(): MockWebListener {
     sendPoll: vi.fn(async () => ({ messageId: "poll-1" })),
     sendReaction: vi.fn(async () => undefined),
     sendComposingTo: vi.fn(async () => undefined),
+    sendPausedTo: vi.fn(async () => undefined),
+    sendPresenceUpdate: vi.fn(async () => undefined),
   };
 }
 

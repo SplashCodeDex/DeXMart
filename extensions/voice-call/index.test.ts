@@ -1,9 +1,3 @@
-import { test } from "vitest";
-
-test.skip("UPSTREAM PENDING SYNC: src/plugins/voice-call.plugin.test.ts", () => {});
-
-/* ORIGINAL TEST CODE COMMENTED OUT TO PREVENT IMPORT/INIT ERRORS */
-/*
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -282,5 +276,3 @@ describe("voice-call plugin", () => {
     }
   });
 });
-
-*/
