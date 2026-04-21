@@ -19,7 +19,7 @@ Every sub-track's D-group appends its scenarios to `frontend/src/e2e/controlui-p
 
 ---
 
-## Phase 0: Discovery & Matrix Maintenance [checkpoint: in_progress]
+## Phase 0: Discovery & Matrix Maintenance [checkpoint: complete]
 
 _Lane — evidence pipeline. Runs once up-front, then on every upstream sync._
 
@@ -40,7 +40,7 @@ _Lane — evidence pipeline. Runs once up-front, then on every upstream sync._
 - [x] Task 0.2.A.4: Write `conductor/tracks/openclaw_sync_20260415/HANDOFF.md` addendum — document "when upstream adds RPC, update FEATURE_SEEDS in parity script"
 - [x] Task 0.2.D.1: Verify: intentionally add a fake RPC method → `--check` fails → remove → green again
 - [x] Task 0.2.D.2: Commit — `chore(parity): CI gate for ControlUI parity matrix`
-- [~] Task: Conductor - User Manual Verification 'Phase 0'
+- [x] Task: Conductor - User Manual Verification 'Phase 0'
 
 ---
 
