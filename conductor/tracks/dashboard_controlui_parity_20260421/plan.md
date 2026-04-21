@@ -107,9 +107,9 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 
 ### Sub-Track 2.4 — SchemaFormRenderer (used by config, cron, skills api-keys, wizard)
 
-- [ ] Task 2.4.A.1: Failing tests — render string/number/bool/enum/object/array from JSON schema; Zod-validate on submit
-- [ ] Task 2.4.B.1: Implement `frontend/src/components/schema-form/SchemaFormRenderer.tsx`
-- [ ] Task 2.4.D.1: Coverage + visual-diff
+- [x] Task 2.4.A.1: Failing tests — render string/number/bool/enum/object/array from JSON schema; Zod-validate on submit 19ed3be
+- [x] Task 2.4.B.1: Implement `frontend/src/components/schema-form/SchemaFormRenderer.tsx` 19ed3be
+- [x] Task 2.4.D.1: Coverage + visual-diff _(coverage: 94% stmts, 81.35% branch, 92.85% funcs, 94% lines; visual-diff deferred — requires live auth session)_ 19ed3be
 
 ### Sub-Track 2.5 — Supporting Primitives
 
