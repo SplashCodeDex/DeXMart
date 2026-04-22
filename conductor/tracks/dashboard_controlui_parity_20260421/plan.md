@@ -150,11 +150,11 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 
 ### Sub-Track 4.1 — sessions _(implement · 23 methods — largest single surface)_
 
-- [x] Task 4.1.A.1: Failing tests — `useSessionsList` (list, filter, search) [checkpoint: 51268f7]
-- [ ] Task 4.1.A.2: Failing tests — `useSessionDetail` (get, subscribe, live updates)
-- [ ] Task 4.1.A.3: Failing tests — `useCompaction` (list, restore, branch)
-- [ ] Task 4.1.B.1: `frontend/src/features/sessions/` + `page.tsx` + `[id]/page.tsx` thin pages
-- [ ] Task 4.1.B.2: `SessionsTable` (sortable: key, agent, channel, model, created, status)
+- [x] Task 4.1.A.1: Failing tests — `useSessionsList` (list, filter, search) [checkpoint: ac517a76cc]
+- [x] Task 4.1.A.2: Failing tests — `useSessionDetail` (get, subscribe, live updates) [checkpoint: fe9fdf4d02]
+- [x] Task 4.1.A.3: Failing tests — `useCompaction` (list, restore, branch) [checkpoint: 29a95f79dc]
+- [x] Task 4.1.B.1: `frontend/src/features/sessions/` + `page.tsx` + `[id]/page.tsx` thin pages [checkpoint: a4d60714d7]
+- [x] Task 4.1.B.2: `SessionsTable` (sortable: key, agent, channel, model, created, status) 11c5a1c690e
 - [ ] Task 4.1.B.3: Row actions via DropdownMenu: delete / reset / compact
 - [ ] Task 4.1.B.4: Detail view — metadata card + transcript (VirtualLogList) + override controls
 - [ ] Task 4.1.B.5: `CompactionPanel` — branch timeline visualization + restore / branch dialogs
