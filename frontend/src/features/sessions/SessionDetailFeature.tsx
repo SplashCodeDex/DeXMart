@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 
 import { useCompaction } from './hooks/useCompaction';
 import { useSessionDetail } from './hooks/useSessionDetail';
+import { CompactionPanel } from './components/CompactionPanel';
 
 import { ModelSelector } from '@/components/shared/ModelSelector';
 import { VirtualLogList } from '@/components/shared/VirtualLogList';
@@ -209,28 +210,7 @@ export function SessionDetailFeature({ sessionId }: SessionDetailFeatureProps): 
               <CardTitle className="text-sm font-black uppercase tracking-widest">Checkpoints</CardTitle>
             </CardHeader>
             <CardContent className="p-6">
-              {isCompactionLoading && checkpoints.length === 0 ? (
-                <div className="text-xs text-muted-foreground animate-pulse font-medium">Loading checkpoints...</div>
-              ) : checkpoints.length === 0 ? (
-                <div className="text-xs text-muted-foreground italic font-medium">No checkpoints found.</div>
-              ) : (
-                <div className="space-y-3">
-                  {checkpoints.map((cp) => (
-                    <div key={cp.id} className="p-3 bg-background border border-border rounded-xl space-y-2 hover:border-primary/30 transition-colors cursor-pointer group">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-foreground group-hover:text-primary transition-colors">{cp.label || cp.id.slice(0, 8)}</span>
-                        <Badge variant="outline" className="text-[8px] font-black uppercase tracking-tighter px-1 py-0 border-border/50">
-                          {cp.reason}
-                        </Badge>
-                      </div>
-                      <div className="flex items-center justify-between text-[9px] text-muted-foreground font-medium">
-                        <span>{new Date(cp.updatedAt).toLocaleDateString()}</span>
-                        <span>{cp.tokenCount.toLocaleString()} tkn</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <CompactionPanel sessionId={sessionId} />
             </CardContent>
           </Card>
         </div>

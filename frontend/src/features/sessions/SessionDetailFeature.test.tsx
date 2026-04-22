@@ -77,7 +77,7 @@ const mockSession = {
 };
 
 const mockCheckpoints = [
-  { id: "cp-1", updatedAt: 1713780000000, reason: "manual", tokenCount: 500, label: "Initial" },
+  { id: "cp-1", updatedAt: 1713780000000, reason: "manual", tokenCount: 500, messageCount: 10, label: "Initial" },
 ];
 
 describe("SessionDetailFeature", () => {
