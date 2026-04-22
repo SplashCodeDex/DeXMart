@@ -1,12 +1,20 @@
 'use client';
 
-import { ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
+import { ChevronDown, ChevronUp, ExternalLink, MoreVertical, RefreshCcw, Trash2, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useState, useMemo } from 'react';
+import { toast } from 'sonner';
 
 import { useSessionsList } from '../hooks/useSessionsList';
 
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
   Table,
   TableBody,
@@ -15,6 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { useGateway } from '@/lib/gateway/gateway-hooks';
 
 type SortField = 'sessionId' | 'label' | 'channel' | 'model' | 'startedAt' | 'updatedAt' | 'status';
 type SortOrder = 'asc' | 'desc';
@@ -34,7 +43,8 @@ function SortIcon({
 
 export function SessionsTable(): React.JSX.Element {
   const router = useRouter();
-  const { filteredSessions, isLoading, error } = useSessionsList();
+  const { filteredSessions, isLoading, error, refresh } = useSessionsList();
+  const { rpc } = useGateway();
   
   const [sortField, setSortField] = useState<SortField>('updatedAt');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
@@ -56,6 +66,43 @@ export function SessionsTable(): React.JSX.Element {
     } else {
       setSortField(field);
       setSortOrder('asc');
+    }
+  };
+
+  const handleDelete = async (e: React.MouseEvent, sessionId: string) => {
+    e.stopPropagation();
+    try {
+      await rpc.call('sessions.delete', { key: sessionId });
+      toast.success('Session deleted');
+      refresh();
+    } catch (err) {
+      toast.error('Failed to delete session');
+    }
+  };
+
+  const handleReset = async (e: React.MouseEvent, sessionId: string) => {
+    e.stopPropagation();
+    try {
+      await rpc.call('sessions.reset', { key: sessionId });
+      toast.success('Session reset');
+      refresh();
+    } catch (err) {
+      toast.error('Failed to reset session');
+    }
+  };
+
+  const handleCompact = async (e: React.MouseEvent, sessionId: string) => {
+    e.stopPropagation();
+    try {
+      const result = await rpc.call('sessions.compact', { key: sessionId });
+      if (result.compacted) {
+        toast.success(`Session compacted (${result.result?.tokensAfter} tokens remaining)`);
+      } else {
+        toast.info('Session already compact');
+      }
+      refresh();
+    } catch (err) {
+      toast.error('Failed to compact session');
     }
   };
 
@@ -166,8 +213,37 @@ export function SessionsTable(): React.JSX.Element {
                     </Badge>
                   )}
                 </TableCell>
-                <TableCell>
-                  <ExternalLink className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-all" />
+                <TableCell onClick={(e) => e.stopPropagation()}>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-muted">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48 bg-card border-border/50 backdrop-blur-xl">
+                      <DropdownMenuItem 
+                        className="cursor-pointer text-xs font-bold uppercase tracking-wider"
+                        onClick={(e) => handleCompact(e, session.sessionId)}
+                      >
+                        <Zap className="mr-2 h-4 w-4 text-yellow-500" />
+                        Compact Session
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        className="cursor-pointer text-xs font-bold uppercase tracking-wider"
+                        onClick={(e) => handleReset(e, session.sessionId)}
+                      >
+                        <RefreshCcw className="mr-2 h-4 w-4 text-blue-500" />
+                        Reset Session
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        className="cursor-pointer text-xs font-bold uppercase tracking-wider text-destructive focus:text-destructive"
+                        onClick={(e) => handleDelete(e, session.sessionId)}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Delete Session
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </TableCell>
               </TableRow>
             ))
