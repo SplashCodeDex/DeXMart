@@ -155,7 +155,7 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [x] Task 4.1.A.3: Failing tests — `useCompaction` (list, restore, branch) [checkpoint: 29a95f79dc]
 - [x] Task 4.1.B.1: `frontend/src/features/sessions/` + `page.tsx` + `[id]/page.tsx` thin pages [checkpoint: a4d60714d7]
 - [x] Task 4.1.B.2: `SessionsTable` (sortable: key, agent, channel, model, created, status) 11c5a1c690e
-- [~] Task 4.1.B.3: Row actions via DropdownMenu: delete / reset / compact
+- [x] Task 4.1.B.3: Row actions via DropdownMenu: delete / reset / compact 3be2da9ca3d
 - [ ] Task 4.1.B.4: Detail view — metadata card + transcript (VirtualLogList) + override controls
 - [ ] Task 4.1.B.5: `CompactionPanel` — branch timeline visualization + restore / branch dialogs
 - [ ] Task 4.1.B.6: Usage breakdown card — recharts BarChart (reused style from Phase 2.5)
