@@ -113,13 +113,13 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 
 ### Sub-Track 2.5 — Supporting Primitives
 
-- [ ] Task 2.5.B.1: `ConnectionStatus` (already referenced — formalize under `components/shared/`)
-- [ ] Task 2.5.B.2: `AbortButton` (chat, sessions)
-- [ ] Task 2.5.B.3: `StatusBadge` (channels, cron, nodes, sessions)
-- [ ] Task 2.5.B.4: `VirtualLogList` (logs, chat transcript, session transcript) — react-virtual wrapper
-- [ ] Task 2.5.B.5: `ToolCallCard` shell (chat, debug RPC playground) — collapsible
-- [ ] Task 2.5.B.6: `ThinkingCard` shell (chat, sessions detail)
-- [ ] Task 2.5.D.1: Commit — `feat(shared): primitives — ModelSelector, QRLoginModal, SchemaFormRenderer, ConnectionStatus, AbortButton, StatusBadge, VirtualLogList, ToolCallCard, ThinkingCard`
+- [x] Task 2.5.B.1: `ConnectionStatus` (already referenced — formalize under `components/shared/`)
+- [x] Task 2.5.B.2: `AbortButton` (chat, sessions)
+- [x] Task 2.5.B.3: `StatusBadge` (channels, cron, nodes, sessions)
+- [x] Task 2.5.B.4: `VirtualLogList` (logs, chat transcript, session transcript) — react-virtual wrapper
+- [x] Task 2.5.B.5: `ToolCallCard` shell (chat, debug RPC playground) — collapsible
+- [x] Task 2.5.B.6: `ThinkingCard` shell (chat, sessions detail)
+- [x] Task 2.5.D.1: Commit — `feat(shared): primitives — ModelSelector, QRLoginModal, SchemaFormRenderer, ConnectionStatus, AbortButton, StatusBadge, VirtualLogList, ToolCallCard, ThinkingCard`
 - [ ] Task: Conductor - User Manual Verification 'Phase 2'
 
 ---

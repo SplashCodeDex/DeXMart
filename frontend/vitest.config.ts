@@ -6,6 +6,11 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: ["./src/test/setup.ts"],
+    server: {
+      deps: {
+        inline: ["@tanstack/react-virtual"],
+      },
+    },
   },
   resolve: {
     alias: {

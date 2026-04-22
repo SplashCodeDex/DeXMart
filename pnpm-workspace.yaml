@@ -1,5 +1,6 @@
 packages:
   - .
+  - frontend
   - ui
   - shared
   - packages/*

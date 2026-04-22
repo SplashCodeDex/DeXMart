@@ -165,11 +165,11 @@ function FieldRenderer({
         <label htmlFor={name} className="text-sm">
           {label}
         </label>
-        {errorMessage && (
+        {errorMessage ? (
           <span role="alert" className="text-xs text-destructive">
             {errorMessage}
           </span>
-        )}
+        ) : null}
       </div>
     );
   }
@@ -192,11 +192,11 @@ function FieldRenderer({
             </option>
           ))}
         </select>
-        {errorMessage && (
+        {errorMessage ? (
           <span role="alert" className="text-xs text-destructive">
             {errorMessage}
           </span>
-        )}
+        ) : null}
       </div>
     );
   }
@@ -214,11 +214,11 @@ function FieldRenderer({
         {...register(name as never)}
         className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm"
       />
-      {errorMessage && (
+      {errorMessage ? (
         <span role="alert" className="text-xs text-destructive">
           {errorMessage}
         </span>
-      )}
+      ) : null}
     </div>
   );
 }
