@@ -158,7 +158,7 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [x] Task 4.1.B.3: Row actions via DropdownMenu: delete / reset / compact 3be2da9ca3d
 - [x] Task 4.1.B.4: Detail view — metadata card + transcript (VirtualLogList) + override controls 40503ee4711
 - [x] Task 4.1.B.5: `CompactionPanel` — branch timeline visualization + restore / branch dialogs 90403905c75
-- [ ] Task 4.1.B.6: Usage breakdown card — recharts BarChart (reused style from Phase 2.5)
+- [~] Task 4.1.B.6: Usage breakdown card — recharts BarChart (reused style from Phase 2.5)
 - [ ] Task 4.1.C.1: Wire `sessions.subscribe` / `sessions.messages.subscribe` event streams to live update
 - [ ] Task 4.1.C.2: Wire `sessions.steer`, `sessions.abort`, `sessions.send`, `sessions.reset`, `sessions.patch`
 - [ ] Task 4.1.D.1: Append 23 parity scenarios (one per method) to Playwright suite
