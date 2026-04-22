@@ -128,11 +128,11 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 
 ### Sub-Track 3.1 — chat _(add · 4 methods: chat.history, chat.send, chat.abort, chat.inject)_
 
-- [x] Task 3.1.A.1: Failing tests — ChatStore (Zustand) message/stream/abort state machine 25fa90f
-- [x] Task 3.1.A.2: Failing tests — `useChatSession` hook (send, stream append, abort, history load paginated) 25fa90f
-- [x] Task 3.1.B.1: `frontend/src/features/chat/` dir + `page.tsx` thin page + Sidebar nav entry 25fa90f
-- [x] Task 3.1.B.2: Implement `ChatStore`, `useChatSession` 25fa90f
-- [~] Task 3.1.B.3: Streaming text renderer (Framer Motion char fade-in reused from `components/ui/motion.tsx`)
+- [x] Task 3.1.A.1: Failing tests — ChatStore (Zustand) message/stream/abort state machine bb0427e
+- [x] Task 3.1.A.2: Failing tests — `useChatSession` hook (send, stream append, abort, history load paginated) bb0427e
+- [x] Task 3.1.B.1: `frontend/src/features/chat/` dir + `page.tsx` thin page + Sidebar nav entry bb0427e
+- [x] Task 3.1.B.2: Implement `ChatStore`, `useChatSession` bb0427e
+- [x] Task 3.1.B.3: Streaming text renderer (Framer Motion char fade-in reused from `components/ui/motion.tsx`) bb0427e
 - [ ] Task 3.1.B.4: Tool call visualization — composes Phase 2 `ToolCallCard` + `ThinkingCard`
 - [ ] Task 3.1.B.5: Slash command `/note` → `chat.inject`
 - [ ] Task 3.1.B.6: Transcript virtualization via `VirtualLogList`
