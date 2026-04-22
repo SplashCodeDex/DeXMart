@@ -18,6 +18,26 @@ export function useChatSession(sessionKey: string = 'main') {
     if (!rpc || !text.trim()) return;
 
     setError(null);
+    
+    // Slash commands
+    if (text.startsWith('/note ')) {
+      const noteContent = text.slice(6).trim();
+      if (!noteContent) return;
+
+      try {
+        await rpc.call('chat.inject', {
+          sessionKey,
+          message: noteContent,
+          label: 'note',
+        });
+        // The backend broadcasts the injected message, so it will appear via subscription.
+        return;
+      } catch (err: any) {
+        setError(err.message || 'Failed to inject note');
+        return;
+      }
+    }
+
     const userMsg: ChatMessage = {
       id: crypto.randomUUID(),
       role: 'user',

@@ -127,4 +127,23 @@ describe("useChatSession", () => {
       }),
     );
   });
+
+  it("should handle /note slash command by calling chat.inject", async () => {
+    const { result } = renderHook(() => useChatSession());
+
+    await act(async () => {
+      await result.current.sendMessage("/note Remember this");
+    });
+
+    expect(mockCall).toHaveBeenCalledWith(
+      "chat.inject",
+      expect.objectContaining({
+        sessionKey: "main",
+        message: "Remember this",
+        label: "note",
+      }),
+    );
+    // Should NOT call chat.send
+    expect(mockCall).not.toHaveBeenCalledWith("chat.send", expect.anything());
+  });
 });
