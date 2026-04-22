@@ -80,7 +80,7 @@ _Lane — typed WS client + transport architecture decision. Everything after de
 
 ---
 
-## Phase 2: Shared Primitives [checkpoint: in_progress]
+## Phase 2: Shared Primitives [checkpoint: 9930068]
 
 _Lane — reusable building blocks. Built once, used by every later lane. Prevents drift in visual language._
 
