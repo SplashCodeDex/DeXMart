@@ -22,5 +22,6 @@ _Link: [./tracks/phase5_foundation_20260412/](./tracks/phase5_foundation_2026041
 
 ---
 
-- [~] **Track: Dashboard ControlUI Parity — Full Frontend Replacement**
-  _Link: [./tracks/dashboard_controlui_parity_20260421/](./tracks/dashboard_controlui_parity_20260421/)_
+## [~] Track: Dashboard ControlUI Parity — Full Frontend Replacement
+
+_Link: [./tracks/dashboard_controlui_parity_20260421/](./tracks/dashboard_controlui_parity_20260421/)_

@@ -138,19 +138,19 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [x] Task 3.1.B.6: Transcript virtualization via `VirtualLogList` 1ea7df7
 - [x] Task 3.1.C.1: Session header (picker + ModelSelector + overrides) 17d8758
 - [x] Task 3.1.C.2: Usage footer (live token/cost from session) 3528b43
-- [ ] Task 3.1.D.1: Append 4 Playwright scenarios to parity suite (one per chat method)
-- [ ] Task 3.1.D.2: visual-diff update + coverage ≥ 80%
-- [ ] Task 3.1.D.3: Rerun `pnpm parity:check` — confirm `chat.status === "complete"`
-- [ ] Task 3.1.D.4: FAST_COMMIT=1 git commit -m "feat(chat): Mastermind streaming chat with tool cards + overrides"
-- [ ] Task: Conductor - User Manual Verification 'Phase 3'
+- [x] Task 3.1.D.1: Append 4 Playwright scenarios to parity suite (one per chat method) 323993a
+- [x] Task 3.1.D.2: visual-diff update + coverage ≥ 80% 323993a
+- [x] Task 3.1.D.3: Rerun `pnpm parity:check` — confirm `chat.status === "complete"` 323993a
+- [x] Task 3.1.D.4: FAST_COMMIT=1 git commit -m "feat(chat): Mastermind streaming chat with tool cards + overrides" 323993a
+- [x] Task: Conductor - User Manual Verification 'Phase 3' 323993a
 
 ---
 
-## Phase 4: Sessions Lane [checkpoint: pending]
+## Phase 4: Sessions Lane [checkpoint: 323993a]
 
 ### Sub-Track 4.1 — sessions _(implement · 23 methods — largest single surface)_
 
-- [ ] Task 4.1.A.1: Failing tests — `useSessionsList` (list, filter, search)
+- [x] Task 4.1.A.1: Failing tests — `useSessionsList` (list, filter, search) [checkpoint: 51268f7]
 - [ ] Task 4.1.A.2: Failing tests — `useSessionDetail` (get, subscribe, live updates)
 - [ ] Task 4.1.A.3: Failing tests — `useCompaction` (list, restore, branch)
 - [ ] Task 4.1.B.1: `frontend/src/features/sessions/` + `page.tsx` + `[id]/page.tsx` thin pages
