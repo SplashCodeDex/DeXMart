@@ -113,14 +113,14 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 
 ### Sub-Track 2.5 — Supporting Primitives
 
-- [x] Task 2.5.B.1: `ConnectionStatus` (already referenced — formalize under `components/shared/`)
-- [x] Task 2.5.B.2: `AbortButton` (chat, sessions)
-- [x] Task 2.5.B.3: `StatusBadge` (channels, cron, nodes, sessions)
-- [x] Task 2.5.B.4: `VirtualLogList` (logs, chat transcript, session transcript) — react-virtual wrapper
-- [x] Task 2.5.B.5: `ToolCallCard` shell (chat, debug RPC playground) — collapsible
-- [x] Task 2.5.B.6: `ThinkingCard` shell (chat, sessions detail)
-- [x] Task 2.5.D.1: FAST_COMMIT=1 git commit -m "feat(shared): primitives — ModelSelector, QRLoginModal, SchemaFormRenderer, ConnectionStatus, AbortButton, StatusBadge, VirtualLogList, ToolCallCard, ThinkingCard"
-- [x] Task: Conductor - User Manual Verification 'Phase 2'
+- [x] Task 2.5.B.1: `ConnectionStatus` (already referenced — formalize under `components/shared/`) 4ebc936
+- [x] Task 2.5.B.2: `AbortButton` (chat, sessions) 4ebc936
+- [x] Task 2.5.B.3: `StatusBadge` (channels, cron, nodes, sessions) 4ebc936
+- [x] Task 2.5.B.4: `VirtualLogList` (logs, chat transcript, session transcript) — react-virtual wrapper 4ebc936
+- [x] Task 2.5.B.5: `ToolCallCard` shell (chat, debug RPC playground) — collapsible 4ebc936
+- [x] Task 2.5.B.6: `ThinkingCard` shell (chat, sessions detail) 4ebc936
+- [x] Task 2.5.D.1: FAST_COMMIT=1 git commit -m "feat(shared): primitives — ModelSelector, QRLoginModal, SchemaFormRenderer, ConnectionStatus, AbortButton, StatusBadge, VirtualLogList, ToolCallCard, ThinkingCard" 4ebc936
+- [ ] Task: Conductor - User Manual Verification 'Phase 2'
 
 ---
 
