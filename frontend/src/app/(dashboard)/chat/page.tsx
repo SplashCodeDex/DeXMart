@@ -3,6 +3,7 @@
 import { ChatActionRenderer } from "@/features/chat/components/ChatActionRenderer";
 import { StreamingText } from "@/features/chat/components/StreamingText";
 import { SessionHeader } from "@/features/chat/components/SessionHeader";
+import { UsageFooter } from "@/features/chat/components/UsageFooter";
 import { useChatSession } from "@/features/chat/hooks/useChatSession";
 import { useChatStore, ChatMessage } from "@/features/chat/store";
 import { VirtualLogList } from "@/components/shared/VirtualLogList";
@@ -150,6 +151,8 @@ export default function ChatPage() {
           )}
         </form>
       </div>
+
+      <UsageFooter sessionKey={currentSessionKey} />
     </div>
   );
 }
