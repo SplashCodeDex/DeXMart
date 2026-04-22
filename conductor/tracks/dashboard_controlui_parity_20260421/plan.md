@@ -44,7 +44,7 @@ _Lane — evidence pipeline. Runs once up-front, then on every upstream sync._
 
 ---
 
-## Phase 1: Gateway RPC Foundation [checkpoint: pending]
+## Phase 1: Gateway RPC Foundation [checkpoint: 8a6b93c]
 
 _Lane — typed WS client + transport architecture decision. Everything after depends on this._
 
