@@ -137,7 +137,7 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [x] Task 3.1.B.5: Slash command `/note` → `chat.inject` ba12626
 - [x] Task 3.1.B.6: Transcript virtualization via `VirtualLogList` 1ea7df7
 - [x] Task 3.1.C.1: Session header (picker + ModelSelector + overrides) 17d8758
-- [ ] Task 3.1.C.2: Usage footer (live token/cost from session)
+- [x] Task 3.1.C.2: Usage footer (live token/cost from session) 3528b43
 - [ ] Task 3.1.D.1: Append 4 Playwright scenarios to parity suite (one per chat method)
 - [ ] Task 3.1.D.2: visual-diff update + coverage ≥ 80%
 - [ ] Task 3.1.D.3: Rerun `pnpm parity:check` — confirm `chat.status === "complete"`
