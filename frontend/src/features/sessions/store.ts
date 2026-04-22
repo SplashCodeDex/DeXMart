@@ -11,6 +11,7 @@ export interface Session {
   status?: "running" | "done" | "failed" | "killed" | "timeout";
   totalTokens?: number;
   estimatedCostUsd?: number;
+  messages?: any[]; // For now, any[] until I find the correct Message type
 }
 
 export interface Checkpoint {

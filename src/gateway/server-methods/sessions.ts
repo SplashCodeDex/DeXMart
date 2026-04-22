@@ -1459,9 +1459,20 @@ export const sessionsHandlers: GatewayRequestHandlers = {
       respond(true, { messages: [] }, undefined);
       return;
     }
+    
+    const cfg = loadConfig();
+    const session = buildGatewaySessionRow({
+      cfg,
+      storePath,
+      store,
+      key: target.canonicalKey,
+      entry,
+      includeDerivedTitles: true,
+    });
+
     const allMessages = readSessionMessages(entry.sessionId, storePath, entry.sessionFile);
     const messages = limit < allMessages.length ? allMessages.slice(-limit) : allMessages;
-    respond(true, { messages }, undefined);
+    respond(true, { session, messages }, undefined);
   },
   "sessions.compact": async ({ req, params, respond, context, client, isWebchatConnect }) => {
     if (!assertValidParams(params, validateSessionsCompactParams, "sessions.compact", respond)) {
