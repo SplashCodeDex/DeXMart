@@ -2,15 +2,22 @@
 
 import { ChatActionRenderer } from "@/features/chat/components/ChatActionRenderer";
 import { StreamingText } from "@/features/chat/components/StreamingText";
+import { SessionHeader } from "@/features/chat/components/SessionHeader";
 import { useChatSession } from "@/features/chat/hooks/useChatSession";
 import { useChatStore, ChatMessage } from "@/features/chat/store";
 import { VirtualLogList } from "@/components/shared/VirtualLogList";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function ChatPage() {
-  const { sendMessage, abort, status } = useChatSession();
-  const { messages, isStreaming, error } = useChatStore();
+  const [currentSessionKey, setCurrentSessionKey] = useState("main");
+  const { sendMessage, abort, status } = useChatSession(currentSessionKey);
+  const { messages, isStreaming, error, clearMessages } = useChatStore();
   const listContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleSessionChange = (key: string) => {
+    setCurrentSessionKey(key);
+    clearMessages();
+  };
 
   // Auto-scroll to bottom on new messages or streaming deltas
   useEffect(() => {
@@ -61,91 +68,88 @@ export default function ChatPage() {
   );
 
   return (
-    <div className="flex flex-col h-full p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-foreground">Mastermind Chat</h1>
-        <div className="flex items-center gap-2">
-          <div
-            className={`h-2 w-2 rounded-full ${status === "connected" ? "bg-green-500" : "bg-yellow-500"}`}
-          />
-          <span className="text-sm text-muted-foreground uppercase tracking-wider">{status}</span>
+    <div className="flex flex-col h-full overflow-hidden bg-background">
+      <SessionHeader 
+        currentSessionKey={currentSessionKey} 
+        onSessionChange={handleSessionChange} 
+      />
+
+      <div className="flex-1 flex flex-col p-6 overflow-hidden">
+        <div ref={listContainerRef} className="flex-1 mb-4 overflow-hidden flex flex-col">
+          {messages.length === 0 ? (
+            <div className="flex-1 flex flex-col items-center justify-center text-center space-y-4 border border-border/50 rounded-2xl bg-card/40 backdrop-blur-md shadow-inner">
+              <div className="p-4 rounded-full bg-primary/10">
+                <span className="text-4xl text-primary">💬</span>
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold text-foreground">No messages yet</h2>
+                <p className="text-muted-foreground max-w-xs">
+                  Start a conversation with Mastermind to see it in action.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <VirtualLogList
+              items={messages}
+              renderItem={renderMessage}
+              height="100%"
+              estimateSize={100}
+              className="border-border/50 rounded-2xl bg-card/40 backdrop-blur-md shadow-inner"
+            />
+          )}
+          {isStreaming && messages.length > 0 && (
+            <div className="flex justify-start mt-2">
+              <div className="bg-muted/30 text-muted-foreground p-2 px-4 rounded-full border border-border/30 text-xs animate-pulse">
+                Agent is thinking...
+              </div>
+            </div>
+          )}
         </div>
-      </div>
 
-      <div ref={listContainerRef} className="flex-1 mb-4">
-        {messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-center space-y-4 border border-border/50 rounded-2xl bg-card/40 backdrop-blur-md shadow-inner">
-            <div className="p-4 rounded-full bg-primary/10">
-              <span className="text-4xl text-primary">💬</span>
-            </div>
-            <div>
-              <h2 className="text-lg font-semibold text-foreground">No messages yet</h2>
-              <p className="text-muted-foreground max-w-xs">
-                Start a conversation with Mastermind to see it in action.
-              </p>
-            </div>
-          </div>
-        ) : (
-          <VirtualLogList
-            items={messages}
-            renderItem={renderMessage}
-            height="100%"
-            estimateSize={100}
-            className="border-border/50 rounded-2xl bg-card/40 backdrop-blur-md shadow-inner"
-          />
-        )}
-        {isStreaming && messages.length > 0 && (
-          <div className="flex justify-start mt-2">
-            <div className="bg-muted/30 text-muted-foreground p-2 px-4 rounded-full border border-border/30 text-xs animate-pulse">
-              Agent is thinking...
-            </div>
+        {error && (
+          <div className="mb-4 p-3 bg-destructive/10 text-destructive border border-destructive/20 rounded-xl text-sm">
+            {error}
           </div>
         )}
-      </div>
 
-      {error && (
-        <div className="mb-4 p-3 bg-destructive/10 text-destructive border border-destructive/20 rounded-xl text-sm">
-          {error}
-        </div>
-      )}
-
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          const form = e.target as HTMLFormElement;
-          const input = form.elements.namedItem("message") as HTMLInputElement;
-          if (input.value.trim()) {
-            sendMessage(input.value);
-            input.value = "";
-          }
-        }}
-        className="flex gap-3 bg-background/40 p-2 rounded-2xl border border-border/50 backdrop-blur-sm shadow-lg"
-      >
-        <input
-          name="message"
-          type="text"
-          placeholder="Ask Mastermind anything..."
-          disabled={status !== "connected" || isStreaming}
-          autoComplete="off"
-          className="flex-1 p-3 bg-transparent border-none focus:ring-0 text-foreground placeholder:text-muted-foreground"
-        />
-        <button
-          type="submit"
-          disabled={status !== "connected" || isStreaming}
-          className="px-6 py-2 bg-primary text-primary-foreground rounded-xl font-medium shadow-md hover:shadow-lg transition-all active:scale-95 disabled:opacity-50"
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            const form = e.target as HTMLFormElement;
+            const input = form.elements.namedItem("message") as HTMLInputElement;
+            if (input.value.trim()) {
+              sendMessage(input.value);
+              input.value = "";
+            }
+          }}
+          className="flex gap-3 bg-background/40 p-2 rounded-2xl border border-border/50 backdrop-blur-sm shadow-lg"
         >
-          Send
-        </button>
-        {isStreaming && (
+          <input
+            name="message"
+            type="text"
+            placeholder="Ask Mastermind anything..."
+            disabled={status !== "connected" || isStreaming}
+            autoComplete="off"
+            className="flex-1 p-3 bg-transparent border-none focus:ring-0 text-foreground placeholder:text-muted-foreground"
+          />
           <button
-            type="button"
-            onClick={abort}
-            className="px-4 py-2 bg-destructive/20 text-destructive border border-destructive/30 rounded-xl font-medium hover:bg-destructive/30 transition-all"
+            type="submit"
+            disabled={status !== "connected" || isStreaming}
+            className="px-6 py-2 bg-primary text-primary-foreground rounded-xl font-medium shadow-md hover:shadow-lg transition-all active:scale-95 disabled:opacity-50"
           >
-            Abort
+            Send
           </button>
-        )}
-      </form>
+          {isStreaming && (
+            <button
+              type="button"
+              onClick={abort}
+              className="px-4 py-2 bg-destructive/20 text-destructive border border-destructive/30 rounded-xl font-medium hover:bg-destructive/30 transition-all"
+            >
+              Abort
+            </button>
+          )}
+        </form>
+      </div>
     </div>
   );
 }
