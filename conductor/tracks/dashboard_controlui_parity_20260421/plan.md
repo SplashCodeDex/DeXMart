@@ -39,7 +39,7 @@ _Lane — evidence pipeline. Runs once up-front, then on every upstream sync._
 - [x] Task 0.2.A.3: Add `pnpm parity:check` to conductor `openclaw_sync_*` track's pre-merge gate — new upstream RPC methods MUST land in matrix before merge
 - [x] Task 0.2.A.4: Write `conductor/tracks/openclaw_sync_20260415/HANDOFF.md` addendum — document "when upstream adds RPC, update FEATURE_SEEDS in parity script"
 - [x] Task 0.2.D.1: Verify: intentionally add a fake RPC method → `--check` fails → remove → green again
-- [x] Task 0.2.D.2: Commit — `chore(parity): CI gate for ControlUI parity matrix`
+- [x] Task 0.2.D.2: FAST_COMMIT=1 git commit -m "chore(parity): CI gate for ControlUI parity matrix"
 - [x] Task: Conductor - User Manual Verification 'Phase 0'
 
 ---
@@ -75,7 +75,7 @@ _Lane — typed WS client + transport architecture decision. Everything after de
 - [x] Task 1.C.C.1: Wire `GatewayProvider` into `frontend/src/app/(dashboard)/layout.tsx`
 - [x] Task 1.C.C.2: Add Gateway `ConnectionStatus` indicator to dashboard header (distinct from existing Socket.io indicator)
 - [x] Task 1.C.D.1: Tests + typecheck green
-- [x] Task 1.C.D.2: Commit — `feat(gateway): typed RPC bridge with Firebase auth and React hooks`
+- [x] Task 1.C.D.2: FAST_COMMIT=1 git commit -m "feat(gateway): typed RPC bridge with Firebase auth and React hooks"
 - [x] Task: Conductor - User Manual Verification 'Phase 1'
 
 ---
@@ -90,7 +90,7 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [x] Task 2.1.B.1: Write `docs/DASHBOARD_STYLE_GUIDE.md` — tokens, spacing scale, motion curves, glassmorphism recipe, Don't-Use list (emojis, custom hex)
 - [x] Task 2.1.B.2: Add `pnpm visual-diff` script — Playwright-visual or Chromatic-equivalent, stores baselines under `frontend/__visuals__/`
 - [x] Task 2.1.D.1: Run `pnpm visual-diff --update` to capture baselines for all 17 existing routes _(deferred — requires live dev server + Firebase auth session; run `pnpm visual-diff:update` from `frontend/` once logged in)_
-- [x] Task 2.1.D.2: Commit — `docs(dashboard): style guide + visual-diff baseline` 61d19bb
+- [x] Task 2.1.D.2: FAST_COMMIT=1 git commit -m "docs(dashboard): style guide + visual-diff baseline" 61d19bb
 
 ### Sub-Track 2.2 — ModelSelector (used by chat, sessions, cron, agents, setup-wizard)
 
@@ -119,7 +119,7 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [x] Task 2.5.B.4: `VirtualLogList` (logs, chat transcript, session transcript) — react-virtual wrapper
 - [x] Task 2.5.B.5: `ToolCallCard` shell (chat, debug RPC playground) — collapsible
 - [x] Task 2.5.B.6: `ThinkingCard` shell (chat, sessions detail)
-- [x] Task 2.5.D.1: Commit — `feat(shared): primitives — ModelSelector, QRLoginModal, SchemaFormRenderer, ConnectionStatus, AbortButton, StatusBadge, VirtualLogList, ToolCallCard, ThinkingCard`
+- [x] Task 2.5.D.1: FAST_COMMIT=1 git commit -m "feat(shared): primitives — ModelSelector, QRLoginModal, SchemaFormRenderer, ConnectionStatus, AbortButton, StatusBadge, VirtualLogList, ToolCallCard, ThinkingCard"
 - [ ] Task: Conductor - User Manual Verification 'Phase 2'
 
 ---
@@ -141,7 +141,7 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [ ] Task 3.1.D.1: Append 4 Playwright scenarios to parity suite (one per chat method)
 - [ ] Task 3.1.D.2: visual-diff update + coverage ≥ 80%
 - [ ] Task 3.1.D.3: Rerun `pnpm parity:check` — confirm `chat.status === "complete"`
-- [ ] Task 3.1.D.4: Commit — `feat(chat): Mastermind streaming chat with tool cards + overrides`
+- [ ] Task 3.1.D.4: FAST_COMMIT=1 git commit -m "feat(chat): Mastermind streaming chat with tool cards + overrides"
 - [ ] Task: Conductor - User Manual Verification 'Phase 3'
 
 ---
@@ -164,7 +164,7 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [ ] Task 4.1.D.1: Append 23 parity scenarios (one per method) to Playwright suite
 - [ ] Task 4.1.D.2: visual-diff + coverage ≥ 80%
 - [ ] Task 4.1.D.3: `parity:check` shows `sessions.status === "complete"`
-- [ ] Task 4.1.D.4: Commit — `feat(sessions): full lifecycle — list/detail/overrides/compaction/branching`
+- [ ] Task 4.1.D.4: FAST_COMMIT=1 git commit -m "feat(sessions): full lifecycle — list/detail/overrides/compaction/branching"
 - [ ] Task: Conductor - User Manual Verification 'Phase 4'
 
 ---
@@ -180,7 +180,7 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [ ] Task 5.1.B.4: `ChannelConfigDrawer` (Sheet) — per-channel fields (phone, webhook, session name)
 - [ ] Task 5.1.B.5: OAuth flow — `web.login.start` + `web.login.wait` for non-QR channels
 - [ ] Task 5.1.B.6: Logout action (`channels.logout`) + optimistic status update
-- [ ] Task 5.1.D.1..4: Scenarios, visual-diff, parity:check, commit
+- [ ] Task 5.1.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
 
 ### Sub-Track 5.2 — devices _(weave → /dashboard/nodes "Devices" tab · 6 methods)_
 
@@ -188,7 +188,7 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [ ] Task 5.2.B.1: `DevicePairingTable` — pending (approve/reject) + paired (remove + AlertDialog)
 - [ ] Task 5.2.B.2: Token management UI — rotate + revoke with confirmation
 - [ ] Task 5.2.C.1: Mount as "Devices" tab inside existing `/dashboard/nodes` Tabs
-- [ ] Task 5.2.D.1..4: Scenarios, visual-diff, parity:check, commit
+- [ ] Task 5.2.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
 - [ ] Task: Conductor - User Manual Verification 'Phase 5'
 
 ---
@@ -204,14 +204,14 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [ ] Task 6.1.B.3: Channel assignment multi-select — sources from `channels.status`
 - [ ] Task 6.1.B.4: Agent CRUD — create/update/delete (AlertDialog for delete)
 - [ ] Task 6.1.B.5: Wire `agent.wait` for async agent startup UI
-- [ ] Task 6.1.D.1..4: Scenarios, visual-diff, parity:check, commit
+- [ ] Task 6.1.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
 
 ### Sub-Track 6.2 — dreaming _(weave → /dashboard/agents "Memory" tab · 3 methods)_
 
 - [ ] Task 6.2.A.1: Failing tests — `useMemoryStatus` (doctor.memory.status toggle)
 - [ ] Task 6.2.B.1: `MemoryPanel` — dream Switch, last-dreamed timestamp, diary entries paginated
 - [ ] Task 6.2.C.1: Wire `config.patch` / `config.schema.lookup` for dream config writes
-- [ ] Task 6.2.D.1..4: Scenarios, visual-diff, parity:check, commit
+- [ ] Task 6.2.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
 - [ ] Task: Conductor - User Manual Verification 'Phase 6'
 
 ---
@@ -226,7 +226,7 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [ ] Task 7.1.B.3: Live status badge via `cron.status` polling
 - [ ] Task 7.1.B.4: Advanced options — delivery mode, stagger, delete-after-run
 - [ ] Task 7.1.B.5: Agent overrides — ModelSelector (Phase 2.2) + thinking toggle
-- [ ] Task 7.1.D.1..4: Scenarios, visual-diff, parity:check, commit
+- [ ] Task 7.1.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
 
 ### Sub-Track 7.2 — skills _(enhance · 9 methods incl. plugin.approval._)\*
 
@@ -235,14 +235,14 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [ ] Task 7.2.B.2: `SkillInstallDrawer` — detail + install with progress
 - [ ] Task 7.2.B.3: `SkillApiKeyModal` — masked inputs, Zod-validated `skills.update`
 - [ ] Task 7.2.B.4: Plugin approval flow — `plugin.approval.list/request/resolve`
-- [ ] Task 7.2.D.1..4: Scenarios, visual-diff, parity:check, commit
+- [ ] Task 7.2.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
 
 ### Sub-Track 7.3 — command-palette _(add · 1 method: commands.list)_
 
 - [ ] Task 7.3.A.1: Failing tests — palette open/close, fuzzy match, exec
 - [ ] Task 7.3.B.1: Global `CommandPalette` via shadcn `cmdk` component, bound to Cmd+K
 - [ ] Task 7.3.C.1: Mount in dashboard layout, gates per Firebase role
-- [ ] Task 7.3.D.1..4: Scenarios, visual-diff, parity:check, commit
+- [ ] Task 7.3.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
 - [ ] Task: Conductor - User Manual Verification 'Phase 7'
 
 ---
@@ -258,7 +258,7 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [ ] Task 8.1.B.3: Node pair flow — request/approve/reject/verify
 - [ ] Task 8.1.B.4: Node rename + node.list live table
 - [ ] Task 8.1.B.5: Node event subscription → live badge updates
-- [ ] Task 8.1.D.1..4: Scenarios, visual-diff, parity:check, commit
+- [ ] Task 8.1.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
 
 ### Sub-Track 8.2 — exec-approvals _(weave → /dashboard/config "Security" tab · 8 methods)_
 
@@ -267,7 +267,7 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [ ] Task 8.2.B.2: Node-level allowlist per node (nested)
 - [ ] Task 8.2.B.3: Approval request/resolve inbox — pending approvals list
 - [ ] Task 8.2.C.1: Mount inside Config "Security" tab (Phase 9.1 owns the tab shell)
-- [ ] Task 8.2.D.1..4: Scenarios, visual-diff, parity:check, commit
+- [ ] Task 8.2.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
 - [ ] Task: Conductor - User Manual Verification 'Phase 8'
 
 ---
@@ -281,7 +281,7 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [ ] Task 9.1.B.2: "Apply & Restart" button → `config.apply` w/ loading state
 - [ ] Task 9.1.B.3: "Secrets" section — `secrets.resolve` (masked) + `secrets.reload`
 - [ ] Task 9.1.C.1: Add Tabs: General / Security / System / Voice (shells for 8.2, 9.2, 9.3)
-- [ ] Task 9.1.D.1..4: Scenarios, visual-diff, parity:check, commit
+- [ ] Task 9.1.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
 
 ### Sub-Track 9.2 — tts _(weave → Config "Voice" tab · 10 methods incl. talk._, voicewake._)_
 
@@ -291,7 +291,7 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [ ] Task 9.2.B.3: Voicewake config — `voicewake.get/set`
 - [ ] Task 9.2.B.4: `talk.mode` + `talk.config` UI
 - [ ] Task 9.2.C.1: Mount in Config "Voice" tab
-- [ ] Task 9.2.D.1..4: Scenarios, visual-diff, parity:check, commit
+- [ ] Task 9.2.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
 
 ### Sub-Track 9.3 — update-runner _(weave → Config "System" tab · 1 method)_
 
@@ -299,7 +299,7 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [ ] Task 9.3.B.1: "Run Update" button w/ AlertDialog confirm
 - [ ] Task 9.3.B.2: Streaming output panel (VirtualLogList from 2.5)
 - [ ] Task 9.3.C.1: Mount in Config "System" tab
-- [ ] Task 9.3.D.1..4: Scenarios, visual-diff, parity:check, commit
+- [ ] Task 9.3.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
 - [ ] Task: Conductor - User Manual Verification 'Phase 9'
 
 ---
@@ -311,7 +311,7 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [ ] Task 10.1.A.1: Failing tests — `useLogStream` subscribe + filter + pause/resume + circular buffer cap
 - [ ] Task 10.1.B.1: `frontend/src/features/logs/` + thin page
 - [ ] Task 10.1.B.2: `LogsViewer` — VirtualLogList (Phase 2.5), ANSI color, level filter chips, search, export (.log Blob)
-- [ ] Task 10.1.D.1..4: Scenarios, visual-diff, parity:check, commit
+- [ ] Task 10.1.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
 
 ### Sub-Track 10.2 — debug _(add · 5 methods: gateway.identity, models.list, push.test, tools._)\*
 
@@ -323,7 +323,7 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [ ] Task 10.2.B.5: `PushTestCard` — dev push trigger
 - [ ] Task 10.2.B.6: `ToolsCatalogCard` — `tools.catalog` + `tools.effective`
 - [ ] Task 10.2.C.1: Sidebar entry hidden unless Firebase `role === "admin"`
-- [ ] Task 10.2.D.1..4: Scenarios, visual-diff, parity:check, commit
+- [ ] Task 10.2.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
 
 ### Sub-Track 10.3 — instances _(weave → /dashboard/home · Presence card)_
 
@@ -331,13 +331,13 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [ ] Task 10.3.B.1: `PresenceCard` — instance list, status dot, uptime badge
 - [ ] Task 10.3.B.2: Gateway identity header card — `gateway.identity.get`
 - [ ] Task 10.3.C.1: Mount in home page
-- [ ] Task 10.3.D.1..4: Scenarios, visual-diff, parity:check, commit
+- [ ] Task 10.3.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
 
 ### Sub-Track 10.4 — overview _(enhance → /dashboard/home remaining cards)_
 
 - [ ] Task 10.4.A.1: Read ControlUI `views/overview*.ts` — list widgets to port
 - [ ] Task 10.4.B.1: `OverviewAttentionCard`, `OverviewEventLogCard`, `OverviewHintsCard`, `OverviewLogTailCard` — port each to shadcn glassmorphism
-- [ ] Task 10.4.D.1..4: Scenarios, visual-diff, parity:check, commit
+- [ ] Task 10.4.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
 - [ ] Task: Conductor - User Manual Verification 'Phase 10'
 
 ---
@@ -350,13 +350,13 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [ ] Task 11.1.B.1: Recharts AreaChart — day/week/month toggle
 - [ ] Task 11.1.B.2: PieChart — cost by provider
 - [ ] Task 11.1.B.3: LineChart — session count trend
-- [ ] Task 11.1.D.1..4: Scenarios, visual-diff, parity:check, commit
+- [ ] Task 11.1.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
 
 ### Sub-Track 11.2 — message-actions _(weave · 1 method: message.action)_
 
 - [ ] Task 11.2.A.1: Failing tests — react/edit/delete/quote flows
 - [ ] Task 11.2.B.1: Row-level `MessageActionsMenu` — mount in sessions transcript + messages feature
-- [ ] Task 11.2.D.1..4: Scenarios, visual-diff, parity:check, commit
+- [ ] Task 11.2.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
 - [ ] Task: Conductor - User Manual Verification 'Phase 11'
 
 ---
@@ -373,7 +373,7 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [ ] Task 12.1.B.5: Step 3: Agent creation — reuses Phase 2.2 ModelSelector
 - [ ] Task 12.1.B.6: Step 4: Completion — canvas-confetti + redirect to home
 - [ ] Task 12.1.C.1: Home layout redirects to `/dashboard/setup` when `wizard.status` incomplete
-- [ ] Task 12.1.D.1..4: Scenarios, visual-diff, parity:check, commit
+- [ ] Task 12.1.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
 - [ ] Task: Conductor - User Manual Verification 'Phase 12'
 
 ---
@@ -408,7 +408,7 @@ _Lane — flag-gate ControlUI, ship to prod, soak for one release cycle. No code
 - [ ] Task 14.1.B.1: Implement flag check in `src/gateway/control-ui-routing.ts` — early return 410 when flag true
 - [ ] Task 14.1.B.2: Flag default false (safe). Production secret flips to true.
 - [ ] Task 14.1.D.1: Deploy to staging with flag=true → manual smoke
-- [ ] Task 14.1.D.2: Commit — `feat(gateway): DEXMART_DISABLE_CONTROLUI flag`
+- [ ] Task 14.1.D.2: FAST_COMMIT=1 git commit -m "feat(gateway): DEXMART_DISABLE_CONTROLUI flag"
 
 ### Sub-Track 14.2 — Production Soak
 
@@ -449,7 +449,7 @@ _Lane — irreversible. Gated by Phase 14 soak sign-off._
 - [ ] Task 15.3.A.4: Update `conductor/tracks.md` — mark `[x]`
 - [ ] Task 15.3.A.5: Remove `DEXMART_DISABLE_CONTROLUI` flag (no longer needed)
 - [ ] Task 15.3.D.1: Final `pnpm test` + `pnpm typecheck` + `pnpm parity:check` all green
-- [ ] Task 15.3.D.2: Commit — `feat(dashboard)!: DeXMart achieves ControlUI parity — ControlUI removed`
+- [ ] Task 15.3.D.2: FAST_COMMIT=1 git commit -m "feat(dashboard)!: DeXMart achieves ControlUI parity — ControlUI removed"
 - [ ] Task: Conductor - User Manual Verification 'Phase 15: ControlUI Deletion Complete'
 
 ---
@@ -476,7 +476,7 @@ Any sub-track that hand-rolls a primitive instead of composing Phase 2 fails cod
 2. Pick a sub-track with `checkpoint: pending` and no blocked-by
 3. `TaskUpdate owner=<name>` on its first Task Group
 4. Follow A (tests) → B (impl) → C (integration) → D (verify) strictly
-5. D-group ends with `parity:check` + visual-diff + commit
+5. D-group ends with `parity:check` + visual-diff + FAST_COMMIT=1 git commit -m "..."
 6. Advance matrix status — rerun discovery, confirm feature flips to `complete`
 7. Release the sub-track, move to next
 
