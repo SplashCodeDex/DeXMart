@@ -133,7 +133,7 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [x] Task 3.1.B.1: `frontend/src/features/chat/` dir + `page.tsx` thin page + Sidebar nav entry bb0427e
 - [x] Task 3.1.B.2: Implement `ChatStore`, `useChatSession` bb0427e
 - [x] Task 3.1.B.3: Streaming text renderer (Framer Motion char fade-in reused from `components/ui/motion.tsx`) bb0427e
-- [ ] Task 3.1.B.4: Tool call visualization — composes Phase 2 `ToolCallCard` + `ThinkingCard`
+- [x] Task 3.1.B.4: Tool call visualization — composes Phase 2 `ToolCallCard` + `ThinkingCard` 42c569b
 - [ ] Task 3.1.B.5: Slash command `/note` → `chat.inject`
 - [ ] Task 3.1.B.6: Transcript virtualization via `VirtualLogList`
 - [ ] Task 3.1.C.1: Session header (picker + ModelSelector + overrides)
