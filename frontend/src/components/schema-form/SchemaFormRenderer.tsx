@@ -248,7 +248,7 @@ export function SchemaFormRenderer({ schema, defaultValues, onSubmit }: SchemaFo
           schema={propSchema}
           register={register}
           control={control}
-          errors={errors[key]}
+          errors={errors[key] as any}
         />
       ))}
       <button
