@@ -3,6 +3,7 @@ import { create } from "zustand";
 export interface Session {
   sessionId: string;
   updatedAt: number;
+  startedAt?: number;
   label?: string;
   displayName?: string;
   channel?: string;
