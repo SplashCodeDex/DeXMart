@@ -3,11 +3,62 @@
 import { ChatActionRenderer } from "@/features/chat/components/ChatActionRenderer";
 import { StreamingText } from "@/features/chat/components/StreamingText";
 import { useChatSession } from "@/features/chat/hooks/useChatSession";
-import { useChatStore } from "@/features/chat/store";
+import { useChatStore, ChatMessage } from "@/features/chat/store";
+import { VirtualLogList } from "@/components/shared/VirtualLogList";
+import { useEffect, useRef } from "react";
 
 export default function ChatPage() {
   const { sendMessage, abort, status } = useChatSession();
   const { messages, isStreaming, error } = useChatStore();
+  const listContainerRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom on new messages or streaming deltas
+  useEffect(() => {
+    if (listContainerRef.current) {
+      const scrollElement = listContainerRef.current.querySelector("div[style*='overflow: auto']");
+      if (scrollElement) {
+        scrollElement.scrollTop = scrollElement.scrollHeight;
+      }
+    }
+  }, [messages, isStreaming]);
+
+  const renderMessage = (msg: ChatMessage) => (
+    <div
+      key={msg.id}
+      className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} p-2`}
+    >
+      <div
+        className={cn(
+          "max-w-[80%] p-4 rounded-2xl shadow-sm",
+          msg.role === "user"
+            ? "bg-primary text-primary-foreground rounded-tr-none"
+            : "bg-muted/50 text-foreground border border-border/50 rounded-tl-none",
+        )}
+      >
+        {msg.actions && msg.actions.length > 0 && (
+          <div className="mb-3 space-y-2">
+            {msg.actions.map((action) => (
+              <ChatActionRenderer key={action.id} action={action} />
+            ))}
+          </div>
+        )}
+        {msg.content && (
+          <div className="message-content">
+            {msg.role === "user" ? (
+              <div className="whitespace-pre-wrap">{msg.content}</div>
+            ) : (
+              <StreamingText content={msg.content} />
+            )}
+          </div>
+        )}
+        {msg.thinking && !msg.actions?.some((a) => a.type === "thinking") && (
+          <div className="mt-2 p-2 rounded bg-background/20 text-xs italic opacity-80 border-l-2 border-primary/30">
+            {msg.thinking}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 
   return (
     <div className="flex flex-col h-full p-6">
@@ -21,9 +72,9 @@ export default function ChatPage() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto mb-4 p-6 space-y-4 border border-border/50 rounded-2xl bg-card/40 backdrop-blur-md shadow-inner">
-        {messages.length === 0 && (
-          <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
+      <div ref={listContainerRef} className="flex-1 mb-4">
+        {messages.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full text-center space-y-4 border border-border/50 rounded-2xl bg-card/40 backdrop-blur-md shadow-inner">
             <div className="p-4 rounded-full bg-primary/10">
               <span className="text-4xl text-primary">💬</span>
             </div>
@@ -34,47 +85,18 @@ export default function ChatPage() {
               </p>
             </div>
           </div>
+        ) : (
+          <VirtualLogList
+            items={messages}
+            renderItem={renderMessage}
+            height="100%"
+            estimateSize={100}
+            className="border-border/50 rounded-2xl bg-card/40 backdrop-blur-md shadow-inner"
+          />
         )}
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-          >
-            <div
-              className={cn(
-                "max-w-[80%] p-4 rounded-2xl shadow-sm",
-                msg.role === "user"
-                  ? "bg-primary text-primary-foreground rounded-tr-none"
-                  : "bg-muted/50 text-foreground border border-border/50 rounded-tl-none",
-              )}
-            >
-              {msg.actions && msg.actions.length > 0 && (
-                <div className="mb-3 space-y-2">
-                  {msg.actions.map((action) => (
-                    <ChatActionRenderer key={action.id} action={action} />
-                  ))}
-                </div>
-              )}
-              {msg.content && (
-                <div className="message-content">
-                  {msg.role === "user" ? (
-                    <div className="whitespace-pre-wrap">{msg.content}</div>
-                  ) : (
-                    <StreamingText content={msg.content} />
-                  )}
-                </div>
-              )}
-              {msg.thinking && !msg.actions?.some((a) => a.type === "thinking") && (
-                <div className="mt-2 p-2 rounded bg-background/20 text-xs italic opacity-80 border-l-2 border-primary/30">
-                  {msg.thinking}
-                </div>
-              )}
-            </div>
-          </div>
-        ))}
-        {isStreaming && (
-          <div className="flex justify-start">
-            <div className="bg-muted/30 text-muted-foreground p-3 rounded-2xl border border-border/30 animate-pulse">
+        {isStreaming && messages.length > 0 && (
+          <div className="flex justify-start mt-2">
+            <div className="bg-muted/30 text-muted-foreground p-2 px-4 rounded-full border border-border/30 text-xs animate-pulse">
               Agent is thinking...
             </div>
           </div>
