@@ -1,5 +1,6 @@
 "use client";
 
+import { ChatActionRenderer } from "@/features/chat/components/ChatActionRenderer";
 import { StreamingText } from "@/features/chat/components/StreamingText";
 import { useChatSession } from "@/features/chat/hooks/useChatSession";
 import { useChatStore } from "@/features/chat/store";
@@ -47,12 +48,23 @@ export default function ChatPage() {
                   : "bg-muted/50 text-foreground border border-border/50 rounded-tl-none",
               )}
             >
-              {msg.role === "user" ? (
-                <div className="whitespace-pre-wrap">{msg.content}</div>
-              ) : (
-                <StreamingText content={msg.content} />
+              {msg.actions && msg.actions.length > 0 && (
+                <div className="mb-3 space-y-2">
+                  {msg.actions.map((action) => (
+                    <ChatActionRenderer key={action.id} action={action} />
+                  ))}
+                </div>
               )}
-              {msg.thinking && (
+              {msg.content && (
+                <div className="message-content">
+                  {msg.role === "user" ? (
+                    <div className="whitespace-pre-wrap">{msg.content}</div>
+                  ) : (
+                    <StreamingText content={msg.content} />
+                  )}
+                </div>
+              )}
+              {msg.thinking && !msg.actions?.some((a) => a.type === "thinking") && (
                 <div className="mt-2 p-2 rounded bg-background/20 text-xs italic opacity-80 border-l-2 border-primary/30">
                   {msg.thinking}
                 </div>

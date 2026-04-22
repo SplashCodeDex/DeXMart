@@ -1,5 +1,16 @@
 import { create } from "zustand";
 
+export interface ChatAction {
+  id: string;
+  type: "tool" | "thinking" | "plan" | "approval" | "command_output" | "patch";
+  status: "pending" | "running" | "success" | "error" | "requested" | "resolved";
+  title: string;
+  content?: string;
+  params?: Record<string, unknown>;
+  result?: unknown;
+  timestamp: number;
+}
+
 export interface ChatMessage {
   id: string;
   role: "user" | "assistant" | "system" | "tool";
@@ -7,6 +18,7 @@ export interface ChatMessage {
   timestamp: number;
   thinking?: string;
   runId?: string;
+  actions?: ChatAction[];
 }
 
 interface ChatState {
@@ -18,6 +30,7 @@ interface ChatState {
   // Actions
   addMessage: (msg: ChatMessage) => void;
   updateLastAssistantMessage: (delta: string) => void;
+  upsertAction: (runId: string, action: ChatAction) => void;
   setStreaming: (isStreaming: boolean) => void;
   setError: (error: string | null) => void;
   setMessages: (messages: ChatMessage[]) => void;
@@ -52,6 +65,39 @@ export const useChatStore = create<ChatState>((set, get) => ({
           content: targetMsg.content + delta,
         };
       }
+
+      return { messages: newMessages };
+    }),
+
+  upsertAction: (runId, action) =>
+    set((state) => {
+      const msgIndex = [...state.messages].reverse().findIndex((m) => m.runId === runId);
+      if (msgIndex === -1) {
+        const newAssistantMsg: ChatMessage = {
+          id: runId,
+          role: "assistant",
+          content: "",
+          timestamp: Date.now(),
+          runId,
+          actions: [action],
+        };
+        return { messages: [...state.messages, newAssistantMsg] };
+      }
+
+      const actualIndex = state.messages.length - 1 - msgIndex;
+      const newMessages = [...state.messages];
+      const targetMsg = { ...newMessages[actualIndex] };
+      const actions = [...(targetMsg.actions || [])];
+      
+      const actionIndex = actions.findIndex((a) => a.id === action.id);
+      if (actionIndex === -1) {
+        actions.push(action);
+      } else {
+        actions[actionIndex] = { ...actions[actionIndex], ...action };
+      }
+
+      targetMsg.actions = actions;
+      newMessages[actualIndex] = targetMsg;
 
       return { messages: newMessages };
     }),
