@@ -4,17 +4,23 @@ import { VirtualLogList } from "./VirtualLogList";
 
 // Mock @tanstack/react-virtual since JSDOM doesn't support layout measurements
 vi.mock("@tanstack/react-virtual", () => ({
-  useVirtualizer: vi.fn(({ count }) => ({
-    getTotalSize: () => count * 30,
-    getVirtualItems: () =>
-      Array.from({ length: count }, (_, i) => ({
-        index: i,
-        key: i,
-        start: i * 30,
-        measureElement: () => {},
-      })),
-    measureElement: () => {},
-  })),
+  useVirtualizer: vi.fn((options) => {
+    // Call these to get coverage in the component
+    if (options.getScrollElement) options.getScrollElement();
+    if (options.estimateSize) options.estimateSize();
+
+    return {
+      getTotalSize: () => options.count * 30,
+      getVirtualItems: () =>
+        Array.from({ length: options.count }, (_, i) => ({
+          index: i,
+          key: i,
+          start: i * 30,
+          measureElement: () => {},
+        })),
+      measureElement: () => {},
+    };
+  }),
 }));
 
 beforeAll(() => {

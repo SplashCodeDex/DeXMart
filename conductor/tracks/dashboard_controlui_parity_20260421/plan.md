@@ -120,7 +120,7 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [x] Task 2.5.B.5: `ToolCallCard` shell (chat, debug RPC playground) — collapsible
 - [x] Task 2.5.B.6: `ThinkingCard` shell (chat, sessions detail)
 - [x] Task 2.5.D.1: FAST_COMMIT=1 git commit -m "feat(shared): primitives — ModelSelector, QRLoginModal, SchemaFormRenderer, ConnectionStatus, AbortButton, StatusBadge, VirtualLogList, ToolCallCard, ThinkingCard"
-- [ ] Task: Conductor - User Manual Verification 'Phase 2'
+- [x] Task: Conductor - User Manual Verification 'Phase 2'
 
 ---
 

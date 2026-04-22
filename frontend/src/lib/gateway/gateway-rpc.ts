@@ -10,6 +10,8 @@ import type {
   SessionsListParams,
   SessionsPreviewParams,
   AgentSummary,
+  WebLoginStartParams,
+  WebLoginWaitParams,
 } from "@openclaw/protocol/index";
 // For schemas that don't have an explicit 'export type' in index.ts, we infer them:
 import { ChatSendParamsSchema, ChatHistoryParamsSchema } from "@openclaw/protocol/index";
@@ -55,6 +57,20 @@ export interface MethodMap {
     params: Record<string, never>;
     result: {
       models: ReadonlyArray<ModelCatalogEntry>;
+    };
+  };
+  "web.login.start": {
+    params: WebLoginStartParams;
+    result: {
+      qrDataUrl?: string;
+      message: string;
+    };
+  };
+  "web.login.wait": {
+    params: WebLoginWaitParams;
+    result: {
+      connected: boolean;
+      message: string;
     };
   };
 }

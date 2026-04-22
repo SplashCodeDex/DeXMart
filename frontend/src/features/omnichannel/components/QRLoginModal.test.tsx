@@ -98,7 +98,7 @@ describe("QRLoginModal", () => {
     });
     render(<QRLoginModal open onClose={onClose} onConnected={onConnected} />, { wrapper });
     await waitFor(() => {
-      const startCalls = mockCall.mock.calls.filter(([m]: [string]) => m === "web.login.start");
+      const startCalls = mockCall.mock.calls.filter(([m]) => m === "web.login.start");
       expect(startCalls.length).toBeGreaterThanOrEqual(2);
     });
   });

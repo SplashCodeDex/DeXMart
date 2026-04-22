@@ -14,8 +14,8 @@ interface QRLoginModalProps {
 }
 
 export function QRLoginModal({ open, onClose, onConnected, accountId }: QRLoginModalProps) {
-  const callStart = useRpcCall("web.login.start" as never);
-  const callWait = useRpcCall("web.login.wait" as never);
+  const callStart = useRpcCall("web.login.start");
+  const callWait = useRpcCall("web.login.wait");
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [countdown, setCountdown] = useState(QR_TIMEOUT_S);
@@ -35,36 +35,35 @@ export function QRLoginModal({ open, onClose, onConnected, accountId }: QRLoginM
         setLoading(true);
         setQrDataUrl(null);
 
-        let startResult: { qrDataUrl?: string; message: string };
         try {
-          startResult = (await callStart({
+          const startResult = await callStart({
             accountId,
             force: true,
             timeoutMs: QR_TIMEOUT_MS,
-          })) as typeof startResult;
-        } catch {
-          break;
-        }
+          });
 
-        if (cancelledRef.current) break;
-        setQrDataUrl(startResult.qrDataUrl ?? null);
-        setLoading(false);
+          if (cancelledRef.current) break;
+          setQrDataUrl(startResult.qrDataUrl ?? null);
+          setLoading(false);
 
-        let waitResult: { connected: boolean; message: string };
-        try {
-          waitResult = (await callWait({
+          const waitResult = await callWait({
             accountId,
             timeoutMs: QR_TIMEOUT_MS,
-          })) as typeof waitResult;
+          });
+
+          if (cancelledRef.current) break;
+
+          if (waitResult.connected) {
+            onConnected();
+            return;
+          }
         } catch {
-          break;
-        }
-
-        if (cancelledRef.current) break;
-
-        if (waitResult.connected) {
-          onConnected();
-          return;
+          if (!cancelledRef.current) {
+            setLoading(false);
+            // Optionally add a small delay before retrying or break on fatal
+            await new Promise((r) => setTimeout(r, 2000));
+          }
+          continue;
         }
         // connected: false → loop for auto-refresh
       }
