@@ -135,7 +135,7 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [x] Task 3.1.B.3: Streaming text renderer (Framer Motion char fade-in reused from `components/ui/motion.tsx`) bb0427e
 - [x] Task 3.1.B.4: Tool call visualization — composes Phase 2 `ToolCallCard` + `ThinkingCard` 42c569b
 - [x] Task 3.1.B.5: Slash command `/note` → `chat.inject` ba12626
-- [ ] Task 3.1.B.6: Transcript virtualization via `VirtualLogList`
+- [x] Task 3.1.B.6: Transcript virtualization via `VirtualLogList` 1ea7df7
 - [ ] Task 3.1.C.1: Session header (picker + ModelSelector + overrides)
 - [ ] Task 3.1.C.2: Usage footer (live token/cost from session)
 - [ ] Task 3.1.D.1: Append 4 Playwright scenarios to parity suite (one per chat method)
