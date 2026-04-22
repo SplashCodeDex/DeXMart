@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1776712575912,
+  "lastScanned": 1776812667775,
   "projectRoot": "/home/codedex/projects/DeXMart",
   "techStack": {
     "languages": [
@@ -172,6 +172,8 @@
       "moltbot:rpc": "node scripts/run-node.mjs agent --mode rpc --json",
       "openclaw": "node scripts/run-node.mjs",
       "openclaw:rpc": "node scripts/run-node.mjs agent --mode rpc --json",
+      "parity:check": "node --import tsx scripts/controlui-parity-discover.ts --check",
+      "parity:generate": "node --import tsx scripts/controlui-parity-discover.ts",
       "plugin-sdk:api:check": "node --import tsx scripts/generate-plugin-sdk-api-baseline.ts --check",
       "plugin-sdk:api:gen": "node --import tsx scripts/generate-plugin-sdk-api-baseline.ts --write",
       "plugin-sdk:check-exports": "node scripts/sync-plugin-sdk-exports.mjs --check",
@@ -339,35 +341,35 @@
       "path": "Expiremental",
       "purpose": null,
       "fileCount": 3,
-      "lastAccessed": 1776712575871,
+      "lastAccessed": 1776812667747,
       "keyFiles": ["SwitchToggle.css", "SwitchToggle.html", "SwitchToggle.js"]
     },
     "Swabble": {
       "path": "Swabble",
       "purpose": null,
       "fileCount": 8,
-      "lastAccessed": 1776712575873,
+      "lastAccessed": 1776812667748,
       "keyFiles": ["CHANGELOG.md", "LICENSE", "Package.resolved", "Package.swift", "README.md"]
     },
     "apps": {
       "path": "apps",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1776712575879,
+      "lastAccessed": 1776812667753,
       "keyFiles": []
     },
     "assets": {
       "path": "assets",
       "purpose": "Static assets",
       "fileCount": 3,
-      "lastAccessed": 1776712575884,
+      "lastAccessed": 1776812667754,
       "keyFiles": ["avatar-placeholder.svg", "dmg-background-small.png", "dmg-background.png"]
     },
     "conductor": {
       "path": "conductor",
       "purpose": null,
       "fileCount": 6,
-      "lastAccessed": 1776712575885,
+      "lastAccessed": 1776812667755,
       "keyFiles": [
         "product-guidelines.md",
         "product.md",
@@ -380,7 +382,7 @@
       "path": "coverage",
       "purpose": null,
       "fileCount": 9,
-      "lastAccessed": 1776712575885,
+      "lastAccessed": 1776812667756,
       "keyFiles": [
         "base.css",
         "block-navigation.js",
@@ -393,7 +395,7 @@
       "path": "dist",
       "purpose": "Distribution/build output",
       "fileCount": 2143,
-      "lastAccessed": 1776712575890,
+      "lastAccessed": 1776812667760,
       "keyFiles": [
         "abort-CMUE6HNf.js",
         "abort-cutoff-CLUBV9OI.js",
@@ -406,27 +408,27 @@
       "path": "dist-runtime",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1776712575892,
+      "lastAccessed": 1776812667760,
       "keyFiles": []
     },
     "docs": {
       "path": "docs",
       "purpose": "Documentation",
-      "fileCount": 22,
-      "lastAccessed": 1776712575892,
+      "fileCount": 24,
+      "lastAccessed": 1776812667760,
       "keyFiles": [
         "AGENTS.md",
+        "ControlUI-replacement-with-DeXmart.md",
+        "DASHBOARD_STYLE_GUIDE.md",
         "OPENCLAW_UPSTREAM_REPORT.md",
-        "PROJECT_RULES.md",
-        "TrueFusionPlan.md",
-        "auth-credential-semantics.md"
+        "PROJECT_RULES.md"
       ]
     },
     "extensions": {
       "path": "extensions",
       "purpose": null,
       "fileCount": 6,
-      "lastAccessed": 1776712575893,
+      "lastAccessed": 1776812667761,
       "keyFiles": [
         "AGENTS.md",
         "music-generation-providers.live.test.ts",
@@ -438,8 +440,8 @@
     "frontend": {
       "path": "frontend",
       "purpose": null,
-      "fileCount": 15,
-      "lastAccessed": 1776712575894,
+      "fileCount": 16,
+      "lastAccessed": 1776812667762,
       "keyFiles": [
         "components.json",
         "eslint.config.mjs",
@@ -452,14 +454,14 @@
       "path": "git-hooks",
       "purpose": null,
       "fileCount": 1,
-      "lastAccessed": 1776712575894,
+      "lastAccessed": 1776812667762,
       "keyFiles": ["pre-commit"]
     },
     "logs": {
       "path": "logs",
       "purpose": null,
       "fileCount": 30,
-      "lastAccessed": 1776712575895,
+      "lastAccessed": 1776812667762,
       "keyFiles": [
         "app-2026-04-07.log",
         "app-2026-04-08.log",
@@ -472,35 +474,35 @@
       "path": "openclaw-path-alias-GRakBP",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1776712575895,
+      "lastAccessed": 1776812667763,
       "keyFiles": []
     },
     "openclaw-path-alias-SWESJP": {
       "path": "openclaw-path-alias-SWESJP",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1776712575895,
+      "lastAccessed": 1776812667763,
       "keyFiles": []
     },
     "packages": {
       "path": "packages",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1776712575896,
+      "lastAccessed": 1776812667763,
       "keyFiles": []
     },
     "patches": {
       "path": "patches",
       "purpose": null,
       "fileCount": 2,
-      "lastAccessed": 1776712575896,
+      "lastAccessed": 1776812667763,
       "keyFiles": ["@whiskeysockets__baileys@7.0.0-rc.9.patch"]
     },
     "qa": {
       "path": "qa",
       "purpose": null,
       "fileCount": 4,
-      "lastAccessed": 1776712575896,
+      "lastAccessed": 1776812667763,
       "keyFiles": [
         "README.md",
         "frontier-harness-plan.md",
@@ -511,8 +513,8 @@
     "scripts": {
       "path": "scripts",
       "purpose": "Build/utility scripts",
-      "fileCount": 226,
-      "lastAccessed": 1776712575897,
+      "fileCount": 227,
+      "lastAccessed": 1776812667764,
       "keyFiles": [
         "AGENTS.md",
         "analyze-plugin-sdk-usage.ts",
@@ -525,21 +527,21 @@
       "path": "shared",
       "purpose": null,
       "fileCount": 3,
-      "lastAccessed": 1776712575897,
+      "lastAccessed": 1776812667764,
       "keyFiles": ["fieldAliases.ts", "package.json", "tsconfig.json"]
     },
     "skills": {
       "path": "skills",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1776712575898,
+      "lastAccessed": 1776812667765,
       "keyFiles": []
     },
     "src": {
       "path": "src",
       "purpose": "Source code",
       "fileCount": 37,
-      "lastAccessed": 1776712575898,
+      "lastAccessed": 1776812667765,
       "keyFiles": [
         "browser-lifecycle-cleanup.test.ts",
         "browser-lifecycle-cleanup.ts",
@@ -552,7 +554,7 @@
       "path": "test",
       "purpose": "Test files",
       "fileCount": 42,
-      "lastAccessed": 1776712575899,
+      "lastAccessed": 1776812667765,
       "keyFiles": [
         "appcast.test.ts",
         "architecture-smells.test.ts",
@@ -565,81 +567,70 @@
       "path": "test-fixtures",
       "purpose": null,
       "fileCount": 1,
-      "lastAccessed": 1776712575899,
+      "lastAccessed": 1776812667765,
       "keyFiles": ["talk-config-contract.json"]
     },
     "tests": {
       "path": "tests",
       "purpose": "Test files",
       "fileCount": 1,
-      "lastAccessed": 1776712575899,
+      "lastAccessed": 1776812667766,
       "keyFiles": ["ApiKeyManager.test.ts"]
     },
     "ui": {
       "path": "ui",
       "purpose": null,
       "fileCount": 6,
-      "lastAccessed": 1776712575900,
+      "lastAccessed": 1776812667766,
       "keyFiles": ["AGENTS.md", "index.html", "package.json", "vite.config.ts", "vitest.config.ts"]
     },
     "vendor": {
       "path": "vendor",
       "purpose": "Third-party code",
       "fileCount": 0,
-      "lastAccessed": 1776712575900,
+      "lastAccessed": 1776812667766,
       "keyFiles": []
     },
     "coverage/src": {
       "path": "coverage/src",
       "purpose": "Source code",
       "fileCount": 7,
-      "lastAccessed": 1776712575901,
+      "lastAccessed": 1776812667767,
       "keyFiles": ["globals.ts.html", "index.html", "logger.ts.html"]
-    },
-    "docs/assets": {
-      "path": "docs/assets",
-      "purpose": "Static assets",
-      "fileCount": 6,
-      "lastAccessed": 1776712575905,
-      "keyFiles": [
-        "install-script.svg",
-        "openclaw-logo-text-dark.png",
-        "openclaw-logo-text-dark.svg"
-      ]
     },
     "scripts/__tests__": {
       "path": "scripts/__tests__",
       "purpose": "Test files",
       "fileCount": 1,
-      "lastAccessed": 1776712575906,
+      "lastAccessed": 1776812667772,
       "keyFiles": ["migrate-tenants-to-users.test.ts"]
     },
     "shared/dist": {
       "path": "shared/dist",
       "purpose": "Distribution/build output",
       "fileCount": 2,
-      "lastAccessed": 1776712575907,
+      "lastAccessed": 1776812667773,
       "keyFiles": ["index.d.ts", "index.js"]
     },
     "shared/node_modules": {
       "path": "shared/node_modules",
       "purpose": "Dependencies",
       "fileCount": 0,
-      "lastAccessed": 1776712575908,
+      "lastAccessed": 1776812667773,
       "keyFiles": []
     },
     "shared/src": {
       "path": "shared/src",
       "purpose": "Source code",
       "fileCount": 1,
-      "lastAccessed": 1776712575908,
+      "lastAccessed": 1776812667773,
       "keyFiles": ["index.ts"]
     },
     "test/fixtures": {
       "path": "test/fixtures",
       "purpose": "Test fixtures",
       "fileCount": 8,
-      "lastAccessed": 1776712575910,
+      "lastAccessed": 1776812667774,
       "keyFiles": [
         "cli-startup-bench.json",
         "exec-allowlist-shell-parser-parity.json",
@@ -650,323 +641,77 @@
       "path": "ui/node_modules",
       "purpose": "Dependencies",
       "fileCount": 0,
-      "lastAccessed": 1776712575911,
+      "lastAccessed": 1776812667774,
       "keyFiles": []
     },
     "ui/public": {
       "path": "ui/public",
       "purpose": "Public files",
       "fileCount": 4,
-      "lastAccessed": 1776712575911,
+      "lastAccessed": 1776812667774,
       "keyFiles": ["apple-touch-icon.png", "favicon-32.png", "favicon.ico"]
     },
     "ui/src": {
       "path": "ui/src",
       "purpose": "Source code",
       "fileCount": 5,
-      "lastAccessed": 1776712575911,
+      "lastAccessed": 1776812667774,
       "keyFiles": ["css.d.ts", "local-storage.ts", "main.ts"]
     }
   },
   "hotPaths": [
     {
-      "path": "",
-      "accessCount": 66,
-      "lastAccessed": 1776773593823,
-      "type": "directory"
+      "path": "conductor/tracks.md",
+      "accessCount": 2,
+      "lastAccessed": 1776813242541,
+      "type": "file"
     },
     {
-      "path": "conductor/tracks.md",
-      "accessCount": 49,
-      "lastAccessed": 1776773428984,
+      "path": "conductor/tracks/dashboard_controlui_parity_20260421/spec.md",
+      "accessCount": 1,
+      "lastAccessed": 1776812932991,
       "type": "file"
     },
     {
       "path": "conductor/workflow.md",
-      "accessCount": 24,
-      "lastAccessed": 1776731342003,
-      "type": "file"
-    },
-    {
-      "path": "package.json",
-      "accessCount": 19,
-      "lastAccessed": 1776773502204,
-      "type": "file"
-    },
-    {
-      "path": "src/billing/auth-guard.ts",
-      "accessCount": 17,
-      "lastAccessed": 1776103408434,
-      "type": "file"
-    },
-    {
-      "path": "conductor/tech-stack.md",
-      "accessCount": 15,
-      "lastAccessed": 1776123772844,
-      "type": "file"
-    },
-    {
-      "path": "src/agents/openclaw-tools.ts",
-      "accessCount": 14,
-      "lastAccessed": 1776612712477,
-      "type": "file"
-    },
-    {
-      "path": "conductor/product.md",
-      "accessCount": 11,
-      "lastAccessed": 1776123772520,
-      "type": "file"
-    },
-    {
-      "path": "src/tenancy/context-resolver.ts",
-      "accessCount": 10,
-      "lastAccessed": 1776103640753,
-      "type": "file"
-    },
-    {
-      "path": "docs/TrueFusionPlan.md",
-      "accessCount": 9,
-      "lastAccessed": 1776030806207,
-      "type": "file"
-    },
-    {
-      "path": "pnpm-workspace.yaml",
-      "accessCount": 8,
-      "lastAccessed": 1776558997634,
-      "type": "file"
-    },
-    {
-      "path": "src/tenancy/tenant-context.ts",
-      "accessCount": 6,
-      "lastAccessed": 1776031453708,
-      "type": "file"
-    },
-    {
-      "path": "tsconfig.json",
-      "accessCount": 5,
-      "lastAccessed": 1775468109843,
-      "type": "file"
-    },
-    {
-      "path": "conductor/tracks/fusion_phase_2_20260401/plan.md",
-      "accessCount": 5,
-      "lastAccessed": 1775679295747,
-      "type": "file"
-    },
-    {
-      "path": "conductor/tracks/true_fusion_audit_sync_20260401/spec.md",
-      "accessCount": 3,
-      "lastAccessed": 1775787700095,
-      "type": "file"
-    },
-    {
-      "path": "conductor/index.md",
-      "accessCount": 3,
-      "lastAccessed": 1775792207807,
-      "type": "file"
-    },
-    {
-      "path": "openclaw/AGENTS.md",
-      "accessCount": 2,
-      "lastAccessed": 1775168681071,
-      "type": "file"
-    },
-    {
-      "path": "backend/src/main.ts",
-      "accessCount": 2,
-      "lastAccessed": 1775168689276,
-      "type": "file"
-    },
-    {
-      "path": "shared/src/index.ts",
-      "accessCount": 2,
-      "lastAccessed": 1775168698076,
-      "type": "file"
-    },
-    {
-      "path": "conductor/tracks/fusion_phase_2_20260401/spec.md",
-      "accessCount": 2,
-      "lastAccessed": 1775677882087,
-      "type": "file"
-    },
-    {
-      "path": "src/dexmart-config/ConfigManager.ts",
-      "accessCount": 2,
-      "lastAccessed": 1775678561013,
-      "type": "file"
-    },
-    {
-      "path": "src/dexmart-config/env.schema.ts",
-      "accessCount": 2,
-      "lastAccessed": 1775745111058,
-      "type": "file"
-    },
-    {
-      "path": "swarm-config.yaml",
       "accessCount": 1,
-      "lastAccessed": 1775168655431,
+      "lastAccessed": 1776812933051,
       "type": "file"
     },
     {
-      "path": "backend/ARCHITECTURE.md",
+      "path": "conductor/tracks/dashboard_controlui_parity_20260421/plan.md",
       "accessCount": 1,
-      "lastAccessed": 1775168662585,
+      "lastAccessed": 1776812933131,
       "type": "file"
     },
     {
-      "path": "src/dexmart-server/multiTenantApp.ts",
+      "path": "frontend/src/components/ui/ConnectionStatus.tsx",
       "accessCount": 1,
-      "lastAccessed": 1775168666518,
+      "lastAccessed": 1776813250761,
       "type": "file"
     },
     {
-      "path": "src/dexmart-config/config.ts",
+      "path": "frontend/src/components/shared/index.ts",
       "accessCount": 1,
-      "lastAccessed": 1775168666645,
+      "lastAccessed": 1776813251108,
       "type": "file"
     },
     {
-      "path": "src/dexmart-lib/context.ts",
+      "path": "frontend/src/components/ui/badge.tsx",
       "accessCount": 1,
-      "lastAccessed": 1775168667071,
+      "lastAccessed": 1776813251617,
       "type": "file"
     },
     {
-      "path": "src/dexmart-lib/apiKeyManager.ts",
+      "path": "frontend/src/components/ui/motion.tsx",
       "accessCount": 1,
-      "lastAccessed": 1775168667558,
+      "lastAccessed": 1776813257193,
       "type": "file"
     },
     {
-      "path": ".agent/README.md",
+      "path": "frontend/src/components/shared/ModelSelector.test.tsx",
       "accessCount": 1,
-      "lastAccessed": 1775168667867,
-      "type": "file"
-    },
-    {
-      "path": "openclaw/VISION.md",
-      "accessCount": 1,
-      "lastAccessed": 1775168667887,
-      "type": "file"
-    },
-    {
-      "path": "backend/package.json",
-      "accessCount": 1,
-      "lastAccessed": 1775168669870,
-      "type": "file"
-    },
-    {
-      "path": "shared/package.json",
-      "accessCount": 1,
-      "lastAccessed": 1775168669918,
-      "type": "file"
-    },
-    {
-      "path": "openclaw/package.json",
-      "accessCount": 1,
-      "lastAccessed": 1775168670221,
-      "type": "file"
-    },
-    {
-      "path": "src/dexmart-lib/firebase.ts",
-      "accessCount": 1,
-      "lastAccessed": 1775168670908,
-      "type": "file"
-    },
-    {
-      "path": "src/dexmart-lib/identity.ts",
-      "accessCount": 1,
-      "lastAccessed": 1775168671083,
-      "type": "file"
-    },
-    {
-      "path": "src/dexmart-lib/simple.ts",
-      "accessCount": 1,
-      "lastAccessed": 1775168671312,
-      "type": "file"
-    },
-    {
-      "path": "src/dexmart-routes/multiTenant.ts",
-      "accessCount": 1,
-      "lastAccessed": 1775168675285,
-      "type": "file"
-    },
-    {
-      "path": "backend/src/config/env.schema.ts",
-      "accessCount": 1,
-      "lastAccessed": 1775168675446,
-      "type": "file"
-    },
-    {
-      "path": "backend/src/services/multiTenantService.ts",
-      "accessCount": 1,
-      "lastAccessed": 1775168675730,
-      "type": "file"
-    },
-    {
-      "path": "backend/src/services/database.ts",
-      "accessCount": 1,
-      "lastAccessed": 1775168676156,
-      "type": "file"
-    },
-    {
-      "path": "backend/src/services/FirebaseService.ts",
-      "accessCount": 1,
-      "lastAccessed": 1775168676517,
-      "type": "file"
-    },
-    {
-      "path": "src/dexmart-middleware/main.ts",
-      "accessCount": 1,
-      "lastAccessed": 1775168676572,
-      "type": "file"
-    },
-    {
-      "path": "src/dexmart-jobs/index.ts",
-      "accessCount": 1,
-      "lastAccessed": 1775168676629,
-      "type": "file"
-    },
-    {
-      "path": "openclaw/src/index.ts",
-      "accessCount": 1,
-      "lastAccessed": 1775168676862,
-      "type": "file"
-    },
-    {
-      "path": "src/services/DeXMartToolBridge.ts",
-      "accessCount": 1,
-      "lastAccessed": 1775168682515,
-      "type": "file"
-    },
-    {
-      "path": "src/services/MastermindSkillBridge.ts",
-      "accessCount": 1,
-      "lastAccessed": 1775168682890,
-      "type": "file"
-    },
-    {
-      "path": "shared/src/schemas/omnichannelSchemas.ts",
-      "accessCount": 1,
-      "lastAccessed": 1775168684802,
-      "type": "file"
-    },
-    {
-      "path": "backend/src/server/multiTenantApp.ts",
-      "accessCount": 1,
-      "lastAccessed": 1775168685565,
-      "type": "file"
-    },
-    {
-      "path": "src/dexmart-utils/openclawImports.ts",
-      "accessCount": 1,
-      "lastAccessed": 1775168685914,
-      "type": "file"
-    },
-    {
-      "path": "backend/src/services/DeXMartToolBridge.ts",
-      "accessCount": 1,
-      "lastAccessed": 1775168689620,
+      "lastAccessed": 1776813257418,
       "type": "file"
     }
   ],

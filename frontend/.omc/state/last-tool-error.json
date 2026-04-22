@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"pnpm tsgo 2>&1 | grep -c \\\"ui/vitest.config.ts\\\" && git -C /home/codedex/projects/DeXMart stash pop\",\"description\":\"Count ui/vitest errors on clean state, then restore stash\"}",
+  "error": "Exit code 1\n0",
+  "timestamp": "2026-04-21T23:03:47.363Z",
+  "retry_count": 2
+}

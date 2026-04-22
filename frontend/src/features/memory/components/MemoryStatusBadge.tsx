@@ -1,13 +1,11 @@
-'use client';
+"use client";
 
-import { Brain, Loader2 } from 'lucide-react';
-import React from 'react';
-
-import { Progress } from '@/components/ui/progress';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { cn } from '@/lib/utils';
-
-import type { MemoryInitProgress } from '../types';
+import { Brain, Loader2 } from "lucide-react";
+import React from "react";
+import { Progress } from "@/components/ui/progress";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import type { MemoryInitProgress } from "../types";
 
 interface MemoryStatusBadgeProps {
   ready: boolean;
@@ -17,9 +15,9 @@ interface MemoryStatusBadgeProps {
   className?: string;
 }
 
-const STAGE_LABELS: Record<MemoryInitProgress['stage'], string> = {
-  loading_model: 'Loading AI model',
-  rehydrating: 'Restoring memories',
+const STAGE_LABELS: Record<MemoryInitProgress["stage"], string> = {
+  loading_model: "Loading AI model",
+  rehydrating: "Restoring memories",
 };
 
 /**
@@ -42,26 +40,26 @@ export function MemoryStatusBadge({
 }: MemoryStatusBadgeProps): React.JSX.Element {
   return (
     <TooltipProvider>
-      <div className={cn('flex items-center gap-2', className)}>
-        {loading && (
+      <div className={cn("flex items-center gap-2", className)}>
+        {loading ? (
           <div className="flex flex-col gap-1 min-w-[140px]">
             <div className="flex items-center gap-2">
               <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
               <span className="text-xs text-muted-foreground">
-                {progress ? STAGE_LABELS[progress.stage] : 'Starting memory'}
+                {progress ? STAGE_LABELS[progress.stage] : "Starting memory"}
               </span>
             </div>
-            {progress && (
+            {progress ? (
               <Progress
                 value={progress.pct}
                 className="h-1"
                 aria-label={`${STAGE_LABELS[progress.stage]}: ${progress.pct}%`}
               />
-            )}
+            ) : null}
           </div>
-        )}
+        ) : null}
 
-        {!loading && ready && (
+        {!loading && ready ? (
           <Tooltip>
             <TooltipTrigger asChild>
               <button
@@ -75,13 +73,14 @@ export function MemoryStatusBadge({
             </TooltipTrigger>
             <TooltipContent side="bottom">
               <p className="text-xs">
-                On-device AI memory is active. Your agent&apos;s context is stored privately on your device.
+                On-device AI memory is active. Your agent&apos;s context is stored privately on your
+                device.
               </p>
             </TooltipContent>
           </Tooltip>
-        )}
+        ) : null}
 
-        {!loading && error && (
+        {!loading && error ? (
           <Tooltip>
             <TooltipTrigger asChild>
               <button
@@ -97,7 +96,7 @@ export function MemoryStatusBadge({
               <p className="text-xs text-red-600">{error}</p>
             </TooltipContent>
           </Tooltip>
-        )}
+        ) : null}
       </div>
     </TooltipProvider>
   );

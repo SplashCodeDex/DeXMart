@@ -1,12 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect, useCallback, useRef } from 'react';
-
-import { useMemory } from '@/lib/memory-client';
-import { useAuth } from '@/features/auth';
-
-import { useMemoryStore } from '../stores/useMemoryStore';
-import type { MemoryItem } from '../types';
+import { useEffect, useCallback, useRef } from "react";
+import { useAuth } from "@/features/auth";
+import { useMemory } from "@/lib/memory-client";
+import { useMemoryStore } from "../stores/useMemoryStore";
+import type { MemoryItem } from "../types";
 
 /**
  * useMemoryPanel
@@ -24,10 +22,11 @@ export function useMemoryPanel() {
   const { user } = useAuth();
 
   // Firestore client: lazy-imported client-side only to avoid SSR issues
-  const firestoreRef = useRef<import('@/lib/memory-client').FirestoreClient | null>(null);
+  const firestoreRef = useRef<import("@/lib/memory-client").FirestoreClient | null>(null);
   useEffect(() => {
-    import('@/lib/firebase/client').then(({ getClientFirestore }) => {
-      firestoreRef.current = getClientFirestore() as unknown as import('@/lib/memory-client').FirestoreClient;
+    import("@/lib/firebase/client").then(({ getClientFirestore }) => {
+      firestoreRef.current =
+        getClientFirestore() as unknown as import("@/lib/memory-client").FirestoreClient;
     });
   }, []);
 
@@ -87,7 +86,7 @@ export function useMemoryPanel() {
       const newItem: MemoryItem = {
         id: `local-${Date.now()}`,
         text,
-        metadata: metadata as MemoryItem['metadata'],
+        metadata: metadata as MemoryItem["metadata"],
         createdAt: new Date().toISOString(),
       };
       setRecentMemories([newItem, ...recentMemories].slice(0, 10));

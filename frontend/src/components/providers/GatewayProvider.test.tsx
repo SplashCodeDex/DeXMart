@@ -12,14 +12,14 @@ vi.mock("../../lib/gateway/gateway-client", () => {
   };
 });
 
-const DummyChild = () => {
+function DummyChild() {
   const { status, error, isHalted } = useGateway();
   return (
     <div data-testid="status">
       Status:{status} Error:{error?.message} Halted:{String(isHalted)}
     </div>
   );
-};
+}
 
 describe("GatewayProvider", () => {
   let mockConnect: ReturnType<typeof vi.fn>;
