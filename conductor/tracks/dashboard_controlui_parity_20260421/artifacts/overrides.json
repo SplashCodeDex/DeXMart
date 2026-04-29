@@ -7,6 +7,10 @@
     }
   ],
   "strategyOverrides": {},
+  "statusOverrides": {
+    "chat": "complete",
+    "sessions": "complete"
+  },
   "featureMapping": {
     "exec-approvals": { "route": "config" },
     "update-runner": { "route": "config" },

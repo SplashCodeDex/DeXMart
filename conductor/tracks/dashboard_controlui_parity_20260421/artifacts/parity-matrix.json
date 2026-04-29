@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-04-21T11:18:18.530Z",
-  "source_commit": "30bee400e6",
+  "generated_at": "2026-04-25T03:05:29.723Z",
+  "source_commit": "c0ee831a29",
   "summary": {
     "rpc_method_count": 119,
     "rpc_domain_count": 28,
     "controlui_view_count": 58,
     "controlui_controller_count": 28,
-    "dexmart_route_count": 17,
-    "dexmart_feature_count": 13,
+    "dexmart_route_count": 21,
+    "dexmart_feature_count": 15,
     "parity_feature_count": 22,
-    "coverage_pct": 73
+    "coverage_pct": 82
   },
   "rpc_methods": [
     {
@@ -436,7 +436,7 @@
       "method": "sessions.compact",
       "domain": "sessions",
       "file": "src/gateway/server-methods/sessions.ts",
-      "line": 1466
+      "line": 1477
     },
     {
       "method": "sessions.compaction.branch",
@@ -1226,6 +1226,11 @@
   ],
   "dexmart_routes": [
     {
+      "route": "/chat",
+      "pageFile": "frontend/src/app/(dashboard)/chat/page.tsx",
+      "featureDir": "frontend/src/features/chat"
+    },
+    {
       "route": "/dashboard/agents",
       "pageFile": "frontend/src/app/(dashboard)/dashboard/agents/page.tsx",
       "featureDir": "frontend/src/features/agents"
@@ -1286,6 +1291,16 @@
       "featureDir": "frontend/src/features/omnichannel"
     },
     {
+      "route": "/dashboard/sessions",
+      "pageFile": "frontend/src/app/(dashboard)/dashboard/sessions/page.tsx",
+      "featureDir": "frontend/src/features/sessions"
+    },
+    {
+      "route": "/dashboard/sessions/[id]",
+      "pageFile": "frontend/src/app/(dashboard)/dashboard/sessions/[id]/page.tsx",
+      "featureDir": "frontend/src/features/sessions"
+    },
+    {
       "route": "/dashboard/settings",
       "pageFile": "frontend/src/app/(dashboard)/dashboard/settings/page.tsx",
       "featureDir": "frontend/src/features/settings"
@@ -1309,6 +1324,11 @@
       "route": "/dashboard/webhooks",
       "pageFile": "frontend/src/app/(dashboard)/dashboard/webhooks/page.tsx",
       "featureDir": "frontend/src/features/webhooks"
+    },
+    {
+      "route": "/settings",
+      "pageFile": "frontend/src/app/(dashboard)/settings/page.tsx",
+      "featureDir": "frontend/src/features/settings"
     }
   ],
   "dexmart_features": [
@@ -1323,6 +1343,10 @@
     {
       "name": "billing",
       "file": "frontend/src/features/billing"
+    },
+    {
+      "name": "chat",
+      "file": "frontend/src/features/chat"
     },
     {
       "name": "config",
@@ -1357,6 +1381,10 @@
       "file": "frontend/src/features/omnichannel"
     },
     {
+      "name": "sessions",
+      "file": "frontend/src/features/sessions"
+    },
+    {
       "name": "settings",
       "file": "frontend/src/features/settings"
     },
@@ -1372,10 +1400,10 @@
       "controlUiViews": ["ui/src/ui/views/chat.ts"],
       "controlUiControllers": ["ui/src/ui/controllers/chat.ts"],
       "rpcMethods": ["chat.abort", "chat.history", "chat.inject", "chat.send"],
-      "dexmartRoute": null,
-      "dexmartFeatureDir": null,
+      "dexmartRoute": "/chat",
+      "dexmartFeatureDir": "frontend/src/features/chat",
       "strategy": "add",
-      "status": "missing",
+      "status": "complete",
       "notes": []
     },
     {
@@ -1470,10 +1498,10 @@
         "sessions.usage.logs",
         "sessions.usage.timeseries"
       ],
-      "dexmartRoute": null,
-      "dexmartFeatureDir": null,
+      "dexmartRoute": "/dashboard/sessions",
+      "dexmartFeatureDir": "frontend/src/features/sessions",
       "strategy": "implement",
-      "status": "missing",
+      "status": "complete",
       "notes": []
     },
     {
@@ -1841,9 +1869,11 @@
       "/dashboard/flows",
       "/dashboard/messages/campaigns/[id]",
       "/dashboard/omnichannel/reasoning",
+      "/dashboard/sessions/[id]",
       "/dashboard/settings",
       "/dashboard/templates",
-      "/dashboard/webhooks"
+      "/dashboard/webhooks",
+      "/settings"
     ]
   }
 }

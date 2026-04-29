@@ -1,11 +1,10 @@
 import { renderHook, act } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-
 import { useSessionsStore, type Session } from "../store";
 import { useSessionsList } from "./useSessionsList";
 
 // Mock the gateway rpc
-const mockCall = vi.fn();
+const mockCall = vi.fn().mockResolvedValue({});
 const mockRpc = {
   call: mockCall,
   subscribe: vi.fn(() => vi.fn()),
@@ -23,6 +22,7 @@ vi.mock("@/lib/gateway/gateway-hooks", () => ({
 describe("useSessionsList", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockCall.mockResolvedValue({});
     mockUseGateway.mockReturnValue({
       rpc: mockRpc,
       status: "connected",
@@ -85,7 +85,8 @@ describe("useSessionsList", () => {
       await result.current.refresh();
     });
 
-    expect(mockCall).toHaveBeenCalledTimes(2); // Mount + Manual refresh
+    // Mount (list) + Mount (subscribe) + Manual refresh (list)
+    expect(mockCall).toHaveBeenCalledTimes(3);
   });
 
   it("should unsubscribe on unmount", () => {
@@ -105,7 +106,7 @@ describe("useSessionsList", () => {
 
     // Get the handler passed to subscribe
     const handler = mockRpc.subscribe.mock.calls.find(
-      (c: [string, () => void]) => c[0] === "sessions",
+      (c: [string, () => void]) => c[0] === "sessions.changed",
     )?.[1];
     expect(handler).toBeDefined();
 
@@ -113,7 +114,8 @@ describe("useSessionsList", () => {
       if (handler) handler();
     });
 
-    expect(mockCall).toHaveBeenCalledTimes(2); // Mount + Event
+    // Mount (list) + Mount (subscribe) + Event (list)
+    expect(mockCall).toHaveBeenCalledTimes(3);
   });
 
   it("should not fetch if status is not connected", async () => {

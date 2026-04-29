@@ -10,6 +10,9 @@ import type {
   SessionsListParams,
   SessionsPreviewParams,
   AgentSummary,
+  ChannelsStatusParams,
+  ChannelsStatusResult,
+  ChannelsLogoutParams,
   WebLoginStartParams,
   WebLoginWaitParams,
 } from "@openclaw/protocol/index";
@@ -34,6 +37,10 @@ export interface MethodMap {
       hasMore?: boolean;
     };
   };
+  "chat.abort": {
+    params: { sessionKey: string; runId?: string };
+    result: { ok: boolean; aborted: boolean; runIds: string[] };
+  };
   "sessions.list": {
     params: SessionsListParams;
     result: {
@@ -41,11 +48,52 @@ export interface MethodMap {
       hasMore?: boolean;
     };
   };
-  "sessions.preview": {
-    params: SessionsPreviewParams;
+  "sessions.get": {
+    params: { key: string; limit?: number };
     result: {
-      preview: unknown;
+      session: any;
+      messages: ReadonlyArray<unknown>;
     };
+  };
+  "sessions.subscribe": {
+    params: Record<string, never>;
+    result: { subscribed: boolean };
+  };
+  "sessions.unsubscribe": {
+    params: Record<string, never>;
+    result: { subscribed: boolean };
+  };
+  "sessions.messages.subscribe": {
+    params: { key: string };
+    result: { subscribed: boolean; key: string };
+  };
+  "sessions.messages.unsubscribe": {
+    params: { key: string };
+    result: { subscribed: boolean; key: string };
+  };
+  "sessions.patch": {
+    params: { key: string; label?: string; model?: string };
+    result: { ok: boolean; key: string };
+  };
+  "sessions.delete": {
+    params: { key: string; deleteTranscript?: boolean };
+    result: { ok: boolean; key: string; deleted: boolean };
+  };
+  "sessions.usage": {
+    params: { key: string };
+    result: { sessions: Array<{ usage: any }> };
+  };
+  "sessions.compaction.list": {
+    params: { key: string };
+    result: { ok: boolean; checkpoints: any[] };
+  };
+  "sessions.compaction.branch": {
+    params: { key: string; checkpointId: string };
+    result: { ok: boolean; key: string; sessionId: string };
+  };
+  "sessions.compaction.restore": {
+    params: { key: string; checkpointId: string };
+    result: { ok: boolean; key: string; sessionId: string };
   };
   "agents.list": {
     params: Record<string, never>;
@@ -57,6 +105,19 @@ export interface MethodMap {
     params: Record<string, never>;
     result: {
       models: ReadonlyArray<ModelCatalogEntry>;
+    };
+  };
+  "channels.status": {
+    params: ChannelsStatusParams;
+    result: ChannelsStatusResult;
+  };
+  "channels.logout": {
+    params: ChannelsLogoutParams;
+    result: {
+      channel: string;
+      accountId: string;
+      cleared: boolean;
+      [key: string]: unknown;
     };
   };
   "web.login.start": {
@@ -77,7 +138,17 @@ export interface MethodMap {
 
 export interface EventMap {
   "session.update": { sessionId: string };
-  "chat.delta": { runId: string; delta: unknown };
+  "sessions.changed": { sessionKey: string; reason: string; ts: number; session?: any };
+  "session.message": { sessionKey: string; message: any; messageSeq?: number };
+  chat: {
+    runId: string;
+    sessionKey: string;
+    seq: number;
+    state: "delta" | "final" | "aborted" | "error";
+    message?: any;
+    errorMessage?: string;
+    usage?: any;
+  };
 }
 
 export class GatewayRpc {

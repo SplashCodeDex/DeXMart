@@ -18,7 +18,7 @@ const REPO_ROOT = path.resolve(path.dirname(__filename), "..");
 const GATEWAY_METHODS_DIR = path.join(REPO_ROOT, "src/gateway/server-methods");
 const CONTROLUI_VIEWS_DIR = path.join(REPO_ROOT, "ui/src/ui/views");
 const CONTROLUI_CONTROLLERS_DIR = path.join(REPO_ROOT, "ui/src/ui/controllers");
-const DEXMART_DASHBOARD_DIR = path.join(REPO_ROOT, "frontend/src/app/(dashboard)/dashboard");
+const DEXMART_DASHBOARD_DIR = path.join(REPO_ROOT, "frontend/src/app/(dashboard)");
 const DEXMART_FEATURES_DIR = path.join(REPO_ROOT, "frontend/src/features");
 
 const TRACK_DIR = path.join(REPO_ROOT, "conductor/tracks/dashboard_controlui_parity_20260421");
@@ -79,6 +79,7 @@ interface ParityEntry {
 interface Overrides {
   subtract?: Array<{ featureId: string; reason: string }>;
   strategyOverrides?: Record<string, Strategy>;
+  statusOverrides?: Record<string, Status>;
   featureMapping?: Record<string, { route?: string; featureDir?: string; label?: string }>;
   weaveTargets?: Record<string, string>;
 }
@@ -198,13 +199,13 @@ const extractDexmartRoutes = (): DexmartRoute[] => {
   return pages
     .map((file): DexmartRoute => {
       const relFile = rel(file);
-      const afterDashboard = relFile.split("/dashboard/")[1] ?? "";
-      const route = "/dashboard/" + afterDashboard.replace(/\/page\.tsx$/, "");
-      const segs = afterDashboard.replace(/\/page\.tsx$/, "").split("/");
-      const featureName = segs[0] || "";
+      const afterGroup = relFile.split("(dashboard)/")[1] ?? "";
+      const route = "/" + afterGroup.replace(/\/page\.tsx$/, "");
+      const segs = afterGroup.replace(/\/page\.tsx$/, "").split("/");
+      const featureName = segs[0] === "dashboard" ? segs[1] : segs[0] || "";
       const featureDirGuess = featureName ? path.join(DEXMART_FEATURES_DIR, featureName) : null;
       return {
-        route: route.replace(/\/$/, "") || "/dashboard",
+        route: route.replace(/\/$/, "") || "/",
         pageFile: relFile,
         featureDir: featureDirGuess && fs.existsSync(featureDirGuess) ? rel(featureDirGuess) : null,
       };
@@ -486,7 +487,11 @@ const determineStatus = (
   strategy: Strategy,
   route: DexmartRoute | null,
   feature: DexmartFeature | null,
+  override?: Status,
 ): Status => {
+  if (override) {
+    return override;
+  }
   if (strategy === "subtract") {
     return "complete";
   }
@@ -531,6 +536,7 @@ const synthesizeMatrix = (
     const strategy = subtractIds.has(seed.id)
       ? "subtract"
       : resolveStrategy(seed.strategy, strategyOverride);
+    const statusOverride = overrides.statusOverrides?.[seed.id];
     const rpcList = collectRpcMethods(
       matchedViews,
       matchedControllers,
@@ -567,7 +573,7 @@ const synthesizeMatrix = (
       dexmartRoute: route?.route ?? null,
       dexmartFeatureDir: feature?.file ?? null,
       strategy,
-      status: determineStatus(strategy, route, feature),
+      status: determineStatus(strategy, route, feature, statusOverride),
       notes,
     };
   });

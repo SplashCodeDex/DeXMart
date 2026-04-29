@@ -1,11 +1,10 @@
 import { renderHook, act } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-
 import { useSessionsStore, type Session } from "../store";
 import { useSessionDetail } from "./useSessionDetail";
 
 // Mock the gateway rpc
-const mockCall = vi.fn();
+const mockCall = vi.fn().mockResolvedValue({});
 const mockRpc = {
   call: mockCall,
   subscribe: vi.fn(() => vi.fn()),
@@ -23,6 +22,7 @@ vi.mock("@/lib/gateway/gateway-hooks", () => ({
 describe("useSessionDetail", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockCall.mockResolvedValue({});
     mockUseGateway.mockReturnValue({
       rpc: mockRpc,
       status: "connected",
@@ -50,12 +50,14 @@ describe("useSessionDetail", () => {
   it("should subscribe to session updates on mount", () => {
     renderHook(() => useSessionDetail("s1"));
 
-    expect(mockRpc.subscribe).toHaveBeenCalledWith("session:s1", expect.any(Function));
+    expect(mockCall).toHaveBeenCalledWith("sessions.messages.subscribe", { key: "s1" });
+    expect(mockRpc.subscribe).toHaveBeenCalledWith("session.message", expect.any(Function));
+    expect(mockRpc.subscribe).toHaveBeenCalledWith("sessions.changed", expect.any(Function));
   });
 
   it("should unsubscribe on unmount", () => {
     const mockUnsubscribe = vi.fn();
-    mockRpc.subscribe.mockReturnValueOnce(mockUnsubscribe as unknown as () => void);
+    mockRpc.subscribe.mockReturnValue(mockUnsubscribe as unknown as () => void);
 
     const { unmount } = renderHook(() => useSessionDetail("s1"));
 
@@ -66,7 +68,11 @@ describe("useSessionDetail", () => {
 
   it("should update session when live update is received", async () => {
     const initialSession: Session = { sessionId: "s1", updatedAt: Date.now(), label: "Initial" };
-    const updatedSession: Session = { sessionId: "s1", updatedAt: Date.now() + 1000, label: "Updated" };
+    const updatedSession: Session = {
+      sessionId: "s1",
+      updatedAt: Date.now() + 1000,
+      label: "Updated",
+    };
 
     mockCall.mockResolvedValueOnce({ session: initialSession });
     renderHook(() => useSessionDetail("s1"));
@@ -76,16 +82,32 @@ describe("useSessionDetail", () => {
       await new Promise((resolve) => setTimeout(resolve, 0));
     });
 
-    // Get the handler passed to subscribe
-    const handler = mockRpc.subscribe.mock.calls.find((c: [string, () => void]) => c[0] === "session:s1")?.[1];
+    // Get the handler passed to subscribe for sessions.changed
+    const handler = mockRpc.subscribe.mock.calls.find(
+      (c: [string, () => void]) => c[0] === "sessions.changed",
+    )?.[1];
     expect(handler).toBeDefined();
 
     await act(async () => {
-      if (handler) handler(updatedSession);
+      if (handler)
+        handler({ sessionKey: "s1", session: updatedSession, reason: "patch", ts: Date.now() });
     });
 
     const selectedSession = useSessionsStore.getState().selectedSession;
     expect(selectedSession?.label).toBe("Updated");
+  });
+
+  it("should provide a steer function that calls sessions.steer", async () => {
+    const { result } = renderHook(() => useSessionDetail("s1"));
+
+    await act(async () => {
+      await result.current.steer("New direction");
+    });
+
+    expect(mockCall).toHaveBeenCalledWith("sessions.steer", {
+      key: "s1",
+      text: "New direction",
+    });
   });
 
   it("should not fetch if status is not connected", async () => {

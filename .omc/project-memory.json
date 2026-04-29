@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1776812667775,
+  "lastScanned": 1777081358931,
   "projectRoot": "/home/codedex/projects/DeXMart",
   "techStack": {
     "languages": [
@@ -341,35 +341,35 @@
       "path": "Expiremental",
       "purpose": null,
       "fileCount": 3,
-      "lastAccessed": 1776812667747,
+      "lastAccessed": 1777081358878,
       "keyFiles": ["SwitchToggle.css", "SwitchToggle.html", "SwitchToggle.js"]
     },
     "Swabble": {
       "path": "Swabble",
       "purpose": null,
       "fileCount": 8,
-      "lastAccessed": 1776812667748,
+      "lastAccessed": 1777081358883,
       "keyFiles": ["CHANGELOG.md", "LICENSE", "Package.resolved", "Package.swift", "README.md"]
     },
     "apps": {
       "path": "apps",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1776812667753,
+      "lastAccessed": 1777081358893,
       "keyFiles": []
     },
     "assets": {
       "path": "assets",
       "purpose": "Static assets",
       "fileCount": 3,
-      "lastAccessed": 1776812667754,
+      "lastAccessed": 1777081358893,
       "keyFiles": ["avatar-placeholder.svg", "dmg-background-small.png", "dmg-background.png"]
     },
     "conductor": {
       "path": "conductor",
       "purpose": null,
       "fileCount": 6,
-      "lastAccessed": 1776812667755,
+      "lastAccessed": 1777081358895,
       "keyFiles": [
         "product-guidelines.md",
         "product.md",
@@ -382,7 +382,7 @@
       "path": "coverage",
       "purpose": null,
       "fileCount": 9,
-      "lastAccessed": 1776812667756,
+      "lastAccessed": 1777081358896,
       "keyFiles": [
         "base.css",
         "block-navigation.js",
@@ -395,7 +395,7 @@
       "path": "dist",
       "purpose": "Distribution/build output",
       "fileCount": 2143,
-      "lastAccessed": 1776812667760,
+      "lastAccessed": 1777081358911,
       "keyFiles": [
         "abort-CMUE6HNf.js",
         "abort-cutoff-CLUBV9OI.js",
@@ -408,14 +408,14 @@
       "path": "dist-runtime",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1776812667760,
+      "lastAccessed": 1777081358911,
       "keyFiles": []
     },
     "docs": {
       "path": "docs",
       "purpose": "Documentation",
       "fileCount": 24,
-      "lastAccessed": 1776812667760,
+      "lastAccessed": 1777081358912,
       "keyFiles": [
         "AGENTS.md",
         "ControlUI-replacement-with-DeXmart.md",
@@ -428,7 +428,7 @@
       "path": "extensions",
       "purpose": null,
       "fileCount": 6,
-      "lastAccessed": 1776812667761,
+      "lastAccessed": 1777081358913,
       "keyFiles": [
         "AGENTS.md",
         "music-generation-providers.live.test.ts",
@@ -441,7 +441,7 @@
       "path": "frontend",
       "purpose": null,
       "fileCount": 16,
-      "lastAccessed": 1776812667762,
+      "lastAccessed": 1777081358913,
       "keyFiles": [
         "components.json",
         "eslint.config.mjs",
@@ -454,14 +454,14 @@
       "path": "git-hooks",
       "purpose": null,
       "fileCount": 1,
-      "lastAccessed": 1776812667762,
+      "lastAccessed": 1777081358913,
       "keyFiles": ["pre-commit"]
     },
     "logs": {
       "path": "logs",
       "purpose": null,
       "fileCount": 30,
-      "lastAccessed": 1776812667762,
+      "lastAccessed": 1777081358914,
       "keyFiles": [
         "app-2026-04-07.log",
         "app-2026-04-08.log",
@@ -474,35 +474,35 @@
       "path": "openclaw-path-alias-GRakBP",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1776812667763,
+      "lastAccessed": 1777081358914,
       "keyFiles": []
     },
     "openclaw-path-alias-SWESJP": {
       "path": "openclaw-path-alias-SWESJP",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1776812667763,
+      "lastAccessed": 1777081358914,
       "keyFiles": []
     },
     "packages": {
       "path": "packages",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1776812667763,
+      "lastAccessed": 1777081358914,
       "keyFiles": []
     },
     "patches": {
       "path": "patches",
       "purpose": null,
       "fileCount": 2,
-      "lastAccessed": 1776812667763,
+      "lastAccessed": 1777081358915,
       "keyFiles": ["@whiskeysockets__baileys@7.0.0-rc.9.patch"]
     },
     "qa": {
       "path": "qa",
       "purpose": null,
       "fileCount": 4,
-      "lastAccessed": 1776812667763,
+      "lastAccessed": 1777081358916,
       "keyFiles": [
         "README.md",
         "frontier-harness-plan.md",
@@ -514,7 +514,7 @@
       "path": "scripts",
       "purpose": "Build/utility scripts",
       "fileCount": 227,
-      "lastAccessed": 1776812667764,
+      "lastAccessed": 1777081358916,
       "keyFiles": [
         "AGENTS.md",
         "analyze-plugin-sdk-usage.ts",
@@ -527,21 +527,21 @@
       "path": "shared",
       "purpose": null,
       "fileCount": 3,
-      "lastAccessed": 1776812667764,
+      "lastAccessed": 1777081358917,
       "keyFiles": ["fieldAliases.ts", "package.json", "tsconfig.json"]
     },
     "skills": {
       "path": "skills",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1776812667765,
+      "lastAccessed": 1777081358917,
       "keyFiles": []
     },
     "src": {
       "path": "src",
       "purpose": "Source code",
       "fileCount": 37,
-      "lastAccessed": 1776812667765,
+      "lastAccessed": 1777081358918,
       "keyFiles": [
         "browser-lifecycle-cleanup.test.ts",
         "browser-lifecycle-cleanup.ts",
@@ -554,7 +554,7 @@
       "path": "test",
       "purpose": "Test files",
       "fileCount": 42,
-      "lastAccessed": 1776812667765,
+      "lastAccessed": 1777081358918,
       "keyFiles": [
         "appcast.test.ts",
         "architecture-smells.test.ts",
@@ -567,70 +567,70 @@
       "path": "test-fixtures",
       "purpose": null,
       "fileCount": 1,
-      "lastAccessed": 1776812667765,
+      "lastAccessed": 1777081358918,
       "keyFiles": ["talk-config-contract.json"]
     },
     "tests": {
       "path": "tests",
       "purpose": "Test files",
       "fileCount": 1,
-      "lastAccessed": 1776812667766,
+      "lastAccessed": 1777081358919,
       "keyFiles": ["ApiKeyManager.test.ts"]
     },
     "ui": {
       "path": "ui",
       "purpose": null,
       "fileCount": 6,
-      "lastAccessed": 1776812667766,
+      "lastAccessed": 1777081358919,
       "keyFiles": ["AGENTS.md", "index.html", "package.json", "vite.config.ts", "vitest.config.ts"]
     },
     "vendor": {
       "path": "vendor",
       "purpose": "Third-party code",
       "fileCount": 0,
-      "lastAccessed": 1776812667766,
+      "lastAccessed": 1777081358920,
       "keyFiles": []
     },
     "coverage/src": {
       "path": "coverage/src",
       "purpose": "Source code",
       "fileCount": 7,
-      "lastAccessed": 1776812667767,
+      "lastAccessed": 1777081358921,
       "keyFiles": ["globals.ts.html", "index.html", "logger.ts.html"]
     },
     "scripts/__tests__": {
       "path": "scripts/__tests__",
       "purpose": "Test files",
       "fileCount": 1,
-      "lastAccessed": 1776812667772,
+      "lastAccessed": 1777081358926,
       "keyFiles": ["migrate-tenants-to-users.test.ts"]
     },
     "shared/dist": {
       "path": "shared/dist",
       "purpose": "Distribution/build output",
       "fileCount": 2,
-      "lastAccessed": 1776812667773,
+      "lastAccessed": 1777081358927,
       "keyFiles": ["index.d.ts", "index.js"]
     },
     "shared/node_modules": {
       "path": "shared/node_modules",
       "purpose": "Dependencies",
       "fileCount": 0,
-      "lastAccessed": 1776812667773,
+      "lastAccessed": 1777081358927,
       "keyFiles": []
     },
     "shared/src": {
       "path": "shared/src",
       "purpose": "Source code",
       "fileCount": 1,
-      "lastAccessed": 1776812667773,
+      "lastAccessed": 1777081358928,
       "keyFiles": ["index.ts"]
     },
     "test/fixtures": {
       "path": "test/fixtures",
       "purpose": "Test fixtures",
       "fileCount": 8,
-      "lastAccessed": 1776812667774,
+      "lastAccessed": 1777081358929,
       "keyFiles": [
         "cli-startup-bench.json",
         "exec-allowlist-shell-parser-parity.json",
@@ -641,29 +641,29 @@
       "path": "ui/node_modules",
       "purpose": "Dependencies",
       "fileCount": 0,
-      "lastAccessed": 1776812667774,
+      "lastAccessed": 1777081358930,
       "keyFiles": []
     },
     "ui/public": {
       "path": "ui/public",
       "purpose": "Public files",
       "fileCount": 4,
-      "lastAccessed": 1776812667774,
+      "lastAccessed": 1777081358931,
       "keyFiles": ["apple-touch-icon.png", "favicon-32.png", "favicon.ico"]
     },
     "ui/src": {
       "path": "ui/src",
       "purpose": "Source code",
       "fileCount": 5,
-      "lastAccessed": 1776812667774,
+      "lastAccessed": 1777081358931,
       "keyFiles": ["css.d.ts", "local-storage.ts", "main.ts"]
     }
   },
   "hotPaths": [
     {
       "path": "conductor/tracks.md",
-      "accessCount": 2,
-      "lastAccessed": 1776813242541,
+      "accessCount": 3,
+      "lastAccessed": 1776863313558,
       "type": "file"
     },
     {

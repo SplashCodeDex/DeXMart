@@ -6,13 +6,14 @@ import { useChatSession } from "./useChatSession";
 // Mock the gateway rpc
 const mockCall = vi.fn();
 const mockSubscribe = vi.fn(() => vi.fn());
+const mockRpc = {
+  call: mockCall,
+  subscribe: mockSubscribe,
+};
 
 vi.mock("@/lib/gateway/gateway-hooks", () => ({
   useGateway: () => ({
-    rpc: {
-      call: mockCall,
-      subscribe: mockSubscribe,
-    },
+    rpc: mockRpc,
     status: "connected",
   }),
 }));
@@ -21,6 +22,30 @@ describe("useChatSession", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     useChatStore.getState().clearMessages();
+  });
+
+  it("should load chat history on mount", async () => {
+    const historyMessages: ChatMessage[] = [
+      { id: "1", role: "user", content: "Past message", timestamp: Date.now() },
+    ];
+    mockCall.mockResolvedValueOnce({ messages: historyMessages });
+
+    renderHook(() => useChatSession());
+
+    expect(mockCall).toHaveBeenCalledWith(
+      "chat.history",
+      expect.objectContaining({
+        sessionKey: "main",
+      }),
+    );
+
+    // Wait for async useEffect
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    const messages = useChatStore.getState().messages;
+    expect(messages).toEqual(historyMessages);
   });
 
   it("should send a message and handle streaming deltas", async () => {

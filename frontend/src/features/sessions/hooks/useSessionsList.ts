@@ -1,9 +1,7 @@
 import type { SessionsListParams } from "@openclaw/protocol";
 import { useCallback, useEffect, useMemo } from "react";
-
-import { useSessionsStore, type Session } from "../store";
-
 import { useGateway } from "@/lib/gateway/gateway-hooks";
+import { useSessionsStore, type Session } from "../store";
 
 export function useSessionsList(params: SessionsListParams = {}): {
   sessions: Session[];
@@ -44,16 +42,20 @@ export function useSessionsList(params: SessionsListParams = {}): {
     if (status !== "connected") return;
 
     // Subscribe to session changes to refresh the list
-    const unsubscribe = rpc.subscribe("sessions", () => {
+    rpc.call("sessions.subscribe", {}).catch(console.error);
+
+    const unsubscribe = rpc.subscribe("sessions.changed", () => {
       fetchSessions();
     });
 
     return () => {
       unsubscribe();
+      rpc.call("sessions.unsubscribe", {}).catch(console.error);
     };
   }, [rpc, status, fetchSessions]);
 
   const filteredSessions = useMemo(() => {
+    if (!sessions) return [];
     if (!searchQuery) return sessions;
     const query = searchQuery.toLowerCase();
     return sessions.filter(

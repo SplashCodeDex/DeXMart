@@ -151,20 +151,20 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 ### Sub-Track 4.1 — sessions _(implement · 23 methods — largest single surface)_
 
 - [x] Task 4.1.A.1: Failing tests — `useSessionsList` (list, filter, search) [checkpoint: ac517a76cc]
-- [x] Task 4.1.A.2: Failing tests — `useSessionDetail` (get, subscribe, live updates) [checkpoint: fe9fdf4d02]
+- [~] Task 4.1.A.2: Failing tests — `useSessionDetail` (get, subscribe, live updates) [checkpoint: fe9fdf4d02]
 - [x] Task 4.1.A.3: Failing tests — `useCompaction` (list, restore, branch) [checkpoint: 29a95f79dc]
 - [x] Task 4.1.B.1: `frontend/src/features/sessions/` + `page.tsx` + `[id]/page.tsx` thin pages [checkpoint: a4d60714d7]
 - [x] Task 4.1.B.2: `SessionsTable` (sortable: key, agent, channel, model, created, status) 11c5a1c690e
 - [x] Task 4.1.B.3: Row actions via DropdownMenu: delete / reset / compact 3be2da9ca3d
 - [x] Task 4.1.B.4: Detail view — metadata card + transcript (VirtualLogList) + override controls 40503ee4711
 - [x] Task 4.1.B.5: `CompactionPanel` — branch timeline visualization + restore / branch dialogs 90403905c75
-- [~] Task 4.1.B.6: Usage breakdown card — recharts BarChart (reused style from Phase 2.5)
-- [ ] Task 4.1.C.1: Wire `sessions.subscribe` / `sessions.messages.subscribe` event streams to live update
-- [ ] Task 4.1.C.2: Wire `sessions.steer`, `sessions.abort`, `sessions.send`, `sessions.reset`, `sessions.patch`
-- [ ] Task 4.1.D.1: Append 23 parity scenarios (one per method) to Playwright suite
-- [ ] Task 4.1.D.2: visual-diff + coverage ≥ 80%
-- [ ] Task 4.1.D.3: `parity:check` shows `sessions.status === "complete"`
-- [ ] Task 4.1.D.4: FAST_COMMIT=1 git commit -m "feat(sessions): full lifecycle — list/detail/overrides/compaction/branching"
+- [x] Task 4.1.B.6: Usage breakdown card — recharts BarChart (reused style from Phase 2.5)
+- [x] Task 4.1.C.1: Wire `sessions.subscribe` / `sessions.messages.subscribe` event streams to live update
+- [x] Task 4.1.C.2: Wire `sessions.steer`, `sessions.abort`, `sessions.send`, `sessions.reset`, `sessions.patch`
+- [x] Task 4.1.D.1: Append 23 parity scenarios (one per method) to Playwright suite
+- [x] Task 4.1.D.2: visual-diff + coverage ≥ 80%
+- [x] Task 4.1.D.3: `parity:check` shows `sessions.status === "complete"`
+- [~] Task 4.1.D.4: FAST_COMMIT=1 git commit -m "feat(sessions): full lifecycle — list/detail/overrides/compaction/branching"
 - [ ] Task: Conductor - User Manual Verification 'Phase 4'
 
 ---
