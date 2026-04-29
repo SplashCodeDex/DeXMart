@@ -9,7 +9,7 @@ Generated from parity-matrix.json. Do NOT hand-edit — rerun `pnpm tsx scripts/
 - **controlui_view_count**: 58
 - **controlui_controller_count**: 28
 - **dexmart_route_count**: 21
-- **dexmart_feature_count**: 15
+- **dexmart_feature_count**: 16
 - **parity_feature_count**: 22
 - **coverage_pct**: 82
 
@@ -25,7 +25,7 @@ Generated from parity-matrix.json. Do NOT hand-edit — rerun `pnpm tsx scripts/
 | cron            | Cron Jobs                           | enhance   | stub     | /dashboard/cron        | 1 view(s)       | 8 methods   |
 | skills          | Skills + Plugins                    | enhance   | stub     | /dashboard/skills      | 3 view(s)       | 9 methods   |
 | nodes           | Nodes + Canvas + Pending Queue      | enhance   | stub     | /dashboard/nodes       | 4 view(s)       | 15 methods  |
-| devices         | Device Pairing + Tokens             | weave     | stub     | /dashboard/nodes       | 4 view(s)       | 6 methods   |
+| devices         | Device Pairing + Tokens             | weave     | partial  | /dashboard/nodes       | 4 view(s)       | 6 methods   |
 | logs            | Live Logs Viewer                    | implement | missing  | —                      | 1 view(s)       | 1 methods   |
 | debug           | Debug / Developer Panel             | add       | missing  | —                      | 1 view(s)       | 5 methods   |
 | dreaming        | Doctor / Memory (Dream)             | weave     | stub     | /dashboard/agents      | 1 view(s)       | 3 methods   |

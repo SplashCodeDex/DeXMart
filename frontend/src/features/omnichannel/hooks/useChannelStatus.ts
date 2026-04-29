@@ -1,0 +1,105 @@
+import { useState, useEffect, useCallback, useRef } from "react";
+import { useGateway } from "@/lib/gateway/gateway-hooks";
+import type { MethodMap } from "@/lib/gateway/gateway-rpc";
+
+type ChannelsStatusResult = MethodMap["channels.status"]["result"];
+type ChannelAccountSnapshot = ChannelsStatusResult["channelAccounts"][string][number];
+
+interface UseChannelStatusOptions {
+  interval?: number;
+  enabled?: boolean;
+}
+
+export function useChannelStatus(options: UseChannelStatusOptions = {}) {
+  const { interval = 5000, enabled = true } = options;
+  const { rpc, status: gatewayStatus } = useGateway();
+  const [data, setData] = useState<ChannelsStatusResult | null>(null);
+  const [error, setError] = useState<Error | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const fetchStatus = useCallback(async () => {
+    if (!rpc || gatewayStatus !== "connected") return;
+
+    try {
+      setIsLoading(true);
+      const result = await rpc.call("channels.status", { probe: true });
+
+      // Process result to add qrDataUrl if rawQr is present
+      const processedResult = { ...result };
+      if (processedResult.channelAccounts) {
+        for (const channelId in processedResult.channelAccounts) {
+          processedResult.channelAccounts[channelId] = processedResult.channelAccounts[
+            channelId
+          ].map((acc) => {
+            if (acc.probe?.rawQr) {
+              return {
+                ...acc,
+                probe: {
+                  ...acc.probe,
+                  qrDataUrl: `data:image/png;base64,${acc.probe.rawQr}`,
+                },
+              };
+            }
+            return acc;
+          });
+        }
+      }
+
+      setData(processedResult);
+      setError(null);
+    } catch (err) {
+      console.error("[useChannelStatus] Failed to fetch channel status:", err);
+      setError(err instanceof Error ? err : new Error(String(err)));
+    } finally {
+      setIsLoading(false);
+    }
+  }, [rpc, gatewayStatus]);
+
+  const logout = useCallback(
+    async (channel: string, accountId?: string) => {
+      if (!rpc) return;
+      try {
+        await rpc.call("channels.logout", { channel, accountId });
+        await fetchStatus(); // Refresh status after logout
+      } catch (err) {
+        console.error("[useChannelStatus] Logout failed:", err);
+        throw err;
+      }
+    },
+    [rpc, fetchStatus],
+  );
+
+  useEffect(() => {
+    if (!enabled || gatewayStatus !== "connected") {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+      return;
+    }
+
+    fetchStatus();
+
+    timerRef.current = setInterval(fetchStatus, interval);
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [enabled, gatewayStatus, interval, fetchStatus]);
+
+  return {
+    channels: data?.channels ?? {},
+    channelAccounts: data?.channelAccounts ?? {},
+    channelOrder: data?.channelOrder ?? [],
+    channelLabels: data?.channelLabels ?? {},
+    channelDefaultAccountId: data?.channelDefaultAccountId ?? {},
+    isLoading,
+    error,
+    logout,
+    refresh: fetchStatus,
+  };
+}

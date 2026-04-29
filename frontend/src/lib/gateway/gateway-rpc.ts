@@ -15,9 +15,22 @@ import type {
   ChannelsLogoutParams,
   WebLoginStartParams,
   WebLoginWaitParams,
+  DevicePairListParams,
+  DevicePairApproveParams,
+  DevicePairRejectParams,
+  DevicePairRemoveParams,
+  DeviceTokenRotateParams,
+  DeviceTokenRevokeParams,
 } from "@openclaw/protocol/index";
 // For schemas that don't have an explicit 'export type' in index.ts, we infer them:
-import { ChatSendParamsSchema, ChatHistoryParamsSchema } from "@openclaw/protocol/index";
+import {
+  ChatSendParamsSchema,
+  ChatHistoryParamsSchema,
+  SkillsStatusParamsSchema,
+  SkillsUpdateParamsSchema,
+  SkillsInstallParamsSchema,
+  ToolsCatalogParamsSchema,
+} from "@openclaw/protocol/index";
 import { z } from "zod";
 import { GatewayClient } from "./gateway-client";
 import type { ModelCatalogEntry } from "./models-types";
@@ -133,6 +146,49 @@ export interface MethodMap {
       connected: boolean;
       message: string;
     };
+  };
+  "skills.status": {
+    params: z.infer<typeof SkillsStatusParamsSchema>;
+    result: any; // We'll use any for now as the complex report type is not exported as a TS type in index.ts
+  };
+  "skills.update": {
+    params: z.infer<typeof SkillsUpdateParamsSchema>;
+    result: { ok: boolean; skillKey: string; config: any };
+  };
+  "skills.install": {
+    params: z.infer<typeof SkillsInstallParamsSchema>;
+    result: { ok: boolean; message: string };
+  };
+  "tools.catalog": {
+    params: z.infer<typeof ToolsCatalogParamsSchema>;
+    result: any;
+  };
+  "device.pair.list": {
+    params: DevicePairListParams;
+    result: {
+      pending: any[];
+      paired: any[];
+    };
+  };
+  "device.pair.approve": {
+    params: DevicePairApproveParams;
+    result: { ok: boolean };
+  };
+  "device.pair.reject": {
+    params: DevicePairRejectParams;
+    result: { ok: boolean };
+  };
+  "device.pair.remove": {
+    params: DevicePairRemoveParams;
+    result: { ok: boolean };
+  };
+  "device.token.rotate": {
+    params: DeviceTokenRotateParams;
+    result: { ok: boolean; token?: string };
+  };
+  "device.token.revoke": {
+    params: DeviceTokenRevokeParams;
+    result: { ok: boolean };
   };
 }
 

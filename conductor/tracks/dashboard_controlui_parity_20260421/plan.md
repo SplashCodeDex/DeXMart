@@ -151,7 +151,7 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 ### Sub-Track 4.1 — sessions _(implement · 23 methods — largest single surface)_
 
 - [x] Task 4.1.A.1: Failing tests — `useSessionsList` (list, filter, search) [checkpoint: ac517a76cc]
-- [~] Task 4.1.A.2: Failing tests — `useSessionDetail` (get, subscribe, live updates) [checkpoint: fe9fdf4d02]
+- [x] Task 4.1.A.2: Failing tests — `useSessionDetail` (get, subscribe, live updates) [checkpoint: c56929e612]
 - [x] Task 4.1.A.3: Failing tests — `useCompaction` (list, restore, branch) [checkpoint: 29a95f79dc]
 - [x] Task 4.1.B.1: `frontend/src/features/sessions/` + `page.tsx` + `[id]/page.tsx` thin pages [checkpoint: a4d60714d7]
 - [x] Task 4.1.B.2: `SessionsTable` (sortable: key, agent, channel, model, created, status) 11c5a1c690e
@@ -164,7 +164,7 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [x] Task 4.1.D.1: Append 23 parity scenarios (one per method) to Playwright suite
 - [x] Task 4.1.D.2: visual-diff + coverage ≥ 80%
 - [x] Task 4.1.D.3: `parity:check` shows `sessions.status === "complete"`
-- [~] Task 4.1.D.4: FAST_COMMIT=1 git commit -m "feat(sessions): full lifecycle — list/detail/overrides/compaction/branching"
+- [x] Task 4.1.D.4: FAST_COMMIT=1 git commit -m "feat(sessions): full lifecycle — list/detail/overrides/compaction/branching" [checkpoint: c56929e612]
 - [ ] Task: Conductor - User Manual Verification 'Phase 4'
 
 ---
@@ -173,19 +173,19 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 
 ### Sub-Track 5.1 — channels _(weave → /dashboard/omnichannel · 4 methods)_
 
-- [ ] Task 5.1.A.1: Failing tests — `useChannelStatus` polling + QR base64 decode
-- [ ] Task 5.1.B.1: `useChannelStatus` hook (Gateway RPC live)
-- [ ] Task 5.1.B.2: `ChannelStatusBadge` via Phase 2.5 `StatusBadge` — states: connecting/online/error/qr-required
-- [ ] Task 5.1.B.3: Wire Phase 2.3 `QRLoginModal` into per-channel "Connect" button
+- [x] Task 5.1.A.1: Failing tests — `useChannelStatus` polling + QR base64 decode
+- [x] Task 5.1.B.1: `useChannelStatus` hook (Gateway RPC live)
+- [~] Task 5.1.B.2: `ChannelStatusBadge` via Phase 2.5 `StatusBadge` — states: connecting/online/error/qr-required
+- [x] Task 5.1.B.3: Wire Phase 2.3 `QRLoginModal` into per-channel "Connect" button
 - [ ] Task 5.1.B.4: `ChannelConfigDrawer` (Sheet) — per-channel fields (phone, webhook, session name)
-- [ ] Task 5.1.B.5: OAuth flow — `web.login.start` + `web.login.wait` for non-QR channels
+- [x] Task 5.1.B.5: OAuth flow — `web.login.start` + `web.login.wait` for non-QR channels
 - [ ] Task 5.1.B.6: Logout action (`channels.logout`) + optimistic status update
-- [ ] Task 5.1.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
+- [x] Task 5.1.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
 
 ### Sub-Track 5.2 — devices _(weave → /dashboard/nodes "Devices" tab · 6 methods)_
 
-- [ ] Task 5.2.A.1: Failing tests — `useDevices` (pair.list, approve/reject/remove, token rotate/revoke)
-- [ ] Task 5.2.B.1: `DevicePairingTable` — pending (approve/reject) + paired (remove + AlertDialog)
+- [x] Task 5.2.A.1: Failing tests — `useDevices` (pair.list, approve/reject/remove, token rotate/revoke)
+- [x] Task 5.2.B.1: `DevicePairingTable` — pending (approve/reject) + paired (remove + AlertDialog)
 - [ ] Task 5.2.B.2: Token management UI — rotate + revoke with confirmation
 - [ ] Task 5.2.C.1: Mount as "Devices" tab inside existing `/dashboard/nodes` Tabs
 - [ ] Task 5.2.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
@@ -230,12 +230,12 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 
 ### Sub-Track 7.2 — skills _(enhance · 9 methods incl. plugin.approval._)\*
 
-- [ ] Task 7.2.A.1: Failing tests — `useSkillsStatus` + search/install/update
-- [ ] Task 7.2.B.1: Debounced `skills.search` input
+- [x] Task 7.2.A.1: Failing tests — `useSkillsStatus` + search/install/update
+- [x] Task 7.2.B.1: Debounced `skills.search` input
 - [ ] Task 7.2.B.2: `SkillInstallDrawer` — detail + install with progress
-- [ ] Task 7.2.B.3: `SkillApiKeyModal` — masked inputs, Zod-validated `skills.update`
+- [x] Task 7.2.B.3: `SkillApiKeyModal` — masked inputs, Zod-validated `skills.update`
 - [ ] Task 7.2.B.4: Plugin approval flow — `plugin.approval.list/request/resolve`
-- [ ] Task 7.2.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
+- [x] Task 7.2.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
 
 ### Sub-Track 7.3 — command-palette _(add · 1 method: commands.list)_
 

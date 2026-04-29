@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-04-25T03:05:29.723Z",
-  "source_commit": "c0ee831a29",
+  "generated_at": "2026-04-29T14:28:46.673Z",
+  "source_commit": "c56929e612",
   "summary": {
     "rpc_method_count": 119,
     "rpc_domain_count": 28,
     "controlui_view_count": 58,
     "controlui_controller_count": 28,
     "dexmart_route_count": 21,
-    "dexmart_feature_count": 15,
+    "dexmart_feature_count": 16,
     "parity_feature_count": 22,
     "coverage_pct": 82
   },
@@ -1361,6 +1361,10 @@
       "file": "frontend/src/features/dashboard"
     },
     {
+      "name": "devices",
+      "file": "frontend/src/features/devices"
+    },
+    {
       "name": "flows",
       "file": "frontend/src/features/flows"
     },
@@ -1631,9 +1635,9 @@
         "device.token.rotate"
       ],
       "dexmartRoute": "/dashboard/nodes",
-      "dexmartFeatureDir": null,
+      "dexmartFeatureDir": "frontend/src/features/devices",
       "strategy": "weave",
-      "status": "stub",
+      "status": "partial",
       "notes": ["Weave target: /dashboard/nodes — Devices tab"]
     },
     {

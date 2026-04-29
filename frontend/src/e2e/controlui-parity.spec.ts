@@ -182,3 +182,37 @@ test.describe("Sessions Parity (Sub-Track 4.1)", () => {
     }
   });
 });
+
+test.describe("Channels Parity (Sub-Track 5.1)", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/dashboard/omnichannel");
+    await page.waitForLoadState("networkidle");
+  });
+
+  test("channels.status: displays live channel connection states", async ({ page }) => {
+    await expect(page.locator(".channel-card")).toBeVisible();
+    await expect(page.locator(".status-badge")).toBeVisible();
+  });
+
+  test("web.login.start + wait: handles QR login flow", async ({ page }) => {
+    const connectButton = page.locator("button:has-text('Connect')").first();
+    if (await connectButton.isVisible()) {
+      await connectButton.click();
+      await expect(page.getByText(/Scan QR Code/i)).toBeVisible();
+      await expect(page.locator("canvas")).toBeVisible();
+    }
+  });
+
+  test("channels.logout: handles account disconnection", async ({ page }) => {
+    const settingsButton = page.locator("button:has(.lucide-settings)").first();
+    if (await settingsButton.isVisible()) {
+      await settingsButton.click();
+      const logoutButton = page.getByRole("button", { name: /Logout/i });
+      if (await logoutButton.isVisible()) {
+        await logoutButton.click();
+        page.on("dialog", (dialog) => dialog.accept());
+        await expect(page.getByText(/Disconnected/i)).toBeVisible();
+      }
+    }
+  });
+});
