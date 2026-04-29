@@ -175,9 +175,9 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 
 - [x] Task 5.1.A.1: Failing tests — `useChannelStatus` polling + QR base64 decode
 - [x] Task 5.1.B.1: `useChannelStatus` hook (Gateway RPC live)
-- [~] Task 5.1.B.2: `ChannelStatusBadge` via Phase 2.5 `StatusBadge` — states: connecting/online/error/qr-required
+- [x] Task 5.1.B.2: `ChannelStatusBadge` via Phase 2.5 `StatusBadge` — states: connecting/online/error/qr-required d942fbe
 - [x] Task 5.1.B.3: Wire Phase 2.3 `QRLoginModal` into per-channel "Connect" button
-- [ ] Task 5.1.B.4: `ChannelConfigDrawer` (Sheet) — per-channel fields (phone, webhook, session name)
+- [~] Task 5.1.B.4: `ChannelConfigDrawer` (Sheet) — per-channel fields (phone, webhook, session name)
 - [x] Task 5.1.B.5: OAuth flow — `web.login.start` + `web.login.wait` for non-QR channels
 - [ ] Task 5.1.B.6: Logout action (`channels.logout`) + optimistic status update
 - [x] Task 5.1.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
@@ -187,8 +187,8 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [x] Task 5.2.A.1: Failing tests — `useDevices` (pair.list, approve/reject/remove, token rotate/revoke)
 - [x] Task 5.2.B.1: `DevicePairingTable` — pending (approve/reject) + paired (remove + AlertDialog)
 - [ ] Task 5.2.B.2: Token management UI — rotate + revoke with confirmation
-- [ ] Task 5.2.C.1: Mount as "Devices" tab inside existing `/dashboard/nodes` Tabs
-- [ ] Task 5.2.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
+- [x] Task 5.2.C.1: Mount as "Devices" tab inside existing `/dashboard/nodes` Tabs
+- [x] Task 5.2.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
 - [ ] Task: Conductor - User Manual Verification 'Phase 5'
 
 ---
