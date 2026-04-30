@@ -158,7 +158,7 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [x] Task 4.1.B.3: Row actions via DropdownMenu: delete / reset / compact 3be2da9ca3d
 - [x] Task 4.1.B.4: Detail view — metadata card + transcript (VirtualLogList) + override controls 40503ee4711
 - [x] Task 4.1.B.5: `CompactionPanel` — branch timeline visualization + restore / branch dialogs 90403905c75
-- [x] Task 4.1.B.6: Usage breakdown card — recharts BarChart (reused style from Phase 2.5)
+- [x] Task 4.1.B.6: Usage breakdown card — recharts BarChart (reused style from Phase 2.5) 77f9dce
 - [x] Task 4.1.C.1: Wire `sessions.subscribe` / `sessions.messages.subscribe` event streams to live update
 - [x] Task 4.1.C.2: Wire `sessions.steer`, `sessions.abort`, `sessions.send`, `sessions.reset`, `sessions.patch`
 - [x] Task 4.1.D.1: Append 23 parity scenarios (one per method) to Playwright suite
@@ -175,11 +175,11 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 
 - [x] Task 5.1.A.1: Failing tests — `useChannelStatus` polling + QR base64 decode
 - [x] Task 5.1.B.1: `useChannelStatus` hook (Gateway RPC live)
-- [x] Task 5.1.B.2: `ChannelStatusBadge` via Phase 2.5 `StatusBadge` — states: connecting/online/error/qr-required d942fbe
+- [x] Task 5.1.B.2: `ChannelStatusBadge` via Phase 2.5 `StatusBadge` — states: connecting/online/error/qr-required 77f9dce
 - [x] Task 5.1.B.3: Wire Phase 2.3 `QRLoginModal` into per-channel "Connect" button
-- [~] Task 5.1.B.4: `ChannelConfigDrawer` (Sheet) — per-channel fields (phone, webhook, session name)
+- [x] Task 5.1.B.4: `ChannelConfigDrawer` (Sheet) — per-channel fields (phone, webhook, session name) 77f9dce
 - [x] Task 5.1.B.5: OAuth flow — `web.login.start` + `web.login.wait` for non-QR channels
-- [ ] Task 5.1.B.6: Logout action (`channels.logout`) + optimistic status update
+- [x] Task 5.1.B.6: Logout action (`channels.logout`) + optimistic status update 77f9dce
 - [x] Task 5.1.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
 
 ### Sub-Track 5.2 — devices _(weave → /dashboard/nodes "Devices" tab · 6 methods)_
@@ -197,7 +197,7 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 
 ### Sub-Track 6.1 — agents _(enhance · 10 methods incl. agent._, agents._, skills.status)_
 
-- [ ] Task 6.1.A.1: Failing tests — `useAgentFiles` (list/get/set)
+- [x] Task 6.1.A.1: Failing tests — `useAgentFiles` (list/get/set)
 - [ ] Task 6.1.A.2: Failing tests — `useAgentIdentity` (agent.identity.get, agents.update)
 - [ ] Task 6.1.B.1: "Files" tab — CodeMirror 6 tree + editor, unsaved-changes guard
 - [ ] Task 6.1.B.2: "Identity" tab — name, avatar preview, ID badge, ModelSelector (Phase 2.2)
