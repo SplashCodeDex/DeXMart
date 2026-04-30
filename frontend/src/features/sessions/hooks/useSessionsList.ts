@@ -13,12 +13,13 @@ export function useSessionsList(params: SessionsListParams = {}): {
   refresh: () => Promise<void>;
 } {
   const { rpc, status } = useGateway();
-  const { sessions, searchQuery, setSessions, setLoading, setError } = useSessionsStore();
+  const { sessions, searchQuery, setSessions, updateSessionInList, setLoading, setError } =
+    useSessionsStore();
 
   const paramsJson = JSON.stringify(params);
 
   const fetchSessions = useCallback(async () => {
-    if (status !== "connected") return;
+    if (status !== "connected" || !rpc) return;
 
     setLoading(true);
     try {
@@ -27,7 +28,7 @@ export function useSessionsList(params: SessionsListParams = {}): {
         search: searchQuery || (JSON.parse(paramsJson) as SessionsListParams).search,
       });
       // result is { sessions: Session[] }
-      setSessions(result.sessions);
+      setSessions((result.sessions || []) as Session[]);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to fetch sessions";
       setError(message);
@@ -39,20 +40,37 @@ export function useSessionsList(params: SessionsListParams = {}): {
   }, [fetchSessions]);
 
   useEffect(() => {
-    if (status !== "connected") return;
+    if (status !== "connected" || !rpc) return;
 
     // Subscribe to session changes to refresh the list
     rpc.call("sessions.subscribe", {}).catch(console.error);
 
-    const unsubscribe = rpc.subscribe("sessions.changed", () => {
-      fetchSessions();
+    const unsubscribe = rpc.subscribe("sessions.changed", (payload) => {
+      if (
+        payload?.sessionId &&
+        (payload.reason === "patch" ||
+          payload.reason === "send" ||
+          payload.reason === "steer" ||
+          payload.phase === "message")
+      ) {
+        // Incremental update for simple changes
+        updateSessionInList({
+          ...payload,
+          sessionId: payload.sessionId,
+        });
+      } else {
+        // Full refresh for creates, deletes, etc.
+        fetchSessions();
+      }
     });
 
     return () => {
       unsubscribe();
-      rpc.call("sessions.unsubscribe", {}).catch(console.error);
+      if (rpc) {
+        rpc.call("sessions.unsubscribe", {}).catch(console.error);
+      }
     };
-  }, [rpc, status, fetchSessions]);
+  }, [rpc, status, fetchSessions, updateSessionInList]);
 
   const filteredSessions = useMemo(() => {
     if (!sessions) return [];

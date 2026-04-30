@@ -10,10 +10,11 @@ export function useSessionDetail(sessionId: string | null): {
   steer: (text: string) => Promise<void>;
 } {
   const { rpc, status } = useGateway();
-  const { selectedSession, setSelectedSession, setLoading, setError } = useSessionsStore();
+  const { selectedSession, setSelectedSession, appendMessageToSession, setLoading, setError } =
+    useSessionsStore();
 
   const fetchSession = useCallback(async () => {
-    if (status !== "connected" || !sessionId) return;
+    if (status !== "connected" || !sessionId || !rpc) return;
 
     setLoading(true);
     try {
@@ -28,9 +29,9 @@ export function useSessionDetail(sessionId: string | null): {
 
   const steer = useCallback(
     async (text: string) => {
-      if (status !== "connected" || !sessionId) return;
+      if (status !== "connected" || !sessionId || !rpc) return;
       try {
-        await rpc.call("sessions.steer", { key: sessionId, text });
+        await (rpc as any).call("sessions.steer", { key: sessionId, text });
       } catch (err: unknown) {
         const message = err instanceof Error ? err.message : "Failed to steer session";
         setError(message);
@@ -44,24 +45,38 @@ export function useSessionDetail(sessionId: string | null): {
   }, [fetchSession]);
 
   useEffect(() => {
-    if (status !== "connected" || !sessionId) return;
+    if (status !== "connected" || !sessionId || !rpc) return;
 
     // Subscribe to session-specific updates
     rpc.call("sessions.messages.subscribe", { key: sessionId }).catch(console.error);
 
     const unsubMessage = rpc.subscribe("session.message", (payload) => {
-      if (payload.sessionKey === sessionId || payload.sessionKey.endsWith(`:${sessionId}`)) {
-        // If it's a message for this session, we might want to append it
-        // but for now, we just refresh to ensure we have the full transcript
-        // and correct derived state.
-        fetchSession();
+      if (
+        payload?.sessionKey &&
+        (payload.sessionKey === sessionId || payload.sessionKey.endsWith(`:${sessionId}`))
+      ) {
+        if (payload.message && sessionId) {
+          appendMessageToSession(sessionId, payload.message);
+        } else {
+          fetchSession();
+        }
       }
     });
 
     const unsubChanged = rpc.subscribe("sessions.changed", (payload) => {
-      if (payload.sessionKey === sessionId || payload.sessionKey.endsWith(`:${sessionId}`)) {
+      if (
+        payload?.sessionKey &&
+        (payload.sessionKey === sessionId || payload.sessionKey.endsWith(`:${sessionId}`))
+      ) {
         if (payload.session) {
           setSelectedSession(payload.session);
+        } else if (payload.sessionId) {
+          // If we have session metadata in payload but not the full session object,
+          // we can partially update the selected session.
+          setSelectedSession({
+            ...selectedSession,
+            ...payload,
+          } as Session);
         } else {
           fetchSession();
         }
@@ -71,7 +86,7 @@ export function useSessionDetail(sessionId: string | null): {
     return () => {
       unsubMessage();
       unsubChanged();
-      if (sessionId) {
+      if (sessionId && rpc) {
         rpc.call("sessions.messages.unsubscribe", { key: sessionId }).catch(console.error);
       }
     };

@@ -21,6 +21,18 @@ import type {
   DevicePairRemoveParams,
   DeviceTokenRotateParams,
   DeviceTokenRevokeParams,
+  AgentsCreateParams,
+  AgentsCreateResult,
+  AgentsUpdateParams,
+  AgentsUpdateResult,
+  AgentsDeleteParams,
+  AgentsDeleteResult,
+  AgentsFilesListParams,
+  AgentsFilesListResult,
+  AgentsFilesGetParams,
+  AgentsFilesGetResult,
+  AgentsFilesSetParams,
+  AgentsFilesSetResult,
 } from "@openclaw/protocol/index";
 // For schemas that don't have an explicit 'export type' in index.ts, we infer them:
 import {
@@ -88,6 +100,18 @@ export interface MethodMap {
     params: { key: string; label?: string; model?: string };
     result: { ok: boolean; key: string };
   };
+  "sessions.abort": {
+    params: { key: string; runId?: string };
+    result: { ok: boolean; key: string; aborted: boolean };
+  };
+  "sessions.reset": {
+    params: { key: string };
+    result: { ok: boolean; key: string };
+  };
+  "sessions.compact": {
+    params: { key: string };
+    result: { ok: boolean; key: string; sessionId: string };
+  };
   "sessions.delete": {
     params: { key: string; deleteTranscript?: boolean };
     result: { ok: boolean; key: string; deleted: boolean };
@@ -101,7 +125,7 @@ export interface MethodMap {
     result: { ok: boolean; checkpoints: any[] };
   };
   "sessions.compaction.branch": {
-    params: { key: string; checkpointId: string };
+    params: { key: string; checkpointId: string; label?: string };
     result: { ok: boolean; key: string; sessionId: string };
   };
   "sessions.compaction.restore": {
@@ -113,6 +137,30 @@ export interface MethodMap {
     result: {
       agents: ReadonlyArray<AgentSummary>;
     };
+  };
+  "agents.create": {
+    params: AgentsCreateParams;
+    result: AgentsCreateResult;
+  };
+  "agents.update": {
+    params: AgentsUpdateParams;
+    result: AgentsUpdateResult;
+  };
+  "agents.delete": {
+    params: AgentsDeleteParams;
+    result: AgentsDeleteResult;
+  };
+  "agents.files.list": {
+    params: AgentsFilesListParams;
+    result: AgentsFilesListResult;
+  };
+  "agents.files.get": {
+    params: AgentsFilesGetParams;
+    result: AgentsFilesGetResult;
+  };
+  "agents.files.set": {
+    params: AgentsFilesSetParams;
+    result: AgentsFilesSetResult;
   };
   "models.list": {
     params: Record<string, never>;
@@ -194,7 +242,15 @@ export interface MethodMap {
 
 export interface EventMap {
   "session.update": { sessionId: string };
-  "sessions.changed": { sessionKey: string; reason: string; ts: number; session?: any };
+  "sessions.changed": {
+    sessionKey: string;
+    reason?: string;
+    phase?: string;
+    ts: number;
+    sessionId?: string;
+    session?: any;
+    [key: string]: any;
+  };
   "session.message": { sessionKey: string; message: any; messageSeq?: number };
   chat: {
     runId: string;

@@ -61,7 +61,7 @@ export function SessionDetailFeature({ sessionId }: SessionDetailFeatureProps): 
   const error = sessionError || compactionError;
 
   const handleSend = async (steer = false) => {
-    if (!command.trim() || isSending) return;
+    if (!command.trim() || isSending || !rpc) return;
 
     setIsSending(true);
     try {
@@ -81,6 +81,7 @@ export function SessionDetailFeature({ sessionId }: SessionDetailFeatureProps): 
   };
 
   const handlePatch = async (patch: any) => {
+    if (!rpc) return;
     setIsPatching(true);
     try {
       await rpc.call("sessions.patch", { key: sessionId, ...patch });
@@ -95,8 +96,9 @@ export function SessionDetailFeature({ sessionId }: SessionDetailFeatureProps): 
   };
 
   const handleAbort = async () => {
+    if (!rpc) return;
     try {
-      await rpc.call("sessions.abort", { sessionKey: sessionId });
+      await (rpc as any).call("sessions.abort", { key: sessionId });
       toast.success("Session aborted");
       refreshSession();
     } catch (err) {
@@ -107,11 +109,11 @@ export function SessionDetailFeature({ sessionId }: SessionDetailFeatureProps): 
   const handleReset = async () => {
     if (!confirm("Are you sure you want to reset this session? This will clear the transcript."))
       return;
+    if (!rpc) return;
     try {
-      await rpc.call("sessions.reset", { key: sessionId } as any);
+      await (rpc as any).call("sessions.reset", { key: sessionId });
       toast.success("Session reset");
       refreshSession();
-      refreshUsage();
     } catch (err) {
       toast.error("Failed to reset session");
     }
@@ -119,6 +121,7 @@ export function SessionDetailFeature({ sessionId }: SessionDetailFeatureProps): 
 
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete this session?")) return;
+    if (!rpc) return;
     try {
       await rpc.call("sessions.delete", { key: sessionId });
       toast.success("Session deleted");

@@ -1,20 +1,25 @@
-'use client';
+"use client";
 
-import { ChevronDown, ChevronUp, ExternalLink, MoreVertical, RefreshCcw, Trash2, Zap } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import React, { useState, useMemo } from 'react';
-import { toast } from 'sonner';
-
-import { useSessionsList } from '../hooks/useSessionsList';
-
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import {
+  ChevronDown,
+  ChevronUp,
+  ExternalLink,
+  MoreVertical,
+  RefreshCcw,
+  Trash2,
+  Zap,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import React, { useState, useMemo } from "react";
+import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -22,87 +27,97 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { useGateway } from '@/lib/gateway/gateway-hooks';
+} from "@/components/ui/table";
+import { useGateway } from "@/lib/gateway/gateway-hooks";
+import { useSessionsList } from "../hooks/useSessionsList";
 
-type SortField = 'sessionId' | 'label' | 'channel' | 'model' | 'startedAt' | 'updatedAt' | 'status';
-type SortOrder = 'asc' | 'desc';
+type SortField = "sessionId" | "label" | "channel" | "model" | "startedAt" | "updatedAt" | "status";
+type SortOrder = "asc" | "desc";
 
-function SortIcon({ 
-  field, 
-  sortField, 
-  sortOrder 
-}: { 
-  field: SortField; 
-  sortField: SortField; 
+function SortIcon({
+  field,
+  sortField,
+  sortOrder,
+}: {
+  field: SortField;
+  sortField: SortField;
   sortOrder: SortOrder;
 }): React.JSX.Element | null {
   if (sortField !== field) return null;
-  return sortOrder === 'asc' ? <ChevronUp className="ml-1 w-3 h-3 inline" /> : <ChevronDown className="ml-1 w-3 h-3 inline" />;
+  return sortOrder === "asc" ? (
+    <ChevronUp className="ml-1 w-3 h-3 inline" />
+  ) : (
+    <ChevronDown className="ml-1 w-3 h-3 inline" />
+  );
 }
 
 export function SessionsTable(): React.JSX.Element {
   const router = useRouter();
   const { filteredSessions, isLoading, error, refresh } = useSessionsList();
   const { rpc } = useGateway();
-  
-  const [sortField, setSortField] = useState<SortField>('updatedAt');
-  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
+
+  const [sortField, setSortField] = useState<SortField>("updatedAt");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
 
   const sortedSessions = useMemo(() => {
     return [...filteredSessions].sort((a, b) => {
       const fieldA = (a as any)[sortField] || 0;
       const fieldB = (b as any)[sortField] || 0;
-      
-      if (fieldA < fieldB) return sortOrder === 'asc' ? -1 : 1;
-      if (fieldA > fieldB) return sortOrder === 'asc' ? 1 : -1;
+
+      if (fieldA < fieldB) return sortOrder === "asc" ? -1 : 1;
+      if (fieldA > fieldB) return sortOrder === "asc" ? 1 : -1;
       return 0;
     });
   }, [filteredSessions, sortField, sortOrder]);
 
   const toggleSort = (field: SortField): void => {
     if (sortField === field) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
-      setSortOrder('asc');
+      setSortOrder("asc");
     }
   };
 
   const handleDelete = async (e: React.MouseEvent, sessionId: string) => {
     e.stopPropagation();
+    if (!rpc) return;
     try {
-      await rpc.call('sessions.delete', { key: sessionId });
-      toast.success('Session deleted');
+      await rpc.call("sessions.delete", { key: sessionId });
+      toast.success("Session deleted");
       refresh();
     } catch (err) {
-      toast.error('Failed to delete session');
+      toast.error("Failed to delete session");
     }
   };
 
   const handleReset = async (e: React.MouseEvent, sessionId: string) => {
     e.stopPropagation();
+    if (!rpc) return;
     try {
-      await rpc.call('sessions.reset', { key: sessionId });
-      toast.success('Session reset');
+      await (rpc as any).call("sessions.reset", { key: sessionId });
+      toast.success("Session reset");
       refresh();
     } catch (err) {
-      toast.error('Failed to reset session');
+      toast.error("Failed to reset session");
     }
   };
 
   const handleCompact = async (e: React.MouseEvent, sessionId: string) => {
     e.stopPropagation();
+    if (!rpc) return;
     try {
-      const result = await rpc.call('sessions.compact', { key: sessionId });
-      if (result.compacted) {
-        toast.success(`Session compacted (${result.result?.tokensAfter} tokens remaining)`);
+      const result = await (rpc as any).call("sessions.compact", { key: sessionId });
+      if ((result as any).compacted) {
+        toast.success(
+          `Session compacted (${(result as any).result?.tokensAfter} tokens remaining)`,
+        );
       } else {
-        toast.info('Session already compact');
+        toast.info("Session already compact");
       }
       refresh();
     } catch (err) {
-      toast.error('Failed to compact session');
+      toast.error("Failed to compact session");
     }
   };
 
@@ -110,7 +125,10 @@ export function SessionsTable(): React.JSX.Element {
     return (
       <div className="space-y-4">
         {[1, 2, 3, 4, 5].map((i) => (
-          <div key={i} className="h-16 w-full bg-card/50 border border-border/50 rounded-xl animate-pulse" />
+          <div
+            key={i}
+            className="h-16 w-full bg-card/50 border border-border/50 rounded-xl animate-pulse"
+          />
         ))}
       </div>
     );
@@ -129,45 +147,45 @@ export function SessionsTable(): React.JSX.Element {
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent border-b border-border/50">
-            <TableHead 
+            <TableHead
               className="cursor-pointer font-black uppercase tracking-widest text-[10px] py-4"
-              onClick={() => toggleSort('sessionId')}
+              onClick={() => toggleSort("sessionId")}
             >
               Key <SortIcon field="sessionId" sortField={sortField} sortOrder={sortOrder} />
             </TableHead>
-            <TableHead 
+            <TableHead
               className="cursor-pointer font-black uppercase tracking-widest text-[10px] py-4"
-              onClick={() => toggleSort('label')}
+              onClick={() => toggleSort("label")}
             >
               Agent <SortIcon field="label" sortField={sortField} sortOrder={sortOrder} />
             </TableHead>
-            <TableHead 
+            <TableHead
               className="cursor-pointer font-black uppercase tracking-widest text-[10px] py-4"
-              onClick={() => toggleSort('channel')}
+              onClick={() => toggleSort("channel")}
             >
               Channel <SortIcon field="channel" sortField={sortField} sortOrder={sortOrder} />
             </TableHead>
-            <TableHead 
+            <TableHead
               className="cursor-pointer font-black uppercase tracking-widest text-[10px] py-4"
-              onClick={() => toggleSort('model')}
+              onClick={() => toggleSort("model")}
             >
               Model <SortIcon field="model" sortField={sortField} sortOrder={sortOrder} />
             </TableHead>
-            <TableHead 
+            <TableHead
               className="cursor-pointer font-black uppercase tracking-widest text-[10px] py-4"
-              onClick={() => toggleSort('startedAt')}
+              onClick={() => toggleSort("startedAt")}
             >
               Created <SortIcon field="startedAt" sortField={sortField} sortOrder={sortOrder} />
             </TableHead>
-            <TableHead 
+            <TableHead
               className="cursor-pointer font-black uppercase tracking-widest text-[10px] py-4"
-              onClick={() => toggleSort('updatedAt')}
+              onClick={() => toggleSort("updatedAt")}
             >
               Updated <SortIcon field="updatedAt" sortField={sortField} sortOrder={sortOrder} />
             </TableHead>
-            <TableHead 
+            <TableHead
               className="cursor-pointer font-black uppercase tracking-widest text-[10px] py-4"
-              onClick={() => toggleSort('status')}
+              onClick={() => toggleSort("status")}
             >
               Status <SortIcon field="status" sortField={sortField} sortOrder={sortOrder} />
             </TableHead>
@@ -177,13 +195,16 @@ export function SessionsTable(): React.JSX.Element {
         <TableBody>
           {sortedSessions.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={8} className="h-32 text-center text-muted-foreground italic font-medium">
+              <TableCell
+                colSpan={8}
+                className="h-32 text-center text-muted-foreground italic font-medium"
+              >
                 No sessions found.
               </TableCell>
             </TableRow>
           ) : (
             sortedSessions.map((session) => (
-              <TableRow 
+              <TableRow
                 key={session.sessionId}
                 className="cursor-pointer hover:bg-muted/30 transition-colors group"
                 onClick={() => router.push(`/dashboard/sessions/${session.sessionId}`)}
@@ -192,23 +213,26 @@ export function SessionsTable(): React.JSX.Element {
                   {session.sessionId.slice(0, 12)}...
                 </TableCell>
                 <TableCell className="font-bold">
-                  {session.label || session.displayName || 'Untitled Session'}
+                  {session.label || session.displayName || "Untitled Session"}
                 </TableCell>
                 <TableCell className="text-xs font-medium text-muted-foreground uppercase tracking-tight">
-                  {session.channel || '—'}
+                  {session.channel || "—"}
                 </TableCell>
                 <TableCell className="text-xs font-medium text-muted-foreground opacity-80">
-                  {session.model || '—'}
+                  {session.model || "—"}
                 </TableCell>
                 <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
-                  {session.startedAt ? new Date(session.startedAt).toLocaleString() : '—'}
+                  {session.startedAt ? new Date(session.startedAt).toLocaleString() : "—"}
                 </TableCell>
                 <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
                   {new Date(session.updatedAt).toLocaleString()}
                 </TableCell>
                 <TableCell>
                   {session.status && (
-                    <Badge variant={session.status === 'running' ? 'default' : 'secondary'} className="rounded-full text-[9px] px-2 py-0 uppercase font-black tracking-tighter">
+                    <Badge
+                      variant={session.status === "running" ? "default" : "secondary"}
+                      className="rounded-full text-[9px] px-2 py-0 uppercase font-black tracking-tighter"
+                    >
                       {session.status}
                     </Badge>
                   )}
@@ -220,22 +244,25 @@ export function SessionsTable(): React.JSX.Element {
                         <MoreVertical className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48 bg-card border-border/50 backdrop-blur-xl">
-                      <DropdownMenuItem 
+                    <DropdownMenuContent
+                      align="end"
+                      className="w-48 bg-card border-border/50 backdrop-blur-xl"
+                    >
+                      <DropdownMenuItem
                         className="cursor-pointer text-xs font-bold uppercase tracking-wider"
                         onClick={(e) => handleCompact(e, session.sessionId)}
                       >
                         <Zap className="mr-2 h-4 w-4 text-yellow-500" />
                         Compact Session
                       </DropdownMenuItem>
-                      <DropdownMenuItem 
+                      <DropdownMenuItem
                         className="cursor-pointer text-xs font-bold uppercase tracking-wider"
                         onClick={(e) => handleReset(e, session.sessionId)}
                       >
                         <RefreshCcw className="mr-2 h-4 w-4 text-blue-500" />
                         Reset Session
                       </DropdownMenuItem>
-                      <DropdownMenuItem 
+                      <DropdownMenuItem
                         className="cursor-pointer text-xs font-bold uppercase tracking-wider text-destructive focus:text-destructive"
                         onClick={(e) => handleDelete(e, session.sessionId)}
                       >

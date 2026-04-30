@@ -91,7 +91,7 @@ describe("useSessionsList", () => {
 
   it("should unsubscribe on unmount", () => {
     const mockUnsubscribe = vi.fn();
-    mockRpc.subscribe.mockReturnValueOnce(mockUnsubscribe as unknown as () => void);
+    (mockRpc.subscribe as any).mockReturnValueOnce(mockUnsubscribe);
 
     const { unmount } = renderHook(() => useSessionsList());
 
@@ -105,8 +105,8 @@ describe("useSessionsList", () => {
     renderHook(() => useSessionsList());
 
     // Get the handler passed to subscribe
-    const handler = mockRpc.subscribe.mock.calls.find(
-      (c: [string, () => void]) => c[0] === "sessions.changed",
+    const handler = (mockRpc.subscribe as any).mock.calls.find(
+      (c: any) => c[0] === "sessions.changed",
     )?.[1];
     expect(handler).toBeDefined();
 
@@ -116,6 +116,38 @@ describe("useSessionsList", () => {
 
     // Mount (list) + Mount (subscribe) + Event (list)
     expect(mockCall).toHaveBeenCalledTimes(3);
+  });
+
+  it("should incrementally update session when sessions event with payload is received", async () => {
+    const initialSessions: Session[] = [
+      { sessionId: "s1", updatedAt: Date.now(), label: "Initial" },
+    ];
+    mockCall.mockResolvedValue({ sessions: initialSessions });
+
+    renderHook(() => useSessionsList());
+
+    // Wait for initial fetch
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    // Get the handler passed to subscribe
+    const handler = (mockRpc.subscribe as any).mock.calls.find(
+      (c: any) => c[0] === "sessions.changed",
+    )?.[1];
+    expect(handler).toBeDefined();
+
+    await act(async () => {
+      if (handler) {
+        handler({ sessionId: "s1", label: "Updated", reason: "patch", ts: Date.now() });
+      }
+    });
+
+    const sessions = useSessionsStore.getState().sessions;
+    expect(sessions[0].label).toBe("Updated");
+    // Should NOT have called refresh (sessions.list) again beyond mount
+    // Mount calls: 1 (sessions.list) + 1 (sessions.subscribe)
+    expect(mockCall).toHaveBeenCalledTimes(2);
   });
 
   it("should not fetch if status is not connected", async () => {
