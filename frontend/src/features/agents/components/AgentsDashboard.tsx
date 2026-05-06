@@ -76,6 +76,7 @@ export function AgentsDashboard(): React.JSX.Element {
   const { createAgent, deleteAgent, isLoading: isCrudLoading } = useAgentsCrud();
 
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState("overview");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [showTrace, setShowTrace] = useState(false);
@@ -94,22 +95,31 @@ export function AgentsDashboard(): React.JSX.Element {
 
   const handleCreateAgent = async (template: AgentTemplate): Promise<void> => {
     setIsCreateOpen(false);
-    const promise = createAgent({
-      name: template.title,
-      iconName: template.iconName, // Rule 181: Using iconName
-      systemPrompt: template.defaultSystemPrompt || "",
-      model: template.suggestedModel || "gemini-1.5-flash",
-    });
+
+    const promise = (async () => {
+      const result = await createAgent({
+        name: template.title,
+        iconName: template.iconName,
+        systemPrompt: template.defaultSystemPrompt || "",
+        model: template.suggestedModel || "gemini-1.5-flash",
+      });
+
+      if (!result.success) {
+        throw new Error(result.error?.message || "Failed to create agent");
+      }
+
+      // Task 6.1.B.5: Wire agent.wait for async agent startup
+      // The backend agents.create returns { agentId, runId? } or similar if it starts a background job
+      // However, current agents.create implementation returns { agentId, ... } but no runId.
+      // If the backend is enhanced to start the agent, we wait.
+      // For now, we refresh and toast success.
+      await handleRefresh();
+      return `Agent "${template.title}" created successfully!`;
+    })();
 
     toast.promise(promise, {
       loading: "Creating agent...",
-      success: (result) => {
-        if (result.success) {
-          handleRefresh();
-          return `Agent "${template.title}" created successfully!`;
-        }
-        throw new Error(result.error?.message);
-      },
+      success: (msg) => msg,
       error: (err) => err.message || "Failed to create agent",
     });
   };
@@ -329,7 +339,7 @@ export function AgentsDashboard(): React.JSX.Element {
                     <Eye className="mr-2 h-4 w-4" />
                     Preview
                   </Button>
-                  <Button size="sm" className="shadow-md">
+                  <Button size="sm" className="shadow-md" onClick={() => setActiveTab("identity")}>
                     <Settings className="mr-2 h-4 w-4" />
                     Configure
                   </Button>
@@ -367,7 +377,7 @@ export function AgentsDashboard(): React.JSX.Element {
                 </div>
               </CardHeader>
               <CardContent className="px-8">
-                <Tabs defaultValue="overview" className="w-full">
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                   <TabsList className="grid w-full grid-cols-6 bg-muted/30 p-1 h-11">
                     <TabsTrigger
                       value="overview"
