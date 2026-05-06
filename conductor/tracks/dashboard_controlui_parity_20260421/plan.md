@@ -159,7 +159,7 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [x] Task 4.1.B.4: Detail view — metadata card + transcript (VirtualLogList) + override controls 40503ee4711
 - [x] Task 4.1.B.5: `CompactionPanel` — branch timeline visualization + restore / branch dialogs 90403905c75
 - [x] Task 4.1.B.6: Usage breakdown card — recharts BarChart (reused style from Phase 2.5) 77f9dce
-- [x] Task 4.1.C.1: Wire `sessions.subscribe` / `sessions.messages.subscribe` event streams to live update
+- [x] Task 4.1.C.1: Wire `sessions.subscribe` / `sessions.messages.subscribe` event streams to live update [checkpoint: 4347327dea]
 - [x] Task 4.1.C.2: Wire `sessions.steer`, `sessions.abort`, `sessions.send`, `sessions.reset`, `sessions.patch`
 - [x] Task 4.1.D.1: Append 23 parity scenarios (one per method) to Playwright suite
 - [x] Task 4.1.D.2: visual-diff + coverage ≥ 80%
@@ -186,7 +186,7 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 
 - [x] Task 5.2.A.1: Failing tests — `useDevices` (pair.list, approve/reject/remove, token rotate/revoke)
 - [x] Task 5.2.B.1: `DevicePairingTable` — pending (approve/reject) + paired (remove + AlertDialog)
-- [ ] Task 5.2.B.2: Token management UI — rotate + revoke with confirmation
+- [x] Task 5.2.B.2: Token management UI — rotate + revoke with confirmation [checkpoint: 4347327dea]
 - [x] Task 5.2.C.1: Mount as "Devices" tab inside existing `/dashboard/nodes` Tabs
 - [x] Task 5.2.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
 - [ ] Task: Conductor - User Manual Verification 'Phase 5'
@@ -198,10 +198,10 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 ### Sub-Track 6.1 — agents _(enhance · 10 methods incl. agent._, agents._, skills.status)_
 
 - [x] Task 6.1.A.1: Failing tests — `useAgentFiles` (list/get/set)
-- [ ] Task 6.1.A.2: Failing tests — `useAgentIdentity` (agent.identity.get, agents.update)
-- [ ] Task 6.1.B.1: "Files" tab — CodeMirror 6 tree + editor, unsaved-changes guard
-- [ ] Task 6.1.B.2: "Identity" tab — name, avatar preview, ID badge, ModelSelector (Phase 2.2)
-- [ ] Task 6.1.B.3: Channel assignment multi-select — sources from `channels.status`
+- [x] Task 6.1.A.2: Failing tests — `useAgentIdentity` (agent.identity.get, agents.update) [checkpoint: 4347327dea]
+- [x] Task 6.1.B.1: "Files" tab — CodeMirror 6 tree + editor, unsaved-changes guard 8a2f1cf
+- [x] Task 6.1.B.2: "Identity" tab — name, avatar preview, ID badge, ModelSelector (Phase 2.2) [checkpoint: 4347327dea]
+- [x] Task 6.1.B.3: Channel assignment multi-select — sources from `channels.status` [checkpoint: 4347327dea]
 - [ ] Task 6.1.B.4: Agent CRUD — create/update/delete (AlertDialog for delete)
 - [ ] Task 6.1.B.5: Wire `agent.wait` for async agent startup UI
 - [ ] Task 6.1.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
