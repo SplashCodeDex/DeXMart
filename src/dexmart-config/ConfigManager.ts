@@ -1,7 +1,7 @@
-import fs from 'fs';
-import path from 'path';
-import logger from '../utils/logger.js';
-import { envSchema, EnvConfig } from './env.schema.js';
+import fs from "fs";
+import path from "path";
+import logger from "../utils/logger.js";
+import { envSchema, EnvConfig } from "./env.schema.js";
 
 export interface Config {
   system: {
@@ -147,16 +147,16 @@ export class ConfigManager {
 
   constructor() {
     this.config = {} as Config;
-    this.configPath = process.env.CONFIG_PATH || './config';
-    this.environment = process.env.NODE_ENV || 'development';
+    this.configPath = process.env.CONFIG_PATH || "./config";
+    this.environment = process.env.NODE_ENV || "development";
 
     try {
       this.env = envSchema.parse(process.env);
-      logger.info('✅ Environment variables validated via Zod');
+      logger.info("✅ Environment variables validated via Zod");
     } catch (error: any) {
-      logger.error('❌ Environment validation failed:', error.message);
+      logger.error("❌ Environment validation failed:", error.message);
       // Fallback or rethrow based on environment
-      if (this.environment === 'production') throw error;
+      if (this.environment === "production") throw error;
       this.env = envSchema.parse({}); // Use defaults in dev
     }
 
@@ -178,20 +178,22 @@ export class ConfigManager {
         requireChannelGroupMembership: this.env.REQUIRE_CHANNEL_GROUP_MEMBERSHIP,
       },
       owner: {
-        name: process.env.OWNER_NAME || 'Owner',
-        id: process.env.OWNER_NUMBER || '',
-        organization: process.env.OWNER_ORGANIZATION || 'CodeDeX',
+        name: process.env.OWNER_NAME || "Owner",
+        id: process.env.OWNER_NUMBER || "",
+        organization: process.env.OWNER_ORGANIZATION || "CodeDeX",
       },
       // Server Configuration
       server: {
         port: this.env.PORT,
-        host: process.env.HOST || '127.0.0.1',
+        host: process.env.HOST || "127.0.0.1",
         environment: this.environment,
-        maxRequestSize: process.env.MAX_REQUEST_SIZE || '50mb',
+        maxRequestSize: process.env.MAX_REQUEST_SIZE || "50mb",
         cors: {
-          origins: (process.env.CORS_ORIGINS || 'http://127.0.0.1:3000').split(',').map(o => o.trim()),
-          credentials: true
-        }
+          origins: (process.env.CORS_ORIGINS || "http://127.0.0.1:3000")
+            .split(",")
+            .map((o) => o.trim()),
+          credentials: true,
+        },
       },
 
       // Database Configuration
@@ -199,7 +201,7 @@ export class ConfigManager {
         maxConnections: 20,
         connectionTimeout: 2000,
         idleTimeout: 30000,
-        ssl: false
+        ssl: false,
       },
 
       // Redis Configuration
@@ -211,20 +213,23 @@ export class ConfigManager {
         retryDelayOnFailover: 100,
         family: 4,
         password: this.env.REDIS_PASSWORD,
-        keyPrefix: 'whatsdx:'
+        keyPrefix: "whatsdx:",
       },
 
       // Authentication & Security
       auth: {
         jwtSecret: this.env.JWT_SECRET,
-        jwtExpires: '4h',
+        jwtExpires: "4h",
         refreshSecret: process.env.JWT_REFRESH_SECRET,
-        refreshExpires: '7d',
+        refreshExpires: "7d",
         sessionSecret: process.env.SESSION_SECRET,
         sessionMaxAge: 7 * 24 * 60 * 60 * 1000,
         bcryptRounds: 12,
         ownerNumber: process.env.OWNER_NUMBER,
-        adminNumbers: (process.env.ADMIN_NUMBERS || '').split(',').map(n => n.trim()).filter(Boolean)
+        adminNumbers: (process.env.ADMIN_NUMBERS || "")
+          .split(",")
+          .map((n) => n.trim())
+          .filter(Boolean),
       },
 
       // Rate Limiting
@@ -232,26 +237,28 @@ export class ConfigManager {
         windowMs: 900000, // 15 minutes
         maxRequests: this.env.RATE_LIMIT_MAX,
         skipSuccessfulRequests: false,
-        skipFailedRequests: false
+        skipFailedRequests: false,
       },
 
       // Channel Configuration
       channel: {
         name: this.env.CHANNEL_NAME,
-        browser: ['DeXMart', 'Chrome', '1.0.0'],
-        prefix: this.env.CHANNEL_PREFIX.startsWith('^') ? [this.env.CHANNEL_PREFIX] : this.env.CHANNEL_PREFIX.split(''),
-        mode: 'public',
+        browser: ["DeXMart", "Chrome", "1.0.0"],
+        prefix: this.env.CHANNEL_PREFIX.startsWith("^")
+          ? [this.env.CHANNEL_PREFIX]
+          : this.env.CHANNEL_PREFIX.split(""),
+        mode: "public",
         selfMode: this.env.SELF_OWNER,
         maxCommandsPerMinute: 60,
         cooldownMs: this.env.CHANNEL_COOLDOWN_MS,
         maintenance: false,
         autoReconnect: true,
-        sessionPath: './sessions',
+        sessionPath: "./sessions",
         authAdapter: {
           default: {
-            authDir: './auth'
-          }
-        }
+            authDir: "./auth",
+          },
+        },
       },
 
       // AI Services
@@ -260,16 +267,16 @@ export class ConfigManager {
           apiKey: this.env.GOOGLE_GEMINI_API_KEY,
           model: this.env.GEMINI_MODEL,
           maxTokens: this.env.GEMINI_MAX_TOKENS,
-          temperature: this.env.GEMINI_TEMP
+          temperature: this.env.GEMINI_TEMP,
         },
 
         summarization: {
           SUMMARIZE_THRESHOLD: this.env.AI_SUMMARIZE_THRESHOLD,
           MESSAGES_TO_SUMMARIZE: this.env.AI_MESSAGES_TO_SUMMARIZE,
-          HISTORY_PRUNE_LENGTH: this.env.AI_HISTORY_PRUNE_LENGTH
+          HISTORY_PRUNE_LENGTH: this.env.AI_HISTORY_PRUNE_LENGTH,
         },
         maxSpawnDepth: this.env.AI_MAX_SPAWN_DEPTH,
-        aiKeywords: []
+        aiKeywords: [],
       },
 
       // Payment Configuration
@@ -278,14 +285,14 @@ export class ConfigManager {
           secretKey: this.env.STRIPE_SECRET_KEY,
           publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
           webhookSecret: this.env.STRIPE_WEBHOOK_SECRET,
-          currency: 'USD'
+          currency: "USD",
         },
         premium: {
           enabled: true,
           monthlyPrice: 4.99,
           yearlyPrice: 49.99,
-          trialDays: 7
-        }
+          trialDays: 7,
+        },
       },
 
       // Monitoring & Analytics
@@ -293,9 +300,9 @@ export class ConfigManager {
         enabled: true,
         metricsPort: 9090,
         healthCheckEnabled: true,
-        logLevel: 'info',
+        logLevel: "info",
         sentryDsn: process.env.SENTRY_DSN,
-        enablePrometheus: false
+        enablePrometheus: false,
       },
 
       // Feature Flags
@@ -305,7 +312,7 @@ export class ConfigManager {
         gameCommands: true,
         moderationCommands: true,
         analyticsTracking: true,
-        websocketEnabled: true
+        websocketEnabled: true,
       },
 
       // Memory Management
@@ -314,8 +321,8 @@ export class ConfigManager {
         chatHistoryTTL: 3600000, // 1 hour
         cacheMaxSize: 1000,
         cleanupInterval: 300000, // 5 minutes
-        maxMemoryUsage: 512 // MB
-      }
+        maxMemoryUsage: 512, // MB
+      },
     };
 
     // Load environment-specific overrides
@@ -327,7 +334,7 @@ export class ConfigManager {
 
     if (fs.existsSync(envConfigPath)) {
       try {
-        const envConfig = JSON.parse(fs.readFileSync(envConfigPath, 'utf8'));
+        const envConfig = JSON.parse(fs.readFileSync(envConfigPath, "utf8"));
         this.config = this.mergeDeep(this.config, envConfig);
         logger.info(`✅ Loaded ${this.environment} configuration`);
       } catch (error: any) {
@@ -340,12 +347,13 @@ export class ConfigManager {
     // Only require JWT_SECRET for auth infrastructure
     const required: string[] = [];
 
-    if (this.environment !== 'test') {
-      if (!this.env.JWT_SECRET || this.env.JWT_SECRET === 'secret') {
-        const msg = '⚠️ JWT_SECRET is missing or using default value! Tokens will be signed with an insecure key.';
-        if (this.environment === 'production') {
+    if (this.environment !== "test") {
+      if (!this.env.JWT_SECRET || this.env.JWT_SECRET === "secret") {
+        const msg =
+          "⚠️ JWT_SECRET is missing or using default value! Tokens will be signed with an insecure key.";
+        if (this.environment === "production") {
           logger.error(msg);
-          throw new Error('JWT_SECRET must be set to a secure value in production');
+          throw new Error("JWT_SECRET must be set to a secure value in production");
         }
         logger.warn(msg);
       } else {
@@ -353,19 +361,19 @@ export class ConfigManager {
       }
     }
 
-    if (this.environment === 'production' && !this.env.REDIS_URL) {
-      logger.error('❌ REDIS_URL is required in production');
-      throw new Error('REDIS_URL is required in production');
+    if (this.environment === "production" && !this.env.REDIS_URL) {
+      logger.error("❌ REDIS_URL is required in production");
+      throw new Error("REDIS_URL is required in production");
     }
 
     // If REDIS_URL is missing but we have host/port, construct it
     if (!this.config.redis.url && this.config.redis.host) {
-      const auth = this.config.redis.password ? `:${this.config.redis.password}@` : '';
+      const auth = this.config.redis.password ? `:${this.config.redis.password}@` : "";
       this.config.redis.url = `redis://${auth}${this.config.redis.host}:${this.config.redis.port}`;
-      logger.info('🔗 Constructed internal REDIS_URL from host and port configuration');
+      logger.info("🔗 Constructed internal REDIS_URL from host and port configuration");
     }
 
-    logger.info('✅ Configuration validation passed');
+    logger.info("✅ Configuration validation passed");
   }
 
   get(path: string): any {
@@ -377,7 +385,7 @@ export class ConfigManager {
   }
 
   getNestedValue(obj: any, path: string): any {
-    const value = path.split('.').reduce((current, key) => {
+    const value = path.split(".").reduce((current, key) => {
       return current && current[key] !== undefined ? current[key] : undefined;
     }, obj);
 
@@ -390,7 +398,7 @@ export class ConfigManager {
   }
 
   setNestedValue(obj: any, path: string, value: any) {
-    const keys = path.split('.');
+    const keys = path.split(".");
     const lastKey = keys.pop();
     if (!lastKey) return;
     const target = keys.reduce((current, key) => {

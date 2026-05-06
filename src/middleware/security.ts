@@ -1,6 +1,6 @@
-import crypto from 'crypto';
-import logger from '../utils/logger.js';
-import auditLogger from '../services/auditService.js';
+import crypto from "crypto";
+import auditLogger from "../services/auditService.js";
+import logger from "../utils/logger.js";
 
 class SecurityMiddleware {
   private suspiciousPatterns: RegExp[];
@@ -37,7 +37,7 @@ class SecurityMiddleware {
       // 1. Content analysis
       const contentCheck = this.analyzeContent(message);
       if (contentCheck.blocked) {
-        await this.logSecurityEvent('content_blocked', {
+        await this.logSecurityEvent("content_blocked", {
           userId,
           userJid,
           remoteJid,
@@ -51,7 +51,7 @@ class SecurityMiddleware {
       // 2. Rate limiting check
       const rateCheck = this.checkRateLimit(userId, remoteJid);
       if (!rateCheck.allowed) {
-        await this.logSecurityEvent('rate_limit_exceeded', {
+        await this.logSecurityEvent("rate_limit_exceeded", {
           userId,
           userJid,
           remoteJid,
@@ -64,7 +64,7 @@ class SecurityMiddleware {
       // 3. Spam detection
       const spamCheck = this.detectSpam(message, userId);
       if (spamCheck.blocked) {
-        await this.logSecurityEvent('spam_detected', {
+        await this.logSecurityEvent("spam_detected", {
           userId,
           userJid,
           remoteJid,
@@ -76,20 +76,20 @@ class SecurityMiddleware {
 
       // 4. Check for blocked users/IPs
       if (this.isBlocked(userId, clientInfo.ip)) {
-        await this.logSecurityEvent('blocked_user', {
+        await this.logSecurityEvent("blocked_user", {
           userId,
           userJid,
           remoteJid,
-          reason: 'User is blocked',
+          reason: "User is blocked",
           clientInfo,
         });
-        return { allowed: false, reason: 'Access denied' };
+        return { allowed: false, reason: "Access denied" };
       }
 
       // 5. Command injection detection
       const injectionCheck = this.detectCommandInjection(message);
       if (injectionCheck.blocked) {
-        await this.logSecurityEvent('command_injection', {
+        await this.logSecurityEvent("command_injection", {
           userId,
           userJid,
           remoteJid,
@@ -103,9 +103,9 @@ class SecurityMiddleware {
       return { allowed: true };
     } catch (error: unknown) {
       const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('Security middleware error:', err);
+      logger.error("Security middleware error:", err);
       // Fail-safe: allow request but log the error
-      await this.logSecurityEvent('middleware_error', {
+      await this.logSecurityEvent("middleware_error", {
         userId,
         userJid,
         remoteJid,
@@ -121,7 +121,7 @@ class SecurityMiddleware {
    * @returns {Object} Analysis result
    */
   analyzeContent(content: string): { blocked: boolean; reason?: string } {
-    if (!content || typeof content !== 'string') {
+    if (!content || typeof content !== "string") {
       return { blocked: false };
     }
 
@@ -130,7 +130,7 @@ class SecurityMiddleware {
       if (pattern.test(content)) {
         return {
           blocked: true,
-          reason: 'Message contains suspicious content',
+          reason: "Message contains suspicious content",
         };
       }
     }
@@ -140,7 +140,7 @@ class SecurityMiddleware {
     if (capsRatio > 0.7 && content.length > 10) {
       return {
         blocked: true,
-        reason: 'Message contains excessive capital letters (possible spam)',
+        reason: "Message contains excessive capital letters (possible spam)",
       };
     }
 
@@ -148,7 +148,7 @@ class SecurityMiddleware {
     if (/(.)\1{10,}/.test(content)) {
       return {
         blocked: true,
-        reason: 'Message contains repetitive characters',
+        reason: "Message contains repetitive characters",
       };
     }
 
@@ -160,7 +160,7 @@ class SecurityMiddleware {
         if (this.isSuspiciousUrl(url)) {
           return {
             blocked: true,
-            reason: 'Message contains suspicious URL',
+            reason: "Message contains suspicious URL",
           };
         }
       }
@@ -184,7 +184,7 @@ class SecurityMiddleware {
     const userRequests: number[] = this.rateLimitCache.get(key) || [];
 
     // Remove old requests outside the window
-    const validRequests = userRequests.filter(time => now - time < windowMs);
+    const validRequests = userRequests.filter((time) => now - time < windowMs);
 
     if (validRequests.length >= maxRequests) {
       return {
@@ -223,7 +223,7 @@ class SecurityMiddleware {
     if (userMessages.includes(content)) {
       return {
         blocked: true,
-        reason: 'Duplicate message detected (possible spam)',
+        reason: "Duplicate message detected (possible spam)",
       };
     }
 
@@ -241,13 +241,13 @@ class SecurityMiddleware {
 
     // Add current time and remove old ones (> 10 seconds)
     messageTimes.push(now);
-    const recentTimes = messageTimes.filter(time => now - time < 10000);
+    const recentTimes = messageTimes.filter((time) => now - time < 10000);
     this.rateLimitCache.set(timeKey, recentTimes);
 
     if (recentTimes.length > 5) {
       return {
         blocked: true,
-        reason: 'Message flooding detected',
+        reason: "Message flooding detected",
       };
     }
 
@@ -277,7 +277,7 @@ class SecurityMiddleware {
       if (pattern.test(content)) {
         return {
           blocked: true,
-          reason: 'Potential command injection detected',
+          reason: "Potential command injection detected",
         };
       }
     }
@@ -302,11 +302,11 @@ class SecurityMiddleware {
    */
   isSuspiciousUrl(url: string): boolean {
     const suspiciousDomains = [
-      'bit.ly',
-      'tinyurl.com',
-      'goo.gl', // URL shorteners
-      'pastebin.com',
-      'hastebin.com', // Paste sites
+      "bit.ly",
+      "tinyurl.com",
+      "goo.gl", // URL shorteners
+      "pastebin.com",
+      "hastebin.com", // Paste sites
       /\.onion/, // Tor hidden services
       /[\w-]+\.ru$/, // Russian domains (often malicious)
       /[\w-]+\.cn$/, // Chinese domains (often malicious)
@@ -316,8 +316,8 @@ class SecurityMiddleware {
       const urlObj = new URL(url);
       const domain = urlObj.hostname.toLowerCase();
 
-      return suspiciousDomains.some(pattern => {
-        if (typeof pattern === 'string') {
+      return suspiciousDomains.some((pattern) => {
+        if (typeof pattern === "string") {
           return domain.includes(pattern);
         }
         return pattern.test(domain);
@@ -333,12 +333,17 @@ class SecurityMiddleware {
    * @param {Object} context - Message context
    * @returns {Object} Client information
    */
-  extractClientInfo(context: any): { userAgent: string; platform: string; ip: string; sessionId: string } {
+  extractClientInfo(context: any): {
+    userAgent: string;
+    platform: string;
+    ip: string;
+    sessionId: string;
+  } {
     return {
-      userAgent: context.userAgent || 'unknown',
-      platform: context.platform || 'unknown',
-      ip: this.hashIdentifier(context.remoteJid || 'unknown'), // Hash for privacy
-      sessionId: context.sessionId || 'unknown',
+      userAgent: context.userAgent || "unknown",
+      platform: context.platform || "unknown",
+      ip: this.hashIdentifier(context.remoteJid || "unknown"), // Hash for privacy
+      sessionId: context.sessionId || "unknown",
     };
   }
 
@@ -348,7 +353,7 @@ class SecurityMiddleware {
    * @returns {string} Hashed identifier
    */
   hashIdentifier(identifier: string): string {
-    return crypto.createHash('sha256').update(identifier).digest('hex').substring(0, 16);
+    return crypto.createHash("sha256").update(identifier).digest("hex").substring(0, 16);
   }
 
   /**
@@ -360,10 +365,10 @@ class SecurityMiddleware {
     try {
       await auditLogger.logEvent({
         eventType,
-        actor: details.userId || 'unknown',
+        actor: details.userId || "unknown",
         actorId: details.userId,
         action: eventType,
-        resource: 'security',
+        resource: "security",
         details: {
           reason: details.reason,
           content: details.content,
@@ -376,7 +381,7 @@ class SecurityMiddleware {
       });
     } catch (error: unknown) {
       const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('Failed to log security event:', err);
+      logger.error("Failed to log security event:", err);
     }
   }
 
@@ -385,17 +390,17 @@ class SecurityMiddleware {
    * @param {string} eventType - Event type
    * @returns {string} Risk level
    */
-  getRiskLevel(eventType: string): 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL' {
-    const riskLevels: Record<string, 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'> = {
-      content_blocked: 'MEDIUM',
-      rate_limit_exceeded: 'LOW',
-      spam_detected: 'MEDIUM',
-      blocked_user: 'HIGH',
-      command_injection: 'CRITICAL',
-      middleware_error: 'MEDIUM',
+  getRiskLevel(eventType: string): "LOW" | "MEDIUM" | "HIGH" | "CRITICAL" {
+    const riskLevels: Record<string, "LOW" | "MEDIUM" | "HIGH" | "CRITICAL"> = {
+      content_blocked: "MEDIUM",
+      rate_limit_exceeded: "LOW",
+      spam_detected: "MEDIUM",
+      blocked_user: "HIGH",
+      command_injection: "CRITICAL",
+      middleware_error: "MEDIUM",
     };
 
-    return riskLevels[eventType] || 'LOW';
+    return riskLevels[eventType] || "LOW";
   }
 
   /**

@@ -1,6 +1,6 @@
-import { RateLimiterRedis } from 'rate-limiter-flexible';
-import logger from '../utils/logger.js';
-import { createClient } from 'redis';
+import { RateLimiterRedis } from "rate-limiter-flexible";
+import { createClient } from "redis";
+import logger from "../utils/logger.js";
 
 interface RateLimiterConfig {
   points: number;
@@ -28,24 +28,24 @@ class RateLimiterService {
     // Initialize Redis client
     try {
       this.redisClient = createClient({
-        url: process.env.REDIS_URL || 'redis://localhost:6379',
+        url: process.env.REDIS_URL || "redis://localhost:6379",
         password: process.env.REDIS_PASSWORD,
       });
 
-      this.redisClient.on('error', (err: any) => {
-        logger.error('Rate limiter Redis connection error:', err);
+      this.redisClient.on("error", (err: any) => {
+        logger.error("Rate limiter Redis connection error:", err);
       });
 
-      this.redisClient.on('connect', () => {
-        logger.info('Rate limiter connected to Redis');
+      this.redisClient.on("connect", () => {
+        logger.info("Rate limiter connected to Redis");
       });
 
       // Connect to Redis
       this.redisClient.connect().catch((err: any) => {
-        logger.error('Failed to connect rate limiter to Redis:', err);
+        logger.error("Failed to connect rate limiter to Redis:", err);
       });
     } catch (error: any) {
-      logger.error('Failed to initialize Redis for rate limiter:', error);
+      logger.error("Failed to initialize Redis for rate limiter:", error);
     }
   }
 
@@ -53,11 +53,11 @@ class RateLimiterService {
    * Get or create a rate limiter for specific configuration
    */
   getLimiter(config: RateLimiterConfig): any {
-    const key = `${config.points}:${config.duration}:${config.keyPrefix || 'default'}`;
+    const key = `${config.points}:${config.duration}:${config.keyPrefix || "default"}`;
 
     if (!this.limiters.has(key)) {
       if (!this.redisClient) {
-        throw new Error('Redis client not available for rate limiting');
+        throw new Error("Redis client not available for rate limiting");
       }
 
       this.limiters.set(
@@ -66,16 +66,16 @@ class RateLimiterService {
           storeClient: this.redisClient,
           points: config.points,
           duration: config.duration,
-          keyPrefix: config.keyPrefix || 'rl',
+          keyPrefix: config.keyPrefix || "rl",
           inMemoryBlockOnConsumed: config.points, // Block if consumed all points
           inMemoryBlockDuration: config.blockDuration || 60, // Block duration in seconds
           insuranceLimiter: new RateLimiterRedis({
             storeClient: this.redisClient,
             points: Math.floor(config.points / 2),
             duration: config.duration * 2,
-            keyPrefix: `${config.keyPrefix || 'rl'}_insurance`,
+            keyPrefix: `${config.keyPrefix || "rl"}_insurance`,
           }),
-        })
+        }),
       );
     }
 
@@ -91,7 +91,7 @@ class RateLimiterService {
       await limiter.consume(key);
       return true;
     } catch (rejRes: any) {
-      logger.warn('Rate limit exceeded', {
+      logger.warn("Rate limit exceeded", {
         key,
         points: config.points,
         duration: config.duration,
@@ -134,10 +134,10 @@ class RateLimiterService {
     try {
       const limiter = this.getLimiter(config);
       await limiter.block(key, seconds);
-      logger.info('Manually blocked key', { key, seconds });
+      logger.info("Manually blocked key", { key, seconds });
       return true;
     } catch (error: any) {
-      logger.error('Failed to block key', { key, error: error.message });
+      logger.error("Failed to block key", { key, error: error.message });
       return false;
     }
   }
@@ -149,10 +149,10 @@ class RateLimiterService {
     try {
       const limiter = this.getLimiter(config);
       await limiter.delete(key);
-      logger.info('Unblocked key', { key });
+      logger.info("Unblocked key", { key });
       return true;
     } catch (error: any) {
-      logger.error('Failed to unblock key', { key, error: error.message });
+      logger.error("Failed to unblock key", { key, error: error.message });
       return false;
     }
   }
@@ -164,10 +164,10 @@ class RateLimiterService {
     try {
       const limiter = this.getLimiter(config);
       await limiter.penalty(key, points);
-      logger.info('Penalized key', { key, points });
+      logger.info("Penalized key", { key, points });
       return true;
     } catch (error: any) {
-      logger.error('Failed to penalize key', { key, error: error.message });
+      logger.error("Failed to penalize key", { key, error: error.message });
       return false;
     }
   }
@@ -179,10 +179,10 @@ class RateLimiterService {
     try {
       const limiter = this.getLimiter(config);
       await limiter.reward(key, points);
-      logger.info('Rewarded key', { key, points });
+      logger.info("Rewarded key", { key, points });
       return true;
     } catch (error: any) {
-      logger.error('Failed to reward key', { key, error: error.message });
+      logger.error("Failed to reward key", { key, error: error.message });
       return false;
     }
   }
@@ -196,42 +196,42 @@ class RateLimiterService {
       aiChat: {
         points: 20, // 20 requests
         duration: 60, // per minute
-        keyPrefix: 'ai_chat',
+        keyPrefix: "ai_chat",
       },
 
       // General commands - moderate limits
       generalCommands: {
         points: 50, // 50 requests
         duration: 60, // per minute
-        keyPrefix: 'general',
+        keyPrefix: "general",
       },
 
       // Media processing - lower limits due to resource usage
       mediaProcessing: {
         points: 10, // 10 requests
         duration: 60, // per minute
-        keyPrefix: 'media',
+        keyPrefix: "media",
       },
 
       // API endpoints - higher limits for web dashboard
       apiRequests: {
         points: 100, // 100 requests
         duration: 60, // per minute
-        keyPrefix: 'api',
+        keyPrefix: "api",
       },
 
       // File uploads - strict limits
       fileUploads: {
         points: 5, // 5 uploads
         duration: 300, // per 5 minutes
-        keyPrefix: 'upload',
+        keyPrefix: "upload",
       },
 
       // Admin actions - very strict limits
       adminActions: {
         points: 10, // 10 actions
         duration: 60, // per minute
-        keyPrefix: 'admin',
+        keyPrefix: "admin",
       },
     };
   }
@@ -273,12 +273,12 @@ class RateLimiterService {
    * Parse Redis INFO command output
    */
   parseRedisInfo(info: string): Record<string, string> {
-    const lines = info.split('\n');
+    const lines = info.split("\n");
     const parsed: Record<string, string> = {};
 
-    lines.forEach(line => {
-      if (line.includes(':')) {
-        const [key, value] = line.split(':');
+    lines.forEach((line) => {
+      if (line.includes(":")) {
+        const [key, value] = line.split(":");
         parsed[key] = value.trim();
       }
     });
@@ -292,20 +292,20 @@ class RateLimiterService {
   async healthCheck() {
     try {
       if (!this.redisClient) {
-        return { status: 'disconnected', service: 'rate-limiter' };
+        return { status: "disconnected", service: "rate-limiter" };
       }
 
       await this.redisClient.ping();
 
       return {
-        status: 'healthy',
-        service: 'rate-limiter',
+        status: "healthy",
+        service: "rate-limiter",
         limiters: this.limiters.size,
       };
     } catch (error: any) {
       return {
-        status: 'unhealthy',
-        service: 'rate-limiter',
+        status: "unhealthy",
+        service: "rate-limiter",
         error: error.message,
       };
     }

@@ -1,12 +1,12 @@
-import { Timestamp } from 'firebase-admin/firestore';
-import { firebaseService } from '@/persistence/firebase.js';
-import logger from '@/utils/logger.js';
-import { TenantUserDocument } from '@/types/index.js';
+import { Timestamp } from "firebase-admin/firestore";
+import { firebaseService } from "@/persistence/firebase.js";
+import { TenantUserDocument } from "@/types/index.js";
+import logger from "@/utils/logger.js";
 
 export class UserService {
   private static instance: UserService;
 
-  private constructor() { }
+  private constructor() {}
 
   public static getInstance(): UserService {
     if (!UserService.instance) {
@@ -18,16 +18,19 @@ export class UserService {
   /**
    * Compute user status based on activity and ban status
    */
-  public computeStatus(user: Partial<TenantUserDocument>): 'active' | 'inactive' | 'banned' {
-    if (user.metadata?.banned) return 'banned';
+  public computeStatus(user: Partial<TenantUserDocument>): "active" | "inactive" | "banned" {
+    if (user.metadata?.banned) return "banned";
 
     const lastActivity = user.lastLogin;
-    if (!lastActivity) return 'inactive';
+    if (!lastActivity) return "inactive";
 
-    const lastMillis = lastActivity instanceof Timestamp ? lastActivity.toMillis() : new Date(lastActivity).getTime();
+    const lastMillis =
+      lastActivity instanceof Timestamp
+        ? lastActivity.toMillis()
+        : new Date(lastActivity).getTime();
     const days30 = 30 * 24 * 60 * 60 * 1000;
 
-    return Date.now() - lastMillis > days30 ? 'inactive' : 'active';
+    return Date.now() - lastMillis > days30 ? "inactive" : "active";
   }
 
   /**
@@ -35,7 +38,7 @@ export class UserService {
    */
   async getUserById(tenantId: string, userId: string): Promise<TenantUserDocument | null> {
     try {
-      return await firebaseService.getDoc<'users/{userId}/users'>('users', userId, tenantId);
+      return await firebaseService.getDoc<"users/{userId}/users">("users", userId, tenantId);
     } catch (error: unknown) {
       logger.error(`UserService.getUserById error [${tenantId}/${userId}]:`, error);
       return null;
@@ -47,7 +50,7 @@ export class UserService {
    */
   async saveUser(tenantId: string, user: TenantUserDocument): Promise<void> {
     try {
-      await firebaseService.setDoc<'users/{userId}/users'>('users', user.id, user, tenantId);
+      await firebaseService.setDoc<"users/{userId}/users">("users", user.id, user, tenantId);
     } catch (error: unknown) {
       logger.error(`UserService.saveUser error [${tenantId}/${user.id}]:`, error);
       throw error;
@@ -59,12 +62,12 @@ export class UserService {
    */
   async updateLastLogin(tenantId: string, userId: string): Promise<void> {
     try {
-      await firebaseService.setDoc<'users/{userId}/users'>(
-        'users',
+      await firebaseService.setDoc<"users/{userId}/users">(
+        "users",
         userId,
         { lastLogin: Timestamp.now() },
         tenantId,
-        true
+        true,
       );
     } catch (error: unknown) {
       logger.error(`UserService.updateLastLogin error [${tenantId}/${userId}]:`, error);

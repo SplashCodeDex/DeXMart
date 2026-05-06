@@ -1,6 +1,6 @@
-import { db } from '../lib/firebase.js';
-import logger from '../utils/logger.js';
-import { Timestamp } from 'firebase-admin/firestore';
+import { Timestamp } from "firebase-admin/firestore";
+import { db } from "../lib/firebase.js";
+import logger from "../utils/logger.js";
 
 interface AuditEvent {
   eventType: string;
@@ -10,7 +10,7 @@ interface AuditEvent {
   resource: string;
   resourceId?: string;
   details?: any;
-  riskLevel?: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  riskLevel?: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
   ipAddress?: string;
   userAgent?: string;
   sessionId?: string;
@@ -28,11 +28,11 @@ interface AuditFilters {
   startDate?: string | Date;
   endDate?: string | Date;
   sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
+  sortOrder?: "asc" | "desc";
 }
 
 class AuditService {
-  private collection = db.collection('audit_logs');
+  private collection = db.collection("audit_logs");
 
   constructor() {
     // Audit service using Firestore
@@ -43,7 +43,7 @@ class AuditService {
       const data = {
         ...eventData,
         details: eventData.details || {},
-        riskLevel: eventData.riskLevel || 'LOW',
+        riskLevel: eventData.riskLevel || "LOW",
         metadata: eventData.metadata || {},
         createdAt: Timestamp.now(),
       };
@@ -53,10 +53,10 @@ class AuditService {
       return {
         id: docRef.id,
         ...data,
-        createdAt: data.createdAt.toDate()
+        createdAt: data.createdAt.toDate(),
       };
     } catch (error: any) {
-      logger.error('Error logging audit event:', error);
+      logger.error("Error logging audit event:", error);
       throw error;
     }
   }
@@ -67,47 +67,50 @@ class AuditService {
       let query: FirebaseFirestore.Query = this.collection;
 
       if (filters.eventType) {
-        query = query.where('eventType', '==', filters.eventType);
+        query = query.where("eventType", "==", filters.eventType);
       }
 
       if (filters.actorId) {
-        query = query.where('actorId', '==', filters.actorId);
+        query = query.where("actorId", "==", filters.actorId);
       }
 
       if (filters.resource) {
-        query = query.where('resource', '==', filters.resource);
+        query = query.where("resource", "==", filters.resource);
       }
 
       if (filters.resourceId) {
-        query = query.where('resourceId', '==', filters.resourceId);
+        query = query.where("resourceId", "==", filters.resourceId);
       }
 
       if (filters.riskLevel) {
-        query = query.where('riskLevel', '==', filters.riskLevel.toUpperCase());
+        query = query.where("riskLevel", "==", filters.riskLevel.toUpperCase());
       }
 
       if (filters.startDate) {
-        query = query.where('createdAt', '>=', Timestamp.fromDate(new Date(filters.startDate)));
+        query = query.where("createdAt", ">=", Timestamp.fromDate(new Date(filters.startDate)));
       }
 
       if (filters.endDate) {
-        query = query.where('createdAt', '<=', Timestamp.fromDate(new Date(filters.endDate)));
+        query = query.where("createdAt", "<=", Timestamp.fromDate(new Date(filters.endDate)));
       }
 
       // Order by createdAt desc by default
-      if (!filters.sortBy || filters.sortBy === 'createdAt') {
-        query = query.orderBy('createdAt', filters.sortOrder === 'asc' ? 'asc' : 'desc');
+      if (!filters.sortBy || filters.sortBy === "createdAt") {
+        query = query.orderBy("createdAt", filters.sortOrder === "asc" ? "asc" : "desc");
       }
 
       // Get snapshot for pagination
       // Note: Offset is expensive in Firestore, but using it for compatibility
-      const snapshot = await query.offset((page - 1) * limit).limit(limit).get();
+      const snapshot = await query
+        .offset((page - 1) * limit)
+        .limit(limit)
+        .get();
 
       // Get total count (using aggregation query if possible, or separate count)
       const countSnapshot = await query.count().get();
       const total = countSnapshot.data().count;
 
-      const logs = snapshot.docs.map(doc => {
+      const logs = snapshot.docs.map((doc) => {
         const data = doc.data();
         return {
           id: doc.id,
@@ -123,10 +126,13 @@ class AuditService {
         limit,
       };
     } catch (error: any) {
-      logger.error('Error getting audit logs:', error);
+      logger.error("Error getting audit logs:", error);
       // Fallback for missing indexes
-      if ((error as any).code === 9) { // FAILED_PRECONDITION (usually missing index)
-        logger.warn('Missing Firestore index for audit logs query. Returning empty result temporarily.');
+      if ((error as any).code === 9) {
+        // FAILED_PRECONDITION (usually missing index)
+        logger.warn(
+          "Missing Firestore index for audit logs query. Returning empty result temporarily.",
+        );
         return { logs: [], total: 0, page: 1, limit: 50 };
       }
       throw error;
@@ -145,7 +151,7 @@ class AuditService {
         createdAt: data?.createdAt instanceof Timestamp ? data.createdAt.toDate() : new Date(),
       };
     } catch (error: any) {
-      logger.error('Error getting audit log by ID:', error);
+      logger.error("Error getting audit log by ID:", error);
       return null;
     }
   }
@@ -162,10 +168,10 @@ class AuditService {
       let query: FirebaseFirestore.Query = this.collection;
 
       if (filters.startDate) {
-        query = query.where('createdAt', '>=', Timestamp.fromDate(new Date(filters.startDate)));
+        query = query.where("createdAt", ">=", Timestamp.fromDate(new Date(filters.startDate)));
       }
       if (filters.endDate) {
-        query = query.where('createdAt', '<=', Timestamp.fromDate(new Date(filters.endDate)));
+        query = query.where("createdAt", "<=", Timestamp.fromDate(new Date(filters.endDate)));
       }
 
       // Get count
@@ -173,24 +179,24 @@ class AuditService {
       const totalEvents = countSnapshot.data().count;
 
       // Get recent events (last 10)
-      const recentSnapshot = await query.orderBy('createdAt', 'desc').limit(10).get();
-      const recentEvents = recentSnapshot.docs.map(doc => ({
+      const recentSnapshot = await query.orderBy("createdAt", "desc").limit(10).get();
+      const recentEvents = recentSnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
-        createdAt: (doc.data().createdAt as Timestamp).toDate()
+        createdAt: (doc.data().createdAt as Timestamp).toDate(),
       }));
 
       // Calculate event type and risk level distribution from actual data
       // For better performance, we limit this to recent events (last 1000)
-      const statsSnapshot = await query.orderBy('createdAt', 'desc').limit(1000).get();
+      const statsSnapshot = await query.orderBy("createdAt", "desc").limit(1000).get();
       const eventsByType: Record<string, number> = {};
       const eventsByRisk: Record<string, number> = {};
 
-      statsSnapshot.docs.forEach(doc => {
+      statsSnapshot.docs.forEach((doc) => {
         const data = doc.data();
-        const eventType = data.eventType || 'unknown';
-        const riskLevel = data.riskLevel || 'low';
-        
+        const eventType = data.eventType || "unknown";
+        const riskLevel = data.riskLevel || "low";
+
         eventsByType[eventType] = (eventsByType[eventType] || 0) + 1;
         eventsByRisk[riskLevel] = (eventsByRisk[riskLevel] || 0) + 1;
       });
@@ -206,44 +212,44 @@ class AuditService {
         },
       };
     } catch (error: any) {
-      logger.error('Error getting audit statistics:', error);
+      logger.error("Error getting audit statistics:", error);
       throw error;
     }
   }
 
-  async exportAuditLogs(filters: AuditFilters = {}, format: string = 'json') {
+  async exportAuditLogs(filters: AuditFilters = {}, format: string = "json") {
     const { logs } = await this.getAuditLogs(filters, { limit: 1000 }); // Cap at 1000 for export
 
-    if (format === 'csv') {
+    if (format === "csv") {
       const headers = [
-        'ID',
-        'Timestamp',
-        'Event Type',
-        'Actor',
-        'Actor ID',
-        'Action',
-        'Resource',
-        'Resource ID',
-        'Risk Level',
-        'IP Address',
-        'Details',
+        "ID",
+        "Timestamp",
+        "Event Type",
+        "Actor",
+        "Actor ID",
+        "Action",
+        "Resource",
+        "Resource ID",
+        "Risk Level",
+        "IP Address",
+        "Details",
       ];
 
       const rows = logs.map((log: any) => [
         log.id,
         log.createdAt.toISOString(),
         log.eventType,
-        log.actor || '',
-        log.actorId || '',
+        log.actor || "",
+        log.actorId || "",
         log.action,
         log.resource,
-        log.resourceId || '',
+        log.resourceId || "",
         log.riskLevel,
-        log.ipAddress || '',
+        log.ipAddress || "",
         JSON.stringify(log.details).replace(/"/g, '""'),
       ]);
 
-      return [headers, ...rows].map(row => row.map(field => `"${field}"`).join(',')).join('\n');
+      return [headers, ...rows].map((row) => row.map((field) => `"${field}"`).join(",")).join("\n");
     }
 
     return JSON.stringify(logs, null, 2);
@@ -254,11 +260,15 @@ class AuditService {
     return [];
   }
 
-  async searchAuditLogs(query: string, fields: string[] = ['actor', 'action', 'resource'], options: any = {}) {
+  async searchAuditLogs(
+    query: string,
+    fields: string[] = ["actor", "action", "resource"],
+    options: any = {},
+  ) {
     // Firestore doesn't support full-text search natively like 'contains' for multiple fields with OR.
     // We will just return empty for now, or implement a very basic prefix search if possible.
     // Proper solution requires Algolia/Elasticsearch or specific setup.
-    logger.warn('Search not fully supported in Firestore backend yet');
+    logger.warn("Search not fully supported in Firestore backend yet");
     return { logs: [], total: 0, page: 1, limit: options.limit || 50 };
   }
 
@@ -266,7 +276,12 @@ class AuditService {
     return this.getAuditLogs({ ...dateFilters, actorId: userId }, options);
   }
 
-  async getResourceActivity(resource: string, resourceId: string, dateFilters: AuditFilters = {}, options: any = {}) {
+  async getResourceActivity(
+    resource: string,
+    resourceId: string,
+    dateFilters: AuditFilters = {},
+    options: any = {},
+  ) {
     return this.getAuditLogs({ ...dateFilters, resource, resourceId }, options);
   }
 
@@ -277,10 +292,13 @@ class AuditService {
       const cutoffTimestamp = Timestamp.fromDate(cutoffDate);
 
       // Batch delete
-      const snapshot = await this.collection.where('createdAt', '<', cutoffTimestamp).limit(500).get();
+      const snapshot = await this.collection
+        .where("createdAt", "<", cutoffTimestamp)
+        .limit(500)
+        .get();
 
       const batch = db.batch();
-      snapshot.docs.forEach(doc => {
+      snapshot.docs.forEach((doc) => {
         batch.delete(doc.ref);
       });
       await batch.commit();
@@ -291,7 +309,7 @@ class AuditService {
         cutoffDate: cutoffDate.toISOString(),
       };
     } catch (error: any) {
-      logger.error('Error cleaning up old logs:', error);
+      logger.error("Error cleaning up old logs:", error);
       throw error;
     }
   }

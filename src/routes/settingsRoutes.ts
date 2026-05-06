@@ -1,6 +1,5 @@
-import express from 'express';
-
-import { updateProfile } from '../controllers/authController.js';
+import express from "express";
+import { updateProfile } from "../controllers/authController.js";
 
 const router = express.Router();
 
@@ -8,6 +7,6 @@ const router = express.Router();
  * PATCH /api/settings/profile
  * Update the authenticated user's display name.
  */
-router.patch('/profile', updateProfile);
+router.patch("/profile", updateProfile);
 
 export default router;

@@ -1,5 +1,5 @@
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 /**
  * Merges Tailwind CSS classes with proper conflict resolution.
@@ -10,5 +10,5 @@ import { twMerge } from 'tailwind-merge';
  * cn('bg-red-500', condition && 'bg-blue-500') // Conditional classes
  */
 export function cn(...inputs: ClassValue[]): string {
-    return twMerge(clsx(inputs));
+  return twMerge(clsx(inputs));
 }

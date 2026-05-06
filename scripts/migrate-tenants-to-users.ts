@@ -102,17 +102,14 @@ export async function runMigration(options: MigrationOptions): Promise<Migration
 
   if (!firestoreState) {
     // Production path: use real Firestore (not called in tests)
-    logger.error('Production Firestore not injected — use the CLI entrypoint for live runs.');
-    return { stats, errors: ['No firestoreState provided'] };
+    logger.error("Production Firestore not injected — use the CLI entrypoint for live runs.");
+    return { stats, errors: ["No firestoreState provided"] };
   }
 
-  const tenantsToProcess =
-    tenantIds.length > 0
-      ? tenantIds
-      : Object.keys(firestoreState.tenants);
+  const tenantsToProcess = tenantIds.length > 0 ? tenantIds : Object.keys(firestoreState.tenants);
 
   logger.info(
-    `Migration ${dryRun ? '[DRY-RUN]' : '[LIVE]'} — processing ${tenantsToProcess.length} tenant(s)`,
+    `Migration ${dryRun ? "[DRY-RUN]" : "[LIVE]"} — processing ${tenantsToProcess.length} tenant(s)`,
   );
 
   for (const tenantId of tenantsToProcess) {
@@ -190,7 +187,7 @@ export async function runMigration(options: MigrationOptions): Promise<Migration
 
   logger.info(
     `Migration complete — ${stats.tenantsProcessed} tenants, ` +
-    `${stats.documentsWritten} written, ${stats.documentsSkipped} skipped`,
+      `${stats.documentsWritten} written, ${stats.documentsSkipped} skipped`,
   );
 
   return { stats, errors };
@@ -198,30 +195,32 @@ export async function runMigration(options: MigrationOptions): Promise<Migration
 
 // ── CLI entrypoint ─────────────────────────────────────────────────────────────
 
-if (process.argv[1]?.endsWith('migrate-tenants-to-users.ts') ||
-    process.argv[1]?.endsWith('migrate-tenants-to-users.js')) {
+if (
+  process.argv[1]?.endsWith("migrate-tenants-to-users.ts") ||
+  process.argv[1]?.endsWith("migrate-tenants-to-users.js")
+) {
   const args = process.argv.slice(2);
-  const isLive = args.includes('--live');
-  const tenantArgIdx = args.indexOf('--tenant');
+  const isLive = args.includes("--live");
+  const tenantArgIdx = args.indexOf("--tenant");
   const tenantIds: string[] = [];
   if (tenantArgIdx !== -1) {
     // Collect all --tenant <id> args
     for (let i = tenantArgIdx + 1; i < args.length; i++) {
-      if (args[i].startsWith('--')) break;
+      if (args[i].startsWith("--")) break;
       tenantIds.push(args[i]);
     }
   }
 
   console.info(`DeXMart Firestore Path Migration`);
-  console.info(`Mode: ${isLive ? 'LIVE (writes enabled)' : 'DRY-RUN (no writes)'}`);
+  console.info(`Mode: ${isLive ? "LIVE (writes enabled)" : "DRY-RUN (no writes)"}`);
   if (tenantIds.length) {
-    console.info(`Targeting tenants: ${tenantIds.join(', ')}`);
+    console.info(`Targeting tenants: ${tenantIds.join(", ")}`);
   } else {
     console.info(`Targeting: ALL tenants`);
   }
-  console.info('');
+  console.info("");
   console.info(
-    'NOTE: Connect a real Firestore instance to run this in production.\n' +
-    'The production Firestore integration is injected at the call site.',
+    "NOTE: Connect a real Firestore instance to run this in production.\n" +
+      "The production Firestore integration is injected at the call site.",
   );
 }

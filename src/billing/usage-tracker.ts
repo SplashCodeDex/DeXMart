@@ -21,15 +21,12 @@
 
 // ── Dependency Interfaces ─────────────────────────────────────────────────────
 
-export type UsageMetric = 'messages' | 'agents' | 'channels' | 'tokensIn' | 'tokensOut';
+export type UsageMetric = "messages" | "agents" | "channels" | "tokensIn" | "tokensOut";
 
 export interface UsageFirestoreClient {
   collection(path: string): {
     doc(id: string): {
-      set(
-        data: Record<string, unknown>,
-        options?: { merge?: boolean },
-      ): Promise<unknown>;
+      set(data: Record<string, unknown>, options?: { merge?: boolean }): Promise<unknown>;
     };
   };
 }
@@ -79,7 +76,10 @@ export function trackUsage(userId: string, metric: UsageMetric, amount: number =
  * @param userId    - Firebase UID to flush.
  * @param firestore - Firestore client.
  */
-export async function flushUserUsage(userId: string, firestore: UsageFirestoreClient): Promise<void> {
+export async function flushUserUsage(
+  userId: string,
+  firestore: UsageFirestoreClient,
+): Promise<void> {
   const pending = pendingBatch.get(userId);
   if (!pending) return;
 
@@ -106,10 +106,7 @@ export async function flushUserUsage(userId: string, firestore: UsageFirestoreCl
   }
 
   try {
-    await firestore.collection('users').doc(userId).set(
-      { usage: update },
-      { merge: true },
-    );
+    await firestore.collection("users").doc(userId).set({ usage: update }, { merge: true });
   } catch (err) {
     // Re-queue on failure so we don't lose increments
     const requeue = pendingBatch.get(userId) ?? {};

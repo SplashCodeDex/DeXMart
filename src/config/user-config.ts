@@ -14,7 +14,7 @@
  * runtime coupling to firebase-admin or ioredis — it is trivially unit-testable.
  */
 
-import type { OpenClawConfig } from './types.openclaw.js';
+import type { OpenClawConfig } from "./types.openclaw.js";
 
 // ── Dependency Interfaces (structural — no hard imports required) ─────────────
 
@@ -94,19 +94,30 @@ export async function loadConfigForUser(
   // ── Layer 3: Firestore ───────────────────────────────────────────────────
   if (firestore) {
     try {
-      const doc = await firestore.collection('users').doc(userId).get();
+      const doc = await firestore.collection("users").doc(userId).get();
       if (doc.exists) {
         const data = doc.data();
-        const userConfigData = data?.['config'];
-        if (userConfigData && typeof userConfigData === 'object' && !Array.isArray(userConfigData)) {
+        const userConfigData = data?.["config"];
+        if (
+          userConfigData &&
+          typeof userConfigData === "object" &&
+          !Array.isArray(userConfigData)
+        ) {
           const base = loadConfig();
           // Shallow merge: user config overrides base defaults; OpenClaw keys are preserved
-          const merged = { ...base, ...(userConfigData as Record<string, unknown>) } as OpenClawConfig;
+          const merged = {
+            ...base,
+            ...(userConfigData as Record<string, unknown>),
+          } as OpenClawConfig;
           memCache.set(cacheKey, { config: merged, expiresAt: now + USER_CONFIG_CACHE_TTL_MS });
           // Backfill Redis so next request is warm
           if (redis) {
             try {
-              await redis.setex(cacheKey, Math.floor(USER_CONFIG_CACHE_TTL_MS / 1000), JSON.stringify(merged));
+              await redis.setex(
+                cacheKey,
+                Math.floor(USER_CONFIG_CACHE_TTL_MS / 1000),
+                JSON.stringify(merged),
+              );
             } catch {
               // Non-fatal: Redis write failure does not block config resolution
             }
@@ -135,7 +146,7 @@ export async function loadConfigForUser(
  */
 export async function invalidateUserConfigCache(
   userId: string,
-  redis: Pick<UserConfigRedis, 'del'> | null | undefined,
+  redis: Pick<UserConfigRedis, "del"> | null | undefined,
 ): Promise<void> {
   const cacheKey = `user:config:${userId}`;
   memCache.delete(cacheKey);

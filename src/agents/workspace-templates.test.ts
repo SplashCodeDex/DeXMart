@@ -1,6 +1,6 @@
-import { test } from 'vitest';
+import { test } from "vitest";
 
-test.skip('UPSTREAM PENDING SYNC: src/agents/workspace-templates.test.ts', () => {});
+test.skip("UPSTREAM PENDING SYNC: src/agents/workspace-templates.test.ts", () => {});
 
 /* ORIGINAL TEST CODE COMMENTED OUT TO PREVENT IMPORT/INIT ERRORS */
 // import fs from "node:fs/promises";
@@ -12,15 +12,15 @@ test.skip('UPSTREAM PENDING SYNC: src/agents/workspace-templates.test.ts', () =>
 //   resetWorkspaceTemplateDirCache,
 //   resolveWorkspaceTemplateDir,
 // } from "./workspace-templates.js";
-// 
+//
 // const tempDirs: string[] = [];
-// 
+//
 // async function makeTempRoot(): Promise<string> {
 //   const root = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-templates-"));
 //   tempDirs.push(root);
 //   return root;
 // }
-// 
+//
 // describe.skip("[UPSTREAM PENDING SYNC] resolveWorkspaceTemplateDir", () => {
 //   afterEach(async () => {
 //     resetWorkspaceTemplateDirCache();
@@ -28,33 +28,33 @@ test.skip('UPSTREAM PENDING SYNC: src/agents/workspace-templates.test.ts', () =>
 //       tempDirs.splice(0).map((dir) => fs.rm(dir, { recursive: true, force: true })),
 //     );
 //   });
-// 
+//
 //   it("resolves templates from package root when module url is dist-rooted", async () => {
 //     const root = await makeTempRoot();
 //     await fs.writeFile(path.join(root, "package.json"), JSON.stringify({ name: "openclaw" }));
-// 
+//
 //     const templatesDir = path.join(root, "docs", "reference", "templates");
 //     await fs.mkdir(templatesDir, { recursive: true });
 //     await fs.writeFile(path.join(templatesDir, "AGENTS.md"), "# ok\n");
-// 
+//
 //     const distDir = path.join(root, "dist");
 //     await fs.mkdir(distDir, { recursive: true });
 //     const moduleUrl = pathToFileURL(path.join(distDir, "model-selection.mjs")).toString();
-// 
+//
 //     const resolved = await resolveWorkspaceTemplateDir({ cwd: distDir, moduleUrl });
 //     expect(resolved).toBe(templatesDir);
 //   });
-// 
+//
 //   it("falls back to package-root docs path when templates directory is missing", async () => {
 //     const root = await makeTempRoot();
 //     await fs.writeFile(path.join(root, "package.json"), JSON.stringify({ name: "openclaw" }));
-// 
+//
 //     const distDir = path.join(root, "dist");
 //     await fs.mkdir(distDir, { recursive: true });
 //     const moduleUrl = pathToFileURL(path.join(distDir, "model-selection.mjs")).toString();
-// 
+//
 //     const resolved = await resolveWorkspaceTemplateDir({ cwd: distDir, moduleUrl });
 //     expect(path.normalize(resolved)).toBe(path.resolve("docs", "reference", "templates"));
 //   });
 // });
-// 
+//

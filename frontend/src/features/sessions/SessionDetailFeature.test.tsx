@@ -4,9 +4,9 @@ import React from "react";
 import { toast } from "sonner";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { useGateway } from "@/lib/gateway/gateway-hooks";
-import { SessionDetailFeature } from "./SessionDetailFeature";
-import { useSessionDetail } from "./hooks/useSessionDetail";
 import { useCompaction } from "./hooks/useCompaction";
+import { useSessionDetail } from "./hooks/useSessionDetail";
+import { SessionDetailFeature } from "./SessionDetailFeature";
 
 // Mock next/navigation
 vi.mock("next/navigation", () => ({
@@ -36,12 +36,14 @@ vi.mock("sonner", () => ({
 }));
 
 // Mock DropdownMenu components
-vi.mock('@/components/ui/dropdown-menu', () => ({
+vi.mock("@/components/ui/dropdown-menu", () => ({
   DropdownMenu: ({ children }: any) => <div data-testid="dropdown-menu">{children}</div>,
   DropdownMenuTrigger: ({ children }: any) => <div data-testid="dropdown-trigger">{children}</div>,
   DropdownMenuContent: ({ children }: any) => <div data-testid="dropdown-content">{children}</div>,
   DropdownMenuItem: ({ children, onClick, className }: any) => (
-    <div onClick={onClick} className={className} role="menuitem">{children}</div>
+    <div onClick={onClick} className={className} role="menuitem">
+      {children}
+    </div>
   ),
 }));
 
@@ -77,7 +79,14 @@ const mockSession = {
 };
 
 const mockCheckpoints = [
-  { id: "cp-1", updatedAt: 1713780000000, reason: "manual", tokenCount: 500, messageCount: 10, label: "Initial" },
+  {
+    id: "cp-1",
+    updatedAt: 1713780000000,
+    reason: "manual",
+    tokenCount: 500,
+    messageCount: 10,
+    label: "Initial",
+  },
 ];
 
 describe("SessionDetailFeature", () => {
@@ -102,9 +111,12 @@ describe("SessionDetailFeature", () => {
       error: null,
       refresh: mockRefreshCompaction,
     });
-    
+
     // Stub window.confirm
-    vi.stubGlobal('confirm', vi.fn(() => true));
+    vi.stubGlobal(
+      "confirm",
+      vi.fn(() => true),
+    );
   });
 
   it("renders session details and transcript", () => {
@@ -115,7 +127,7 @@ describe("SessionDetailFeature", () => {
     expect(screen.getByText("gpt-4")).toBeInTheDocument();
     expect(screen.getByText("1,000")).toBeInTheDocument();
     expect(screen.getByText("$0.0500")).toBeInTheDocument();
-    
+
     expect(screen.getByText("Hello")).toBeInTheDocument();
     expect(screen.getByText("Hi there!")).toBeInTheDocument();
     expect(screen.getByText("Initial")).toBeInTheDocument();
@@ -127,9 +139,9 @@ describe("SessionDetailFeature", () => {
     fireEvent.click(screen.getByText("gpt-4")); // Open model selector via button in header
     fireEvent.click(screen.getByText("Select GPT-4")); // Select new model
 
-    expect(mockRpcCall).toHaveBeenCalledWith("sessions.patch", { 
-      key: "session-123", 
-      model: "new-model" 
+    expect(mockRpcCall).toHaveBeenCalledWith("sessions.patch", {
+      key: "session-123",
+      model: "new-model",
     });
     await waitFor(() => expect(toast.success).toHaveBeenCalledWith("Session updated"));
   });

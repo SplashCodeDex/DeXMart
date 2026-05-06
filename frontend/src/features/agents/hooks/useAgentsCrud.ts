@@ -94,10 +94,26 @@ export function useAgentsCrud() {
     [rpc, status],
   );
 
+  const waitAndRefresh = useCallback(
+    async (runId: string, timeoutMs: number = 60_000): Promise<boolean> => {
+      if (status !== "connected" || !rpc) return false;
+
+      try {
+        const result = await (rpc as any).call("agent.wait", { runId, timeoutMs });
+        return result.status === "ok";
+      } catch (err) {
+        console.error("agent.wait failed:", err);
+        return false;
+      }
+    },
+    [rpc, status],
+  );
+
   return {
     createAgent,
     updateAgent,
     deleteAgent,
+    waitAndRefresh,
     isLoading,
   };
 }

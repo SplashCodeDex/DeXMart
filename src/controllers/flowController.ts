@@ -1,7 +1,7 @@
-import { Request, Response } from 'express';
-import { flowService } from '../services/flowService.js';
-import logger from '../utils/logger.js';
-import { z } from 'zod';
+import { Request, Response } from "express";
+import { z } from "zod";
+import { flowService } from "../services/flowService.js";
+import logger from "../utils/logger.js";
 
 const flowSchema = z.object({
   id: z.string().optional(),
@@ -16,7 +16,7 @@ export class FlowController {
   static async saveFlow(req: Request, res: Response) {
     try {
       const tenantId = req.user?.tenantId;
-      if (!tenantId) return res.status(401).json({ success: false, error: 'Unauthorized' });
+      if (!tenantId) return res.status(401).json({ success: false, error: "Unauthorized" });
 
       const flowData = flowSchema.parse(req.body);
       const result = await flowService.saveFlow(tenantId, flowData);
@@ -30,15 +30,15 @@ export class FlowController {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ success: false, error: error.issues[0].message });
       }
-      logger.error('FlowController.saveFlow error:', error);
-      res.status(500).json({ success: false, error: 'Internal server error' });
+      logger.error("FlowController.saveFlow error:", error);
+      res.status(500).json({ success: false, error: "Internal server error" });
     }
   }
 
   static async listFlows(req: Request, res: Response) {
     try {
       const tenantId = req.user?.tenantId;
-      if (!tenantId) return res.status(401).json({ success: false, error: 'Unauthorized' });
+      if (!tenantId) return res.status(401).json({ success: false, error: "Unauthorized" });
 
       const result = await flowService.listFlows(tenantId);
 
@@ -48,15 +48,15 @@ export class FlowController {
         res.status(400).json({ success: false, error: result.error?.message });
       }
     } catch (error: any) {
-      logger.error('FlowController.listFlows error:', error);
-      res.status(500).json({ success: false, error: 'Internal server error' });
+      logger.error("FlowController.listFlows error:", error);
+      res.status(500).json({ success: false, error: "Internal server error" });
     }
   }
 
   static async getFlow(req: Request, res: Response) {
     try {
       const tenantId = req.user?.tenantId;
-      if (!tenantId) return res.status(401).json({ success: false, error: 'Unauthorized' });
+      if (!tenantId) return res.status(401).json({ success: false, error: "Unauthorized" });
 
       const flowId = req.params.id as string;
       const result = await flowService.getFlow(tenantId, flowId);
@@ -67,15 +67,15 @@ export class FlowController {
         res.status(404).json({ success: false, error: result.error?.message });
       }
     } catch (error: any) {
-      logger.error('FlowController.getFlow error:', error);
-      res.status(500).json({ success: false, error: 'Internal server error' });
+      logger.error("FlowController.getFlow error:", error);
+      res.status(500).json({ success: false, error: "Internal server error" });
     }
   }
 
   static async deleteFlow(req: Request, res: Response) {
     try {
       const tenantId = req.user?.tenantId;
-      if (!tenantId) return res.status(401).json({ success: false, error: 'Unauthorized' });
+      if (!tenantId) return res.status(401).json({ success: false, error: "Unauthorized" });
 
       const flowId = req.params.id as string;
       const result = await flowService.deleteFlow(tenantId, flowId);
@@ -86,8 +86,8 @@ export class FlowController {
         res.status(400).json({ success: false, error: result.error?.message });
       }
     } catch (error: any) {
-      logger.error('FlowController.deleteFlow error:', error);
-      res.status(500).json({ success: false, error: 'Internal server error' });
+      logger.error("FlowController.deleteFlow error:", error);
+      res.status(500).json({ success: false, error: "Internal server error" });
     }
   }
 }

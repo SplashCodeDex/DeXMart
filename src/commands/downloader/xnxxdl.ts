@@ -1,9 +1,9 @@
-import { MessageContext } from '../../types/index.js';
-import axios from 'axios';
+import axios from "axios";
+import { MessageContext } from "../../types/index.js";
 
 export default {
-  name: 'xnxxdl',
-  category: 'downloader',
+  name: "xnxxdl",
+  category: "downloader",
   permissions: {
     premium: true,
   },
@@ -13,19 +13,19 @@ export default {
 
     if (!url)
       return await ctx.reply(
-        `${formatter.quote(tools.msg.generateInstruction(['send'], ['text']))}\n${formatter.quote(
+        `${formatter.quote(tools.msg.generateInstruction(["send"], ["text"]))}\n${formatter.quote(
           tools.msg.generateCmdExample(
             ctx.used,
-            'https://www.xnxx.com/video-187eejb8/ova_hentai_evangelion'
-          )
-        )}`
+            "https://www.xnxx.com/video-187eejb8/ova_hentai_evangelion",
+          ),
+        )}`,
       );
 
     const isUrl = tools.cmd.isUrl(url);
     if (!isUrl) return await ctx.reply(config.msg.urlInvalid);
 
     try {
-      const apiUrl = tools.api.createUrl('hang', '/download/xnxx', {
+      const apiUrl = tools.api.createUrl("hang", "/download/xnxx", {
         url,
       });
       const result = (await axios.get(apiUrl)).data.result.files;
@@ -34,7 +34,7 @@ export default {
         video: {
           url: result.high || result.low,
         },
-        mimetype: tools.mime.lookup('mp4'),
+        mimetype: tools.mime.lookup("mp4"),
         caption: formatter.quote(`URL: ${url}`),
         footer: config.msg.footer,
       });

@@ -1,7 +1,7 @@
-import { firebaseService } from '@/persistence/firebase.js';
-import { TemplateSchema, MessageTemplate, Result } from '../types/contracts.js';
-import logger from '../utils/logger.js';
-import crypto from 'crypto';
+import crypto from "crypto";
+import { firebaseService } from "@/persistence/firebase.js";
+import { TemplateSchema, MessageTemplate, Result } from "../types/contracts.js";
+import logger from "../utils/logger.js";
 
 export class TemplateService {
   private static instance: TemplateService;
@@ -17,7 +17,7 @@ export class TemplateService {
 
   public async createTemplate(
     tenantId: string,
-    data: Omit<MessageTemplate, 'id' | 'tenantId' | 'createdAt' | 'updatedAt'>
+    data: Omit<MessageTemplate, "id" | "tenantId" | "createdAt" | "updatedAt">,
   ): Promise<Result<MessageTemplate>> {
     try {
       const id = `tpl_${crypto.randomUUID()}`;
@@ -26,7 +26,7 @@ export class TemplateService {
         id,
         tenantId,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
 
       const validation = TemplateSchema.safeParse(template);
@@ -34,40 +34,54 @@ export class TemplateService {
         return { success: false, error: new Error(validation.error.issues[0].message) };
       }
 
-      await firebaseService.setDoc<'users/{userId}/templates'>('templates', id, template, tenantId);
+      await firebaseService.setDoc<"users/{userId}/templates">("templates", id, template, tenantId);
       return { success: true, data: template };
     } catch (error: any) {
-      logger.error('Error creating template', error);
+      logger.error("Error creating template", error);
       return { success: false, error };
     }
   }
 
   public async getTemplates(tenantId: string): Promise<Result<MessageTemplate[]>> {
     try {
-      const templates = await firebaseService.getCollection<'users/{userId}/templates'>('templates', tenantId);
+      const templates = await firebaseService.getCollection<"users/{userId}/templates">(
+        "templates",
+        tenantId,
+      );
       return { success: true, data: templates };
     } catch (error: any) {
-      logger.error('Error fetching templates', error);
+      logger.error("Error fetching templates", error);
       return { success: false, error };
     }
   }
 
-  public async getTemplate(tenantId: string, templateId: string): Promise<Result<MessageTemplate | null>> {
+  public async getTemplate(
+    tenantId: string,
+    templateId: string,
+  ): Promise<Result<MessageTemplate | null>> {
     try {
-      const template = await firebaseService.getDoc<'users/{userId}/templates'>('templates', templateId, tenantId);
+      const template = await firebaseService.getDoc<"users/{userId}/templates">(
+        "templates",
+        templateId,
+        tenantId,
+      );
       return { success: true, data: template };
     } catch (error: any) {
-      logger.error('Error fetching template', error);
+      logger.error("Error fetching template", error);
       return { success: false, error };
     }
   }
 
   public async deleteTemplate(tenantId: string, templateId: string): Promise<Result<void>> {
     try {
-      await firebaseService.deleteDoc<'users/{userId}/templates'>('templates', templateId, tenantId);
+      await firebaseService.deleteDoc<"users/{userId}/templates">(
+        "templates",
+        templateId,
+        tenantId,
+      );
       return { success: true, data: undefined };
     } catch (error: any) {
-      logger.error('Error deleting template', error);
+      logger.error("Error deleting template", error);
       return { success: false, error };
     }
   }

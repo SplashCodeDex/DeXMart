@@ -1,37 +1,37 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const envSchema = z.object({
-  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+  NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
   PORT: z.coerce.number().default(3001),
   // DATABASE_URL removed as we use Firestore exclusively
 
   // Channel Config
-  CHANNEL_NAME: z.string().default('DeXMart'),
-  CHANNEL_PREFIX: z.string().default('^[.#!?]'),
+  CHANNEL_NAME: z.string().default("DeXMart"),
+  CHANNEL_PREFIX: z.string().default("^[.#!?]"),
   CHANNEL_PHONE_NUMBER: z.string().optional(),
   GROUP_JID: z.string().optional(),
-  NEWSLETTER_JID: z.string().default('120363416372653441@newsletter'),
-  SESSION_ID: z.string().default('default'),
-  TENANT_ID: z.string().default('system'),
+  NEWSLETTER_JID: z.string().default("120363416372653441@newsletter"),
+  SESSION_ID: z.string().default("default"),
+  TENANT_ID: z.string().default("system"),
 
   // NOTE: OWNER_NAME and OWNER_NUMBER are now per-tenant settings in Firestore
   // See: TenantConfigService.getTenantSettings()
 
   // Auth Adapter
-  AUTH_ADAPTER: z.enum(['default', 'mysql', 'mongodb', 'firebase']).default('default'),
+  AUTH_ADAPTER: z.enum(["default", "mysql", "mongodb", "firebase"]).default("default"),
 
   // Firebase
   FIREBASE_PROJECT_ID: z.string().optional(),
   FIREBASE_CLIENT_EMAIL: z.string().optional(),
   FIREBASE_PRIVATE_KEY: z.string().optional(),
-  FIREBASE_TABLE_NAME: z.string().default('DeXMart'),
-  FIREBASE_SESSION: z.string().default('state'),
+  FIREBASE_TABLE_NAME: z.string().default("DeXMart"),
+  FIREBASE_SESSION: z.string().default("state"),
   FIREBASE_SERVICE_ACCOUNT_PATH: z.string().optional(),
   FIREBASE_WEB_API_KEY: z.string().optional(), // Required for Firebase Auth REST API login
 
   // App URL & Frontend
-  NEXT_PUBLIC_APP_URL: z.string().url().default('http://127.0.0.1:3000'),
-  JWT_SECRET: z.string().default('secret'),
+  NEXT_PUBLIC_APP_URL: z.string().url().default("http://127.0.0.1:3000"),
+  JWT_SECRET: z.string().default("secret"),
 
   // Rate Limiting
   RATE_LIMIT_MAX: z.coerce.number().default(100),
@@ -49,7 +49,7 @@ export const envSchema = z.object({
   // System
   USE_SERVER: z.coerce.boolean().default(true),
   CHANNEL_COOLDOWN_MS: z.coerce.number().default(10000),
-  TIME_ZONE: z.string().default('Africa/Accra'),
+  TIME_ZONE: z.string().default("Africa/Accra"),
   REQUIRE_CHANNEL_GROUP_MEMBERSHIP: z.coerce.boolean().default(false),
   REQUIRE_GROUP_SEWA: z.coerce.boolean().default(false),
   UNAVAILABLE_AT_NIGHT: z.coerce.boolean().default(false),
@@ -61,19 +61,19 @@ export const envSchema = z.object({
   SELF_OWNER: z.coerce.boolean().default(false),
   SELF_REPLY: z.coerce.boolean().default(true),
   USE_PAIRING_CODE: z.coerce.boolean().default(false),
-  CUSTOM_PAIRING_CODE: z.string().default('UMBR4L15'),
+  CUSTOM_PAIRING_CODE: z.string().default("UMBR4L15"),
   USE_STORE: z.coerce.boolean().default(false),
 
   // Redis
   REDIS_URL: z.string().optional(),
-  REDIS_HOST: z.string().default('localhost'),
+  REDIS_HOST: z.string().default("localhost"),
   REDIS_PORT: z.coerce.number().default(6379),
   REDIS_PASSWORD: z.string().optional(),
 
   // AI & Gemini
   GOOGLE_GEMINI_API_KEY: z.string().optional(),
   META_AI_KEY: z.string().optional(),
-  GEMINI_MODEL: z.string().default('gemini-pro'),
+  GEMINI_MODEL: z.string().default("gemini-pro"),
   GEMINI_TEMP: z.coerce.number().default(0.7),
   GEMINI_TOP_P: z.coerce.number().default(0.8),
   GEMINI_TOP_K: z.coerce.number().default(40),

@@ -1,6 +1,5 @@
 import { renderHook, act } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-
 import { useSessionsStore, type Checkpoint } from "../store";
 import { useCompaction } from "./useCompaction";
 
@@ -58,7 +57,10 @@ describe("useCompaction", () => {
       await result.current.restore("c1");
     });
 
-    expect(mockCall).toHaveBeenCalledWith("sessions.compaction.restore", { key: "s1", checkpointId: "c1" });
+    expect(mockCall).toHaveBeenCalledWith("sessions.compaction.restore", {
+      key: "s1",
+      checkpointId: "c1",
+    });
   });
 
   it("should handle branch action", async () => {

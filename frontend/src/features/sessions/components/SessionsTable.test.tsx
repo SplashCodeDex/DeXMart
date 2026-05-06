@@ -32,12 +32,14 @@ vi.mock("sonner", () => ({
 }));
 
 // Mock DropdownMenu components to render directly for easier testing
-vi.mock('@/components/ui/dropdown-menu', () => ({
+vi.mock("@/components/ui/dropdown-menu", () => ({
   DropdownMenu: ({ children }: any) => <div data-testid="dropdown-menu">{children}</div>,
   DropdownMenuTrigger: ({ children }: any) => <div data-testid="dropdown-trigger">{children}</div>,
   DropdownMenuContent: ({ children }: any) => <div data-testid="dropdown-content">{children}</div>,
   DropdownMenuItem: ({ children, onClick, className }: any) => (
-    <div onClick={onClick} className={className} role="menuitem">{children}</div>
+    <div onClick={onClick} className={className} role="menuitem">
+      {children}
+    </div>
   ),
 }));
 
@@ -154,7 +156,7 @@ describe("SessionsTable", () => {
 
     // Default sort is updatedAt desc
     let rows = screen.getAllByRole("row").slice(1);
-    expect(rows[0]).toHaveTextContent("Zeta Session"); 
+    expect(rows[0]).toHaveTextContent("Zeta Session");
     expect(rows[1]).toHaveTextContent("Alpha Session");
 
     // Sort by Created (startedAt) asc
@@ -178,10 +180,10 @@ describe("SessionsTable", () => {
   it("triggers delete action from dropdown menu", async () => {
     mockRpcCall.mockResolvedValue({ ok: true });
     render(<SessionsTable />);
-    
+
     const deleteItem = screen.getAllByText("Delete Session")[0];
     fireEvent.click(deleteItem);
-    
+
     expect(mockRpcCall).toHaveBeenCalledWith("sessions.delete", { key: mockSessions[1].sessionId });
     await waitFor(() => expect(toast.success).toHaveBeenCalledWith("Session deleted"));
     expect(mockRefresh).toHaveBeenCalled();
@@ -190,10 +192,10 @@ describe("SessionsTable", () => {
   it("triggers reset action from dropdown menu", async () => {
     mockRpcCall.mockResolvedValue({ ok: true });
     render(<SessionsTable />);
-    
+
     const resetItem = screen.getAllByText("Reset Session")[0];
     fireEvent.click(resetItem);
-    
+
     expect(mockRpcCall).toHaveBeenCalledWith("sessions.reset", { key: mockSessions[1].sessionId });
     await waitFor(() => expect(toast.success).toHaveBeenCalledWith("Session reset"));
   });
@@ -201,11 +203,15 @@ describe("SessionsTable", () => {
   it("triggers compact action from dropdown menu", async () => {
     mockRpcCall.mockResolvedValue({ compacted: true, result: { tokensAfter: 500 } });
     render(<SessionsTable />);
-    
+
     const compactItem = screen.getAllByText("Compact Session")[0];
     fireEvent.click(compactItem);
-    
-    expect(mockRpcCall).toHaveBeenCalledWith("sessions.compact", { key: mockSessions[1].sessionId });
-    await waitFor(() => expect(toast.success).toHaveBeenCalledWith("Session compacted (500 tokens remaining)"));
+
+    expect(mockRpcCall).toHaveBeenCalledWith("sessions.compact", {
+      key: mockSessions[1].sessionId,
+    });
+    await waitFor(() =>
+      expect(toast.success).toHaveBeenCalledWith("Session compacted (500 tokens remaining)"),
+    );
   });
 });

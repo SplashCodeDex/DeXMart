@@ -1,7 +1,7 @@
-import { db, admin } from '../lib/firebase.js';
-import { Timestamp } from 'firebase-admin/firestore';
-import logger from '../utils/logger.js';
-import { Result } from '../types/contracts.js';
+import { Timestamp } from "firebase-admin/firestore";
+import { db, admin } from "../lib/firebase.js";
+import { Result } from "../types/contracts.js";
+import logger from "../utils/logger.js";
 
 /**
  * AI Analytics Service
@@ -12,7 +12,14 @@ import { Result } from '../types/contracts.js';
 interface AIRequestMetric {
   tenantId: string;
   userId: string;
-  requestType: 'chat' | 'image_generation' | 'translation' | 'moderation' | 'batch_analysis' | 'fine_tuning' | 'summary';
+  requestType:
+    | "chat"
+    | "image_generation"
+    | "translation"
+    | "moderation"
+    | "batch_analysis"
+    | "fine_tuning"
+    | "summary";
   success: boolean;
   responseTime: number; // milliseconds
   tokensUsed?: number;
@@ -45,7 +52,7 @@ class AIAnalyticsService {
   async trackAIRequest(metric: AIRequestMetric): Promise<Result<void>> {
     try {
       const tenantPath = `tenants/${metric.tenantId}`;
-      
+
       // Store detailed request log
       await db.collection(`${tenantPath}/ai_requests`).add({
         userId: metric.userId,
@@ -56,11 +63,11 @@ class AIAnalyticsService {
         errorMessage: metric.errorMessage || null,
         confidence: metric.confidence || null,
         toolsUsed: metric.toolsUsed || [],
-        timestamp: Timestamp.fromDate(metric.timestamp)
+        timestamp: Timestamp.fromDate(metric.timestamp),
       });
 
       // Update daily aggregates
-      const date = metric.timestamp.toISOString().split('T')[0];
+      const date = metric.timestamp.toISOString().split("T")[0];
       await this.updateDailyAggregates(metric.tenantId, date, metric);
 
       // Clear cache for this tenant
@@ -68,7 +75,7 @@ class AIAnalyticsService {
 
       return { success: true, data: undefined };
     } catch (error: any) {
-      logger.error('Failed to track AI request', { error: error.message, metric });
+      logger.error("Failed to track AI request", { error: error.message, metric });
       return { success: false, error };
     }
   }
@@ -76,44 +83,56 @@ class AIAnalyticsService {
   /**
    * Update daily AI analytics aggregates
    */
-  private async updateDailyAggregates(tenantId: string, date: string, metric: AIRequestMetric): Promise<void> {
+  private async updateDailyAggregates(
+    tenantId: string,
+    date: string,
+    metric: AIRequestMetric,
+  ): Promise<void> {
     const tenantPath = `tenants/${tenantId}`;
     const aggregateRef = db.doc(`${tenantPath}/ai_analytics_daily/${date}`);
 
     await db.runTransaction(async (transaction) => {
       const doc = await transaction.get(aggregateRef);
-      const existing = (doc.exists ? doc.data() : {
-        date,
-        totalRequests: 0,
-        successfulRequests: 0,
-        failedRequests: 0,
-        totalResponseTime: 0,
-        totalTokens: 0,
-        featureUsage: {},
-        hourlyDistribution: {},
-        updatedAt: new Date()
-      }) as any;
+      const existing = (
+        doc.exists
+          ? doc.data()
+          : {
+              date,
+              totalRequests: 0,
+              successfulRequests: 0,
+              failedRequests: 0,
+              totalResponseTime: 0,
+              totalTokens: 0,
+              featureUsage: {},
+              hourlyDistribution: {},
+              updatedAt: new Date(),
+            }
+      ) as any;
 
       const hour = metric.timestamp.getHours();
       const hourKey = `hour_${hour}`;
 
-      transaction.set(aggregateRef, {
-        date,
-        totalRequests: (existing.totalRequests || 0) + 1,
-        successfulRequests: (existing.successfulRequests || 0) + (metric.success ? 1 : 0),
-        failedRequests: (existing.failedRequests || 0) + (metric.success ? 0 : 1),
-        totalResponseTime: (existing.totalResponseTime || 0) + metric.responseTime,
-        totalTokens: (existing.totalTokens || 0) + (metric.tokensUsed || 0),
-        featureUsage: {
-          ...existing.featureUsage,
-          [metric.requestType]: ((existing.featureUsage as any)?.[metric.requestType] || 0) + 1
+      transaction.set(
+        aggregateRef,
+        {
+          date,
+          totalRequests: (existing.totalRequests || 0) + 1,
+          successfulRequests: (existing.successfulRequests || 0) + (metric.success ? 1 : 0),
+          failedRequests: (existing.failedRequests || 0) + (metric.success ? 0 : 1),
+          totalResponseTime: (existing.totalResponseTime || 0) + metric.responseTime,
+          totalTokens: (existing.totalTokens || 0) + (metric.tokensUsed || 0),
+          featureUsage: {
+            ...existing.featureUsage,
+            [metric.requestType]: ((existing.featureUsage as any)?.[metric.requestType] || 0) + 1,
+          },
+          hourlyDistribution: {
+            ...existing.hourlyDistribution,
+            [hourKey]: ((existing.hourlyDistribution as any)?.[hourKey] || 0) + 1,
+          },
+          updatedAt: new Date(),
         },
-        hourlyDistribution: {
-          ...existing.hourlyDistribution,
-          [hourKey]: ((existing.hourlyDistribution as any)?.[hourKey] || 0) + 1
-        },
-        updatedAt: new Date()
-      }, { merge: true });
+        { merge: true },
+      );
     });
   }
 
@@ -124,15 +143,15 @@ class AIAnalyticsService {
     tenantId: string,
     userId: string | null,
     timeRange: string,
-    metrics: string[]
+    metrics: string[],
   ): Promise<Result<AIPerformanceMetrics>> {
     try {
       // Check cache first
-      const cacheKey = `${tenantId}:${userId || 'all'}:${timeRange}`;
+      const cacheKey = `${tenantId}:${userId || "all"}:${timeRange}`;
       const cached = this.metricsCache.get(cacheKey);
-      
+
       if (cached && Date.now() - cached.timestamp < this.cacheTTL) {
-        logger.info('Returning cached AI analytics', { tenantId, timeRange });
+        logger.info("Returning cached AI analytics", { tenantId, timeRange });
         return { success: true, data: cached.data };
       }
 
@@ -141,21 +160,22 @@ class AIAnalyticsService {
       const tenantPath = `tenants/${tenantId}`;
 
       // Query AI requests within time range
-      let query = db.collection(`${tenantPath}/ai_requests`)
-        .where('timestamp', '>=', Timestamp.fromDate(startDate))
-        .where('timestamp', '<=', Timestamp.fromDate(endDate));
+      let query = db
+        .collection(`${tenantPath}/ai_requests`)
+        .where("timestamp", ">=", Timestamp.fromDate(startDate))
+        .where("timestamp", "<=", Timestamp.fromDate(endDate));
 
       if (userId) {
-        query = query.where('userId', '==', userId);
+        query = query.where("userId", "==", userId);
       }
 
       const snapshot = await query.get();
-      const requests = snapshot.docs.map(doc => doc.data());
+      const requests = snapshot.docs.map((doc) => doc.data());
 
       if (requests.length === 0) {
         return {
           success: true,
-          data: this.getEmptyMetrics(timeRange)
+          data: this.getEmptyMetrics(timeRange),
         };
       }
 
@@ -165,12 +185,16 @@ class AIAnalyticsService {
       // Cache the results
       this.metricsCache.set(cacheKey, {
         data: analytics,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
 
       return { success: true, data: analytics };
     } catch (error: any) {
-      logger.error('Failed to get AI performance analytics', { error: error.message, tenantId, timeRange });
+      logger.error("Failed to get AI performance analytics", {
+        error: error.message,
+        tenantId,
+        timeRange,
+      });
       return { success: false, error };
     }
   }
@@ -180,7 +204,7 @@ class AIAnalyticsService {
    */
   private calculateMetrics(requests: any[], timeRange: string): AIPerformanceMetrics {
     const totalRequests = requests.length;
-    const successfulRequests = requests.filter(r => r.success).length;
+    const successfulRequests = requests.filter((r) => r.success).length;
     const failedRequests = totalRequests - successfulRequests;
 
     // Average response time
@@ -195,8 +219,8 @@ class AIAnalyticsService {
 
     // Feature usage
     const featureUsage: Record<string, number> = {};
-    requests.forEach(r => {
-      const type = r.requestType || 'unknown';
+    requests.forEach((r) => {
+      const type = r.requestType || "unknown";
       featureUsage[type] = (featureUsage[type] || 0) + 1;
     });
 
@@ -208,19 +232,20 @@ class AIAnalyticsService {
 
     // User satisfaction (based on success rate and confidence)
     const confidenceScores = requests
-      .filter(r => r.success && r.confidence)
-      .map(r => r.confidence);
-    
-    const avgConfidence = confidenceScores.length > 0
-      ? confidenceScores.reduce((sum, c) => sum + c, 0) / confidenceScores.length
-      : 0;
+      .filter((r) => r.success && r.confidence)
+      .map((r) => r.confidence);
+
+    const avgConfidence =
+      confidenceScores.length > 0
+        ? confidenceScores.reduce((sum, c) => sum + c, 0) / confidenceScores.length
+        : 0;
 
     const userSatisfaction = (successRate / 100) * 0.7 + avgConfidence * 0.3; // Weighted average
     const userSatisfactionScore = parseFloat((userSatisfaction * 5).toFixed(1)); // Scale to 0-5
 
     // Hourly distribution
     const hourlyDistribution: Record<string, number> = {};
-    requests.forEach(r => {
+    requests.forEach((r) => {
       const hour = new Date(r.timestamp.toDate()).getHours();
       const hourKey = `hour_${hour}`;
       hourlyDistribution[hourKey] = (hourlyDistribution[hourKey] || 0) + 1;
@@ -236,7 +261,7 @@ class AIAnalyticsService {
       timeRange,
       generatedAt: new Date().toISOString(),
       featureBreakdown: featureUsage,
-      hourlyDistribution
+      hourlyDistribution,
     };
   }
 
@@ -249,10 +274,10 @@ class AIAnalyticsService {
     // Assumptions:
     // 1. Average human labor cost per "task" (request) = $0.50
     // 2. AI Cost per 1k tokens = $0.01 (blended rate)
-    const humanLaborCost = totalRequests * 0.50;
+    const humanLaborCost = totalRequests * 0.5;
     const aiTokenCost = (totalTokens / 1000) * 0.01;
     const estimatedSavings = humanLaborCost - aiTokenCost;
-    
+
     // Return floor of 0 to avoid negative ROI on small sample sizes
     return Math.max(0, parseFloat(estimatedSavings.toFixed(2)));
   }
@@ -263,9 +288,9 @@ class AIAnalyticsService {
    */
   public calculateEfficiency(successRatePercent: number, avgResponseTimeSec: number): number {
     const maxAcceptableLatency = 10.0; // 10 seconds is the threshold for "low efficiency"
-    const latencyFactor = Math.max(0, 1 - (avgResponseTimeSec / maxAcceptableLatency));
+    const latencyFactor = Math.max(0, 1 - avgResponseTimeSec / maxAcceptableLatency);
     const efficiency = (successRatePercent / 100) * latencyFactor * 100;
-    
+
     return Math.min(100, parseFloat(efficiency.toFixed(1)));
   }
 
@@ -283,7 +308,7 @@ class AIAnalyticsService {
       timeRange,
       generatedAt: new Date().toISOString(),
       featureBreakdown: {},
-      hourlyDistribution: {}
+      hourlyDistribution: {},
     };
   }
 
@@ -295,16 +320,16 @@ class AIAnalyticsService {
     const startDate = new Date();
 
     switch (timeRange) {
-      case '24h':
+      case "24h":
         startDate.setHours(startDate.getHours() - 24);
         break;
-      case '7d':
+      case "7d":
         startDate.setDate(startDate.getDate() - 7);
         break;
-      case '30d':
+      case "30d":
         startDate.setDate(startDate.getDate() - 30);
         break;
-      case '90d':
+      case "90d":
         startDate.setDate(startDate.getDate() - 90);
         break;
       default:
@@ -319,14 +344,14 @@ class AIAnalyticsService {
    */
   private invalidateCache(tenantId: string): void {
     const keysToDelete: string[] = [];
-    
+
     this.metricsCache.forEach((_, key) => {
       if (key.startsWith(`${tenantId}:`)) {
         keysToDelete.push(key);
       }
     });
 
-    keysToDelete.forEach(key => this.metricsCache.delete(key));
+    keysToDelete.forEach((key) => this.metricsCache.delete(key));
   }
 
   /**
@@ -342,7 +367,7 @@ class AIAnalyticsService {
       }
     });
 
-    keysToDelete.forEach(key => this.metricsCache.delete(key));
+    keysToDelete.forEach((key) => this.metricsCache.delete(key));
   }
 }
 

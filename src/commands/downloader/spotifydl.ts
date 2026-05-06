@@ -1,10 +1,10 @@
-import { MessageContext } from '../../types/index.js';
-import axios from 'axios';
+import axios from "axios";
+import { MessageContext } from "../../types/index.js";
 
 export default {
-  name: 'spotifydl',
-  aliases: ['spotidl'],
-  category: 'downloader',
+  name: "spotifydl",
+  aliases: ["spotidl"],
+  category: "downloader",
   permissions: {
     coin: 10,
   },
@@ -14,19 +14,19 @@ export default {
 
     if (!url)
       return await ctx.reply(
-        `${formatter.quote(tools.msg.generateInstruction(['send'], ['text']))}\n${formatter.quote(
+        `${formatter.quote(tools.msg.generateInstruction(["send"], ["text"]))}\n${formatter.quote(
           tools.msg.generateCmdExample(
             ctx.used,
-            'https://open.spotify.com/track/5RhWszHMSKzb7KiXk4Ae0M'
-          )
-        )}`
+            "https://open.spotify.com/track/5RhWszHMSKzb7KiXk4Ae0M",
+          ),
+        )}`,
       );
 
     const isUrl = tools.cmd.isUrl(url);
     if (!isUrl) return await ctx.reply(config.msg.urlInvalid);
 
     try {
-      const apiUrl = tools.api.createUrl('diibot', '/api/download/spotify', {
+      const apiUrl = tools.api.createUrl("diibot", "/api/download/spotify", {
         url,
       });
       const result = (await axios.get(apiUrl)).data.result.audio;
@@ -35,7 +35,7 @@ export default {
         audio: {
           url: result,
         },
-        mimetype: tools.mime.lookup('mp3'),
+        mimetype: tools.mime.lookup("mp3"),
       });
     } catch (error: any) {
       await tools.cmd.handleError(ctx, error, true);

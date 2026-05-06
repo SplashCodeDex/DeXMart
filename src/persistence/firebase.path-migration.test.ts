@@ -89,7 +89,9 @@ describe("Task 5.9 — Firestore paths use users/{userId}/... (not tenants/)", (
   });
 
   it("setDoc('campaigns', id, data, userId) resolves to users/{userId}/campaigns", async () => {
-    await firebaseService.setDoc("campaigns", "camp-1", { id: "camp-1" } as any, USER_ID).catch(() => {});
+    await firebaseService
+      .setDoc("campaigns", "camp-1", { id: "camp-1" } as any, USER_ID)
+      .catch(() => {});
     expect(lastPath()).toBe(`users/${USER_ID}/campaigns`);
     expect(lastPath()).not.toContain("tenants/");
   });
@@ -101,10 +103,9 @@ describe("Task 5.9 — Firestore paths use users/{userId}/... (not tenants/)", (
   });
 
   it("nested auth path agents/{agentId}/channels/{chanId}/auth resolves under users/", async () => {
-    await firebaseService.getCollection(
-      "agents/agent-1/channels/chan-1/auth",
-      USER_ID,
-    ).catch(() => {});
+    await firebaseService
+      .getCollection("agents/agent-1/channels/chan-1/auth", USER_ID)
+      .catch(() => {});
     expect(lastPath()).toBe(`users/${USER_ID}/agents/agent-1/channels/chan-1/auth`);
     expect(lastPath()).not.toContain("tenants/");
   });

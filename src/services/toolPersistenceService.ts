@@ -1,6 +1,6 @@
-import { cacheService } from './cache.js';
-import logger from '../utils/logger.js';
-import { Result } from '../types/index.js';
+import { Result } from "../types/index.js";
+import logger from "../utils/logger.js";
+import { cacheService } from "./cache.js";
 
 /**
  * ToolPersistenceService
@@ -22,21 +22,33 @@ export class ToolPersistenceService {
   /**
    * Store a tool result for later use in the same session
    */
-  async storeResult(scope: { tenantId: string, platform: string, chatId: string }, toolName: string, result: any): Promise<void> {
+  async storeResult(
+    scope: { tenantId: string; platform: string; chatId: string },
+    toolName: string,
+    result: any,
+  ): Promise<void> {
     const key = this.createKey(scope, toolName);
-    await cacheService.set(key, {
-      tool: toolName,
-      data: result,
-      timestamp: Date.now()
-    }, this.TTL);
-    
+    await cacheService.set(
+      key,
+      {
+        tool: toolName,
+        data: result,
+        timestamp: Date.now(),
+      },
+      this.TTL,
+    );
+
     logger.info(`Persisted tool result for ${toolName} in session ${scope.chatId}`);
   }
 
   /**
    * Retrieve all recent tool results for a session
    */
-  async getSessionResults(scope: { tenantId: string, platform: string, chatId: string }): Promise<any[]> {
+  async getSessionResults(scope: {
+    tenantId: string;
+    platform: string;
+    chatId: string;
+  }): Promise<any[]> {
     // This is a bit tricky with Redis/CacheService since we don't have a 'search by pattern' easily
     // For now, we'll store a list of keys for the session
     const listKey = `session:tools:${scope.tenantId}:${scope.platform}:${scope.chatId}`;
@@ -57,11 +69,14 @@ export class ToolPersistenceService {
   /**
    * Register a new result key to the session's key list
    */
-  async registerKey(scope: { tenantId: string, platform: string, chatId: string }, toolKey: string): Promise<void> {
+  async registerKey(
+    scope: { tenantId: string; platform: string; chatId: string },
+    toolKey: string,
+  ): Promise<void> {
     const listKey = `session:tools:${scope.tenantId}:${scope.platform}:${scope.chatId}`;
     const keyListResult = await cacheService.get<string[]>(listKey);
     const keys = keyListResult.success && keyListResult.data ? keyListResult.data : [];
-    
+
     if (!keys.includes(toolKey)) {
       keys.push(toolKey);
       // Keep only last 10 tool results to avoid bloat
@@ -70,7 +85,10 @@ export class ToolPersistenceService {
     }
   }
 
-  private createKey(scope: { tenantId: string, platform: string, chatId: string }, toolName: string): string {
+  private createKey(
+    scope: { tenantId: string; platform: string; chatId: string },
+    toolName: string,
+  ): string {
     return `tool:res:${scope.tenantId}:${scope.platform}:${scope.chatId}:${toolName}`;
   }
 }

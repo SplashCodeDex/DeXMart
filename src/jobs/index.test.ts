@@ -1,14 +1,14 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import JobRegistry from './index.js';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import JobRegistry from "./index.js";
 
 // Hoist mock object so it's available inside vi.mock factory (which is hoisted to top of file)
 const mockJobQueueService = vi.hoisted(() => ({
   process: vi.fn(),
 }));
 
-vi.mock('../services/jobQueue.js', () => {
+vi.mock("../services/jobQueue.js", () => {
   return {
-    JobQueueService: vi.fn().mockImplementation(function() {
+    JobQueueService: vi.fn().mockImplementation(function () {
       return mockJobQueueService;
     }),
     jobQueueService: mockJobQueueService,
@@ -16,9 +16,9 @@ vi.mock('../services/jobQueue.js', () => {
   };
 });
 
-vi.mock('./aiProcessor.js', () => {
+vi.mock("./aiProcessor.js", () => {
   return {
-    default: vi.fn().mockImplementation(function() {
+    default: vi.fn().mockImplementation(function () {
       return {
         processContentGeneration: vi.fn(),
         processBatchAnalysis: vi.fn(),
@@ -26,13 +26,13 @@ vi.mock('./aiProcessor.js', () => {
         processFineTuningData: vi.fn(),
         processPerformanceAnalytics: vi.fn(),
       };
-    })
+    }),
   };
 });
 
-vi.mock('./mediaProcessor.js', () => {
+vi.mock("./mediaProcessor.js", () => {
   return {
-    default: vi.fn().mockImplementation(function() {
+    default: vi.fn().mockImplementation(function () {
       return {
         processImageOptimization: vi.fn(),
         processBatchImageProcessing: vi.fn(),
@@ -41,11 +41,11 @@ vi.mock('./mediaProcessor.js', () => {
         processMediaCleanup: vi.fn(),
         processMediaAnalytics: vi.fn(),
       };
-    })
+    }),
   };
 });
 
-vi.mock('../utils/logger.js', () => ({
+vi.mock("../utils/logger.js", () => ({
   default: {
     info: vi.fn(),
     error: vi.fn(),
@@ -53,7 +53,7 @@ vi.mock('../utils/logger.js', () => ({
   },
 }));
 
-describe('JobRegistry', () => {
+describe("JobRegistry", () => {
   let jobRegistry: JobRegistry;
 
   beforeEach(() => {
@@ -61,13 +61,16 @@ describe('JobRegistry', () => {
     jobRegistry = new JobRegistry();
   });
 
-  it('should initialize and register all processors', async () => {
+  it("should initialize and register all processors", async () => {
     await jobRegistry.initialize(mockJobQueueService as any);
 
     // Expect AI processors to be registered
-    expect(mockJobQueueService.process).toHaveBeenCalledWith('ai-processing', expect.any(Function));
-    
+    expect(mockJobQueueService.process).toHaveBeenCalledWith("ai-processing", expect.any(Function));
+
     // Expect Media processors to be registered
-    expect(mockJobQueueService.process).toHaveBeenCalledWith('media-processing', expect.any(Function));
+    expect(mockJobQueueService.process).toHaveBeenCalledWith(
+      "media-processing",
+      expect.any(Function),
+    );
   });
 });

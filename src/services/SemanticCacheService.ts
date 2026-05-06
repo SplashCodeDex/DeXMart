@@ -1,7 +1,7 @@
-import { cacheService } from './cache.js';
-import { embeddingService } from './embeddingService.js';
-import logger from '../utils/logger.js';
-import { Result } from '../types/index.js';
+import { Result } from "../types/index.js";
+import logger from "../utils/logger.js";
+import { cacheService } from "./cache.js";
+import { embeddingService } from "./embeddingService.js";
 
 interface CachedIntent {
   intent: string;
@@ -12,10 +12,10 @@ interface CachedIntent {
 
 export class SemanticCacheService {
   private static instance: SemanticCacheService;
-  private cacheKeyPrefix = 'semantic:intent:';
+  private cacheKeyPrefix = "semantic:intent:";
   private similarityThreshold = 0.92; // High threshold for cache hits
 
-  private constructor() { }
+  private constructor() {}
 
   public static getInstance(): SemanticCacheService {
     if (!SemanticCacheService.instance) {
@@ -36,7 +36,7 @@ export class SemanticCacheService {
         intent: query,
         embedding: embeddingRes.data,
         response: result,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
 
       // We store a list of recent entries in Redis list or a set
@@ -45,15 +45,14 @@ export class SemanticCacheService {
       // Since we don't have a Vector Redis module here, we'll store it in a simplified way:
       // We map the *text* hash to the entry for exact matches, and use HNSW (Ruflo) for fuzzy.
       // BUT, fulfilling the prompt "Redis Semantic Cache":
-      
+
       // Strategy: Retrieve all cached keys (expensive) OR use a bucket strategy.
       // Better Strategy: Use Ruflo's HNSW index as the "Pointer" to the Redis Cache Key.
-      
-      const key = `${this.cacheKeyPrefix}${Buffer.from(query).toString('base64').substring(0, 32)}`;
+
+      const key = `${this.cacheKeyPrefix}${Buffer.from(query).toString("base64").substring(0, 32)}`;
       await cacheService.set(key, cacheEntry, ttlSeconds);
-      
     } catch (error) {
-      logger.warn('SemanticCacheService.cacheResult failed', error);
+      logger.warn("SemanticCacheService.cacheResult failed", error);
     }
   }
 
@@ -63,11 +62,12 @@ export class SemanticCacheService {
   async retrieve(query: string): Promise<Result<any | null>> {
     try {
       const embeddingRes = await embeddingService.generateEmbedding(query);
-      if (!embeddingRes.success || !embeddingRes.data) return { success: false, error: new Error('Embedding failed') };
+      if (!embeddingRes.success || !embeddingRes.data)
+        return { success: false, error: new Error("Embedding failed") };
       const queryVec = embeddingRes.data;
 
       // 1. Check exact match first (Fastest)
-      const exactKey = `${this.cacheKeyPrefix}${Buffer.from(query).toString('base64').substring(0, 32)}`;
+      const exactKey = `${this.cacheKeyPrefix}${Buffer.from(query).toString("base64").substring(0, 32)}`;
       const exactHit = await cacheService.get<CachedIntent>(exactKey);
       if (exactHit.success && exactHit.data) {
         logger.info(`[SemanticCache] Exact hit for "${query}"`);
@@ -79,12 +79,11 @@ export class SemanticCacheService {
       // Here, we'll scan keys with the prefix (Limit to 50 for performance)
       const keys = await cacheService.keys(`${this.cacheKeyPrefix}*`);
       // Note: cacheService.keys might not exist on the wrapper, checking cache.ts...
-      
-      // Fallback: If we can't scan, we skip fuzzy semantic cache for this iteration 
-      // and rely on the exact match or Ruflo's AgentDB.
-      
-      return { success: true, data: null };
 
+      // Fallback: If we can't scan, we skip fuzzy semantic cache for this iteration
+      // and rely on the exact match or Ruflo's AgentDB.
+
+      return { success: true, data: null };
     } catch (error: any) {
       return { success: false, error };
     }

@@ -1,6 +1,6 @@
-import { test } from 'vitest';
+import { test } from "vitest";
 
-test.skip('UPSTREAM PENDING SYNC: src/infra/system-run-command.contract.test.ts', () => {});
+test.skip("UPSTREAM PENDING SYNC: src/infra/system-run-command.contract.test.ts", () => {});
 
 /* ORIGINAL TEST CODE COMMENTED OUT TO PREVENT IMPORT/INIT ERRORS */
 // import fs from "node:fs";
@@ -8,11 +8,11 @@ test.skip('UPSTREAM PENDING SYNC: src/infra/system-run-command.contract.test.ts'
 // import { fileURLToPath } from "node:url";
 // import { describe, expect, test } from "vitest";
 // import { resolveSystemRunCommand } from "./system-run-command.js";
-// 
+//
 // type ContractFixture = {
 //   cases: ContractCase[];
 // };
-// 
+//
 // type ContractCase = {
 //   name: string;
 //   command: string[];
@@ -23,13 +23,13 @@ test.skip('UPSTREAM PENDING SYNC: src/infra/system-run-command.contract.test.ts'
 //     errorContains?: string;
 //   };
 // };
-// 
+//
 // const fixturePath = path.resolve(
 //   path.dirname(fileURLToPath(import.meta.url)),
 //   "../../test/fixtures/system-run-command-contract.json",
 // );
 // const fixture = JSON.parse(fs.readFileSync(fixturePath, "utf8")) as ContractFixture;
-// 
+//
 // describe.skip("[UPSTREAM PENDING SYNC] system-run command contract fixtures", () => {
 //   for (const entry of fixture.cases) {
 //     test(entry.name, () => {
@@ -37,7 +37,7 @@ test.skip('UPSTREAM PENDING SYNC: src/infra/system-run-command.contract.test.ts'
 //         command: entry.command,
 //         rawCommand: entry.rawCommand,
 //       });
-// 
+//
 //       if (!entry.expected.valid) {
 //         expect(result.ok).toBe(false);
 //         if (result.ok) {
@@ -48,7 +48,7 @@ test.skip('UPSTREAM PENDING SYNC: src/infra/system-run-command.contract.test.ts'
 //         }
 //         return;
 //       }
-// 
+//
 //       expect(result.ok).toBe(true);
 //       if (!result.ok) {
 //         throw new Error(`unexpected validation failure: ${result.message}`);
@@ -57,4 +57,4 @@ test.skip('UPSTREAM PENDING SYNC: src/infra/system-run-command.contract.test.ts'
 //     });
 //   }
 // });
-// 
+//

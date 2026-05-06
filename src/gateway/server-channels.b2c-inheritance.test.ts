@@ -186,13 +186,23 @@ describe("Task 5.7.2 — Stripe billing gate is generic (not channel-specific)",
   };
 
   it("blocks startChannel for 'discord' when plan limit exceeded", async () => {
-    installTestRegistry(createTestPlugin("discord", vi.fn(async () => {})));
+    installTestRegistry(
+      createTestPlugin(
+        "discord",
+        vi.fn(async () => {}),
+      ),
+    );
     const manager = createChannelManager(makeOpts("discord", { billingGuard: blockedGuard }));
     await expect(manager.startChannel("discord" as ChannelId)).rejects.toThrow(/plan limit/i);
   });
 
   it("blocks startChannel for 'telegram' when plan limit exceeded", async () => {
-    installTestRegistry(createTestPlugin("telegram", vi.fn(async () => {})));
+    installTestRegistry(
+      createTestPlugin(
+        "telegram",
+        vi.fn(async () => {}),
+      ),
+    );
     const manager = createChannelManager(makeOpts("telegram", { billingGuard: blockedGuard }));
     await expect(manager.startChannel("telegram" as ChannelId)).rejects.toThrow(/plan limit/i);
   });
@@ -222,7 +232,9 @@ describe("Task 5.7.2 — Stripe billing gate is generic (not channel-specific)",
       createTestPlugin("telegram", telegramStart),
     );
 
-    const discordManager = createChannelManager(makeOpts("discord", { billingGuard: blockedGuard }));
+    const discordManager = createChannelManager(
+      makeOpts("discord", { billingGuard: blockedGuard }),
+    );
     const telegramManager = createChannelManager(
       makeOpts("telegram", { billingGuard: blockedGuard }),
     );

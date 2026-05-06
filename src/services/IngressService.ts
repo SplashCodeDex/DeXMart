@@ -1,19 +1,19 @@
-import { proto } from 'baileys';
-import logger from '@/utils/logger.js';
-import { webhookService } from './webhookService.js';
-import { channelService } from './ChannelService.js';
-import { agentService } from './AgentService.js';
-import { createChannelContext } from '../utils/createChannelContext.js';
-import { GlobalContext } from '../types/index.js';
-import { tenantConfigService } from './tenantConfigService.js';
-import analyticsService from './analytics.js';
-import { Agent } from '../types/contracts.js';
-import { flowService } from './flowService.js';
-import { flowEngine } from './flowEngine.js';
-import { automationService } from './automationService.js';
-import { CommonMessage } from '../types/omnichannel.js';
-import { deduplicationService } from './deduplicationService.js';
-import { MessageNormalizer } from '../utils/messageNormalizer.js';
+import { proto } from "baileys";
+import logger from "@/utils/logger.js";
+import { Agent } from "../types/contracts.js";
+import { GlobalContext } from "../types/index.js";
+import { CommonMessage } from "../types/omnichannel.js";
+import { createChannelContext } from "../utils/createChannelContext.js";
+import { MessageNormalizer } from "../utils/messageNormalizer.js";
+import { agentService } from "./AgentService.js";
+import analyticsService from "./analytics.js";
+import { automationService } from "./automationService.js";
+import { channelService } from "./ChannelService.js";
+import { deduplicationService } from "./deduplicationService.js";
+import { flowEngine } from "./flowEngine.js";
+import { flowService } from "./flowService.js";
+import { tenantConfigService } from "./tenantConfigService.js";
+import { webhookService } from "./webhookService.js";
 
 /**
  * Ingress Service
@@ -28,7 +28,7 @@ import { MessageNormalizer } from '../utils/messageNormalizer.js';
 export class IngressService {
   private static instance: IngressService;
 
-  private constructor() { }
+  private constructor() {}
 
   public static getInstance(): IngressService {
     if (!IngressService.instance) {
@@ -41,20 +41,28 @@ export class IngressService {
    * Process an incoming message from any channel using the CommonMessage format.
    * This is the preferred way to handle messages in the 2026 Omnichannel architecture.
    */
-  async handleCommonMessage(tenantId: string, channelId: string, message: CommonMessage, context: GlobalContext, fullPath?: string): Promise<void> {
+  async handleCommonMessage(
+    tenantId: string,
+    channelId: string,
+    message: CommonMessage,
+    context: GlobalContext,
+    fullPath?: string,
+  ): Promise<void> {
     try {
       // MASTERMIND Resilience: Deduplication & Clock Skew (Scenario 6)
       if (!deduplicationService.shouldProcess(message.id, message.timestamp)) {
         return;
       }
 
-      logger.info(`[Ingress] Common message from ${message.platform} (${channelId}) for tenant ${tenantId}`);
+      logger.info(
+        `[Ingress] Common message from ${message.platform} (${channelId}) for tenant ${tenantId}`,
+      );
 
       let activeAgent: Agent | null = null;
 
       // 1. Resolve Agent from Path
-      if (fullPath && fullPath.includes('/agents/')) {
-        const parts = fullPath.split('/');
+      if (fullPath && fullPath.includes("/agents/")) {
+        const parts = fullPath.split("/");
         const agentId = parts[3];
         const agentResult = await agentService.getAgent(tenantId, agentId);
         activeAgent = agentResult.success ? agentResult.data : null;
@@ -63,28 +71,32 @@ export class IngressService {
       // 2. Prepare AI Context (Decoupled from platform-specifics)
       const channelResult = await channelService.getChannel(tenantId, channelId, activeAgent?.id);
       if (!channelResult.success) {
-          logger.warn(`[Ingress] Channel ${channelId} not found in Firestore, using mock instance.`);
+        logger.warn(`[Ingress] Channel ${channelId} not found in Firestore, using mock instance.`);
       }
-      
-      const channelInstance = channelResult.success ? channelResult.data : { tenantId, channelId } as any;
+
+      const channelInstance = channelResult.success
+        ? channelResult.data
+        : ({ tenantId, channelId } as any);
       const aiCtx = await createChannelContext(channelInstance, message, context);
 
-      const isAiEnabled = await tenantConfigService.isFeatureEnabled(tenantId, 'aiEnabled');
+      const isAiEnabled = await tenantConfigService.isFeatureEnabled(tenantId, "aiEnabled");
 
       // --- AUTOMATION TRIGGER (Priority 0) ---
       const automationsResult = await automationService.listAutomations(tenantId);
       if (automationsResult.success) {
-        const activeAutos = automationsResult.data.filter(a => a.isActive && a.trigger.type === 'message_received');
+        const activeAutos = automationsResult.data.filter(
+          (a) => a.isActive && a.trigger.type === "message_received",
+        );
         for (const auto of activeAutos) {
           const keyword = auto.trigger.config?.keyword;
-          const text = aiCtx.body || '';
+          const text = aiCtx.body || "";
           if (!keyword || text.toLowerCase().includes(keyword.toLowerCase())) {
             logger.info(`[Ingress] Triggering Automation: ${auto.name} (${auto.id})`);
-            
+
             // MASTERMIND Fix: Execute Automation Actions
             await automationService.executeAutomation(tenantId, auto.id, aiCtx);
-            
-            analyticsService.trackMessage(tenantId, 'received');
+
+            analyticsService.trackMessage(tenantId, "received");
             return; // Exit early as automation handled it
           }
         }
@@ -97,20 +109,20 @@ export class IngressService {
           const executed = await flowEngine.executeFlow(flow, aiCtx);
           if (executed) {
             logger.info(`[Ingress] Message handled by Visual Flow: ${flow.id}`);
-            await webhookService.dispatch(tenantId, 'flow.executed', {
+            await webhookService.dispatch(tenantId, "flow.executed", {
               channelId,
               flowId: flow.id,
               sender: aiCtx.sender?.jid,
-              timestamp: Date.now()
+              timestamp: Date.now(),
             });
-            analyticsService.trackMessage(tenantId, 'received');
+            analyticsService.trackMessage(tenantId, "received");
             return; // Exit early
           }
         }
       }
 
       // --- AGENT MODE (Priority 2) ---
-      if (activeAgent && activeAgent.id !== 'system_default' && isAiEnabled && context.unifiedAI) {
+      if (activeAgent && activeAgent.id !== "system_default" && isAiEnabled && context.unifiedAI) {
         logger.info(`[Ingress] Routing ${message.platform} message to Agent: ${activeAgent.name}`);
         // Inject the path into metadata for Agent hierarchy awareness
         if (!message.metadata) message.metadata = {};
@@ -119,10 +131,10 @@ export class IngressService {
         await (context.unifiedAI as any).processMessage(channelInstance, aiCtx);
       } else {
         logger.info(`[Ingress] Webhook forwarding for ${message.platform} message.`);
-        await webhookService.dispatch(tenantId, 'message.received', message);
+        await webhookService.dispatch(tenantId, "message.received", message);
       }
 
-      analyticsService.trackMessage(tenantId, 'received');
+      analyticsService.trackMessage(tenantId, "received");
     } catch (error: unknown) {
       logger.error(`IngressService.handleCommonMessage error:`, error);
     }
@@ -133,7 +145,13 @@ export class IngressService {
    * @param fullPath Optional full Firestore path for path-aware routing (tenants/T/agents/A/channels/C)
    * @deprecated Use handleCommonMessage for new platform integrations.
    */
-  async handleMessage(tenantId: string, channelId: string, message: proto.IWebMessageInfo, context: GlobalContext, fullPath?: string): Promise<void> {
+  async handleMessage(
+    tenantId: string,
+    channelId: string,
+    message: proto.IWebMessageInfo,
+    context: GlobalContext,
+    fullPath?: string,
+  ): Promise<void> {
     try {
       // MASTERMIND Resilience: Deduplication & Clock Skew (Scenario 6)
       const msgId = MessageNormalizer.getId(message);
@@ -142,14 +160,16 @@ export class IngressService {
         return;
       }
 
-      logger.info(`Processing message for channel ${channelId} (Tenant: ${tenantId}, Path: ${fullPath || 'flat'})`);
+      logger.info(
+        `Processing message for channel ${channelId} (Tenant: ${tenantId}, Path: ${fullPath || "flat"})`,
+      );
 
       let activeAgent: Agent | null = null;
 
       // 1. Resolve Agent (Architecture Alignment)
-      if (fullPath && fullPath.includes('/agents/')) {
+      if (fullPath && fullPath.includes("/agents/")) {
         // Path-based resolution: tenants/{tenantId}/agents/{agentId}/channels/{channelId}
-        const parts = fullPath.split('/');
+        const parts = fullPath.split("/");
         const agentId = parts[3];
         const agentResult = await agentService.getAgent(tenantId, agentId);
         activeAgent = agentResult.success ? agentResult.data : null;
@@ -157,22 +177,32 @@ export class IngressService {
         // Fallback: Resolve via Channel mapping (Surgical Migration Safety)
         const channelResult = await channelService.getChannel(tenantId, channelId); // Defaults to system_default agent if not nested
         if (channelResult.success && channelResult.data.assignedAgentId) {
-          const agentResult = await agentService.getAgent(tenantId, channelResult.data.assignedAgentId);
+          const agentResult = await agentService.getAgent(
+            tenantId,
+            channelResult.data.assignedAgentId,
+          );
           activeAgent = agentResult.success ? agentResult.data : null;
         }
       }
 
       // 2. Prepare AI Context
-      const aiCtx = await createChannelContext({ tenantId, channelId: channelId } as any, message, context);
+      const aiCtx = await createChannelContext(
+        { tenantId, channelId: channelId } as any,
+        message,
+        context,
+      );
 
       // --- AUTOMATION TRIGGER (Priority 0) ---
       // Check for automations that trigger on message_received
       const automationsResult = await automationService.listAutomations(tenantId);
       if (automationsResult.success) {
-        const activeAutos = automationsResult.data.filter(a => a.isActive && a.trigger.type === 'message_received');
+        const activeAutos = automationsResult.data.filter(
+          (a) => a.isActive && a.trigger.type === "message_received",
+        );
         for (const auto of activeAutos) {
           const keyword = auto.trigger.config?.keyword;
-          const text = aiCtx.message?.conversation || aiCtx.message?.extendedTextMessage?.text || '';
+          const text =
+            aiCtx.message?.conversation || aiCtx.message?.extendedTextMessage?.text || "";
           if (!keyword || text.toLowerCase().includes(keyword.toLowerCase())) {
             logger.info(`Triggering Automation: ${auto.name} (${auto.id})`);
             // Automation execution would involve iterating over actions
@@ -189,24 +219,24 @@ export class IngressService {
           if (executed) {
             logger.info(`Message handled by Visual Flow: ${flow.id}`);
             // Webhook Dispatch for flow execution
-            await webhookService.dispatch(tenantId, 'flow.executed', {
+            await webhookService.dispatch(tenantId, "flow.executed", {
               channelId,
               flowId: flow.id,
               sender: aiCtx.sender?.jid,
-              timestamp: Date.now()
+              timestamp: Date.now(),
             });
-            analyticsService.trackMessage(tenantId, 'received');
+            analyticsService.trackMessage(tenantId, "received");
             return; // Exit early
           }
         }
       }
 
-      if (activeAgent && activeAgent.id !== 'system_default') {
+      if (activeAgent && activeAgent.id !== "system_default") {
         // --- AGENT MODE (Priority 2) ---
         logger.info(`Routing to Agent: ${activeAgent.name} (${activeAgent.id})`);
 
         // Enforce Feature Flag: Check if AI is enabled for this tenant
-        const isAiEnabled = await tenantConfigService.isFeatureEnabled(tenantId, 'aiEnabled');
+        const isAiEnabled = await tenantConfigService.isFeatureEnabled(tenantId, "aiEnabled");
         if (!isAiEnabled) {
           logger.warn(`AI processing skipped for tenant ${tenantId}: AI disabled.`);
         }
@@ -218,22 +248,26 @@ export class IngressService {
       }
 
       // 3. Post-processing
-      analyticsService.trackMessage(tenantId, 'received');
-
+      analyticsService.trackMessage(tenantId, "received");
     } catch (error: unknown) {
       logger.error(`IngressService error for channel ${channelId}:`, error);
     }
   }
 
-  private async dispatchWebhook(tenantId: string, channelId: string, message: proto.IWebMessageInfo, aiCtx: any) {
-    const text = aiCtx.message?.conversation || aiCtx.message?.extendedTextMessage?.text || '';
+  private async dispatchWebhook(
+    tenantId: string,
+    channelId: string,
+    message: proto.IWebMessageInfo,
+    aiCtx: any,
+  ) {
+    const text = aiCtx.message?.conversation || aiCtx.message?.extendedTextMessage?.text || "";
 
-    await webhookService.dispatch(tenantId, 'message.received', {
+    await webhookService.dispatch(tenantId, "message.received", {
       channelId,
       sender: aiCtx.sender.jid,
       message: text,
       timestamp: Date.now(),
-      raw: message
+      raw: message,
     });
   }
 }

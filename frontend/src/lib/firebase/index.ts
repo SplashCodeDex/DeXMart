@@ -2,4 +2,4 @@
  * Firebase Library Exports
  */
 
-export { getApp, getClientAuth, getClientFirestore } from './client';
+export { getApp, getClientAuth, getClientFirestore } from "./client";

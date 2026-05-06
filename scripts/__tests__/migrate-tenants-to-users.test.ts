@@ -7,7 +7,7 @@
  * All Firestore interactions are mocked — no real Firebase connections.
  */
 
-import { describe, it, expect, vi, beforeEach, type MockInstance } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type MockInstance } from "vitest";
 
 // ── Firestore mock infrastructure ─────────────────────────────────────────────
 
@@ -41,9 +41,15 @@ let logOutput: string[];
 // ── Mock logger ───────────────────────────────────────────────────────────────
 
 const mockLogger = {
-  info: vi.fn((msg: string) => { logOutput.push(`INFO: ${msg}`); }),
-  warn: vi.fn((msg: string) => { logOutput.push(`WARN: ${msg}`); }),
-  error: vi.fn((msg: string) => { logOutput.push(`ERROR: ${msg}`); }),
+  info: vi.fn((msg: string) => {
+    logOutput.push(`INFO: ${msg}`);
+  }),
+  warn: vi.fn((msg: string) => {
+    logOutput.push(`WARN: ${msg}`);
+  }),
+  error: vi.fn((msg: string) => {
+    logOutput.push(`ERROR: ${msg}`);
+  }),
 };
 
 // ── Migration module under test ───────────────────────────────────────────────
@@ -54,7 +60,7 @@ import type {
   MigrationOptions,
   MigrationResult,
   MigrationStats,
-} from '../migrate-tenants-to-users.js';
+} from "../migrate-tenants-to-users.js";
 
 // ── Test helpers ──────────────────────────────────────────────────────────────
 
@@ -76,7 +82,7 @@ function getUserSubcollection(userId: string, subcollection: string): MockCollec
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
-describe('migrate-tenants-to-users — dry-run mode', () => {
+describe("migrate-tenants-to-users — dry-run mode", () => {
   beforeEach(() => {
     resetState();
     writeCalls = [];
@@ -84,42 +90,49 @@ describe('migrate-tenants-to-users — dry-run mode', () => {
     vi.clearAllMocks();
   });
 
-  it('dry-run logs operations without writing to Firestore', async () => {
-    seedTenant('tenant-abc', {
-      'bot-1': { id: 'bot-1', data: { name: 'BotAlpha', status: 'active' } },
+  it("dry-run logs operations without writing to Firestore", async () => {
+    seedTenant("tenant-abc", {
+      "bot-1": { id: "bot-1", data: { name: "BotAlpha", status: "active" } },
     });
 
-    const { runMigration } = await import('../migrate-tenants-to-users.js');
-    const result = await runMigration(
-      { dryRun: true, tenantIds: ['tenant-abc'], firestoreState, writeCalls, logger: mockLogger },
-    );
+    const { runMigration } = await import("../migrate-tenants-to-users.js");
+    const result = await runMigration({
+      dryRun: true,
+      tenantIds: ["tenant-abc"],
+      firestoreState,
+      writeCalls,
+      logger: mockLogger,
+    });
 
     // No actual writes
     expect(writeCalls).toHaveLength(0);
-    expect(getUserDocs('tenant-abc')).toEqual({});
+    expect(getUserDocs("tenant-abc")).toEqual({});
 
     // But operations were logged
     expect(result.stats.documentsLogged).toBeGreaterThan(0);
     expect(result.stats.documentsWritten).toBe(0);
-    expect(logOutput.some((l) => l.includes('tenant-abc'))).toBe(true);
+    expect(logOutput.some((l) => l.includes("tenant-abc"))).toBe(true);
   });
 
-  it('dry-run is the default when dryRun option is omitted', async () => {
-    seedTenant('tenant-xyz', {
-      'msg-1': { id: 'msg-1', data: { text: 'hello' } },
+  it("dry-run is the default when dryRun option is omitted", async () => {
+    seedTenant("tenant-xyz", {
+      "msg-1": { id: "msg-1", data: { text: "hello" } },
     });
 
-    const { runMigration } = await import('../migrate-tenants-to-users.js');
-    const result = await runMigration(
-      { tenantIds: ['tenant-xyz'], firestoreState, writeCalls, logger: mockLogger },
-    );
+    const { runMigration } = await import("../migrate-tenants-to-users.js");
+    const result = await runMigration({
+      tenantIds: ["tenant-xyz"],
+      firestoreState,
+      writeCalls,
+      logger: mockLogger,
+    });
 
     expect(writeCalls).toHaveLength(0);
     expect(result.stats.documentsWritten).toBe(0);
   });
 });
 
-describe('migrate-tenants-to-users — live migration', () => {
+describe("migrate-tenants-to-users — live migration", () => {
   beforeEach(() => {
     resetState();
     writeCalls = [];
@@ -127,106 +140,106 @@ describe('migrate-tenants-to-users — live migration', () => {
     vi.clearAllMocks();
   });
 
-  it('copies all root documents from tenants/{id}/ to users/{id}/', async () => {
-    seedTenant('tenant-alpha', {
-      'bot-1': { id: 'bot-1', data: { name: 'BotAlpha', plan: 'pro' } },
-      'bot-2': { id: 'bot-2', data: { name: 'BotBeta', plan: 'free' } },
+  it("copies all root documents from tenants/{id}/ to users/{id}/", async () => {
+    seedTenant("tenant-alpha", {
+      "bot-1": { id: "bot-1", data: { name: "BotAlpha", plan: "pro" } },
+      "bot-2": { id: "bot-2", data: { name: "BotBeta", plan: "free" } },
     });
 
-    const { runMigration } = await import('../migrate-tenants-to-users.js');
+    const { runMigration } = await import("../migrate-tenants-to-users.js");
     await runMigration({
       dryRun: false,
-      tenantIds: ['tenant-alpha'],
+      tenantIds: ["tenant-alpha"],
       firestoreState,
       writeCalls,
       logger: mockLogger,
     });
 
     // Documents copied to users/
-    const userDocs = getUserDocs('tenant-alpha');
-    expect(userDocs['bot-1']).toBeDefined();
-    expect(userDocs['bot-1'].data.name).toBe('BotAlpha');
-    expect(userDocs['bot-2']).toBeDefined();
+    const userDocs = getUserDocs("tenant-alpha");
+    expect(userDocs["bot-1"]).toBeDefined();
+    expect(userDocs["bot-1"].data.name).toBe("BotAlpha");
+    expect(userDocs["bot-2"]).toBeDefined();
   });
 
-  it('copies all subcollections from tenants/{id}/{sub}/ to users/{id}/{sub}/', async () => {
+  it("copies all subcollections from tenants/{id}/{sub}/ to users/{id}/{sub}/", async () => {
     seedTenant(
-      'tenant-beta',
-      { 'root-doc': { id: 'root-doc', data: { type: 'profile' } } },
+      "tenant-beta",
+      { "root-doc": { id: "root-doc", data: { type: "profile" } } },
       {
         messages: {
-          'msg-1': { id: 'msg-1', data: { text: 'Hello world', ts: 1234567890 } },
-          'msg-2': { id: 'msg-2', data: { text: 'Reply', ts: 1234567891 } },
+          "msg-1": { id: "msg-1", data: { text: "Hello world", ts: 1234567890 } },
+          "msg-2": { id: "msg-2", data: { text: "Reply", ts: 1234567891 } },
         },
         agents: {
-          'agent-1': { id: 'agent-1', data: { model: 'gemini-2.0-flash', active: true } },
+          "agent-1": { id: "agent-1", data: { model: "gemini-2.0-flash", active: true } },
         },
       },
     );
 
-    const { runMigration } = await import('../migrate-tenants-to-users.js');
+    const { runMigration } = await import("../migrate-tenants-to-users.js");
     await runMigration({
       dryRun: false,
-      tenantIds: ['tenant-beta'],
+      tenantIds: ["tenant-beta"],
       firestoreState,
       writeCalls,
       logger: mockLogger,
     });
 
-    const messages = getUserSubcollection('tenant-beta', 'messages');
-    expect(messages['msg-1']).toBeDefined();
-    expect(messages['msg-1'].data.text).toBe('Hello world');
-    expect(messages['msg-2']).toBeDefined();
+    const messages = getUserSubcollection("tenant-beta", "messages");
+    expect(messages["msg-1"]).toBeDefined();
+    expect(messages["msg-1"].data.text).toBe("Hello world");
+    expect(messages["msg-2"]).toBeDefined();
 
-    const agents = getUserSubcollection('tenant-beta', 'agents');
-    expect(agents['agent-1']).toBeDefined();
-    expect(agents['agent-1'].data.model).toBe('gemini-2.0-flash');
+    const agents = getUserSubcollection("tenant-beta", "agents");
+    expect(agents["agent-1"]).toBeDefined();
+    expect(agents["agent-1"].data.model).toBe("gemini-2.0-flash");
   });
 
-  it('preserves all field values during migration (no data loss)', async () => {
+  it("preserves all field values during migration (no data loss)", async () => {
     const originalData = {
-      name: 'TestBot',
+      name: "TestBot",
       config: { antiBan: true, maxRetries: 3 },
-      createdAt: new Date('2026-01-01').toISOString(),
-      tags: ['production', 'whatsapp'],
+      createdAt: new Date("2026-01-01").toISOString(),
+      tags: ["production", "whatsapp"],
     };
-    seedTenant('tenant-gamma', {
-      'bot-1': { id: 'bot-1', data: originalData },
+    seedTenant("tenant-gamma", {
+      "bot-1": { id: "bot-1", data: originalData },
     });
 
-    const { runMigration } = await import('../migrate-tenants-to-users.js');
+    const { runMigration } = await import("../migrate-tenants-to-users.js");
     await runMigration({
       dryRun: false,
-      tenantIds: ['tenant-gamma'],
+      tenantIds: ["tenant-gamma"],
       firestoreState,
       writeCalls,
       logger: mockLogger,
     });
 
-    const copied = getUserDocs('tenant-gamma')['bot-1'].data;
+    const copied = getUserDocs("tenant-gamma")["bot-1"].data;
     expect(copied).toEqual(originalData);
   });
 
-  it('document counts match after migration (integrity check)', async () => {
+  it("document counts match after migration (integrity check)", async () => {
     seedTenant(
-      'tenant-delta',
+      "tenant-delta",
       {
-        'doc-1': { id: 'doc-1', data: { x: 1 } },
-        'doc-2': { id: 'doc-2', data: { x: 2 } },
-        'doc-3': { id: 'doc-3', data: { x: 3 } },
+        "doc-1": { id: "doc-1", data: { x: 1 } },
+        "doc-2": { id: "doc-2", data: { x: 2 } },
+        "doc-3": { id: "doc-3", data: { x: 3 } },
       },
       {
         channels: {
-          'ch-1': { id: 'ch-1', data: { type: 'whatsapp' } },
-          'ch-2': { id: 'ch-2', data: { type: 'discord' } },
+          "ch-1": { id: "ch-1", data: { type: "whatsapp" } },
+          "ch-2": { id: "ch-2", data: { type: "discord" } },
         },
       },
     );
 
-    const { runMigration } = await import('../migrate-tenants-to-users.js');
+    const { runMigration } = await import("../migrate-tenants-to-users.js");
     const result = await runMigration({
       dryRun: false,
-      tenantIds: ['tenant-delta'],
+      tenantIds: ["tenant-delta"],
       firestoreState,
       writeCalls,
       logger: mockLogger,
@@ -236,14 +249,14 @@ describe('migrate-tenants-to-users — live migration', () => {
     expect(result.stats.documentsLogged).toBe(5);
 
     // Verify counts match
-    const userDocs = getUserDocs('tenant-delta');
+    const userDocs = getUserDocs("tenant-delta");
     expect(Object.keys(userDocs)).toHaveLength(3);
-    const channels = getUserSubcollection('tenant-delta', 'channels');
+    const channels = getUserSubcollection("tenant-delta", "channels");
     expect(Object.keys(channels)).toHaveLength(2);
   });
 });
 
-describe('migrate-tenants-to-users — idempotency', () => {
+describe("migrate-tenants-to-users — idempotency", () => {
   beforeEach(() => {
     resetState();
     writeCalls = [];
@@ -251,15 +264,15 @@ describe('migrate-tenants-to-users — idempotency', () => {
     vi.clearAllMocks();
   });
 
-  it('second run produces zero new writes (idempotent)', async () => {
-    seedTenant('tenant-idem', {
-      'doc-1': { id: 'doc-1', data: { val: 42 } },
+  it("second run produces zero new writes (idempotent)", async () => {
+    seedTenant("tenant-idem", {
+      "doc-1": { id: "doc-1", data: { val: 42 } },
     });
 
-    const { runMigration } = await import('../migrate-tenants-to-users.js');
+    const { runMigration } = await import("../migrate-tenants-to-users.js");
     const opts = {
       dryRun: false,
-      tenantIds: ['tenant-idem'],
+      tenantIds: ["tenant-idem"],
       firestoreState,
       writeCalls,
       logger: mockLogger,
@@ -277,7 +290,7 @@ describe('migrate-tenants-to-users — idempotency', () => {
   });
 });
 
-describe('migrate-tenants-to-users — multi-tenant batch', () => {
+describe("migrate-tenants-to-users — multi-tenant batch", () => {
   beforeEach(() => {
     resetState();
     writeCalls = [];
@@ -285,15 +298,15 @@ describe('migrate-tenants-to-users — multi-tenant batch', () => {
     vi.clearAllMocks();
   });
 
-  it('migrates multiple tenants in a single run', async () => {
-    seedTenant('tenant-a', { 'doc-a': { id: 'doc-a', data: { src: 'a' } } });
-    seedTenant('tenant-b', { 'doc-b': { id: 'doc-b', data: { src: 'b' } } });
-    seedTenant('tenant-c', { 'doc-c': { id: 'doc-c', data: { src: 'c' } } });
+  it("migrates multiple tenants in a single run", async () => {
+    seedTenant("tenant-a", { "doc-a": { id: "doc-a", data: { src: "a" } } });
+    seedTenant("tenant-b", { "doc-b": { id: "doc-b", data: { src: "b" } } });
+    seedTenant("tenant-c", { "doc-c": { id: "doc-c", data: { src: "c" } } });
 
-    const { runMigration } = await import('../migrate-tenants-to-users.js');
+    const { runMigration } = await import("../migrate-tenants-to-users.js");
     const result = await runMigration({
       dryRun: false,
-      tenantIds: ['tenant-a', 'tenant-b', 'tenant-c'],
+      tenantIds: ["tenant-a", "tenant-b", "tenant-c"],
       firestoreState,
       writeCalls,
       logger: mockLogger,
@@ -301,8 +314,8 @@ describe('migrate-tenants-to-users — multi-tenant batch', () => {
 
     expect(result.stats.tenantsProcessed).toBe(3);
     expect(result.stats.documentsWritten).toBe(3);
-    expect(getUserDocs('tenant-a')['doc-a']).toBeDefined();
-    expect(getUserDocs('tenant-b')['doc-b']).toBeDefined();
-    expect(getUserDocs('tenant-c')['doc-c']).toBeDefined();
+    expect(getUserDocs("tenant-a")["doc-a"]).toBeDefined();
+    expect(getUserDocs("tenant-b")["doc-b"]).toBeDefined();
+    expect(getUserDocs("tenant-c")["doc-c"]).toBeDefined();
   });
 });

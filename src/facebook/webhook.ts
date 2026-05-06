@@ -1,4 +1,4 @@
-import * as crypto from 'node:crypto';
+import * as crypto from "node:crypto";
 
 /**
  * Validates the X-Hub-Signature-256 header sent by Facebook.
@@ -7,19 +7,27 @@ import * as crypto from 'node:crypto';
  * @param appSecret The Facebook App Secret
  * @returns boolean true if valid
  */
-export function validateFacebookSignature(payload: string, signatureHeader: string | string[] | undefined, appSecret: string): boolean {
-  if (!signatureHeader || typeof signatureHeader !== 'string' || !signatureHeader.startsWith('sha256=')) {
+export function validateFacebookSignature(
+  payload: string,
+  signatureHeader: string | string[] | undefined,
+  appSecret: string,
+): boolean {
+  if (
+    !signatureHeader ||
+    typeof signatureHeader !== "string" ||
+    !signatureHeader.startsWith("sha256=")
+  ) {
     return false;
   }
 
   try {
-    const expectedHash = crypto.createHmac('sha256', appSecret).update(payload).digest('hex');
+    const expectedHash = crypto.createHmac("sha256", appSecret).update(payload).digest("hex");
     const expectedSignature = `sha256=${expectedHash}`;
-    
+
     // Use timingSafeEqual to prevent timing attacks
     const a = Buffer.from(signatureHeader);
     const b = Buffer.from(expectedSignature);
-    
+
     if (a.length !== b.length) return false;
     return crypto.timingSafeEqual(a, b);
   } catch (err) {
@@ -35,8 +43,13 @@ export function validateFacebookSignature(payload: string, signatureHeader: stri
  * @param myVerifyToken The verify token configured in DeXMart
  * @returns The challenge string if valid, null otherwise
  */
-export function handleFacebookChallenge(mode: any, token: any, challenge: any, myVerifyToken: string): string | null {
-  if (mode === 'subscribe' && token === myVerifyToken) {
+export function handleFacebookChallenge(
+  mode: any,
+  token: any,
+  challenge: any,
+  myVerifyToken: string,
+): string | null {
+  if (mode === "subscribe" && token === myVerifyToken) {
     return String(challenge);
   }
   return null;
@@ -49,7 +62,7 @@ export function handleFacebookChallenge(mode: any, token: any, challenge: any, m
  */
 export function normalizeFacebookEvents(body: any): any[] {
   const events: any[] = [];
-  if (body?.object === 'page' && Array.isArray(body.entry)) {
+  if (body?.object === "page" && Array.isArray(body.entry)) {
     for (const entry of body.entry) {
       if (Array.isArray(entry.messaging)) {
         for (const event of entry.messaging) {

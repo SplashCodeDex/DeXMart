@@ -1,7 +1,7 @@
-import { Request, Response } from 'express';
-import billingService from '../services/billingService.js';
-import logger from '../utils/logger.js';
-import { AppError } from '../types/result.js';
+import { Request, Response } from "express";
+import billingService from "../services/billingService.js";
+import { AppError } from "../types/result.js";
+import logger from "../utils/logger.js";
 
 export const createCheckoutSession = async (req: Request, res: Response) => {
   try {
@@ -13,7 +13,7 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
       user.userId,
       user.email,
       planId,
-      interval
+      interval,
     );
 
     if (result.success) {
@@ -31,20 +31,20 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
     });
   } catch (error: unknown) {
     if (error instanceof Error) {
-      logger.error('Error creating checkout session', { error: error.message });
+      logger.error("Error creating checkout session", { error: error.message });
       return res.status(500).json({
         success: false,
         error: {
-          code: 'INTERNAL_ERROR',
-          message: 'Failed to create checkout session',
+          code: "INTERNAL_ERROR",
+          message: "Failed to create checkout session",
         },
       });
     }
     return res.status(500).json({
       success: false,
       error: {
-        code: 'UNKNOWN_ERROR',
-        message: 'An unexpected error occurred',
+        code: "UNKNOWN_ERROR",
+        message: "An unexpected error occurred",
       },
     });
   }
@@ -69,20 +69,20 @@ export const getSubscription = async (req: Request, res: Response) => {
     });
   } catch (error: unknown) {
     if (error instanceof Error) {
-      logger.error('Error getting subscription', { error: error.message });
+      logger.error("Error getting subscription", { error: error.message });
       return res.status(500).json({
         success: false,
         error: {
-          code: 'INTERNAL_ERROR',
-          message: 'Failed to get subscription info',
+          code: "INTERNAL_ERROR",
+          message: "Failed to get subscription info",
         },
       });
     }
     return res.status(500).json({
       success: false,
       error: {
-        code: 'UNKNOWN_ERROR',
-        message: 'An unexpected error occurred',
+        code: "UNKNOWN_ERROR",
+        message: "An unexpected error occurred",
       },
     });
   }
@@ -107,20 +107,20 @@ export const getInvoices = async (req: Request, res: Response) => {
     });
   } catch (error: unknown) {
     if (error instanceof Error) {
-      logger.error('Error getting invoices', { error: error.message });
+      logger.error("Error getting invoices", { error: error.message });
       return res.status(500).json({
         success: false,
         error: {
-          code: 'INTERNAL_ERROR',
-          message: 'Failed to get invoices',
+          code: "INTERNAL_ERROR",
+          message: "Failed to get invoices",
         },
       });
     }
     return res.status(500).json({
       success: false,
       error: {
-        code: 'UNKNOWN_ERROR',
-        message: 'An unexpected error occurred',
+        code: "UNKNOWN_ERROR",
+        message: "An unexpected error occurred",
       },
     });
   }
@@ -145,20 +145,20 @@ export const getPaymentMethods = async (req: Request, res: Response) => {
     });
   } catch (error: unknown) {
     if (error instanceof Error) {
-      logger.error('Error getting payment methods', { error: error.message });
+      logger.error("Error getting payment methods", { error: error.message });
       return res.status(500).json({
         success: false,
         error: {
-          code: 'INTERNAL_ERROR',
-          message: 'Failed to get payment methods',
+          code: "INTERNAL_ERROR",
+          message: "Failed to get payment methods",
         },
       });
     }
     return res.status(500).json({
       success: false,
       error: {
-        code: 'UNKNOWN_ERROR',
-        message: 'An unexpected error occurred',
+        code: "UNKNOWN_ERROR",
+        message: "An unexpected error occurred",
       },
     });
   }
@@ -184,20 +184,20 @@ export const deletePaymentMethod = async (req: Request, res: Response) => {
     });
   } catch (error: unknown) {
     if (error instanceof Error) {
-      logger.error('Error deleting payment method', { error: error.message });
+      logger.error("Error deleting payment method", { error: error.message });
       return res.status(500).json({
         success: false,
         error: {
-          code: 'INTERNAL_ERROR',
-          message: 'Failed to delete payment method',
+          code: "INTERNAL_ERROR",
+          message: "Failed to delete payment method",
         },
       });
     }
     return res.status(500).json({
       success: false,
       error: {
-        code: 'UNKNOWN_ERROR',
-        message: 'An unexpected error occurred',
+        code: "UNKNOWN_ERROR",
+        message: "An unexpected error occurred",
       },
     });
   }

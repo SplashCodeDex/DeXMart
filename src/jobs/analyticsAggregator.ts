@@ -1,8 +1,8 @@
-import { CronJob } from 'cron';
-import { db } from '../lib/firebase.js';
-import { Timestamp } from 'firebase-admin/firestore';
-import logger from '../utils/logger.js';
-import { aiAnalyticsService } from '../services/aiAnalytics.js';
+import { CronJob } from "cron";
+import { Timestamp } from "firebase-admin/firestore";
+import { db } from "../lib/firebase.js";
+import { aiAnalyticsService } from "../services/aiAnalytics.js";
+import logger from "../utils/logger.js";
 
 /**
  * Analytics Aggregator
@@ -20,32 +20,32 @@ class AnalyticsAggregator {
   initialize() {
     // Run daily aggregation at 1 AM
     this.dailyAggregationJob = new CronJob(
-      '0 1 * * *', // Every day at 1 AM
+      "0 1 * * *", // Every day at 1 AM
       async () => {
-        logger.info('🔄 Running daily analytics aggregation...');
+        logger.info("🔄 Running daily analytics aggregation...");
         await this.runDailyAggregation();
       },
       null,
       false,
-      'UTC'
+      "UTC",
     );
 
     // Run cleanup weekly on Sunday at 2 AM
     this.cleanupJob = new CronJob(
-      '0 2 * * 0', // Every Sunday at 2 AM
+      "0 2 * * 0", // Every Sunday at 2 AM
       async () => {
-        logger.info('🧹 Running weekly analytics cleanup...');
+        logger.info("🧹 Running weekly analytics cleanup...");
         await this.runWeeklyCleanup();
       },
       null,
       false,
-      'UTC'
+      "UTC",
     );
 
     this.dailyAggregationJob.start();
     this.cleanupJob.start();
 
-    logger.info('✅ Analytics aggregation jobs initialized');
+    logger.info("✅ Analytics aggregation jobs initialized");
   }
 
   /**
@@ -56,11 +56,11 @@ class AnalyticsAggregator {
       const startTime = Date.now();
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
-      const dateStr = yesterday.toISOString().split('T')[0];
+      const dateStr = yesterday.toISOString().split("T")[0];
 
       // Get all tenants
-      const tenantsSnapshot = await db.collection('tenants').get();
-      const tenants = tenantsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const tenantsSnapshot = await db.collection("tenants").get();
+      const tenants = tenantsSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
       logger.info(`Processing daily aggregation for ${tenants.length} tenants...`);
 
@@ -78,9 +78,11 @@ class AnalyticsAggregator {
       }
 
       const duration = Date.now() - startTime;
-      logger.info(`✅ Daily aggregation completed: ${aggregatedCount} succeeded, ${errorCount} failed in ${duration}ms`);
+      logger.info(
+        `✅ Daily aggregation completed: ${aggregatedCount} succeeded, ${errorCount} failed in ${duration}ms`,
+      );
     } catch (error: any) {
-      logger.error('Daily aggregation failed:', error);
+      logger.error("Daily aggregation failed:", error);
     }
   }
 
@@ -101,11 +103,20 @@ class AnalyticsAggregator {
 
     // Get message counts from channels
     const channelsSnapshot = await db.collection(`${tenantPath}/channels`).get();
-    const channels = channelsSnapshot.docs.map(doc => doc.data());
+    const channels = channelsSnapshot.docs.map((doc) => doc.data());
 
-    const totalSent = channels.reduce((sum, channel) => sum + (channel.stats?.messagesSent || 0), 0);
-    const totalReceived = channels.reduce((sum, channel) => sum + (channel.stats?.messagesReceived || 0), 0);
-    const totalErrors = channels.reduce((sum, channel) => sum + (channel.stats?.errorsCount || 0), 0);
+    const totalSent = channels.reduce(
+      (sum, channel) => sum + (channel.stats?.messagesSent || 0),
+      0,
+    );
+    const totalReceived = channels.reduce(
+      (sum, channel) => sum + (channel.stats?.messagesReceived || 0),
+      0,
+    );
+    const totalErrors = channels.reduce(
+      (sum, channel) => sum + (channel.stats?.errorsCount || 0),
+      0,
+    );
 
     // Store aggregated data
     await analyticsRef.set({
@@ -113,10 +124,12 @@ class AnalyticsAggregator {
       sent: totalSent,
       received: totalReceived,
       errors: totalErrors,
-      updatedAt: Timestamp.now()
+      updatedAt: Timestamp.now(),
     });
 
-    logger.debug(`Aggregated analytics for ${tenantId} on ${dateStr}: ${totalSent} sent, ${totalReceived} received`);
+    logger.debug(
+      `Aggregated analytics for ${tenantId} on ${dateStr}: ${totalSent} sent, ${totalReceived} received`,
+    );
 
     // 2. Aggregate AI analytics (from ai_requests collection)
     await this.aggregateAIData(tenantId, dateStr);
@@ -140,9 +153,10 @@ class AnalyticsAggregator {
     const startOfDay = Timestamp.fromDate(new Date(date.setHours(0, 0, 0, 0)));
     const endOfDay = Timestamp.fromDate(new Date(date.setHours(23, 59, 59, 999)));
 
-    const aiRequestsSnapshot = await db.collection(`${tenantPath}/ai_requests`)
-      .where('timestamp', '>=', startOfDay)
-      .where('timestamp', '<=', endOfDay)
+    const aiRequestsSnapshot = await db
+      .collection(`${tenantPath}/ai_requests`)
+      .where("timestamp", ">=", startOfDay)
+      .where("timestamp", "<=", endOfDay)
       .get();
 
     if (aiRequestsSnapshot.empty) {
@@ -150,25 +164,25 @@ class AnalyticsAggregator {
       return;
     }
 
-    const requests = aiRequestsSnapshot.docs.map(doc => doc.data());
+    const requests = aiRequestsSnapshot.docs.map((doc) => doc.data());
 
     // Calculate aggregates
     const totalRequests = requests.length;
-    const successfulRequests = requests.filter(r => r.success).length;
+    const successfulRequests = requests.filter((r) => r.success).length;
     const failedRequests = totalRequests - successfulRequests;
     const totalResponseTime = requests.reduce((sum, r) => sum + (r.responseTime || 0), 0);
     const totalTokens = requests.reduce((sum, r) => sum + (r.tokensUsed || 0), 0);
 
     // Feature usage breakdown
     const featureUsage: Record<string, number> = {};
-    requests.forEach(r => {
-      const type = r.requestType || 'unknown';
+    requests.forEach((r) => {
+      const type = r.requestType || "unknown";
       featureUsage[type] = (featureUsage[type] || 0) + 1;
     });
 
     // Hourly distribution
     const hourlyDistribution: Record<string, number> = {};
-    requests.forEach(r => {
+    requests.forEach((r) => {
       const hour = r.timestamp.toDate().getHours();
       const hourKey = `hour_${hour}`;
       hourlyDistribution[hourKey] = (hourlyDistribution[hourKey] || 0) + 1;
@@ -184,10 +198,12 @@ class AnalyticsAggregator {
       totalTokens,
       featureUsage,
       hourlyDistribution,
-      updatedAt: Timestamp.now()
+      updatedAt: Timestamp.now(),
     });
 
-    logger.debug(`Aggregated AI analytics for ${tenantId} on ${dateStr}: ${totalRequests} requests`);
+    logger.debug(
+      `Aggregated AI analytics for ${tenantId} on ${dateStr}: ${totalRequests} requests`,
+    );
   }
 
   /**
@@ -204,8 +220,8 @@ class AnalyticsAggregator {
       logger.info(`Cleaning up AI request logs older than ${cutoffDate.toISOString()}...`);
 
       // Get all tenants
-      const tenantsSnapshot = await db.collection('tenants').get();
-      const tenants = tenantsSnapshot.docs.map(doc => doc.id);
+      const tenantsSnapshot = await db.collection("tenants").get();
+      const tenants = tenantsSnapshot.docs.map((doc) => doc.id);
 
       let deletedCount = 0;
       let errorCount = 0;
@@ -224,23 +240,29 @@ class AnalyticsAggregator {
       aiAnalyticsService.cleanupCache();
 
       const duration = Date.now() - startTime;
-      logger.info(`✅ Weekly cleanup completed: ${deletedCount} records deleted, ${errorCount} errors in ${duration}ms`);
+      logger.info(
+        `✅ Weekly cleanup completed: ${deletedCount} records deleted, ${errorCount} errors in ${duration}ms`,
+      );
     } catch (error: any) {
-      logger.error('Weekly cleanup failed:', error);
+      logger.error("Weekly cleanup failed:", error);
     }
   }
 
   /**
    * Cleanup old AI requests for a tenant
    */
-  private async cleanupTenantAIRequests(tenantId: string, cutoffTimestamp: Timestamp): Promise<number> {
+  private async cleanupTenantAIRequests(
+    tenantId: string,
+    cutoffTimestamp: Timestamp,
+  ): Promise<number> {
     const tenantPath = `tenants/${tenantId}`;
     const batchSize = 500;
     let totalDeleted = 0;
 
     while (true) {
-      const snapshot = await db.collection(`${tenantPath}/ai_requests`)
-        .where('timestamp', '<', cutoffTimestamp)
+      const snapshot = await db
+        .collection(`${tenantPath}/ai_requests`)
+        .where("timestamp", "<", cutoffTimestamp)
         .limit(batchSize)
         .get();
 
@@ -249,7 +271,7 @@ class AnalyticsAggregator {
       }
 
       const batch = db.batch();
-      snapshot.docs.forEach(doc => {
+      snapshot.docs.forEach((doc) => {
         batch.delete(doc.ref);
       });
 
@@ -271,10 +293,10 @@ class AnalyticsAggregator {
    * Manually trigger aggregation (for testing or manual runs)
    */
   async manualAggregation(dateStr?: string) {
-    const targetDate = dateStr || new Date().toISOString().split('T')[0];
+    const targetDate = dateStr || new Date().toISOString().split("T")[0];
     logger.info(`Running manual aggregation for ${targetDate}...`);
     await this.runDailyAggregation();
-    logger.info('Manual aggregation completed');
+    logger.info("Manual aggregation completed");
   }
 
   /**
@@ -283,11 +305,11 @@ class AnalyticsAggregator {
   stop() {
     if (this.dailyAggregationJob) {
       this.dailyAggregationJob.stop();
-      logger.info('Daily aggregation job stopped');
+      logger.info("Daily aggregation job stopped");
     }
     if (this.cleanupJob) {
       this.cleanupJob.stop();
-      logger.info('Cleanup job stopped');
+      logger.info("Cleanup job stopped");
     }
   }
 }

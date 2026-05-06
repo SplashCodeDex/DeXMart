@@ -1,5 +1,5 @@
-import { MessageContext, GlobalContext } from '../../types/index.js';
-import axios from 'axios';
+import axios from "axios";
+import { MessageContext, GlobalContext } from "../../types/index.js";
 
 interface SfileResult {
   title: string;
@@ -8,19 +8,19 @@ interface SfileResult {
 }
 
 export default {
-  name: 'sfilesearch',
-  aliases: ['sfile', 'sfiles'],
-  category: 'search',
+  name: "sfilesearch",
+  aliases: ["sfile", "sfiles"],
+  category: "search",
   permissions: {
     coin: 10,
   },
   code: async (ctx: MessageContext) => {
     const { formatter, tools, config } = ctx.channel.context as GlobalContext;
-    const input = ctx.args.join(' ') || null;
+    const input = ctx.args.join(" ") || null;
 
     if (!input) {
-      const instruction = tools.msg.generateInstruction(['send'], ['text']);
-      const example = tools.msg.generateCmdExample(ctx.used, 'evangelion');
+      const instruction = tools.msg.generateInstruction(["send"], ["text"]);
+      const example = tools.msg.generateCmdExample(ctx.used, "evangelion");
       return await ctx.reply(`${formatter.quote(instruction)}
 ${formatter.quote(example)}`);
     }
@@ -36,11 +36,11 @@ ${formatter.quote(example)}`);
             `${formatter.quote(`Nama: ${res.title}`)}
 ` +
             `${formatter.quote(`Ukuran: ${res.size}`)}
-${formatter.quote(`URL: ${res.link}`)}`
+${formatter.quote(`URL: ${res.link}`)}`,
         )
-        .join('\n' + `${formatter.quote('· · ─ ·✶· ─ · ·')}\n`);
+        .join("\n" + `${formatter.quote("· · ─ ·✶· ─ · ·")}\n`);
       await ctx.reply({
-        text: resultText || config.msg.notFound || 'No results found',
+        text: resultText || config.msg.notFound || "No results found",
         footer: config.msg.footer,
       });
     } catch (error: unknown) {

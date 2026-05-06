@@ -35,22 +35,46 @@
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-import { z } from 'zod';
+import { z } from "zod";
 
-export const WorkerMessageSchema = z.discriminatedUnion('type', [
-  z.object({ type: z.literal('init'), id: z.string(), payload: z.object({ userId: z.string() }) }),
-  z.object({ type: z.literal('remember'), id: z.string(), payload: z.object({ text: z.string(), metadata: z.record(z.string(), z.unknown()).optional() }) }),
-  z.object({ type: z.literal('search'), id: z.string(), payload: z.object({ query: z.string(), maxResults: z.number().optional() }) }),
-  z.object({ type: z.literal('status'), id: z.string(), payload: z.record(z.string(), z.unknown()).optional() }),
-  z.object({ type: z.literal('clear'), id: z.string(), payload: z.record(z.string(), z.unknown()).optional() }),
-  z.object({ type: z.literal('firestore:response'), id: z.string().optional(), payload: z.object({ requestId: z.string(), data: z.unknown().optional(), error: z.string().optional() }) })
+export const WorkerMessageSchema = z.discriminatedUnion("type", [
+  z.object({ type: z.literal("init"), id: z.string(), payload: z.object({ userId: z.string() }) }),
+  z.object({
+    type: z.literal("remember"),
+    id: z.string(),
+    payload: z.object({ text: z.string(), metadata: z.record(z.string(), z.unknown()).optional() }),
+  }),
+  z.object({
+    type: z.literal("search"),
+    id: z.string(),
+    payload: z.object({ query: z.string(), maxResults: z.number().optional() }),
+  }),
+  z.object({
+    type: z.literal("status"),
+    id: z.string(),
+    payload: z.record(z.string(), z.unknown()).optional(),
+  }),
+  z.object({
+    type: z.literal("clear"),
+    id: z.string(),
+    payload: z.record(z.string(), z.unknown()).optional(),
+  }),
+  z.object({
+    type: z.literal("firestore:response"),
+    id: z.string().optional(),
+    payload: z.object({
+      requestId: z.string(),
+      data: z.unknown().optional(),
+      error: z.string().optional(),
+    }),
+  }),
 ]);
 export type WorkerMessage = z.infer<typeof WorkerMessageSchema>;
 
 export const WorkerResponseSchema = z.object({
-  type: z.enum(['result', 'error', 'progress', 'firestore:response']),
+  type: z.enum(["result", "error", "progress", "firestore:response"]),
   id: z.string(),
-  payload: z.unknown()
+  payload: z.unknown(),
 });
 export type WorkerResponse = z.infer<typeof WorkerResponseSchema>;
 
@@ -72,7 +96,9 @@ interface SearchResult {
 
 const MAX_LOCAL_ITEMS = 10;
 let userId: string | null = null;
-let pipeline: ((text: string | string[], opts?: Record<string, unknown>) => Promise<{ data: Float32Array }>) | null = null;
+let pipeline:
+  | ((text: string | string[], opts?: Record<string, unknown>) => Promise<{ data: Float32Array }>)
+  | null = null;
 let db: IDBDatabase | null = null; // IndexedDB fallback (OPFS may not be available on all browsers)
 let memories: MemoryVector[] = []; // In-memory store (loaded from IDB on init)
 let initialized = false;
@@ -103,9 +129,9 @@ async function openDB(): Promise<IDBDatabase> {
     const req = indexedDB.open(`dexmart-memory-${userId}`, 1);
     req.onupgradeneeded = (e) => {
       const db = (e.target as IDBOpenDBRequest).result;
-      if (!db.objectStoreNames.contains('memories')) {
-        const store = db.createObjectStore('memories', { keyPath: 'id', autoIncrement: true });
-        store.createIndex('createdAt', 'createdAt');
+      if (!db.objectStoreNames.contains("memories")) {
+        const store = db.createObjectStore("memories", { keyPath: "id", autoIncrement: true });
+        store.createIndex("createdAt", "createdAt");
       }
     };
     req.onsuccess = (e) => resolve((e.target as IDBOpenDBRequest).result);
@@ -116,26 +142,29 @@ async function openDB(): Promise<IDBDatabase> {
 async function loadMemoriesFromDB(): Promise<MemoryVector[]> {
   if (!db) return [];
   return new Promise((resolve, reject) => {
-    const tx = db!.transaction('memories', 'readonly');
-    const store = tx.objectStore('memories');
-    const req = store.index('createdAt').getAll();
+    const tx = db!.transaction("memories", "readonly");
+    const store = tx.objectStore("memories");
+    const req = store.index("createdAt").getAll();
     req.onsuccess = (e) => {
       const results = (e.target as IDBRequest).result as MemoryVector[];
       // Deserialize embedding (stored as Array, need Float32Array)
-      resolve(results.map(r => ({
-        ...r,
-        embedding: r.embedding instanceof Float32Array ? r.embedding : new Float32Array(r.embedding),
-      })));
+      resolve(
+        results.map((r) => ({
+          ...r,
+          embedding:
+            r.embedding instanceof Float32Array ? r.embedding : new Float32Array(r.embedding),
+        })),
+      );
     };
     req.onerror = (e) => reject((e.target as IDBRequest).error);
   });
 }
 
-async function saveMemoryToDB(memory: Omit<MemoryVector, 'id'>): Promise<number> {
-  if (!db) throw new Error('DB not initialized');
+async function saveMemoryToDB(memory: Omit<MemoryVector, "id">): Promise<number> {
+  if (!db) throw new Error("DB not initialized");
   return new Promise((resolve, reject) => {
-    const tx = db!.transaction('memories', 'readwrite');
-    const store = tx.objectStore('memories');
+    const tx = db!.transaction("memories", "readwrite");
+    const store = tx.objectStore("memories");
     // Store embedding as regular array (Float32Array isn't structured-cloneable in all browsers)
     const req = store.add({ ...memory, embedding: Array.from(memory.embedding) });
     req.onsuccess = (e) => resolve((e.target as IDBRequest).result as number);
@@ -146,22 +175,26 @@ async function saveMemoryToDB(memory: Omit<MemoryVector, 'id'>): Promise<number>
 async function pruneDB(keep: number): Promise<void> {
   if (!db || memories.length <= keep) return;
   const toDelete = memories.slice(0, memories.length - keep);
-  const tx = db!.transaction('memories', 'readwrite');
-  const store = tx.objectStore('memories');
+  const tx = db!.transaction("memories", "readwrite");
+  const store = tx.objectStore("memories");
   for (const mem of toDelete) {
     store.delete(mem.id);
   }
   memories = memories.slice(memories.length - keep);
-  return new Promise((resolve) => { tx.oncomplete = () => resolve(); });
+  return new Promise((resolve) => {
+    tx.oncomplete = () => resolve();
+  });
 }
 
 async function clearDB(): Promise<void> {
   if (!db) return;
-  const tx = db!.transaction('memories', 'readwrite');
-  const store = tx.objectStore('memories');
+  const tx = db!.transaction("memories", "readwrite");
+  const store = tx.objectStore("memories");
   store.clear();
   memories = [];
-  return new Promise((resolve) => { tx.oncomplete = () => resolve(); });
+  return new Promise((resolve) => {
+    tx.oncomplete = () => resolve();
+  });
 }
 
 // ── Model Loading ─────────────────────────────────────────────────────────────
@@ -173,34 +206,30 @@ async function loadModel(onProgress: (pct: number) => void): Promise<void> {
     // Dynamic import — model loaded only when needed, cached by browser
     const module = await import(
       // @ts-expect-error — CDN URL import has no type declarations
-      /* webpackIgnore: true */ 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2/dist/transformers.min.js'
+      /* webpackIgnore: true */ "https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2/dist/transformers.min.js"
     );
-    const { pipeline: createPipeline, env } = module as { pipeline: Function, env: any };
+    const { pipeline: createPipeline, env } = module as { pipeline: Function; env: any };
 
     // Use local cache in OPFS if available, else CDN
     env.allowLocalModels = false;
     env.useBrowserCache = true;
 
-    pipeline = await createPipeline(
-      'feature-extraction',
-      'Xenova/all-MiniLM-L6-v2',
-      {
-        quantized: true, // ~22MB instead of 45MB, negligible accuracy loss
-        progress_callback: (progress: { status: string; progress?: number }) => {
-          if (progress.status === 'progress' && progress.progress != null) {
-            onProgress(Math.round(progress.progress));
-          }
-        },
+    pipeline = await createPipeline("feature-extraction", "Xenova/all-MiniLM-L6-v2", {
+      quantized: true, // ~22MB instead of 45MB, negligible accuracy loss
+      progress_callback: (progress: { status: string; progress?: number }) => {
+        if (progress.status === "progress" && progress.progress != null) {
+          onProgress(Math.round(progress.progress));
+        }
       },
-    );
+    });
   } finally {
     modelLoading = false;
   }
 }
 
 async function embed(text: string): Promise<Float32Array> {
-  if (!pipeline) throw new Error('Model not loaded');
-  const output = await pipeline(text, { pooling: 'mean', normalize: true });
+  if (!pipeline) throw new Error("Model not loaded");
+  const output = await pipeline(text, { pooling: "mean", normalize: true });
   return output.data as Float32Array;
 }
 
@@ -212,13 +241,19 @@ async function embed(text: string): Promise<Float32Array> {
 // We send a 'firestore:write' and 'firestore:read' request to main thread
 // and await the response via a promise map.
 
-const pendingFirestore = new Map<string, { resolve: (v: unknown) => void; reject: (e: unknown) => void }>();
+const pendingFirestore = new Map<
+  string,
+  { resolve: (v: unknown) => void; reject: (e: unknown) => void }
+>();
 
-function firestoreWrite(collection: string, data: Record<string, unknown>): Promise<{ id: string }> {
+function firestoreWrite(
+  collection: string,
+  data: Record<string, unknown>,
+): Promise<{ id: string }> {
   const id = `fs-${Date.now()}-${Math.random().toString(36).slice(2)}`;
   return new Promise((resolve, reject) => {
     pendingFirestore.set(id, { resolve: resolve as (v: unknown) => void, reject });
-    send({ type: 'result', id: `firestore:write:${id}`, payload: { collection, data } });
+    send({ type: "result", id: `firestore:write:${id}`, payload: { collection, data } });
   });
 }
 
@@ -226,16 +261,16 @@ function firestoreRead(collection: string, limit: number): Promise<Array<Record<
   const id = `fs-${Date.now()}-${Math.random().toString(36).slice(2)}`;
   return new Promise((resolve, reject) => {
     pendingFirestore.set(id, { resolve: resolve as (v: unknown) => void, reject });
-    send({ type: 'result', id: `firestore:read:${id}`, payload: { collection, limit } });
+    send({ type: "result", id: `firestore:read:${id}`, payload: { collection, limit } });
   });
 }
 
 // ── Handlers ──────────────────────────────────────────────────────────────────
 
 async function handleInit(payload: Record<string, unknown>, msgId: string): Promise<void> {
-  userId = payload['userId'] as string;
+  userId = payload["userId"] as string;
   if (!userId) {
-    send({ type: 'error', id: msgId, payload: 'userId is required' });
+    send({ type: "error", id: msgId, payload: "userId is required" });
     return;
   }
 
@@ -244,41 +279,52 @@ async function handleInit(payload: Record<string, unknown>, msgId: string): Prom
   memories = await loadMemoriesFromDB();
 
   // Load model (with progress)
-  send({ type: 'progress', id: msgId, payload: { stage: 'loading_model', pct: 0 } });
+  send({ type: "progress", id: msgId, payload: { stage: "loading_model", pct: 0 } });
   await loadModel((pct) => {
-    send({ type: 'progress', id: msgId, payload: { stage: 'loading_model', pct } });
+    send({ type: "progress", id: msgId, payload: { stage: "loading_model", pct } });
   });
 
   // Cold-start rehydration: if local DB is empty, fetch from Firestore
   if (memories.length === 0) {
-    send({ type: 'progress', id: msgId, payload: { stage: 'rehydrating', pct: 0 } });
+    send({ type: "progress", id: msgId, payload: { stage: "rehydrating", pct: 0 } });
     try {
       const firestoreDocs = await firestoreRead(`users/${userId}/memory`, 10);
       const docs = [...firestoreDocs].reverse(); // Oldest first
       for (let i = 0; i < docs.length; i++) {
         const doc = docs[i];
         if (!doc) continue;
-        const text = doc['text'] as string | undefined;
+        const text = doc["text"] as string | undefined;
         if (!text) continue;
         const embedding = await embed(text);
         const id = await saveMemoryToDB({ text, embedding, createdAt: Date.now(), metadata: {} });
         memories.push({ id, text, embedding, createdAt: Date.now() });
-        send({ type: 'progress', id: msgId, payload: { stage: 'rehydrating', pct: Math.round(((i + 1) / docs.length) * 100) } });
+        send({
+          type: "progress",
+          id: msgId,
+          payload: { stage: "rehydrating", pct: Math.round(((i + 1) / docs.length) * 100) },
+        });
       }
     } catch (err) {
       // Rehydration failure is non-fatal
-      console.warn('[memory-worker] Rehydration from Firestore failed:', err);
+      console.warn("[memory-worker] Rehydration from Firestore failed:", err);
     }
   }
 
   initialized = true;
-  send({ type: 'result', id: msgId, payload: { status: 'ready', memoriesLoaded: memories.length } });
+  send({
+    type: "result",
+    id: msgId,
+    payload: { status: "ready", memoriesLoaded: memories.length },
+  });
 }
 
 async function handleRemember(payload: Record<string, unknown>, msgId: string): Promise<void> {
-  if (!initialized) { send({ type: 'error', id: msgId, payload: 'Worker not initialized' }); return; }
-  const text = payload['text'] as string;
-  const metadata = (payload['metadata'] as Record<string, unknown> | undefined) ?? {};
+  if (!initialized) {
+    send({ type: "error", id: msgId, payload: "Worker not initialized" });
+    return;
+  }
+  const text = payload["text"] as string;
+  const metadata = (payload["metadata"] as Record<string, unknown> | undefined) ?? {};
 
   // 1. Generate embedding locally
   const embedding = await embed(text);
@@ -296,17 +342,20 @@ async function handleRemember(payload: Record<string, unknown>, msgId: string): 
     metadata,
     userId,
     createdAt: new Date().toISOString(),
-  }).catch((err) => { 
-    console.warn('[memory-worker] Failed to sync memory to Firestore:', err); 
+  }).catch((err) => {
+    console.warn("[memory-worker] Failed to sync memory to Firestore:", err);
   });
 
-  send({ type: 'result', id: msgId, payload: { ok: true, total: memories.length } });
+  send({ type: "result", id: msgId, payload: { ok: true, total: memories.length } });
 }
 
 async function handleSearch(payload: Record<string, unknown>, msgId: string): Promise<void> {
-  if (!initialized) { send({ type: 'error', id: msgId, payload: 'Worker not initialized' }); return; }
-  const query = payload['query'] as string;
-  const maxResults = (payload['maxResults'] as number | undefined) ?? 5;
+  if (!initialized) {
+    send({ type: "error", id: msgId, payload: "Worker not initialized" });
+    return;
+  }
+  const query = payload["query"] as string;
+  const maxResults = (payload["maxResults"] as number | undefined) ?? 5;
 
   // Embed the query
   const queryVec = await embed(query);
@@ -322,12 +371,12 @@ async function handleSearch(payload: Record<string, unknown>, msgId: string): Pr
   scored.sort((a, b) => b.score - a.score);
   const results = scored.slice(0, maxResults).filter((r) => r.score > 0.1);
 
-  send({ type: 'result', id: msgId, payload: { results } });
+  send({ type: "result", id: msgId, payload: { results } });
 }
 
 async function handleStatus(_payload: Record<string, unknown>, msgId: string): Promise<void> {
   send({
-    type: 'result',
+    type: "result",
     id: msgId,
     payload: {
       initialized,
@@ -341,24 +390,24 @@ async function handleStatus(_payload: Record<string, unknown>, msgId: string): P
 
 async function handleClear(_payload: Record<string, unknown>, msgId: string): Promise<void> {
   await clearDB();
-  send({ type: 'result', id: msgId, payload: { ok: true } });
+  send({ type: "result", id: msgId, payload: { ok: true } });
 }
 
 // ── Message Router ────────────────────────────────────────────────────────────
 
-self.addEventListener('message', async (rawEvent: MessageEvent) => {
+self.addEventListener("message", async (rawEvent: MessageEvent) => {
   let message: WorkerMessage;
   try {
     message = WorkerMessageSchema.parse(rawEvent.data);
   } catch (err) {
-    send({ type: 'error', id: 'unknown', payload: 'Invalid message payload: ' + String(err) });
+    send({ type: "error", id: "unknown", payload: "Invalid message payload: " + String(err) });
     return;
   }
 
   const { type, id, payload } = message;
 
   // Handle Firestore response callbacks from main thread
-  if (type === 'firestore:response') {
+  if (type === "firestore:response") {
     const fsId = payload.requestId;
     const pending = pendingFirestore.get(fsId);
     if (pending) {
@@ -372,20 +421,30 @@ self.addEventListener('message', async (rawEvent: MessageEvent) => {
     return;
   }
 
-  const msgId = id || 'unknown';
+  const msgId = id || "unknown";
 
   const safePayload = payload ?? {};
   try {
     switch (type) {
-      case 'init':     await handleInit(safePayload, msgId); break;
-      case 'remember': await handleRemember(safePayload, msgId); break;
-      case 'search':   await handleSearch(safePayload, msgId); break;
-      case 'status':   await handleStatus(safePayload, msgId); break;
-      case 'clear':    await handleClear(safePayload, msgId); break;
+      case "init":
+        await handleInit(safePayload, msgId);
+        break;
+      case "remember":
+        await handleRemember(safePayload, msgId);
+        break;
+      case "search":
+        await handleSearch(safePayload, msgId);
+        break;
+      case "status":
+        await handleStatus(safePayload, msgId);
+        break;
+      case "clear":
+        await handleClear(safePayload, msgId);
+        break;
       default:
-        send({ type: 'error', id: msgId, payload: `Unknown message type` });
+        send({ type: "error", id: msgId, payload: `Unknown message type` });
     }
   } catch (err) {
-    send({ type: 'error', id, payload: err instanceof Error ? err.message : String(err) });
+    send({ type: "error", id, payload: err instanceof Error ? err.message : String(err) });
   }
 });

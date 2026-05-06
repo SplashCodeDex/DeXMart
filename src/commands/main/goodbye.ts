@@ -1,10 +1,10 @@
-import { MessageContext } from '../../types/index.js';
+import { MessageContext } from "../../types/index.js";
 
 export default {
-    name: 'goodbye',
-    category: 'main',
-    description: 'A simple farewell command.',
-    code: async (ctx: MessageContext) => {
-        await ctx.reply('Goodbye! Have a great day!');
-    },
+  name: "goodbye",
+  category: "main",
+  description: "A simple farewell command.",
+  code: async (ctx: MessageContext) => {
+    await ctx.reply("Goodbye! Have a great day!");
+  },
 };

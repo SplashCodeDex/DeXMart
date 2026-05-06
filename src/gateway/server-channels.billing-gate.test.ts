@@ -88,9 +88,7 @@ describe("Task 5.3 — Billing gate in startChannelInternal", () => {
       }),
     );
 
-    await expect(manager.startChannel("discord" as ChannelId)).rejects.toThrow(
-      /channel limit/i,
-    );
+    await expect(manager.startChannel("discord" as ChannelId)).rejects.toThrow(/channel limit/i);
     expect(startAccount).not.toHaveBeenCalled();
   });
 

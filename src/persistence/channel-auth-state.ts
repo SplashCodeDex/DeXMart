@@ -24,7 +24,7 @@ import type {
   AuthenticationCreds,
   AuthenticationState,
   SignalDataTypeMap,
-} from '@whiskeysockets/baileys';
+} from "@whiskeysockets/baileys";
 
 // ── Storage Interface ─────────────────────────────────────────────────────────
 
@@ -60,7 +60,7 @@ export async function useChannelAuthState(store: AuthKeyValueStore): Promise<{
   clearAuthState: () => Promise<void>;
 }> {
   // Lazy import baileys — only available in openclaw's package scope at runtime
-  const { BufferJSON, initAuthCreds, proto } = await import('baileys');
+  const { BufferJSON, initAuthCreds, proto } = await import("baileys");
 
   const readData = async (key: string): Promise<unknown | null> => {
     try {
@@ -82,7 +82,7 @@ export async function useChannelAuthState(store: AuthKeyValueStore): Promise<{
   };
 
   const creds: AuthenticationCreds =
-    (await readData('creds')) as AuthenticationCreds ?? initAuthCreds();
+    ((await readData("creds")) as AuthenticationCreds) ?? initAuthCreds();
 
   return {
     state: {
@@ -95,8 +95,8 @@ export async function useChannelAuthState(store: AuthKeyValueStore): Promise<{
           const result: Record<string, SignalDataTypeMap[T]> = {};
           await Promise.all(
             ids.map(async (id) => {
-              let value = await readData(`${type}-${id}`) as SignalDataTypeMap[T] | null;
-              if (type === 'app-state-sync-key' && value) {
+              let value = (await readData(`${type}-${id}`)) as SignalDataTypeMap[T] | null;
+              if (type === "app-state-sync-key" && value) {
                 value = proto.Message.AppStateSyncKeyData.fromObject(
                   value as object,
                 ) as unknown as SignalDataTypeMap[T];
@@ -120,10 +120,10 @@ export async function useChannelAuthState(store: AuthKeyValueStore): Promise<{
       },
     },
     saveCreds: async () => {
-      await writeData('creds', creds);
+      await writeData("creds", creds);
     },
     clearAuthState: async () => {
-      await deleteData('creds');
+      await deleteData("creds");
       // Keys are prefixed by category; clearing creds kills the active session.
       // A full key-space wipe requires store.listKeys() which varies by backend.
       // Callers needing full wipe should implement AuthKeyValueStore.clear().
@@ -170,7 +170,7 @@ export function makeFirestoreAuthStore(
       const doc = await firestore.collection(authPath).doc(key).get();
       if (!doc.exists) return null;
       const data = doc.data();
-      return data?.['value'] ?? null;
+      return data?.["value"] ?? null;
     },
     async set(key: string, value: unknown | null): Promise<void> {
       const ref = firestore.collection(authPath).doc(key);

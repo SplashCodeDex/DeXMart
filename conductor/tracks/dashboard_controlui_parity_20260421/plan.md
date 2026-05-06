@@ -247,28 +247,28 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 
 ---
 
-## Phase 8: Nodes Lane [checkpoint: pending]
+## Phase 8: Nodes Lane [checkpoint: e911958]
 
 ### Sub-Track 8.1 — nodes _(enhance · 15 methods covering canvas, pending, pair)_
 
-- [ ] Task 8.1.A.1: Failing tests — `useNodeDetail` (describe, invoke)
-- [ ] Task 8.1.A.2: Failing tests — pending queue (pull/ack/drain/enqueue)
-- [ ] Task 8.1.B.1: Node detail Sheet — capabilities, invoke form, canvas.capability.refresh
-- [ ] Task 8.1.B.2: `NodePendingPanel` — pull, ack, drain with AlertDialog
-- [ ] Task 8.1.B.3: Node pair flow — request/approve/reject/verify
-- [ ] Task 8.1.B.4: Node rename + node.list live table
-- [ ] Task 8.1.B.5: Node event subscription → live badge updates
-- [ ] Task 8.1.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
+- [x] Task 8.1.A.1: Failing tests — `useNodeDetail` (describe, invoke) e911958
+- [x] Task 8.1.A.2: Failing tests — pending queue (pull/ack/drain/enqueue) e911958
+- [x] Task 8.1.B.1: Node detail Sheet — capabilities, invoke form, canvas.capability.refresh e911958
+- [x] Task 8.1.B.2: `NodePendingPanel` — pull, ack, drain with AlertDialog e911958
+- [x] Task 8.1.B.3: Node pair flow — request/approve/reject/verify e911958
+- [x] Task 8.1.B.4: Node rename + node.list live table e911958
+- [x] Task 8.1.B.5: Node event subscription → live badge updates e911958
+- [x] Task 8.1.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..." e911958
 
 ### Sub-Track 8.2 — exec-approvals _(weave → /dashboard/config "Security" tab · 8 methods)_
 
-- [ ] Task 8.2.A.1: Failing tests — `useExecApprovals` (get/set for gateway + node allowlists)
-- [ ] Task 8.2.B.1: `ExecApprovalsCard` — gateway allowlist (tag input)
-- [ ] Task 8.2.B.2: Node-level allowlist per node (nested)
-- [ ] Task 8.2.B.3: Approval request/resolve inbox — pending approvals list
-- [ ] Task 8.2.C.1: Mount inside Config "Security" tab (Phase 9.1 owns the tab shell)
-- [ ] Task 8.2.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
-- [ ] Task: Conductor - User Manual Verification 'Phase 8'
+- [x] Task 8.2.A.1: Failing tests — `useExecApprovals` (get/set for gateway + node allowlists) e911958
+- [x] Task 8.2.B.1: `ExecApprovalsCard` — gateway allowlist (tag input) e911958
+- [x] Task 8.2.B.2: Node-level allowlist per node (nested) e911958
+- [x] Task 8.2.B.3: Approval request/resolve inbox — pending approvals list e911958
+- [x] Task 8.2.C.1: Mount inside Config "Security" tab (Phase 9.1 owns the tab shell) e911958
+- [x] Task 8.2.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..." e911958
+- [x] Task: Conductor - User Manual Verification 'Phase 8' e911958
 
 ---
 

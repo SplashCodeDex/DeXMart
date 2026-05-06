@@ -1110,7 +1110,7 @@ export function createConfigIO(overrides: ConfigIoDeps = {}) {
         }
         const jsonForHash = JSON.stringify(stagedForHash, null, 2).trimEnd().concat("\n");
         const calculatedHash = hashConfigRaw(jsonForHash);
-        
+
         if (metaIntegrity !== calculatedHash) {
           deps.logger.warn(
             `Config integrity mismatch at ${configPath}: expected ${metaIntegrity}, got ${calculatedHash}`,
@@ -1586,7 +1586,9 @@ export function createConfigIO(overrides: ConfigIoDeps = {}) {
 
     // OC-26104: Calculate and stamp integrity hash.
     // We hash the JSON representation of the config BEFORE adding the integrity field.
-    const jsonWithoutIntegrity = JSON.stringify(stampedOutputConfig, null, 2).trimEnd().concat("\n");
+    const jsonWithoutIntegrity = JSON.stringify(stampedOutputConfig, null, 2)
+      .trimEnd()
+      .concat("\n");
     const integrityHash = hashConfigRaw(jsonWithoutIntegrity);
     if (stampedOutputConfig.meta) {
       stampedOutputConfig.meta.integrity = integrityHash;

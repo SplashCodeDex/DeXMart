@@ -1,7 +1,10 @@
-import { Middleware, MessageContext } from '../types/index.js';
-import { rateLimiterService } from '../services/rateLimiter.js';
+import { rateLimiterService } from "../services/rateLimiter.js";
+import { Middleware, MessageContext } from "../types/index.js";
 
-export const cooldownMiddleware: Middleware = async (ctx: MessageContext, next: () => Promise<void>) => {
+export const cooldownMiddleware: Middleware = async (
+  ctx: MessageContext,
+  next: () => Promise<void>,
+) => {
   const tenantId = ctx.channel.tenantId;
   const userId = ctx.sender.jid;
 
@@ -11,15 +14,15 @@ export const cooldownMiddleware: Middleware = async (ctx: MessageContext, next: 
     const globalKey = `global_cooldown:${tenantId}:${userId}`;
     const globalAllowed = await rateLimiterService.check(globalKey, {
       points: 1,
-      duration: channelCooldownSec
+      duration: channelCooldownSec,
     });
 
     if (!globalAllowed) {
       // 2026 Enhancement: Synchronize with presence
       if (ctx.sendPresenceUpdate) {
-        await ctx.sendPresenceUpdate('paused');
+        await ctx.sendPresenceUpdate("paused");
       }
-      await ctx.replyReact?.('⏳');
+      await ctx.replyReact?.("⏳");
       return;
     }
   }
@@ -40,7 +43,7 @@ export const cooldownMiddleware: Middleware = async (ctx: MessageContext, next: 
   const key = `cooldown:${tenantId}:${userId}:${commandName}`;
   const allowed = await rateLimiterService.check(key, {
     points: 1,
-    duration: cooldownSec
+    duration: cooldownSec,
   });
 
   if (!allowed) {

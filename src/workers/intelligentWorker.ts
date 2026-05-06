@@ -1,7 +1,7 @@
-import { DeXMartBrain } from '../services/index.js';
-import { createChannelContext } from '../utils/createChannelContext.js';
-import logger from '../utils/logger.js';
-import { ActiveChannel, GlobalContext } from '../types/index.js';
+import { DeXMartBrain } from "../services/index.js";
+import { ActiveChannel, GlobalContext } from "../types/index.js";
+import { createChannelContext } from "../utils/createChannelContext.js";
+import logger from "../utils/logger.js";
 
 /**
  * Intelligent Worker - Processes messages with AI intelligence
@@ -15,7 +15,7 @@ class IntelligentWorker {
   private startedAt: number = Date.now();
 
   constructor() {
-    logger.info('Intelligent Worker initialized');
+    logger.info("Intelligent Worker initialized");
   }
 
   /**
@@ -25,7 +25,7 @@ class IntelligentWorker {
     this.channel = channel;
     this.context = context;
     this.processor = new DeXMartBrain(this.channel, context);
-    logger.info('Intelligent Worker ready for message processing');
+    logger.info("Intelligent Worker ready for message processing");
   }
 
   /**
@@ -33,10 +33,10 @@ class IntelligentWorker {
    */
   async processMessage(job: any) {
     if (!this.processor) {
-      throw new Error('Intelligent processor not initialized');
+      throw new Error("Intelligent processor not initialized");
     }
     if (!this.channel) {
-      throw new Error('Channel not initialized');
+      throw new Error("Channel not initialized");
     }
 
     const { messageData, channelContext } = job.data;
@@ -49,16 +49,15 @@ class IntelligentWorker {
       await this.processor.processMessage(ctx);
       this.messagesProcessed++;
 
-      logger.debug('Message processed intelligently', {
+      logger.debug("Message processed intelligently", {
         userId: ctx.sender?.jid,
-        processed: true
+        processed: true,
       });
-
     } catch (error: any) {
       this.errorsCount++;
-      logger.error('Intelligent processing failed:', {
+      logger.error("Intelligent processing failed:", {
         error: error.message,
-        messageData: JSON.stringify(messageData, null, 2).substring(0, 500)
+        messageData: JSON.stringify(messageData, null, 2).substring(0, 500),
       });
       throw error;
     }
@@ -68,15 +67,15 @@ class IntelligentWorker {
    * Create enhanced context from message data
    */
   async createEnhancedContext(messageData: any, channelContext: any) {
-    if (!this.context) throw new Error('Global context not initialized');
-    if (!this.channel) throw new Error('Channel not initialized');
+    if (!this.context) throw new Error("Global context not initialized");
+    if (!this.channel) throw new Error("Channel not initialized");
 
     const ctx = await createChannelContext(this.channel, messageData, this.context);
 
     // Add intelligent enhancements
     ctx.intelligentMode = true;
     ctx.processingTimestamp = Date.now();
-    ctx.workerVersion = 'intelligent-v3';
+    ctx.workerVersion = "intelligent-v3";
 
     return ctx;
   }
@@ -87,21 +86,29 @@ class IntelligentWorker {
   getStats() {
     const uptimeMs = Date.now() - this.startedAt;
     const uptimeSec = Math.floor(uptimeMs / 1000);
-    return this.processor ? {
-      status: 'active',
-      messagesProcessed: this.messagesProcessed,
-      errorsCount: this.errorsCount,
-      errorRate: this.messagesProcessed > 0 ? (this.errorsCount / this.messagesProcessed * 100).toFixed(2) + '%' : '0%',
-      uptimeSeconds: uptimeSec,
-      uptime: uptimeSec > 3600 ? `${Math.floor(uptimeSec / 3600)}h ${Math.floor((uptimeSec % 3600) / 60)}m` : `${Math.floor(uptimeSec / 60)}m ${uptimeSec % 60}s`
-    } : {
-      status: 'not_initialized',
-      messagesProcessed: 0,
-      errorsCount: 0,
-      errorRate: '0%',
-      uptimeSeconds: 0,
-      uptime: '0s'
-    };
+    return this.processor
+      ? {
+          status: "active",
+          messagesProcessed: this.messagesProcessed,
+          errorsCount: this.errorsCount,
+          errorRate:
+            this.messagesProcessed > 0
+              ? ((this.errorsCount / this.messagesProcessed) * 100).toFixed(2) + "%"
+              : "0%",
+          uptimeSeconds: uptimeSec,
+          uptime:
+            uptimeSec > 3600
+              ? `${Math.floor(uptimeSec / 3600)}h ${Math.floor((uptimeSec % 3600) / 60)}m`
+              : `${Math.floor(uptimeSec / 60)}m ${uptimeSec % 60}s`,
+        }
+      : {
+          status: "not_initialized",
+          messagesProcessed: 0,
+          errorsCount: 0,
+          errorRate: "0%",
+          uptimeSeconds: 0,
+          uptime: "0s",
+        };
   }
 
   /**
@@ -109,21 +116,21 @@ class IntelligentWorker {
    */
   async healthCheck() {
     if (!this.processor) {
-      return { status: 'unhealthy', reason: 'processor_not_initialized' };
+      return { status: "unhealthy", reason: "processor_not_initialized" };
     }
 
     try {
       const stats = this.getStats();
       return {
-        status: 'healthy',
+        status: "healthy",
         stats,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
     } catch (error: any) {
       return {
-        status: 'unhealthy',
+        status: "unhealthy",
         reason: error.message,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
     }
   }

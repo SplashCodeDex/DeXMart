@@ -9,12 +9,12 @@
  *
  * 2026 Mastermind Edition — Zero-trust, Result pattern, singleton.
  */
-import { GoogleGenerativeAI, GenerativeModel } from '@google/generative-ai';
-import { ApiKeyManager } from '../lib/apiKeyManager.js';
-import logger from '../utils/logger.js';
+import { GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
+import { ApiKeyManager } from "../lib/apiKeyManager.js";
+import logger from "../utils/logger.js";
 
 interface ChatMessage {
-  role: 'user' | 'model';
+  role: "user" | "model";
   content: string;
 }
 
@@ -31,11 +31,11 @@ export class AIUtilityService {
 
   private constructor(keyManager: ApiKeyManager) {
     this.keyManager = keyManager;
-    this.modelId = 'gemini-2.0-flash';
+    this.modelId = "gemini-2.0-flash";
 
     const stats = this.keyManager.getStats();
     logger.info(
-      `AIUtilityService initialized with ${stats.totalKeys} API keys (${stats.healthyKeys} healthy)`
+      `AIUtilityService initialized with ${stats.totalKeys} API keys (${stats.healthyKeys} healthy)`,
     );
   }
 
@@ -61,15 +61,18 @@ export class AIUtilityService {
    */
   async getChatCompletion(prompt: string): Promise<string> {
     if (!prompt?.trim()) {
-      throw new Error('AIUtilityService: prompt is required');
+      throw new Error("AIUtilityService: prompt is required");
     }
 
-    return this.keyManager.execute(async (key) => {
-      const genAI = new GoogleGenerativeAI(key);
-      const model = genAI.getGenerativeModel({ model: this.modelId });
-      const result = await model.generateContent(prompt);
-      return result.response.text();
-    }, { maxRetries: 3, timeoutMs: 30000 });
+    return this.keyManager.execute(
+      async (key) => {
+        const genAI = new GoogleGenerativeAI(key);
+        const model = genAI.getGenerativeModel({ model: this.modelId });
+        const result = await model.generateContent(prompt);
+        return result.response.text();
+      },
+      { maxRetries: 3, timeoutMs: 30000 },
+    );
   }
 
   /**
@@ -77,8 +80,8 @@ export class AIUtilityService {
    */
   async getSummary(messages: ChatMessage[]): Promise<string> {
     const formatted = messages
-      .map((m) => `${m.role === 'user' ? 'User' : 'AI'}: ${m.content}`)
-      .join('\n');
+      .map((m) => `${m.role === "user" ? "User" : "AI"}: ${m.content}`)
+      .join("\n");
     const prompt = `Summarize the following conversation concisely:\n\n${formatted}`;
     return this.getChatCompletion(prompt);
   }
@@ -102,23 +105,26 @@ ${content}`;
 
     try {
       const response = await this.getChatCompletion(prompt);
-      const cleaned = response.replace(/```json\n?|\n?```/g, '').trim();
+      const cleaned = response.replace(/```json\n?|\n?```/g, "").trim();
       return JSON.parse(cleaned) as ModerationResult;
     } catch (error) {
-      logger.error('AIUtilityService: moderation parsing failed', { error });
-      return { safe: true, categories: {}, reason: 'Moderation check failed, defaulting to safe' };
+      logger.error("AIUtilityService: moderation parsing failed", { error });
+      return { safe: true, categories: {}, reason: "Moderation check failed, defaulting to safe" };
     }
   }
   /**
    * Spin message to vary content (for Anti-Ban).
    */
-  public static async spinMessage(content: string, tenantId: string): Promise<{success: boolean, data?: string, error?: string}> {
+  public static async spinMessage(
+    content: string,
+    tenantId: string,
+  ): Promise<{ success: boolean; data?: string; error?: string }> {
     try {
       const prompt = `Rewrite the following message to be unique but convey the exact same meaning:\n\n${content}`;
       const response = await AIUtilityService.getInstance().getChatCompletion(prompt);
       return { success: true, data: response };
     } catch (error: any) {
-      logger.error('AIUtilityService: spinMessage failed', { error: error.message, tenantId });
+      logger.error("AIUtilityService: spinMessage failed", { error: error.message, tenantId });
       return { success: false, error: error.message };
     }
   }

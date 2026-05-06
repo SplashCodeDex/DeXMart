@@ -4,10 +4,6 @@
  * Business logic layer using Result pattern for error handling
  */
 
-import stripeService from './stripeService.js';
-import { db } from '../lib/firebase.js';
-import logger from '../utils/logger.js';
-import { Result, success, failure, AppError } from '../types/result.js';
 import {
   CreateCheckoutSessionRequestSchema,
   SubscriptionInfoResponseSchema,
@@ -17,8 +13,12 @@ import {
   type SubscriptionInfoResponse,
   type InvoiceResponse,
   type PaymentMethodResponse,
-} from '@DeXMart/shared';
-import { ConfigService } from './ConfigService.js';
+} from "@DeXMart/shared";
+import { db } from "../lib/firebase.js";
+import { Result, success, failure, AppError } from "../types/result.js";
+import logger from "../utils/logger.js";
+import { ConfigService } from "./ConfigService.js";
+import stripeService from "./stripeService.js";
 
 export class BillingService {
   /**
@@ -29,7 +29,7 @@ export class BillingService {
     userId: string,
     userEmail: string,
     planId: string,
-    interval: string
+    interval: string,
   ): Promise<Result<CheckoutSessionResponse, AppError>> {
     try {
       // Validate input with Zod
@@ -38,11 +38,11 @@ export class BillingService {
         interval,
       });
 
-      const tenantRef = db.collection('tenants').doc(tenantId);
+      const tenantRef = db.collection("tenants").doc(tenantId);
       const tenantDoc = await tenantRef.get();
 
       if (!tenantDoc.exists) {
-        return failure(AppError.notFound('Tenant not found'));
+        return failure(AppError.notFound("Tenant not found"));
       }
 
       const tenantData = tenantDoc.data()!;
@@ -50,7 +50,7 @@ export class BillingService {
 
       const stripe = stripeService.stripe;
       if (!stripe) {
-        return failure(AppError.serviceUnavailable('Stripe service not initialized'));
+        return failure(AppError.serviceUnavailable("Stripe service not initialized"));
       }
 
       // Create Stripe customer if it doesn't exist
@@ -69,31 +69,36 @@ export class BillingService {
       // Find the price ID
       const prices = await stripe.prices.list({
         active: true,
-        expand: ['data.product'],
+        expand: ["data.product"],
       });
 
       const price = prices.data.find(
-        (p) => p.metadata.planId === validatedInput.planId && p.metadata.type === validatedInput.interval
+        (p) =>
+          p.metadata.planId === validatedInput.planId &&
+          p.metadata.type === validatedInput.interval,
       );
 
       if (!price) {
-        logger.error('Stripe price not found', { planId: validatedInput.planId, interval: validatedInput.interval });
+        logger.error("Stripe price not found", {
+          planId: validatedInput.planId,
+          interval: validatedInput.interval,
+        });
         return failure(
-          AppError.badRequest('Price configuration not found in Stripe', {
+          AppError.badRequest("Price configuration not found in Stripe", {
             planId: validatedInput.planId,
             interval: validatedInput.interval,
-          })
+          }),
         );
       }
 
       const config = ConfigService.getInstance();
-      const appUrl = config.get('NEXT_PUBLIC_APP_URL');
+      const appUrl = config.get("NEXT_PUBLIC_APP_URL");
 
       // Create Checkout Session
       const session = await stripe.checkout.sessions.create({
         customer: stripeCustomerId,
-        mode: 'subscription',
-        payment_method_types: ['card'],
+        mode: "subscription",
+        payment_method_types: ["card"],
         line_items: [
           {
             price: price.id,
@@ -113,19 +118,19 @@ export class BillingService {
       });
 
       if (!session.url) {
-        return failure(AppError.internal('Failed to create checkout session URL'));
+        return failure(AppError.internal("Failed to create checkout session URL"));
       }
 
       return success({ url: session.url });
     } catch (error: unknown) {
       if (error instanceof Error) {
-        if (error.name === 'ZodError') {
-          return failure(AppError.badRequest('Validation failed', (error as any).errors));
+        if (error.name === "ZodError") {
+          return failure(AppError.badRequest("Validation failed", (error as any).errors));
         }
-        logger.error('Error creating checkout session', { error: error.message });
+        logger.error("Error creating checkout session", { error: error.message });
         return failure(AppError.internal(error.message));
       }
-      return failure(AppError.internal('Unknown error creating checkout session'));
+      return failure(AppError.internal("Unknown error creating checkout session"));
     }
   }
 
@@ -134,19 +139,21 @@ export class BillingService {
    */
   async getSubscription(tenantId: string): Promise<Result<SubscriptionInfoResponse, AppError>> {
     try {
-      const tenantDoc = await db.collection('tenants').doc(tenantId).get();
+      const tenantDoc = await db.collection("tenants").doc(tenantId).get();
 
       if (!tenantDoc.exists) {
-        return failure(AppError.notFound('Tenant not found'));
+        return failure(AppError.notFound("Tenant not found"));
       }
 
       const data = tenantDoc.data()!;
 
       const subscriptionInfo: SubscriptionInfoResponse = {
-        plan: data.plan || 'starter',
-        status: data.subscriptionStatus || 'trialing',
+        plan: data.plan || "starter",
+        status: data.subscriptionStatus || "trialing",
         trialEndsAt: data.trialEndsAt ? (data.trialEndsAt as any).toDate().toISOString() : null,
-        currentPeriodEnd: data.currentPeriodEnd ? (data.currentPeriodEnd as any).toDate().toISOString() : null,
+        currentPeriodEnd: data.currentPeriodEnd
+          ? (data.currentPeriodEnd as any).toDate().toISOString()
+          : null,
         cancelAtPeriodEnd: data.cancelAtPeriodEnd || false,
       };
 
@@ -155,10 +162,10 @@ export class BillingService {
       return success(validatedInfo);
     } catch (error: unknown) {
       if (error instanceof Error) {
-        logger.error('Error getting subscription', { error: error.message });
+        logger.error("Error getting subscription", { error: error.message });
         return failure(AppError.internal(error.message));
       }
-      return failure(AppError.internal('Unknown error getting subscription'));
+      return failure(AppError.internal("Unknown error getting subscription"));
     }
   }
 
@@ -167,10 +174,10 @@ export class BillingService {
    */
   async getInvoices(tenantId: string): Promise<Result<InvoiceResponse[], AppError>> {
     try {
-      const tenantDoc = await db.collection('tenants').doc(tenantId).get();
+      const tenantDoc = await db.collection("tenants").doc(tenantId).get();
 
       if (!tenantDoc.exists) {
-        return failure(AppError.notFound('Tenant not found'));
+        return failure(AppError.notFound("Tenant not found"));
       }
 
       const tenantData = tenantDoc.data()!;
@@ -182,7 +189,7 @@ export class BillingService {
 
       const stripe = stripeService.stripe;
       if (!stripe) {
-        return failure(AppError.serviceUnavailable('Stripe service not initialized'));
+        return failure(AppError.serviceUnavailable("Stripe service not initialized"));
       }
 
       const invoices = await stripe.invoices.list({
@@ -195,9 +202,10 @@ export class BillingService {
           id: invoice.id,
           date: new Date(invoice.created * 1000).toISOString(),
           amount: invoice.total,
-          status: invoice.status === 'paid' ? 'paid' : invoice.status === 'open' ? 'pending' : 'failed',
-          invoiceUrl: invoice.hosted_invoice_url || invoice.invoice_pdf || '',
-          description: invoice.lines.data[0]?.description || 'Subscription payment',
+          status:
+            invoice.status === "paid" ? "paid" : invoice.status === "open" ? "pending" : "failed",
+          invoiceUrl: invoice.hosted_invoice_url || invoice.invoice_pdf || "",
+          description: invoice.lines.data[0]?.description || "Subscription payment",
         };
 
         // Validate each invoice with Zod
@@ -207,10 +215,10 @@ export class BillingService {
       return success(formattedInvoices);
     } catch (error: unknown) {
       if (error instanceof Error) {
-        logger.error('Error getting invoices', { error: error.message });
+        logger.error("Error getting invoices", { error: error.message });
         return failure(AppError.internal(error.message));
       }
-      return failure(AppError.internal('Unknown error getting invoices'));
+      return failure(AppError.internal("Unknown error getting invoices"));
     }
   }
 
@@ -219,10 +227,10 @@ export class BillingService {
    */
   async getPaymentMethods(tenantId: string): Promise<Result<PaymentMethodResponse[], AppError>> {
     try {
-      const tenantDoc = await db.collection('tenants').doc(tenantId).get();
+      const tenantDoc = await db.collection("tenants").doc(tenantId).get();
 
       if (!tenantDoc.exists) {
-        return failure(AppError.notFound('Tenant not found'));
+        return failure(AppError.notFound("Tenant not found"));
       }
 
       const tenantData = tenantDoc.data()!;
@@ -234,12 +242,12 @@ export class BillingService {
 
       const stripe = stripeService.stripe;
       if (!stripe) {
-        return failure(AppError.serviceUnavailable('Stripe service not initialized'));
+        return failure(AppError.serviceUnavailable("Stripe service not initialized"));
       }
 
       const paymentMethods = await stripe.paymentMethods.list({
         customer: stripeCustomerId,
-        type: 'card',
+        type: "card",
       });
 
       const customer = await stripe.customers.retrieve(stripeCustomerId);
@@ -248,8 +256,8 @@ export class BillingService {
       const formattedMethods: PaymentMethodResponse[] = paymentMethods.data.map((pm) => {
         const methodData: PaymentMethodResponse = {
           id: pm.id,
-          brand: pm.card?.brand || 'card',
-          last4: pm.card?.last4 || '0000',
+          brand: pm.card?.brand || "card",
+          last4: pm.card?.last4 || "0000",
           expiryMonth: pm.card?.exp_month || 1,
           expiryYear: pm.card?.exp_year || 2099,
           isDefault: pm.id === defaultPaymentMethodId,
@@ -262,51 +270,56 @@ export class BillingService {
       return success(formattedMethods);
     } catch (error: unknown) {
       if (error instanceof Error) {
-        logger.error('Error getting payment methods', { error: error.message });
+        logger.error("Error getting payment methods", { error: error.message });
         return failure(AppError.internal(error.message));
       }
-      return failure(AppError.internal('Unknown error getting payment methods'));
+      return failure(AppError.internal("Unknown error getting payment methods"));
     }
   }
 
   /**
    * Delete a payment method
    */
-  async deletePaymentMethod(tenantId: string, paymentMethodId: string): Promise<Result<{ message: string }, AppError>> {
+  async deletePaymentMethod(
+    tenantId: string,
+    paymentMethodId: string,
+  ): Promise<Result<{ message: string }, AppError>> {
     try {
       const stripe = stripeService.stripe;
       if (!stripe) {
-        return failure(AppError.serviceUnavailable('Stripe service not initialized'));
+        return failure(AppError.serviceUnavailable("Stripe service not initialized"));
       }
 
       // Ownership check: Get tenant to get stripeCustomerId
-      const tenantDoc = await db.collection('tenants').doc(tenantId).get();
+      const tenantDoc = await db.collection("tenants").doc(tenantId).get();
       if (!tenantDoc.exists) {
-        return failure(AppError.notFound('Tenant not found'));
+        return failure(AppError.notFound("Tenant not found"));
       }
       const tenantData = tenantDoc.data()!;
       const stripeCustomerId = tenantData.stripeCustomerId;
 
       if (!stripeCustomerId) {
-        return failure(AppError.forbidden('Tenant has no associated billing account'));
+        return failure(AppError.forbidden("Tenant has no associated billing account"));
       }
 
       // Retrieve payment method to verify customer ownership
       const paymentMethod = await stripe.paymentMethods.retrieve(paymentMethodId);
       if (paymentMethod.customer !== stripeCustomerId) {
-        logger.warn('Forbidden attempt to delete payment method', { tenantId, paymentMethodId });
-        return failure(AppError.forbidden('You do not have permission to delete this payment method'));
+        logger.warn("Forbidden attempt to delete payment method", { tenantId, paymentMethodId });
+        return failure(
+          AppError.forbidden("You do not have permission to delete this payment method"),
+        );
       }
 
       await stripe.paymentMethods.detach(paymentMethodId);
 
-      return success({ message: 'Payment method removed successfully' });
+      return success({ message: "Payment method removed successfully" });
     } catch (error: unknown) {
       if (error instanceof Error) {
-        logger.error('Error deleting payment method', { error: error.message });
+        logger.error("Error deleting payment method", { error: error.message });
         return failure(AppError.internal(error.message));
       }
-      return failure(AppError.internal('Unknown error deleting payment method'));
+      return failure(AppError.internal("Unknown error deleting payment method"));
     }
   }
 }

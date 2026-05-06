@@ -1,21 +1,38 @@
-import { AuthenticationState, AuthenticationCreds, BufferJSON, initAuthCreds, proto } from 'baileys';
-import { firebaseService } from './firebase.js';
+import {
+  AuthenticationState,
+  AuthenticationCreds,
+  BufferJSON,
+  initAuthCreds,
+  proto,
+} from "baileys";
+import { firebaseService } from "./firebase.js";
 
 /**
  * Custom Baileys Auth State using Firestore subcollections
  * Supports both flat (legacy) and hierarchical paths.
  * @param collectionOrPath Either a collection name ('channels') or a partial path ('agents/A/channels/C')
  */
-export async function useFirestoreAuthState(tenantId: string, channelId: string, collectionOrPath: string = 'channels'): Promise<{ state: AuthenticationState, saveCreds: () => Promise<void>, clearAuthState: () => Promise<void> }> {
-
+export async function useFirestoreAuthState(
+  tenantId: string,
+  channelId: string,
+  collectionOrPath: string = "channels",
+): Promise<{
+  state: AuthenticationState;
+  saveCreds: () => Promise<void>;
+  clearAuthState: () => Promise<void>;
+}> {
   // Ensure channelId is provided to prevent illegal Firestore paths (e.g., 'channels//auth')
   // which causes the library to hang/retry infinitely.
-  if (!channelId && !collectionOrPath.endsWith('/auth')) {
-    throw new Error(`[AuthSystem] Failed to initialize Firestore Auth state: 'channelId' is missing for collection '${collectionOrPath}'`);
+  if (!channelId && !collectionOrPath.endsWith("/auth")) {
+    throw new Error(
+      `[AuthSystem] Failed to initialize Firestore Auth state: 'channelId' is missing for collection '${collectionOrPath}'`,
+    );
   }
 
   // If collectionOrPath already contains '/auth', don't append it
-  const path = collectionOrPath.endsWith('/auth') ? collectionOrPath : `${collectionOrPath}/${channelId}/auth`;
+  const path = collectionOrPath.endsWith("/auth")
+    ? collectionOrPath
+    : `${collectionOrPath}/${channelId}/auth`;
 
   const writeData = async (data: any, id: string) => {
     const serialized = JSON.parse(JSON.stringify(data, BufferJSON.replacer));
@@ -25,7 +42,7 @@ export async function useFirestoreAuthState(tenantId: string, channelId: string,
   const readData = async (id: string) => {
     try {
       const doc = await firebaseService.getDoc(path, id, tenantId);
-      if (doc && 'value' in (doc as any)) {
+      if (doc && "value" in (doc as any)) {
         return JSON.parse(JSON.stringify((doc as any).value), BufferJSON.reviver);
       }
       return null;
@@ -38,7 +55,7 @@ export async function useFirestoreAuthState(tenantId: string, channelId: string,
     await firebaseService.deleteDoc(path, id, tenantId);
   };
 
-  const creds: AuthenticationCreds = await readData('creds') || initAuthCreds();
+  const creds: AuthenticationCreds = (await readData("creds")) || initAuthCreds();
 
   return {
     state: {
@@ -49,11 +66,11 @@ export async function useFirestoreAuthState(tenantId: string, channelId: string,
           await Promise.all(
             ids.map(async (id) => {
               let value = await readData(`${type}-${id}`);
-              if (type === 'app-state-sync-key' && value) {
+              if (type === "app-state-sync-key" && value) {
                 value = proto.Message.AppStateSyncKeyData.fromObject(value);
               }
               data[id] = value;
-            })
+            }),
           );
           return data;
         },
@@ -67,18 +84,18 @@ export async function useFirestoreAuthState(tenantId: string, channelId: string,
             }
           }
           await Promise.all(tasks);
-        }
-      }
+        },
+      },
     },
     saveCreds: async () => {
-      await writeData(creds, 'creds');
+      await writeData(creds, "creds");
     },
     clearAuthState: async () => {
       // Clear main creds
-      await removeData('creds');
+      await removeData("creds");
       // This is a rough way to clear keys,
       // ideally we would list all docs in the subcollection.
       // For now, this ensures the main session is dead.
-    }
+    },
   };
 }

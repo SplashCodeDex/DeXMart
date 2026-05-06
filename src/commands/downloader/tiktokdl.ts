@@ -1,10 +1,10 @@
-import { MessageContext } from '../../types/index.js';
-import axios from 'axios';
+import axios from "axios";
+import { MessageContext } from "../../types/index.js";
 
 export default {
-  name: 'tiktokdl',
-  aliases: ['tiktok', 'tiktoknowm', 'tt', 'ttdl', 'vt', 'vtdl', 'vtdltiktok', 'vtnowm'],
-  category: 'downloader',
+  name: "tiktokdl",
+  aliases: ["tiktok", "tiktoknowm", "tt", "ttdl", "vt", "vtdl", "vtdltiktok", "vtnowm"],
+  category: "downloader",
   permissions: {
     coin: 10,
   },
@@ -18,19 +18,19 @@ export default {
 
     if (!url)
       return await ctx.reply(
-        `${formatter.quote(msg.generateInstruction(['send'], ['text']))}\n${formatter.quote(
+        `${formatter.quote(msg.generateInstruction(["send"], ["text"]))}\n${formatter.quote(
           msg.generateCmdExample(
             ctx.used,
-            'https://www.tiktok.com/@grazeuz/video/7486690677888158984'
-          )
-        )}`
+            "https://www.tiktok.com/@grazeuz/video/7486690677888158984",
+          ),
+        )}`,
       );
 
     const isUrl = cmd.isUrl(url);
     if (!isUrl) return await ctx.reply(config.msg.urlInvalid);
 
     try {
-      const apiUrl = api.createUrl('diibot', '/api/download/tiktok', {
+      const apiUrl = api.createUrl("diibot", "/api/download/tiktok", {
         url,
       });
       const { result } = (await axios.get(apiUrl)).data;
@@ -40,7 +40,7 @@ export default {
           video: {
             url: result.play,
           },
-          mimetype: mime.lookup('mp4'),
+          mimetype: mime.lookup("mp4"),
           caption: formatter.quote(`URL: ${url}`),
           footer: config.msg.footer,
         });
@@ -49,7 +49,7 @@ export default {
           image: {
             url: imageUrl,
           },
-          mimetype: mime.lookup('jpeg'),
+          mimetype: mime.lookup("jpeg"),
         }));
 
         await ctx.reply({

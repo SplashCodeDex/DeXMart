@@ -1,5 +1,15 @@
-import { Timestamp } from 'firebase-admin/firestore';
-import { ModerationItem, Violation, Campaign, Webhook, Contact, Audience, MessageTemplate, LearningData, AnalyticsData } from './contracts.js';
+import { Timestamp } from "firebase-admin/firestore";
+import {
+  ModerationItem,
+  Violation,
+  Campaign,
+  Webhook,
+  Contact,
+  Audience,
+  MessageTemplate,
+  LearningData,
+  AnalyticsData,
+} from "./contracts.js";
 
 /**
  * Root 'tenants' collection document
@@ -8,9 +18,17 @@ export interface TenantDocument {
   id: string;
   name: string;
   subdomain: string;
-  plan: 'starter' | 'pro' | 'enterprise';
-  subscriptionStatus: 'trialing' | 'active' | 'past_due' | 'unpaid' | 'canceled' | 'incomplete' | 'incomplete_expired' | 'paused';
-  status: 'active' | 'suspended' | 'cancelled';
+  plan: "starter" | "pro" | "enterprise";
+  subscriptionStatus:
+    | "trialing"
+    | "active"
+    | "past_due"
+    | "unpaid"
+    | "canceled"
+    | "incomplete"
+    | "incomplete_expired"
+    | "paused";
+  status: "active" | "suspended" | "cancelled";
   ownerId: string; // Firebase Auth UID
   stripeCustomerId?: string;
   trialEndsAt?: Timestamp | Date;
@@ -31,9 +49,17 @@ export interface TenantUserDocument {
   id: string; // Firebase Auth UID
   email: string;
   displayName: string;
-  role: 'owner' | 'admin' | 'viewer';
-  plan: 'starter' | 'pro' | 'enterprise';
-  subscriptionStatus: 'trialing' | 'active' | 'past_due' | 'unpaid' | 'canceled' | 'incomplete' | 'incomplete_expired' | 'paused';
+  role: "owner" | "admin" | "viewer";
+  plan: "starter" | "pro" | "enterprise";
+  subscriptionStatus:
+    | "trialing"
+    | "active"
+    | "past_due"
+    | "unpaid"
+    | "canceled"
+    | "incomplete"
+    | "incomplete_expired"
+    | "paused";
   trialEndsAt?: Timestamp | Date;
   joinedAt: Timestamp | Date;
   lastLogin?: Timestamp | Date;
@@ -47,10 +73,10 @@ export interface TenantUserDocument {
 export interface ChannelDocument {
   id: string;
   name: string;
-  type: 'whatsapp' | 'telegram' | 'discord' | 'slack' | 'signal';
+  type: "whatsapp" | "telegram" | "discord" | "slack" | "signal";
   phoneNumber?: string;
   identifier?: string;
-  status: 'connected' | 'disconnected' | 'connecting' | 'qr_pending' | 'error';
+  status: "connected" | "disconnected" | "connecting" | "qr_pending" | "error";
   lastSeenAt?: Timestamp | Date;
   connectionMetadata?: {
     browser?: [string, string, string];
@@ -146,8 +172,16 @@ export interface SubscriptionDocument {
   stripeSubscriptionId: string;
   stripeCustomerId: string;
   stripePriceId: string;
-  plan: 'starter' | 'pro' | 'enterprise';
-  status: 'trialing' | 'active' | 'past_due' | 'unpaid' | 'canceled' | 'incomplete' | 'incomplete_expired' | 'paused';
+  plan: "starter" | "pro" | "enterprise";
+  status:
+    | "trialing"
+    | "active"
+    | "past_due"
+    | "unpaid"
+    | "canceled"
+    | "incomplete"
+    | "incomplete_expired"
+    | "paused";
   currentPeriodStart: Timestamp | Date;
   currentPeriodEnd: Timestamp | Date;
   trialStart?: Timestamp | Date;
@@ -163,23 +197,23 @@ export interface SubscriptionDocument {
  */
 export interface FirestoreSchema {
   tenants: TenantDocument;
-  'users/{userId}/users': TenantUserDocument;
-  'users/{userId}/channels': ChannelDocument;
-  'users/{userId}/agents': AgentDocument;
-  'users/{userId}/agents/{agentId}/channels': ChannelDocument;
-  'users/{userId}/agents/{agentId}/channels/{channelId}/auth': { value: any };
-  'users/{userId}/slots': ChannelInstanceDocument;
-  'users/{userId}/members': ChannelMemberDocument;
-  'users/{userId}/groups': ChannelGroupDocument;
-  'users/{userId}/subscriptions': SubscriptionDocument;
-  'users/{userId}/moderation': ModerationItem;
-  'users/{userId}/violations': Violation;
-  'users/{userId}/campaigns': Campaign;
-  'users/{userId}/webhooks': Webhook;
-  'users/{userId}/contacts': Contact;
-  'users/{userId}/audiences': Audience;
-  'users/{userId}/templates': MessageTemplate;
-  'users/{userId}/channels/{channelId}/auth': { value: any };
-  'users/{userId}/learning': LearningData;
-  'users/{userId}/analytics': AnalyticsData;
+  "users/{userId}/users": TenantUserDocument;
+  "users/{userId}/channels": ChannelDocument;
+  "users/{userId}/agents": AgentDocument;
+  "users/{userId}/agents/{agentId}/channels": ChannelDocument;
+  "users/{userId}/agents/{agentId}/channels/{channelId}/auth": { value: any };
+  "users/{userId}/slots": ChannelInstanceDocument;
+  "users/{userId}/members": ChannelMemberDocument;
+  "users/{userId}/groups": ChannelGroupDocument;
+  "users/{userId}/subscriptions": SubscriptionDocument;
+  "users/{userId}/moderation": ModerationItem;
+  "users/{userId}/violations": Violation;
+  "users/{userId}/campaigns": Campaign;
+  "users/{userId}/webhooks": Webhook;
+  "users/{userId}/contacts": Contact;
+  "users/{userId}/audiences": Audience;
+  "users/{userId}/templates": MessageTemplate;
+  "users/{userId}/channels/{channelId}/auth": { value: any };
+  "users/{userId}/learning": LearningData;
+  "users/{userId}/analytics": AnalyticsData;
 }

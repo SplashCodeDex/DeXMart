@@ -1,9 +1,6 @@
 import { useCallback, useEffect } from "react";
-
-import { useSessionsStore, type Checkpoint } from "../store";
-
 import { useGateway } from "@/lib/gateway/gateway-hooks";
-
+import { useSessionsStore, type Checkpoint } from "../store";
 
 export function useCompaction(sessionId: string | null): {
   checkpoints: Checkpoint[];
@@ -34,37 +31,43 @@ export function useCompaction(sessionId: string | null): {
     fetchCheckpoints();
   }, [fetchCheckpoints]);
 
-  const restore = useCallback(async (checkpointId: string) => {
-    if (status !== "connected" || !sessionId) return;
+  const restore = useCallback(
+    async (checkpointId: string) => {
+      if (status !== "connected" || !sessionId) return;
 
-    setLoading(true);
-    try {
-      await rpc.call("sessions.compaction.restore", { key: sessionId, checkpointId });
-      await fetchCheckpoints();
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Failed to restore checkpoint";
-      setError(message);
-    }
-  }, [rpc, status, sessionId, fetchCheckpoints, setLoading, setError]);
+      setLoading(true);
+      try {
+        await rpc.call("sessions.compaction.restore", { key: sessionId, checkpointId });
+        await fetchCheckpoints();
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : "Failed to restore checkpoint";
+        setError(message);
+      }
+    },
+    [rpc, status, sessionId, fetchCheckpoints, setLoading, setError],
+  );
 
-  const branch = useCallback(async (checkpointId: string, label?: string): Promise<string | undefined> => {
-    if (status !== "connected" || !sessionId) return;
+  const branch = useCallback(
+    async (checkpointId: string, label?: string): Promise<string | undefined> => {
+      if (status !== "connected" || !sessionId) return;
 
-    setLoading(true);
-    try {
-      const result = await rpc.call("sessions.compaction.branch", {
-        key: sessionId,
-        checkpointId,
-        label,
-      });
-      return result.sessionId;
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Failed to branch from checkpoint";
-      setError(message);
-    } finally {
-      setLoading(false);
-    }
-  }, [rpc, status, sessionId, setLoading, setError]);
+      setLoading(true);
+      try {
+        const result = await rpc.call("sessions.compaction.branch", {
+          key: sessionId,
+          checkpointId,
+          label,
+        });
+        return result.sessionId;
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : "Failed to branch from checkpoint";
+        setError(message);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [rpc, status, sessionId, setLoading, setError],
+  );
 
   return {
     checkpoints,

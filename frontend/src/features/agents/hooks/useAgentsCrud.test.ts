@@ -67,4 +67,31 @@ describe("useAgentsCrud", () => {
 
     expect(response?.success).toBe(false);
   });
+
+  it("should wait and refresh successfully", async () => {
+    mockRpc.call.mockResolvedValue({ status: "ok" });
+
+    const { result } = renderHook(() => useAgentsCrud());
+
+    let success;
+    await act(async () => {
+      success = await result.current.waitAndRefresh("run-123");
+    });
+
+    expect(mockRpc.call).toHaveBeenCalledWith("agent.wait", { runId: "run-123", timeoutMs: 60000 });
+    expect(success).toBe(true);
+  });
+
+  it("should return false if waitAndRefresh fails", async () => {
+    mockRpc.call.mockResolvedValue({ status: "error", error: "Failed" });
+
+    const { result } = renderHook(() => useAgentsCrud());
+
+    let success;
+    await act(async () => {
+      success = await result.current.waitAndRefresh("run-123");
+    });
+
+    expect(success).toBe(false);
+  });
 });

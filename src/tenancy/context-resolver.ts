@@ -1,12 +1,7 @@
-import { 
-  UserContext, 
-  UserContextResolver, 
-  PLAN_CAPABILITIES,
-  PlanTier
-} from './tenant-context.js';
-import { db, admin } from '../lib/firebase.js';
-import { Redis } from 'ioredis';
-import logger from '../utils/logger.js';
+import { Redis } from "ioredis";
+import { db, admin } from "../lib/firebase.js";
+import logger from "../utils/logger.js";
+import { UserContext, UserContextResolver, PLAN_CAPABILITIES, PlanTier } from "./tenant-context.js";
 
 export class UserContextResolverImpl implements UserContextResolver {
   private readonly CACHE_TTL = 300; // 5 minutes
@@ -14,7 +9,7 @@ export class UserContextResolverImpl implements UserContextResolver {
   constructor(
     private readonly firestore: typeof db,
     private readonly auth: typeof admin,
-    private readonly redis: Redis
+    private readonly redis: Redis,
   ) {}
 
   /**
@@ -34,29 +29,29 @@ export class UserContextResolverImpl implements UserContextResolver {
     }
 
     // 2. Cache Miss -> Fetch from Firestore
-    const userDoc = await this.firestore.collection('users').doc(userId).get();
+    const userDoc = await this.firestore.collection("users").doc(userId).get();
     if (!userDoc.exists) {
       throw new Error(`User not found: ${userId}`);
     }
 
     const userData = userDoc.data()!;
-    const plan = (userData.plan || 'free') as PlanTier;
+    const plan = (userData.plan || "free") as PlanTier;
 
     // 3. Fetch Usage (Asynchronous but required for context)
     const usageDoc = await this.firestore
-      .collection('users')
+      .collection("users")
       .doc(userId)
-      .collection('usage')
-      .doc('current')
+      .collection("usage")
+      .doc("current")
       .get();
-    
+
     const usageData = usageDoc.exists ? usageDoc.data()! : {};
 
     // 4. Construct Full UserContext
     const context: UserContext = {
       userId: userId,
-      displayName: userData.displayName || 'User',
-      email: userData.email || '',
+      displayName: userData.displayName || "User",
+      email: userData.email || "",
       plan: plan,
       capabilities: PLAN_CAPABILITIES[plan],
       usage: {
@@ -70,15 +65,15 @@ export class UserContextResolverImpl implements UserContextResolver {
       subscription: {
         stripeCustomerId: userData.stripeCustomerId || null,
         stripeSubscriptionId: userData.stripeSubscriptionId || null,
-        isActive: userData.subscriptionStatus === 'active',
-        isTrial: userData.subscriptionStatus === 'trialing',
+        isActive: userData.subscriptionStatus === "active",
+        isTrial: userData.subscriptionStatus === "trialing",
         trialEndsAt: userData.trialEndsAt?.toDate() || null,
         isOverLimit: false, // Calculated by usage trackers
       },
       meta: {
         createdAt: userData.createdAt?.toDate() || new Date(),
         lastActiveAt: new Date(),
-        timezone: userData.settings?.timezone || 'UTC',
+        timezone: userData.settings?.timezone || "UTC",
       },
     };
 
@@ -100,8 +95,8 @@ export class UserContextResolverImpl implements UserContextResolver {
       const decodedToken = await this.auth.auth().verifyIdToken(token);
       return await this.fromUserId(decodedToken.uid);
     } catch (err) {
-      logger.error('[UserContextResolver] Token verification failed:', err);
-      throw new Error('Unauthorized: Invalid token');
+      logger.error("[UserContextResolver] Token verification failed:", err);
+      throw new Error("Unauthorized: Invalid token");
     }
   }
 
@@ -122,13 +117,13 @@ export class UserContextResolverImpl implements UserContextResolver {
     }
 
     // 2. Firestore lookup for mapping
-    const mappingDoc = await this.firestore.collection('channelMappings').doc(channelId).get();
+    const mappingDoc = await this.firestore.collection("channelMappings").doc(channelId).get();
     if (!mappingDoc.exists) {
       throw new Error(`Channel mapping not found: ${channelId}`);
     }
 
     const userId = mappingDoc.data()!.userId;
-    
+
     // 3. Cache the mapping (Longer TTL than context)
     try {
       await this.redis.setex(mappingCacheKey, 3600 * 24, userId); // 24 hours

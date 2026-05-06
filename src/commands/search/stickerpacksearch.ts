@@ -1,5 +1,5 @@
-import { MessageContext, GlobalContext } from '../../types/index.js';
-import axios from 'axios';
+import axios from "axios";
+import { MessageContext, GlobalContext } from "../../types/index.js";
 
 interface StickerPackResult {
   name: string;
@@ -8,19 +8,19 @@ interface StickerPackResult {
 }
 
 export default {
-  name: 'stickerpacksearch',
-  aliases: ['stickerpack', 'stickerpacks'],
-  category: 'search',
+  name: "stickerpacksearch",
+  aliases: ["stickerpack", "stickerpacks"],
+  category: "search",
   permissions: {
     coin: 10,
   },
   code: async (ctx: MessageContext) => {
     const { formatter, tools, config } = ctx.channel.context as GlobalContext;
-    const input = ctx.args.join(' ') || null;
+    const input = ctx.args.join(" ") || null;
 
     if (!input) {
-      const instruction = tools.msg.generateInstruction(['send'], ['text']);
-      const example = tools.msg.generateCmdExample(ctx.used, 'evangelion');
+      const instruction = tools.msg.generateInstruction(["send"], ["text"]);
+      const example = tools.msg.generateCmdExample(ctx.used, "evangelion");
       return await ctx.reply(`${formatter.quote(instruction)}
 ${formatter.quote(example)}`);
     }
@@ -36,11 +36,11 @@ ${formatter.quote(example)}`);
             `${formatter.quote(`Nama: ${res.name}`)}
 ` +
             `${formatter.quote(`Pembuat: ${res.author}`)}
-${formatter.quote(`URL: ${res.url}`)}`
+${formatter.quote(`URL: ${res.url}`)}`,
         )
-        .join('\n' + `${formatter.quote('· · ─ ·✶· ─ · ·')}\n`);
+        .join("\n" + `${formatter.quote("· · ─ ·✶· ─ · ·")}\n`);
       await ctx.reply({
-        text: resultText || config.msg.notFound || 'No results found',
+        text: resultText || config.msg.notFound || "No results found",
         footer: config.msg.footer,
       });
     } catch (error: unknown) {

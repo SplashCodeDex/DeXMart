@@ -1,12 +1,12 @@
-import { test } from 'vitest';
+import { test } from "vitest";
 
-test.skip('UPSTREAM PENDING SYNC: src/services/templateService.test.ts', () => {});
+test.skip("UPSTREAM PENDING SYNC: src/services/templateService.test.ts", () => {});
 
 /* ORIGINAL TEST CODE COMMENTED OUT TO PREVENT IMPORT/INIT ERRORS */
 // import { describe, it, expect, beforeEach, vi } from 'vitest';
 // import { TemplateService } from './templateService.js';
 // import { FirebaseService } from './FirebaseService.js';
-// 
+//
 // // Mock dependencies
 // const { mockFirebase } = vi.hoisted(() => ({
 //   mockFirebase: {
@@ -16,20 +16,20 @@ test.skip('UPSTREAM PENDING SYNC: src/services/templateService.test.ts', () => {
 //     deleteDoc: vi.fn(),
 //   }
 // }));
-// 
+//
 // vi.mock('./FirebaseService.js', () => ({
 //   firebaseService: mockFirebase,
 //   FirebaseService: { getInstance: () => mockFirebase }
 // }));
-// 
+//
 // describe.skip('[UPSTREAM PENDING SYNC] TemplateService', () => {
 //   let service: TemplateService;
-// 
+//
 //   beforeEach(() => {
 //     vi.clearAllMocks();
 //     service = TemplateService.getInstance();
 //   });
-// 
+//
 //   describe.skip('[UPSTREAM PENDING SYNC] createTemplate', () => {
 //     it('should create a valid template', async () => {
 //       const tenantId = 'tenant_1';
@@ -39,11 +39,11 @@ test.skip('UPSTREAM PENDING SYNC: src/services/templateService.test.ts', () => {
 //         category: 'marketing' as const,
 //         mediaType: 'text' as const
 //       };
-// 
+//
 //       mockFirebase.setDoc.mockResolvedValue(undefined);
-// 
+//
 //       const result = await service.createTemplate(tenantId, templateData);
-// 
+//
 //       expect(result.success).toBe(true);
 //       expect(mockFirebase.setDoc).toHaveBeenCalledWith(
 //         'templates',
@@ -57,18 +57,18 @@ test.skip('UPSTREAM PENDING SYNC: src/services/templateService.test.ts', () => {
 //       );
 //     });
 //   });
-// 
+//
 //   describe.skip('[UPSTREAM PENDING SYNC] getTemplates', () => {
 //     it('should return all templates for a tenant', async () => {
 //       const tenantId = 'tenant_1';
 //       const mockTemplates = [
 //         { id: '1', name: 'T1', tenantId, content: 'C1', createdAt: new Date(), updatedAt: new Date(), category: 'marketing', mediaType: 'text' }
 //       ];
-// 
+//
 //       mockFirebase.getCollection.mockResolvedValue(mockTemplates);
-// 
+//
 //       const result = await service.getTemplates(tenantId);
-// 
+//
 //       expect(result.success).toBe(true);
 //       if (result.success) {
 //         expect(result.data).toHaveLength(1);
@@ -77,4 +77,4 @@ test.skip('UPSTREAM PENDING SYNC: src/services/templateService.test.ts', () => {
 //     });
 //   });
 // });
-// 
+//

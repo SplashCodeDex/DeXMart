@@ -1,10 +1,10 @@
-import { MessageContext } from '../../types/index.js';
-import axios from 'axios';
+import axios from "axios";
+import { MessageContext } from "../../types/index.js";
 
 export default {
-  name: 'soundclouddl',
-  aliases: ['scdl'],
-  category: 'downloader',
+  name: "soundclouddl",
+  aliases: ["scdl"],
+  category: "downloader",
   permissions: {
     coin: 10,
   },
@@ -14,19 +14,19 @@ export default {
 
     if (!url)
       return await ctx.reply(
-        `${formatter.quote(tools.msg.generateInstruction(['send'], ['text']))}\n${formatter.quote(
+        `${formatter.quote(tools.msg.generateInstruction(["send"], ["text"]))}\n${formatter.quote(
           tools.msg.generateCmdExample(
             ctx.used,
-            'https://soundcloud.com/hikaruutada/one-last-kiss-live-version'
-          )
-        )}`
+            "https://soundcloud.com/hikaruutada/one-last-kiss-live-version",
+          ),
+        )}`,
       );
 
     const isUrl = tools.cmd.isUrl(url);
     if (!isUrl) return await ctx.reply(config.msg.urlInvalid);
 
     try {
-      const apiUrl = tools.api.createUrl('izumi', '/downloader/soundcloud', {
+      const apiUrl = tools.api.createUrl("izumi", "/downloader/soundcloud", {
         url,
       });
       const result = (await axios.get(apiUrl)).data.result.url;
@@ -35,7 +35,7 @@ export default {
         audio: {
           url: result,
         },
-        mimetype: tools.mime.lookup('mp3'),
+        mimetype: tools.mime.lookup("mp3"),
       });
     } catch (error: any) {
       await tools.cmd.handleError(ctx, error, true);

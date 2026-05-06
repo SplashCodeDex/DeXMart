@@ -1,26 +1,26 @@
-import { MessageContext } from '../../types/index.js';
-import axios from 'axios';
+import axios from "axios";
+import { MessageContext } from "../../types/index.js";
 
 export default {
-  name: 'googleimage',
-  aliases: ['gimage'],
-  category: 'tool',
+  name: "googleimage",
+  aliases: ["gimage"],
+  category: "tool",
   permissions: {
     coin: 10,
   },
   code: async (ctx: MessageContext) => {
     const { formatter, tools, config } = ctx.channel.context;
-    const input = ctx.args.join(' ') || null;
+    const input = ctx.args.join(" ") || null;
 
     if (!input)
       return await ctx.reply(
-        `${formatter.quote(tools.msg.generateInstruction(['send'], ['text']))}\n${formatter.quote(
-          tools.msg.generateCmdExample(ctx.used, 'rei ayanami')
-        )}`
+        `${formatter.quote(tools.msg.generateInstruction(["send"], ["text"]))}\n${formatter.quote(
+          tools.msg.generateCmdExample(ctx.used, "rei ayanami"),
+        )}`,
       );
 
     try {
-      const apiUrl = tools.api.createUrl('davidcyril', '/googleimage', {
+      const apiUrl = tools.api.createUrl("davidcyril", "/googleimage", {
         query: input,
       });
       const result = tools.cmd.getRandomElement((await axios.get(apiUrl)).data.results);
@@ -29,14 +29,14 @@ export default {
         image: {
           url: result,
         },
-        mimetype: tools.mime.lookup('jpeg'),
+        mimetype: tools.mime.lookup("jpeg"),
         caption: formatter.quote(`Kueri: ${input}`),
         footer: config.msg.footer,
         buttons: [
           {
             buttonId: `${ctx.used.prefix + ctx.used.command} ${input}`,
             buttonText: {
-              displayText: 'Ambil Lagi',
+              displayText: "Ambil Lagi",
             },
           },
         ],

@@ -1,5 +1,5 @@
-import { AIUtilityService } from './ai-utility.js';
-import logger from '../utils/logger.js';
+import logger from "../utils/logger.js";
+import { AIUtilityService } from "./ai-utility.js";
 
 interface ModerationResult {
   safe: boolean;
@@ -18,8 +18,8 @@ class ContentModerationService {
 
   constructor() {
     this.gemini = AIUtilityService.getInstance();
-    this.moderationEnabled = process.env.CONTENT_MODERATION_ENABLED === 'true';
-    this.strictMode = process.env.MODERATION_STRICT_MODE === 'true';
+    this.moderationEnabled = process.env.CONTENT_MODERATION_ENABLED === "true";
+    this.strictMode = process.env.MODERATION_STRICT_MODE === "true";
 
     // Moderation thresholds
     this.thresholds = {
@@ -32,18 +32,18 @@ class ContentModerationService {
 
     // Content categories to monitor
     this.categories = [
-      'hate_speech',
-      'violence',
-      'adult_content',
-      'spam',
-      'harassment',
-      'bullying',
-      'discrimination',
-      'self_harm',
-      'illegal_activities',
+      "hate_speech",
+      "violence",
+      "adult_content",
+      "spam",
+      "harassment",
+      "bullying",
+      "discrimination",
+      "self_harm",
+      "illegal_activities",
     ];
 
-    logger.info('Content moderation service initialized', {
+    logger.info("Content moderation service initialized", {
       enabled: this.moderationEnabled,
       strictMode: this.strictMode,
     });
@@ -61,7 +61,7 @@ class ContentModerationService {
     }
 
     try {
-      logger.debug('Moderating content', {
+      logger.debug("Moderating content", {
         contentLength: content.length,
         userId: context.userId,
         groupId: context.groupId,
@@ -74,7 +74,7 @@ class ContentModerationService {
 
       // Log moderation results
       if (!enhancedResult.safe) {
-        logger.warn('Content flagged by moderation', {
+        logger.warn("Content flagged by moderation", {
           userId: context.userId,
           groupId: context.groupId,
           categories: enhancedResult.categories,
@@ -85,7 +85,7 @@ class ContentModerationService {
 
       return enhancedResult;
     } catch (error: any) {
-      logger.error('Content moderation failed', {
+      logger.error("Content moderation failed", {
         error: error.message,
         contentLength: content.length,
         userId: context.userId,
@@ -96,7 +96,7 @@ class ContentModerationService {
         safe: true,
         score: 0,
         categories: [],
-        reason: 'Moderation service unavailable',
+        reason: "Moderation service unavailable",
         fallback: true,
       };
     }
@@ -113,7 +113,7 @@ class ContentModerationService {
     const enhanced: ModerationResult = {
       safe: aiResult.safe ?? true,
       score: aiResult.score ?? 0,
-      categories: aiResult.categories ?? []
+      categories: aiResult.categories ?? [],
     };
 
     // Additional pattern-based checks
@@ -176,25 +176,25 @@ class ContentModerationService {
     ];
 
     // Check hate speech
-    if (hatePatterns.some(pattern => pattern.test(lowerContent))) {
-      categories.push('hate_speech');
+    if (hatePatterns.some((pattern) => pattern.test(lowerContent))) {
+      categories.push("hate_speech");
       score = Math.max(score, 0.9);
     }
 
     // Check violence
-    if (violencePatterns.some(pattern => pattern.test(lowerContent))) {
-      categories.push('violence');
+    if (violencePatterns.some((pattern) => pattern.test(lowerContent))) {
+      categories.push("violence");
       score = Math.max(score, 0.8);
     }
 
     // Check spam
     const spamMatches = spamPatterns.reduce(
       (count, pattern) => count + (lowerContent.match(pattern) || []).length,
-      0
+      0,
     );
 
     if (spamMatches > 2) {
-      categories.push('spam');
+      categories.push("spam");
       score = Math.max(score, 0.6);
     }
 
@@ -202,14 +202,14 @@ class ContentModerationService {
     if (content.length > 10) {
       const capsRatio = (content.match(/[A-Z]/g) || []).length / content.length;
       if (capsRatio > 0.7) {
-        categories.push('spam');
+        categories.push("spam");
         score = Math.max(score, 0.4);
       }
     }
 
     // Check for repeated characters
     if (/(.)\1{4,}/.test(content)) {
-      categories.push('spam');
+      categories.push("spam");
       score = Math.max(score, 0.3);
     }
 
@@ -248,9 +248,9 @@ class ContentModerationService {
    */
   determineSafety(score: number, categories: string[]) {
     // Always block certain categories regardless of score
-    const alwaysBlock = ['hate_speech', 'violence', 'self_harm', 'illegal_activities'];
+    const alwaysBlock = ["hate_speech", "violence", "self_harm", "illegal_activities"];
 
-    if (categories.some(cat => alwaysBlock.includes(cat))) {
+    if (categories.some((cat) => alwaysBlock.includes(cat))) {
       return false;
     }
 
@@ -274,7 +274,7 @@ class ContentModerationService {
         lastUpdated: new Date().toISOString(),
       };
     } catch (error: any) {
-      logger.error('Failed to get moderation statistics', { error: error.message });
+      logger.error("Failed to get moderation statistics", { error: error.message });
       return null;
     }
   }
@@ -305,9 +305,14 @@ class ContentModerationService {
    * @param {boolean} correctDecision - Whether the moderation was correct
    * @param {string} feedback - User feedback
    */
-  async reportFeedback(content: string, moderationResult: ModerationResult, correctDecision: boolean, feedback: string) {
+  async reportFeedback(
+    content: string,
+    moderationResult: ModerationResult,
+    correctDecision: boolean,
+    feedback: string,
+  ) {
     try {
-      logger.info('Moderation feedback received', {
+      logger.info("Moderation feedback received", {
         contentLength: content.length,
         wasCorrect: correctDecision,
         feedback: feedback.substring(0, 100),
@@ -318,7 +323,7 @@ class ContentModerationService {
       // This would store feedback for model improvement
       // Could be used to fine-tune moderation over time
     } catch (error: any) {
-      logger.error('Failed to process moderation feedback', { error: error.message });
+      logger.error("Failed to process moderation feedback", { error: error.message });
     }
   }
 
@@ -339,7 +344,7 @@ class ContentModerationService {
       this.thresholds = { ...this.thresholds, ...settings.thresholds };
     }
 
-    logger.info('Moderation settings updated', {
+    logger.info("Moderation settings updated", {
       enabled: this.moderationEnabled,
       strictMode: this.strictMode,
       thresholds: this.thresholds,
@@ -352,22 +357,22 @@ class ContentModerationService {
    */
   async healthCheck() {
     try {
-      const testContent = 'This is a test message for moderation.';
+      const testContent = "This is a test message for moderation.";
       const result = await this.moderateContent(testContent);
 
       return {
-        status: 'healthy',
-        service: 'content-moderation',
+        status: "healthy",
+        service: "content-moderation",
         enabled: this.moderationEnabled,
         strictMode: this.strictMode,
         testResult: result,
         timestamp: new Date().toISOString(),
       };
     } catch (error: any) {
-      logger.error('Content moderation health check failed', { error: error.message });
+      logger.error("Content moderation health check failed", { error: error.message });
       return {
-        status: 'unhealthy',
-        service: 'content-moderation',
+        status: "unhealthy",
+        service: "content-moderation",
         error: error.message,
         timestamp: new Date().toISOString(),
       };

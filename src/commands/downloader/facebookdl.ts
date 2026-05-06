@@ -1,10 +1,10 @@
-import { MessageContext } from '../../types/index.js';
-import axios from 'axios';
+import axios from "axios";
+import { MessageContext } from "../../types/index.js";
 
 export default {
-  name: 'facebookdl',
-  aliases: ['facebook', 'fb', 'fbdl'],
-  category: 'downloader',
+  name: "facebookdl",
+  aliases: ["facebook", "fb", "fbdl"],
+  category: "downloader",
   permissions: {
     coin: 10,
   },
@@ -14,16 +14,16 @@ export default {
 
     if (!url)
       return await ctx.reply(
-        `${formatter.quote(tools.msg.generateInstruction(['send'], ['text']))}\n${formatter.quote(
-          tools.msg.generateCmdExample(ctx.used, 'https://www.facebook.com/reel/1112151989983701')
-        )}`
+        `${formatter.quote(tools.msg.generateInstruction(["send"], ["text"]))}\n${formatter.quote(
+          tools.msg.generateCmdExample(ctx.used, "https://www.facebook.com/reel/1112151989983701"),
+        )}`,
       );
 
     const isUrl = tools.cmd.isUrl(url);
     if (!isUrl) return await ctx.reply(config.msg.urlInvalid);
 
     try {
-      const apiUrl = tools.api.createUrl('davidcyril', '/facebook', {
+      const apiUrl = tools.api.createUrl("davidcyril", "/facebook", {
         url,
       });
       const result = (await axios.get(apiUrl)).data.result.downloads;
@@ -32,7 +32,7 @@ export default {
         video: {
           url: result.hd.url || result.sd.url,
         },
-        mimetype: tools.mime.lookup('mp4'),
+        mimetype: tools.mime.lookup("mp4"),
         caption: formatter.quote(`URL: ${url}`),
         footer: config.msg.footer,
       });

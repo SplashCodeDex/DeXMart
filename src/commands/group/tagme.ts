@@ -1,7 +1,7 @@
-import { MessageContext } from '../../types/index.js';
+import { MessageContext } from "../../types/index.js";
 export default {
-  name: 'tagme',
-  category: 'group',
+  name: "tagme",
+  category: "group",
   permissions: {
     group: true,
   },

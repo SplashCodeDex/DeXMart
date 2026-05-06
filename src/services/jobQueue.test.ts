@@ -1,17 +1,17 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { JobQueueService } from './jobQueue.js';
-import { Queue, Worker } from 'bullmq';
+import { Queue, Worker } from "bullmq";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { JobQueueService } from "./jobQueue.js";
 
 // Mock bullmq
-vi.mock('bullmq', () => {
+vi.mock("bullmq", () => {
   return {
-    Queue: vi.fn().mockImplementation(function() {
+    Queue: vi.fn().mockImplementation(function () {
       return {
         add: vi.fn(),
         close: vi.fn(),
       };
     }),
-    Worker: vi.fn().mockImplementation(function() {
+    Worker: vi.fn().mockImplementation(function () {
       return {
         on: vi.fn(),
         close: vi.fn(),
@@ -20,7 +20,7 @@ vi.mock('bullmq', () => {
   };
 });
 
-vi.mock('../utils/logger.js', () => ({
+vi.mock("../utils/logger.js", () => ({
   default: {
     info: vi.fn(),
     error: vi.fn(),
@@ -28,19 +28,19 @@ vi.mock('../utils/logger.js', () => ({
   },
 }));
 
-vi.mock('../dexmart-config/ConfigManager.js', () => ({
+vi.mock("../dexmart-config/ConfigManager.js", () => ({
   default: {
     config: {
       redis: {
-        host: 'localhost',
+        host: "localhost",
         port: 6379,
-        password: '',
+        password: "",
       },
     },
   },
 }));
 
-describe('JobQueueService', () => {
+describe("JobQueueService", () => {
   let jobQueueService: JobQueueService;
 
   beforeEach(() => {
@@ -48,22 +48,22 @@ describe('JobQueueService', () => {
     jobQueueService = new JobQueueService();
   });
 
-  it('should register a worker for a queue', async () => {
+  it("should register a worker for a queue", async () => {
     await jobQueueService.initialize();
 
     const mockHandler = vi.fn();
-    jobQueueService.process('ai-processing', mockHandler);
+    jobQueueService.process("ai-processing", mockHandler);
 
     expect(Worker).toHaveBeenCalledWith(
-      'ai-processing',
+      "ai-processing",
       expect.any(Function),
-      expect.objectContaining({ concurrency: 2 })
+      expect.objectContaining({ concurrency: 2 }),
     );
   });
 
-  it('should initialize queues from config', async () => {
+  it("should initialize queues from config", async () => {
     await jobQueueService.initialize();
-    expect(Queue).toHaveBeenCalledWith('ai-processing', expect.any(Object));
-    expect(Queue).toHaveBeenCalledWith('media-processing', expect.any(Object));
+    expect(Queue).toHaveBeenCalledWith("ai-processing", expect.any(Object));
+    expect(Queue).toHaveBeenCalledWith("media-processing", expect.any(Object));
   });
 });

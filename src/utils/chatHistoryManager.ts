@@ -4,10 +4,10 @@
  * Refactored for Multi-Tenancy (Rule 3).
  */
 
-import { MemoryManager } from './memoryManager.js';
-import { db } from '../lib/firebase.js';
-import { Timestamp } from 'firebase-admin/firestore';
-import { logger } from './logger.js';
+import { Timestamp } from "firebase-admin/firestore";
+import { db } from "../lib/firebase.js";
+import { logger } from "./logger.js";
+import { MemoryManager } from "./memoryManager.js";
 
 export class ChatHistoryManager {
   maxHistoryLength: number;
@@ -21,7 +21,7 @@ export class ChatHistoryManager {
     this.compressionThreshold = options.compressionThreshold || 30;
     this.memoryManager = new MemoryManager({
       maxSize: options.maxUsers || 10000,
-      ttl: options.userTTL || 7200000 // 2 hours
+      ttl: options.userTTL || 7200000, // 2 hours
     });
   }
 
@@ -37,7 +37,7 @@ export class ChatHistoryManager {
       // Load from database if not in memory
       chat = await this.loadFromDatabase(tenantId, userId);
       if (!chat) {
-        chat = { history: [], summary: '', lastActivity: Date.now() };
+        chat = { history: [], summary: "", lastActivity: Date.now() };
       }
       this.memoryManager.set(key, chat);
     }
@@ -52,7 +52,7 @@ export class ChatHistoryManager {
     chat.history.push({
       role,
       content,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
 
     // Update last activity
@@ -68,7 +68,9 @@ export class ChatHistoryManager {
     this.memoryManager.set(key, chat);
 
     // Async save to database (don't wait)
-    this.saveToDatabase(tenantId, userId, chat).catch(err => logger.error('Async save history failed', { tenantId, userId, error: err }));
+    this.saveToDatabase(tenantId, userId, chat).catch((err) =>
+      logger.error("Async save history failed", { tenantId, userId, error: err }),
+    );
 
     return chat;
   }
@@ -76,7 +78,11 @@ export class ChatHistoryManager {
   /**
    * Directly update chat state (useful for replacing history)
    */
-  async updateChat(tenantId: string, userId: string, updates: { history?: any[], summary?: string }) {
+  async updateChat(
+    tenantId: string,
+    userId: string,
+    updates: { history?: any[]; summary?: string },
+  ) {
     const chat = await this.getChat(tenantId, userId);
     if (updates.history) chat.history = updates.history;
     if (updates.summary !== undefined) chat.summary = updates.summary;
@@ -106,7 +112,7 @@ export class ChatHistoryManager {
 
       // Trim summary if too long
       if (chat.summary.length > this.maxSummaryLength) {
-        chat.summary = chat.summary.substring(0, this.maxSummaryLength) + '...';
+        chat.summary = chat.summary.substring(0, this.maxSummaryLength) + "...";
       }
     }
 
@@ -116,8 +122,8 @@ export class ChatHistoryManager {
 
   async summarizeMessages(messages: any[]) {
     // Simplified summarization
-    const userMessages = messages.filter(m => m.role === 'user').length;
-    const assistantMessages = messages.filter(m => m.role === 'assistant').length;
+    const userMessages = messages.filter((m) => m.role === "user").length;
+    const assistantMessages = messages.filter((m) => m.role === "assistant").length;
     return `Previous context: ${userMessages} user messages and ${assistantMessages} assistant responses.`;
   }
 
@@ -127,24 +133,34 @@ export class ChatHistoryManager {
 
   async loadFromDatabase(tenantId: string, userId: string) {
     try {
-      const doc = await db.collection('tenants').doc(tenantId).collection('conversation_memory').doc(userId).get();
+      const doc = await db
+        .collection("tenants")
+        .doc(tenantId)
+        .collection("conversation_memory")
+        .doc(userId)
+        .get();
 
       if (!doc.exists) return null;
 
       const record = doc.data()!;
       let history = [];
       try {
-        history = typeof record.messages === 'string' ? JSON.parse(record.messages) : record.messages;
+        history =
+          typeof record.messages === "string" ? JSON.parse(record.messages) : record.messages;
       } catch (_) {
         history = [];
       }
       return {
         history,
-        summary: record.summary || '',
-        lastActivity: record.lastUpdated ? (record.lastUpdated instanceof Timestamp ? record.lastUpdated.toMillis() : Date.now()) : Date.now()
+        summary: record.summary || "",
+        lastActivity: record.lastUpdated
+          ? record.lastUpdated instanceof Timestamp
+            ? record.lastUpdated.toMillis()
+            : Date.now()
+          : Date.now(),
       };
     } catch (error: any) {
-      logger.error('Error loading chat from database:', { tenantId, userId, error });
+      logger.error("Error loading chat from database:", { tenantId, userId, error });
       return null;
     }
   }
@@ -156,12 +172,17 @@ export class ChatHistoryManager {
         userId,
         messages: messagesJson,
         summary: chat.summary,
-        lastUpdated: Timestamp.now()
+        lastUpdated: Timestamp.now(),
       };
 
-      await db.collection('tenants').doc(tenantId).collection('conversation_memory').doc(userId).set(data, { merge: true });
+      await db
+        .collection("tenants")
+        .doc(tenantId)
+        .collection("conversation_memory")
+        .doc(userId)
+        .set(data, { merge: true });
     } catch (error: any) {
-      logger.error('Error saving chat to database:', { tenantId, userId, error });
+      logger.error("Error saving chat to database:", { tenantId, userId, error });
     }
   }
 
@@ -172,7 +193,7 @@ export class ChatHistoryManager {
       activeChats: memStats.size,
       memoryUsage: memStats.memoryUsage,
       maxHistoryLength: this.maxHistoryLength,
-      compressionThreshold: this.compressionThreshold
+      compressionThreshold: this.compressionThreshold,
     };
   }
 
@@ -180,12 +201,17 @@ export class ChatHistoryManager {
   async cleanupInactiveUsers(tenantId: string, inactivityThreshold = 24 * 60 * 60 * 1000) {
     const cutoff = Timestamp.fromMillis(Date.now() - inactivityThreshold);
     try {
-      const snapshot = await db.collection('tenants').doc(tenantId).collection('conversation_memory').where('lastUpdated', '<', cutoff).get();
+      const snapshot = await db
+        .collection("tenants")
+        .doc(tenantId)
+        .collection("conversation_memory")
+        .where("lastUpdated", "<", cutoff)
+        .get();
       const batch = db.batch();
-      snapshot.docs.forEach(doc => batch.delete(doc.ref));
+      snapshot.docs.forEach((doc) => batch.delete(doc.ref));
       await batch.commit();
     } catch (e) {
-      logger.error('Cleanup failed', { tenantId, error: e });
+      logger.error("Cleanup failed", { tenantId, error: e });
     }
   }
 }

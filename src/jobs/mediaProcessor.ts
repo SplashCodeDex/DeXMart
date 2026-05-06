@@ -1,8 +1,8 @@
-import path from 'path';
-import sharp from 'sharp';
-import { promises as fs } from 'fs';
-import logger from '../utils/logger.js';
-import { Job } from 'bullmq';
+import { promises as fs } from "fs";
+import path from "path";
+import { Job } from "bullmq";
+import sharp from "sharp";
+import logger from "../utils/logger.js";
 
 /**
  * Media Processing Job Handlers
@@ -65,13 +65,13 @@ class MediaProcessor {
 
   constructor() {
     this.supportedFormats = {
-      images: ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'tiff'],
-      videos: ['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm'],
-      audio: ['mp3', 'wav', 'ogg', 'aac', 'flac'],
+      images: ["jpg", "jpeg", "png", "webp", "gif", "bmp", "tiff"],
+      videos: ["mp4", "avi", "mov", "wmv", "flv", "webm"],
+      audio: ["mp3", "wav", "ogg", "aac", "flac"],
     };
 
-    this.tempDir = path.join(process.cwd(), 'temp');
-    this.outputDir = path.join(process.cwd(), 'processed');
+    this.tempDir = path.join(process.cwd(), "temp");
+    this.outputDir = path.join(process.cwd(), "processed");
 
     // Ensure directories exist
     this.ensureDirectories();
@@ -84,9 +84,9 @@ class MediaProcessor {
     try {
       await fs.mkdir(this.tempDir, { recursive: true });
       await fs.mkdir(this.outputDir, { recursive: true });
-      logger.debug('Media processing directories ensured');
+      logger.debug("Media processing directories ensured");
     } catch (error: any) {
-      logger.error('Failed to create media processing directories', { error: error.message });
+      logger.error("Failed to create media processing directories", { error: error.message });
     }
   }
 
@@ -100,7 +100,7 @@ class MediaProcessor {
     const { imagePath, options, userId } = jobData;
 
     try {
-      logger.info('Processing image optimization', {
+      logger.info("Processing image optimization", {
         jobId: job.id,
         userId,
         imagePath,
@@ -120,7 +120,7 @@ class MediaProcessor {
       // Resize if specified
       if (options.width || options.height) {
         sharpInstance = sharpInstance.resize(options.width, options.height, {
-          fit: options.fit || 'cover',
+          fit: options.fit || "cover",
           withoutEnlargement: options.withoutEnlargement !== false,
         });
       }
@@ -144,7 +144,7 @@ class MediaProcessor {
         100
       ).toFixed(2);
 
-      logger.info('Image optimization completed', {
+      logger.info("Image optimization completed", {
         jobId: job.id,
         originalSize: originalStats.size,
         optimizedSize: stats.size,
@@ -169,7 +169,7 @@ class MediaProcessor {
         processingTime,
       };
     } catch (error: any) {
-      logger.error('Image optimization failed', {
+      logger.error("Image optimization failed", {
         jobId: job.id,
         userId,
         imagePath,
@@ -190,7 +190,7 @@ class MediaProcessor {
     const { images, options, userId } = jobData;
 
     try {
-      logger.info('Processing batch image processing', {
+      logger.info("Processing batch image processing", {
         jobId: job.id,
         userId,
         imageCount: images.length,
@@ -209,7 +209,7 @@ class MediaProcessor {
               options: { ...options, ...imageData.options },
               userId,
             },
-            { ...job, id: `${job.id}_${i}` } as any
+            { ...job, id: `${job.id}_${i}` } as any,
           );
 
           results.push({
@@ -218,7 +218,7 @@ class MediaProcessor {
             success: true,
           });
         } catch (imageError: any) {
-          logger.warn('Failed to process image in batch', {
+          logger.warn("Failed to process image in batch", {
             jobId: job.id,
             imageId: imageData.id,
             error: imageError.message,
@@ -235,7 +235,7 @@ class MediaProcessor {
         await job.updateProgress(((i + 1) / images.length) * 100);
       }
 
-      const successful = results.filter(r => r.success).length;
+      const successful = results.filter((r) => r.success).length;
 
       return {
         success: true,
@@ -246,7 +246,7 @@ class MediaProcessor {
         processingTime: Date.now() - (job.processedOn ?? Date.now()),
       };
     } catch (error: any) {
-      logger.error('Batch image processing failed', {
+      logger.error("Batch image processing failed", {
         jobId: job.id,
         userId,
         error: error.message,
@@ -266,7 +266,7 @@ class MediaProcessor {
     const { videoPath, timestamp, size, userId } = jobData;
 
     try {
-      logger.info('Processing video thumbnail generation', {
+      logger.info("Processing video thumbnail generation", {
         jobId: job.id,
         userId,
         videoPath,
@@ -276,20 +276,36 @@ class MediaProcessor {
 
       const thumbnailPath = path.join(
         this.outputDir,
-        `${path.basename(videoPath, path.extname(videoPath))}_thumbnail.jpg`
+        `${path.basename(videoPath, path.extname(videoPath))}_thumbnail.jpg`,
       );
 
       // Try to use ffmpeg to grab a frame, fallback to placeholder if not available
-      const { spawn } = await import('child_process');
-      const ts = typeof timestamp === 'number' ? Math.max(0, timestamp) : 0;
-      const ffArgs = ['-y', '-ss', String(ts), '-i', videoPath, '-frames:v', '1', '-vf', `scale=${size?.width || 320}:${size?.height || -1}:force_original_aspect_ratio=decrease`, thumbnailPath];
-      const runFfmpeg = () => new Promise((resolve, reject) => {
-        try {
-          const ff = spawn('ffmpeg', ffArgs);
-          ff.on('error', reject);
-          ff.on('close', code => (code === 0 ? resolve(true) : reject(new Error(`ffmpeg exited ${code}`))));
-        } catch (e) { reject(e); }
-      });
+      const { spawn } = await import("child_process");
+      const ts = typeof timestamp === "number" ? Math.max(0, timestamp) : 0;
+      const ffArgs = [
+        "-y",
+        "-ss",
+        String(ts),
+        "-i",
+        videoPath,
+        "-frames:v",
+        "1",
+        "-vf",
+        `scale=${size?.width || 320}:${size?.height || -1}:force_original_aspect_ratio=decrease`,
+        thumbnailPath,
+      ];
+      const runFfmpeg = () =>
+        new Promise((resolve, reject) => {
+          try {
+            const ff = spawn("ffmpeg", ffArgs);
+            ff.on("error", reject);
+            ff.on("close", (code) =>
+              code === 0 ? resolve(true) : reject(new Error(`ffmpeg exited ${code}`)),
+            );
+          } catch (e) {
+            reject(e);
+          }
+        });
 
       let usedFfmpeg = false;
       try {
@@ -304,7 +320,9 @@ class MediaProcessor {
             channels: 3,
             background: { r: 100, g: 100, b: 100 },
           },
-        }).jpeg().toFile(thumbnailPath);
+        })
+          .jpeg()
+          .toFile(thumbnailPath);
       }
 
       // Get file sizes
@@ -328,7 +346,7 @@ class MediaProcessor {
         processingTime,
       };
     } catch (error: any) {
-      logger.error('Video thumbnail generation failed', {
+      logger.error("Video thumbnail generation failed", {
         jobId: job.id,
         userId,
         videoPath,
@@ -349,7 +367,7 @@ class MediaProcessor {
     const { inputPath, outputFormat, options, userId } = jobData;
 
     try {
-      logger.info('Processing file conversion', {
+      logger.info("Processing file conversion", {
         jobId: job.id,
         userId,
         inputPath,
@@ -370,14 +388,14 @@ class MediaProcessor {
 
         // Apply conversion options
         switch (outputFormat) {
-          case 'webp':
+          case "webp":
             sharpInstance = sharpInstance.webp(options);
             break;
-          case 'png':
+          case "png":
             sharpInstance = sharpInstance.png(options);
             break;
-          case 'jpg':
-          case 'jpeg':
+          case "jpg":
+          case "jpeg":
             sharpInstance = (sharpInstance as any).jpeg(options);
             break;
           default:
@@ -388,7 +406,7 @@ class MediaProcessor {
       } else {
         // For unsupported conversions, just copy the file
         await fs.copyFile(inputPath, outputPath);
-        logger.warn('Unsupported conversion, file copied as-is', {
+        logger.warn("Unsupported conversion, file copied as-is", {
           jobId: job.id,
           inputFormat: inputExt,
           outputFormat,
@@ -422,7 +440,7 @@ class MediaProcessor {
         processingTime,
       };
     } catch (error: any) {
-      logger.error('File conversion failed', {
+      logger.error("File conversion failed", {
         jobId: job.id,
         userId,
         inputPath,
@@ -444,7 +462,7 @@ class MediaProcessor {
     const { olderThan, patterns, userId } = jobData;
 
     try {
-      logger.info('Processing media cleanup', {
+      logger.info("Processing media cleanup", {
         jobId: job.id,
         userId,
         olderThan,
@@ -465,14 +483,14 @@ class MediaProcessor {
           // Check if file matches cleanup patterns
           const shouldDelete =
             !patterns ||
-            patterns.some(pattern => file.includes(pattern) || file.match(new RegExp(pattern)));
+            patterns.some((pattern) => file.includes(pattern) || file.match(new RegExp(pattern)));
 
           if (shouldDelete) {
             await fs.unlink(filePath);
             deletedCount++;
             freedSpace += stats.size;
 
-            logger.debug('Cleaned up temp file', {
+            logger.debug("Cleaned up temp file", {
               jobId: job.id,
               file,
               size: stats.size,
@@ -495,7 +513,7 @@ class MediaProcessor {
           deletedCount++;
           freedSpace += stats.size;
 
-          logger.debug('Cleaned up processed file', {
+          logger.debug("Cleaned up processed file", {
             jobId: job.id,
             file,
             size: stats.size,
@@ -514,7 +532,7 @@ class MediaProcessor {
         processingTime,
       };
     } catch (error: any) {
-      logger.error('Media cleanup failed', {
+      logger.error("Media cleanup failed", {
         jobId: job.id,
         userId,
         error: error.message,
@@ -534,7 +552,7 @@ class MediaProcessor {
     const { timeRange, userId } = jobData;
 
     try {
-      logger.info('Processing media analytics', {
+      logger.info("Processing media analytics", {
         jobId: job.id,
         userId,
         timeRange,
@@ -553,8 +571,14 @@ class MediaProcessor {
       };
 
       const files = await walk(this.outputDir);
-      const images = files.filter(f => ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.bmp', '.tiff'].includes(path.extname(f).toLowerCase()));
-      const videos = files.filter(f => ['.mp4', '.avi', '.mov', '.wmv', '.flv', '.webm'].includes(path.extname(f).toLowerCase()));
+      const images = files.filter((f) =>
+        [".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp", ".tiff"].includes(
+          path.extname(f).toLowerCase(),
+        ),
+      );
+      const videos = files.filter((f) =>
+        [".mp4", ".avi", ".mov", ".wmv", ".flv", ".webm"].includes(path.extname(f).toLowerCase()),
+      );
       let totalSize = 0;
       for (const f of files) {
         const s = await fs.stat(f);
@@ -573,7 +597,9 @@ class MediaProcessor {
         storageUsed: toGB(totalSize),
         averageProcessingTime: avgProcessing,
         successRate,
-        popularFormats: Array.from(new Set(files.map(f => path.extname(f).slice(1).toLowerCase()))).slice(0, 5),
+        popularFormats: Array.from(
+          new Set(files.map((f) => path.extname(f).slice(1).toLowerCase())),
+        ).slice(0, 5),
         timeRange,
         generatedAt: new Date().toISOString(),
       };
@@ -584,7 +610,7 @@ class MediaProcessor {
         processingTime: Date.now() - (job.processedOn ?? Date.now()),
       };
     } catch (error: any) {
-      logger.error('Media analytics processing failed', {
+      logger.error("Media analytics processing failed", {
         jobId: job.id,
         userId,
         error: error.message,
@@ -608,7 +634,7 @@ class MediaProcessor {
    * @param {string} type - Type of media (images, videos, audio)
    * @returns {boolean} Whether format is supported
    */
-  isFormatSupported(filename: string, type: 'images' | 'videos' | 'audio' = 'images'): boolean {
+  isFormatSupported(filename: string, type: "images" | "videos" | "audio" = "images"): boolean {
     const ext = path.extname(filename).toLowerCase().slice(1);
     return this.supportedFormats[type]?.includes(ext) || false;
   }

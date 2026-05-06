@@ -1,77 +1,77 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { IngressService } from './IngressService.js';
-import { agentService } from './AgentService.js';
-import { tenantConfigService } from './tenantConfigService.js';
-import { webhookService } from './webhookService.js';
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { agentService } from "./AgentService.js";
+import { IngressService } from "./IngressService.js";
+import { tenantConfigService } from "./tenantConfigService.js";
+import { webhookService } from "./webhookService.js";
 
 // Mock dependencies
-vi.mock('./AgentService.js', () => ({
+vi.mock("./AgentService.js", () => ({
   agentService: {
-    getAgent: vi.fn()
-  }
+    getAgent: vi.fn(),
+  },
 }));
 
-vi.mock('./tenantConfigService.js', () => ({
+vi.mock("./tenantConfigService.js", () => ({
   tenantConfigService: {
-    isFeatureEnabled: vi.fn()
-  }
+    isFeatureEnabled: vi.fn(),
+  },
 }));
 
-vi.mock('./webhookService.js', () => ({
+vi.mock("./webhookService.js", () => ({
   webhookService: {
-    dispatch: vi.fn()
-  }
+    dispatch: vi.fn(),
+  },
 }));
 
-vi.mock('../utils/createChannelContext.js', () => ({
-  createChannelContext: vi.fn(() => Promise.resolve({ sender: { jid: '123@s.whatsapp.net' } }))
+vi.mock("../utils/createChannelContext.js", () => ({
+  createChannelContext: vi.fn(() => Promise.resolve({ sender: { jid: "123@s.whatsapp.net" } })),
 }));
 
-vi.mock('./deduplicationService.js', () => ({
+vi.mock("./deduplicationService.js", () => ({
   deduplicationService: {
-    shouldProcess: vi.fn().mockReturnValue(true)
-  }
+    shouldProcess: vi.fn().mockReturnValue(true),
+  },
 }));
 
-vi.mock('./ChannelService.js', () => ({
+vi.mock("./ChannelService.js", () => ({
   channelService: {
     getChannel: vi.fn().mockResolvedValue({
       success: true,
-      data: { tenantId: 'tenant-123', channelId: 'chan-1' }
-    })
-  }
+      data: { tenantId: "tenant-123", channelId: "chan-1" },
+    }),
+  },
 }));
 
-vi.mock('./automationService.js', () => ({
+vi.mock("./automationService.js", () => ({
   automationService: {
     listAutomations: vi.fn().mockResolvedValue({ success: true, data: [] }),
-    executeAutomation: vi.fn()
-  }
+    executeAutomation: vi.fn(),
+  },
 }));
 
-vi.mock('./flowService.js', () => ({
+vi.mock("./flowService.js", () => ({
   flowService: {
-    listActiveFlows: vi.fn().mockResolvedValue({ success: true, data: [] })
-  }
+    listActiveFlows: vi.fn().mockResolvedValue({ success: true, data: [] }),
+  },
 }));
 
-vi.mock('./flowEngine.js', () => ({
+vi.mock("./flowEngine.js", () => ({
   flowEngine: {
-    executeFlow: vi.fn().mockResolvedValue(false)
-  }
+    executeFlow: vi.fn().mockResolvedValue(false),
+  },
 }));
 
-vi.mock('./analytics.js', () => ({
+vi.mock("./analytics.js", () => ({
   default: {
-    trackMessage: vi.fn()
-  }
+    trackMessage: vi.fn(),
+  },
 }));
 
-describe('IngressService Path-Aware Resolution', () => {
+describe("IngressService Path-Aware Resolution", () => {
   let service: IngressService;
-  const tenantId = 'tenant-123';
-  const channelId = 'chan-1';
-  const agentId = 'agent-456';
+  const tenantId = "tenant-123";
+  const channelId = "chan-1";
+  const agentId = "agent-456";
   const fullPath = `tenants/${tenantId}/agents/${agentId}/channels/${channelId}`;
 
   beforeEach(() => {
@@ -81,48 +81,71 @@ describe('IngressService Path-Aware Resolution', () => {
     service = IngressService.getInstance();
   });
 
-  describe('handleCommonMessage', () => {
-    it('should resolve agentId from fullPath and route to AI', async () => {
-      const mockAgent = { id: agentId, name: 'AI Agent' };
+  describe("handleCommonMessage", () => {
+    it("should resolve agentId from fullPath and route to AI", async () => {
+      const mockAgent = { id: agentId, name: "AI Agent" };
       const mockContext = {
         unifiedAI: {
-          processMessage: vi.fn()
-        }
+          processMessage: vi.fn(),
+        },
       };
-      const mockMessage = { platform: 'whatsapp', content: { text: 'hello' } } as any;
+      const mockMessage = { platform: "whatsapp", content: { text: "hello" } } as any;
 
       vi.mocked(agentService.getAgent).mockResolvedValue({ success: true, data: mockAgent as any });
       vi.mocked(tenantConfigService.isFeatureEnabled).mockResolvedValue(true);
 
-      await service.handleCommonMessage(tenantId, channelId, mockMessage, mockContext as any, fullPath);
+      await service.handleCommonMessage(
+        tenantId,
+        channelId,
+        mockMessage,
+        mockContext as any,
+        fullPath,
+      );
 
       // Verify correct agent was fetched
       expect(agentService.getAgent).toHaveBeenCalledWith(tenantId, agentId);
 
       // Verify AI processing was called
       expect(mockContext.unifiedAI.processMessage).toHaveBeenCalled();
-      expect(webhookService.dispatch).not.toHaveBeenCalledWith(tenantId, 'message.received', expect.anything());
+      expect(webhookService.dispatch).not.toHaveBeenCalledWith(
+        tenantId,
+        "message.received",
+        expect.anything(),
+      );
     });
 
-    it('should fallback to webhook if no agent in path (system_default)', async () => {
+    it("should fallback to webhook if no agent in path (system_default)", async () => {
       const mockContext = {
         unifiedAI: {
-          processMessage: vi.fn()
-        }
+          processMessage: vi.fn(),
+        },
       };
-      const mockMessage = { platform: 'whatsapp', content: { text: 'hello' } } as any;
+      const mockMessage = { platform: "whatsapp", content: { text: "hello" } } as any;
       const systemPath = `tenants/${tenantId}/agents/system_default/channels/${channelId}`;
 
       // Mock agentService.getAgent to return system_default agent
-      const mockSystemAgent = { id: 'system_default', name: 'System Default' };
-      vi.mocked(agentService.getAgent).mockResolvedValue({ success: true, data: mockSystemAgent as any });
+      const mockSystemAgent = { id: "system_default", name: "System Default" };
+      vi.mocked(agentService.getAgent).mockResolvedValue({
+        success: true,
+        data: mockSystemAgent as any,
+      });
       vi.mocked(tenantConfigService.isFeatureEnabled).mockResolvedValue(true);
 
-      await service.handleCommonMessage(tenantId, channelId, mockMessage, mockContext as any, systemPath);
+      await service.handleCommonMessage(
+        tenantId,
+        channelId,
+        mockMessage,
+        mockContext as any,
+        systemPath,
+      );
 
       // Should NOT call AI if agent is system_default
       expect(mockContext.unifiedAI.processMessage).not.toHaveBeenCalled();
-      expect(webhookService.dispatch).toHaveBeenCalledWith(tenantId, 'message.received', expect.any(Object));
+      expect(webhookService.dispatch).toHaveBeenCalledWith(
+        tenantId,
+        "message.received",
+        expect.any(Object),
+      );
     });
   });
 });

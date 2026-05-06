@@ -27,7 +27,7 @@ export class MemoryManager<T = any> {
     this.cleanupInterval = options.cleanupInterval || 300000; // 5 minutes
     this.data = new Map();
     this.accessTimes = new Map();
-    
+
     this.startCleanupTimer();
   }
 
@@ -38,14 +38,14 @@ export class MemoryManager<T = any> {
 
     const ttl = customTTL || this.ttl;
     const expiresAt = Date.now() + ttl;
-    
+
     this.data.set(key, { value, expiresAt });
     this.accessTimes.set(key, Date.now());
   }
 
   get(key: string): T | null {
     const item = this.data.get(key);
-    
+
     if (!item) return null;
 
     if (Date.now() > item.expiresAt) {
@@ -65,12 +65,12 @@ export class MemoryManager<T = any> {
   has(key: string): boolean {
     const item = this.data.get(key);
     if (!item) return false;
-    
+
     if (Date.now() > item.expiresAt) {
       this.delete(key);
       return false;
     }
-    
+
     return true;
   }
 
@@ -100,7 +100,7 @@ export class MemoryManager<T = any> {
       }
     }
 
-    expiredKeys.forEach(key => this.delete(key));
+    expiredKeys.forEach((key) => this.delete(key));
   }
 
   private startCleanupTimer(): void {
@@ -114,7 +114,7 @@ export class MemoryManager<T = any> {
     return {
       size: this.data.size,
       maxSize: this.maxSize,
-      memoryUsage: (this.data.size / this.maxSize) * 100
+      memoryUsage: (this.data.size / this.maxSize) * 100,
     };
   }
 

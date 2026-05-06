@@ -1,7 +1,7 @@
-import { MessageContext } from '../../types/index.js';
+import { MessageContext } from "../../types/index.js";
 export default {
-  name: 'setmaxwarnings',
-  category: 'group',
+  name: "setmaxwarnings",
+  category: "group",
   permissions: {
     admin: true,
     channelAdmin: true,
@@ -13,9 +13,9 @@ export default {
 
     if (!input)
       return await ctx.reply(
-        `${formatter.quote(tools.msg.generateInstruction(['send'], ['text']))}\n${formatter.quote(
-          tools.msg.generateCmdExample(ctx.used, '8')
-        )}`
+        `${formatter.quote(tools.msg.generateInstruction(["send"], ["text"]))}\n${formatter.quote(
+          tools.msg.generateCmdExample(ctx.used, "8"),
+        )}`,
       );
 
     try {

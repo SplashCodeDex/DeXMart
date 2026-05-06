@@ -1,6 +1,6 @@
-import { Job } from 'bullmq';
-import { AIUtilityService } from '../services/ai-utility.js';
-import logger from '../utils/logger.js';
+import { Job } from "bullmq";
+import { AIUtilityService } from "../services/ai-utility.js";
+import logger from "../utils/logger.js";
 
 interface Message {
   role: string;
@@ -67,7 +67,7 @@ class AIProcessor {
     const { prompt, type, userId, context } = jobData;
 
     try {
-      logger.info('Processing AI content generation', {
+      logger.info("Processing AI content generation", {
         jobId: job.id,
         type,
         userId,
@@ -77,26 +77,26 @@ class AIProcessor {
       let result;
 
       switch (type) {
-        case 'text':
+        case "text":
           result = await this.gemini.getChatCompletion(prompt);
           break;
 
-        case 'analysis':
+        case "analysis":
           result = await this.gemini.getChatCompletion(`Analyze the following content: ${prompt}`);
           break;
 
-        case 'summary':
-          result = await this.gemini.getSummary([{ role: 'user', content: prompt }]);
+        case "summary":
+          result = await this.gemini.getSummary([{ role: "user", content: prompt }]);
           break;
 
-        case 'translation':
+        case "translation":
           const { targetLanguage } = context || {};
           if (targetLanguage) {
             result = await this.gemini.getChatCompletion(
-              `Translate the following text to ${targetLanguage}: ${prompt}`
+              `Translate the following text to ${targetLanguage}: ${prompt}`,
             );
           } else {
-            throw new Error('Target language not specified for translation');
+            throw new Error("Target language not specified for translation");
           }
           break;
 
@@ -107,7 +107,7 @@ class AIProcessor {
       // Store result in cache for faster retrieval
       if (context?.cacheKey) {
         // Implementation would depend on cache service
-        logger.debug('AI result cached', { cacheKey: context.cacheKey });
+        logger.debug("AI result cached", { cacheKey: context.cacheKey });
       }
 
       return {
@@ -122,7 +122,7 @@ class AIProcessor {
         },
       };
     } catch (error: any) {
-      logger.error('AI content generation failed', {
+      logger.error("AI content generation failed", {
         jobId: job.id,
         type,
         userId,
@@ -143,7 +143,7 @@ class AIProcessor {
     const { items, analysisType, userId } = jobData;
 
     try {
-      logger.info('Processing batch AI analysis', {
+      logger.info("Processing batch AI analysis", {
         jobId: job.id,
         itemCount: items.length,
         analysisType,
@@ -159,25 +159,25 @@ class AIProcessor {
           let analysis;
 
           switch (analysisType) {
-            case 'sentiment':
+            case "sentiment":
               analysis = await this.gemini.getChatCompletion(
-                `Analyze the sentiment of this text (positive, negative, or neutral): "${item.content}"`
+                `Analyze the sentiment of this text (positive, negative, or neutral): "${item.content}"`,
               );
               break;
 
-            case 'topics':
+            case "topics":
               analysis = await this.gemini.getChatCompletion(
-                `Extract the main topics from this text: "${item.content}"`
+                `Extract the main topics from this text: "${item.content}"`,
               );
               break;
 
-            case 'summary':
-              analysis = await this.gemini.getSummary([{ role: 'user', content: item.content }]);
+            case "summary":
+              analysis = await this.gemini.getSummary([{ role: "user", content: item.content }]);
               break;
 
             default:
               analysis = await this.gemini.getChatCompletion(
-                `Analyze this content: "${item.content}"`
+                `Analyze this content: "${item.content}"`,
               );
           }
 
@@ -188,7 +188,7 @@ class AIProcessor {
             success: true,
           });
         } catch (itemError: any) {
-          logger.warn('Failed to analyze item in batch', {
+          logger.warn("Failed to analyze item in batch", {
             jobId: job.id,
             itemId: item.id,
             error: itemError.message,
@@ -210,12 +210,12 @@ class AIProcessor {
         success: true,
         analysisType,
         totalItems: items.length,
-        successfulAnalyses: results.filter(r => r.success).length,
+        successfulAnalyses: results.filter((r) => r.success).length,
         results,
         processingTime: Date.now() - (job.processedOn ?? Date.now()),
       };
     } catch (error: any) {
-      logger.error('Batch AI analysis failed', {
+      logger.error("Batch AI analysis failed", {
         jobId: job.id,
         analysisType,
         userId,
@@ -236,7 +236,7 @@ class AIProcessor {
     const { content, userId, context } = jobData;
 
     try {
-      logger.info('Processing AI content moderation', {
+      logger.info("Processing AI content moderation", {
         jobId: job.id,
         userId,
         contentLength: content.length,
@@ -246,7 +246,7 @@ class AIProcessor {
 
       // Log moderation actions
       if (!moderationResult.safe) {
-        logger.warn('Content flagged by AI moderation', {
+        logger.warn("Content flagged by AI moderation", {
           jobId: job.id,
           userId,
           categories: moderationResult.categories,
@@ -266,7 +266,7 @@ class AIProcessor {
         },
       };
     } catch (error: any) {
-      logger.error('AI content moderation failed', {
+      logger.error("AI content moderation failed", {
         jobId: job.id,
         userId,
         error: error.message,
@@ -286,7 +286,7 @@ class AIProcessor {
     const { conversations, userId, modelType } = jobData;
 
     try {
-      logger.info('Processing AI fine-tuning data', {
+      logger.info("Processing AI fine-tuning data", {
         jobId: job.id,
         userId,
         conversationCount: conversations.length,
@@ -308,7 +308,7 @@ class AIProcessor {
             success: true,
           });
         } catch (convError: any) {
-          logger.warn('Failed to process conversation for fine-tuning', {
+          logger.warn("Failed to process conversation for fine-tuning", {
             jobId: job.id,
             conversationId: conversation.id,
             error: convError.message,
@@ -333,7 +333,7 @@ class AIProcessor {
         processingTime: Date.now() - (job.processedOn ?? Date.now()),
       };
     } catch (error: any) {
-      logger.error('AI fine-tuning data processing failed', {
+      logger.error("AI fine-tuning data processing failed", {
         jobId: job.id,
         userId,
         modelType,
@@ -356,7 +356,7 @@ class AIProcessor {
     // Create a prompt for the AI to generate a training example
     const prompt = `Create a training example for a ${modelType} model from this conversation:
 
-${messages.map((msg: Message) => `${msg.role}: ${msg.content}`).join('\n')}
+${messages.map((msg: Message) => `${msg.role}: ${msg.content}`).join("\n")}
 
 Context: ${JSON.stringify(context)}
 
@@ -375,13 +375,13 @@ Generate a JSON training example with the following format:
       // If parsing fails, create a basic structure
       return {
         input: messages
-          .filter((m: Message) => m.role === 'user')
+          .filter((m: Message) => m.role === "user")
           .map((m: Message) => m.content)
-          .join(' '),
+          .join(" "),
         output: messages
-          .filter((m: Message) => m.role === 'assistant')
+          .filter((m: Message) => m.role === "assistant")
           .map((m: Message) => m.content)
-          .join(' '),
+          .join(" "),
         context: context || {},
       };
     }
@@ -397,25 +397,25 @@ Generate a JSON training example with the following format:
     const { timeRange, userId, metrics } = jobData;
 
     try {
-      logger.info('Processing AI performance analytics', {
+      logger.info("Processing AI performance analytics", {
         jobId: job.id,
         userId,
         timeRange,
-        metrics: metrics.join(', '),
+        metrics: metrics.join(", "),
       });
 
       // Get real analytics from aiAnalyticsService
-      const { aiAnalyticsService } = await import('../services/aiAnalytics.js');
+      const { aiAnalyticsService } = await import("../services/aiAnalytics.js");
 
       // Extract tenantId from userId (assuming format includes tenant info or we need to query)
       // For now, we'll need tenantId to be part of jobData - this is a requirement
-      const tenantId = (jobData as any).tenantId || 'default';
+      const tenantId = (jobData as any).tenantId || "default";
 
       const analyticsResult = await aiAnalyticsService.getPerformanceAnalytics(
         tenantId,
         userId,
         timeRange,
-        metrics
+        metrics,
       );
 
       if (!analyticsResult.success) {
@@ -430,7 +430,7 @@ Generate a JSON training example with the following format:
         processingTime: Date.now() - (job.processedOn ?? Date.now()),
       };
     } catch (error: any) {
-      logger.error('AI performance analytics processing failed', {
+      logger.error("AI performance analytics processing failed", {
         jobId: job.id,
         userId,
         error: error.message,

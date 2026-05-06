@@ -1,6 +1,6 @@
-import crypto from 'crypto';
-import redisClient from './redis.js';
-import { Result } from '../types/index.js';
+import crypto from "crypto";
+import { Result } from "../types/index.js";
+import redisClient from "./redis.js";
 
 class Cache {
   private readonly redis: typeof redisClient;
@@ -12,7 +12,7 @@ class Cache {
   }
 
   createKey(data: unknown): string {
-    return crypto.createHash('md5').update(JSON.stringify(data)).digest('hex');
+    return crypto.createHash("md5").update(JSON.stringify(data)).digest("hex");
   }
 
   async get<T>(key: string): Promise<Result<T | null>> {
@@ -20,24 +20,24 @@ class Cache {
       const data = await this.redis.get(key);
       return {
         success: true,
-        data: data ? (JSON.parse(data) as T) : null
+        data: data ? (JSON.parse(data) as T) : null,
       };
     } catch (error: unknown) {
       return {
         success: false,
-        error: error instanceof Error ? error : new Error('Unknown cache get error')
+        error: error instanceof Error ? error : new Error("Unknown cache get error"),
       };
     }
   }
 
   async set(key: string, value: unknown, ttl: number = this.defaultTTL): Promise<Result<boolean>> {
     try {
-      await this.redis.set(key, JSON.stringify(value), 'EX', ttl);
+      await this.redis.set(key, JSON.stringify(value), "EX", ttl);
       return { success: true, data: true };
     } catch (error: unknown) {
       return {
         success: false,
-        error: error instanceof Error ? error : new Error('Unknown cache set error')
+        error: error instanceof Error ? error : new Error("Unknown cache set error"),
       };
     }
   }
@@ -49,7 +49,7 @@ class Cache {
     } catch (error: unknown) {
       return {
         success: false,
-        error: error instanceof Error ? error : new Error('Unknown cache del error')
+        error: error instanceof Error ? error : new Error("Unknown cache del error"),
       };
     }
   }
@@ -69,7 +69,7 @@ class Cache {
     } catch (error: unknown) {
       return {
         success: false,
-        error: error instanceof Error ? error : new Error('Unknown cache invalidate error')
+        error: error instanceof Error ? error : new Error("Unknown cache invalidate error"),
       };
     }
   }

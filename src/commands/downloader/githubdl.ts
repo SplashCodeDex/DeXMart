@@ -1,10 +1,10 @@
-import { MessageContext } from '../../types/index.js';
-import axios from 'axios';
+import axios from "axios";
+import { MessageContext } from "../../types/index.js";
 
 export default {
-  name: 'githubdl',
-  aliases: ['ghdl', 'gitclone'],
-  category: 'downloader',
+  name: "githubdl",
+  aliases: ["ghdl", "gitclone"],
+  category: "downloader",
   permissions: {
     coin: 10,
   },
@@ -14,16 +14,16 @@ export default {
 
     if (!url)
       return await ctx.reply(
-        `${formatter.quote(tools.msg.generateInstruction(['send'], ['text']))}\n${formatter.quote(
-          tools.msg.generateCmdExample(ctx.used, 'https://github.com/itsreimau/DeXMart')
-        )}`
+        `${formatter.quote(tools.msg.generateInstruction(["send"], ["text"]))}\n${formatter.quote(
+          tools.msg.generateCmdExample(ctx.used, "https://github.com/itsreimau/DeXMart"),
+        )}`,
       );
 
     const isUrl = tools.cmd.isUrl(url);
     if (!isUrl) return await ctx.reply(config.msg.urlInvalid);
 
     try {
-      const apiUrl = tools.api.createUrl('diibot', '/api/download/gitclone', {
+      const apiUrl = tools.api.createUrl("diibot", "/api/download/gitclone", {
         url,
       });
       const { result } = (await axios.get(apiUrl)).data;
@@ -33,7 +33,7 @@ export default {
           url: result.urllink,
         },
         fileName: result.filename,
-        mimetype: tools.mime.lookup(result.filename) || 'application/octet-stream',
+        mimetype: tools.mime.lookup(result.filename) || "application/octet-stream",
         caption: formatter.quote(`URL: ${url}`),
         footer: config.msg.footer,
       });

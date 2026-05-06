@@ -1,5 +1,5 @@
-import { MessageContext, GlobalContext } from '../../types/index.js';
-import axios from 'axios';
+import axios from "axios";
+import { MessageContext, GlobalContext } from "../../types/index.js";
 
 interface XnxxResult {
   title: string;
@@ -7,19 +7,19 @@ interface XnxxResult {
 }
 
 export default {
-  name: 'xnxxsearch',
-  aliases: ['xnxx', 'xnxxs'],
-  category: 'search',
+  name: "xnxxsearch",
+  aliases: ["xnxx", "xnxxs"],
+  category: "search",
   permissions: {
     premium: true,
   },
   code: async (ctx: MessageContext) => {
     const { formatter, tools, config } = ctx.channel.context as GlobalContext;
-    const input = ctx.args.join(' ') || null;
+    const input = ctx.args.join(" ") || null;
 
     if (!input) {
-      const instruction = tools.msg.generateInstruction(['send'], ['text']);
-      const example = tools.msg.generateCmdExample(ctx.used, 'evangelion');
+      const instruction = tools.msg.generateInstruction(["send"], ["text"]);
+      const example = tools.msg.generateCmdExample(ctx.used, "evangelion");
       return await ctx.reply(`${formatter.quote(instruction)}
 ${formatter.quote(example)}`);
     }
@@ -32,11 +32,11 @@ ${formatter.quote(example)}`);
       const resultText = result
         .map(
           (res: XnxxResult) => `${formatter.quote(`Judul: ${res.title}`)}
-${formatter.quote(`URL: ${res.link}`)}`
+${formatter.quote(`URL: ${res.link}`)}`,
         )
-        .join('\n' + `${formatter.quote('· · ─ ·✶· ─ · ·')}\n`);
+        .join("\n" + `${formatter.quote("· · ─ ·✶· ─ · ·")}\n`);
       await ctx.reply({
-        text: resultText || config.msg.notFound || 'No results found',
+        text: resultText || config.msg.notFound || "No results found",
         footer: config.msg.footer,
       });
     } catch (error: unknown) {

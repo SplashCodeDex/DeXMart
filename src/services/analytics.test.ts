@@ -1,13 +1,13 @@
-import { test } from 'vitest';
+import { test } from "vitest";
 
-test.skip('UPSTREAM PENDING SYNC: src/services/analytics.test.ts', () => {});
+test.skip("UPSTREAM PENDING SYNC: src/services/analytics.test.ts", () => {});
 
 /* ORIGINAL TEST CODE COMMENTED OUT TO PREVENT IMPORT/INIT ERRORS */
 // import { describe, it, expect, vi, beforeEach } from 'vitest';
 // import analyticsService from './analytics.js';
 // import { firebaseService } from './FirebaseService.js';
 // import { admin } from '../lib/firebase.js';
-// 
+//
 // vi.mock('./FirebaseService.js', () => ({
 //   firebaseService: {
 //     setDoc: vi.fn().mockResolvedValue(undefined),
@@ -16,7 +16,7 @@ test.skip('UPSTREAM PENDING SYNC: src/services/analytics.test.ts', () => {});
 //     ]),
 //   }
 // }));
-// 
+//
 // vi.mock('../lib/firebase.js', () => ({
 //   db: {
 //     doc: vi.fn(() => ({
@@ -43,7 +43,7 @@ test.skip('UPSTREAM PENDING SYNC: src/services/analytics.test.ts', () => {});
 //     }
 //   }
 // }));
-// 
+//
 // vi.mock('../utils/logger.js', () => ({
 //   default: {
 //     info: vi.fn(),
@@ -52,17 +52,17 @@ test.skip('UPSTREAM PENDING SYNC: src/services/analytics.test.ts', () => {});
 //     debug: vi.fn()
 //   }
 // }));
-// 
+//
 // describe.skip('[UPSTREAM PENDING SYNC] AnalyticsService', () => {
 //   const tenantId = 'tenant_1';
-// 
+//
 //   beforeEach(() => {
 //     vi.clearAllMocks();
 //   });
-// 
+//
 //   it('should track a sent message correctly', async () => {
 //     const result = await analyticsService.trackMessage(tenantId, 'sent');
-// 
+//
 //     expect(result.success).toBe(true);
 //     expect(firebaseService.setDoc).toHaveBeenCalledWith(
 //       'analytics',
@@ -74,10 +74,10 @@ test.skip('UPSTREAM PENDING SYNC: src/services/analytics.test.ts', () => {});
 //       true
 //     );
 //   });
-// 
+//
 //   it('should track an error correctly', async () => {
 //       const result = await analyticsService.trackMessage(tenantId, 'error');
-// 
+//
 //       expect(result.success).toBe(true);
 //       expect(firebaseService.setDoc).toHaveBeenCalledWith(
 //         'analytics',
@@ -89,23 +89,23 @@ test.skip('UPSTREAM PENDING SYNC: src/services/analytics.test.ts', () => {});
 //         true
 //       );
 //     });
-// 
+//
 //   it('should get historical metrics', async () => {
 //     const result = await analyticsService.getHistoricalMetrics(tenantId, 7);
-// 
+//
 //     expect(result.success).toBe(true);
 //     if (result.success) {
 //         expect(result.data).toHaveLength(1);
 //         expect(result.data[0].date).toBe('2026-02-09');
 //     }
 //   });
-// 
+//
 //   it('should track events with tenant isolation', async () => {
 //       const { db } = await import('../lib/firebase.js');
 //       const result = await analyticsService.trackEvent(tenantId, 'user_1', 'click_button', { btn: 'save' });
-// 
+//
 //       expect(result.success).toBe(true);
 //       expect(db.collection).toHaveBeenCalledWith(`tenants/${tenantId}/events`);
 //   });
 // });
-// 
+//

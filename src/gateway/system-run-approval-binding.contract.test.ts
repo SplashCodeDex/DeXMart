@@ -1,6 +1,6 @@
-import { test } from 'vitest';
+import { test } from "vitest";
 
-test.skip('UPSTREAM PENDING SYNC: src/gateway/system-run-approval-binding.contract.test.ts', () => {});
+test.skip("UPSTREAM PENDING SYNC: src/gateway/system-run-approval-binding.contract.test.ts", () => {});
 
 /* ORIGINAL TEST CODE COMMENTED OUT TO PREVENT IMPORT/INIT ERRORS */
 // import fs from "node:fs";
@@ -10,7 +10,7 @@ test.skip('UPSTREAM PENDING SYNC: src/gateway/system-run-approval-binding.contra
 // import type { ExecApprovalRequestPayload } from "../infra/exec-approvals.js";
 // import { buildSystemRunApprovalBinding } from "../infra/system-run-approval-binding.js";
 // import { evaluateSystemRunApprovalMatch } from "./node-invoke-system-run-approval-match.js";
-// 
+//
 // type FixtureCase = {
 //   name: string;
 //   request: {
@@ -42,17 +42,17 @@ test.skip('UPSTREAM PENDING SYNC: src/gateway/system-run-approval-binding.contra
 //     code?: "APPROVAL_REQUEST_MISMATCH" | "APPROVAL_ENV_BINDING_MISSING" | "APPROVAL_ENV_MISMATCH";
 //   };
 // };
-// 
+//
 // type Fixture = {
 //   cases: FixtureCase[];
 // };
-// 
+//
 // const fixturePath = path.resolve(
 //   path.dirname(fileURLToPath(import.meta.url)),
 //   "../../test/fixtures/system-run-approval-binding-contract.json",
 // );
 // const fixture = JSON.parse(fs.readFileSync(fixturePath, "utf8")) as Fixture;
-// 
+//
 // function buildRequestPayload(entry: FixtureCase): ExecApprovalRequestPayload {
 //   const payload: ExecApprovalRequestPayload = {
 //     host: entry.request.host,
@@ -73,7 +73,7 @@ test.skip('UPSTREAM PENDING SYNC: src/gateway/system-run-approval-binding.contra
 //   }
 //   return payload;
 // }
-// 
+//
 // describe.skip("[UPSTREAM PENDING SYNC] system-run approval binding contract fixtures", () => {
 //   for (const entry of fixture.cases) {
 //     test(entry.name, () => {
@@ -82,7 +82,7 @@ test.skip('UPSTREAM PENDING SYNC: src/gateway/system-run-approval-binding.contra
 //         request: buildRequestPayload(entry),
 //         binding: entry.invoke.binding,
 //       });
-// 
+//
 //       expect(result.ok).toBe(entry.expected.ok);
 //       if (!entry.expected.ok) {
 //         if (result.ok) {
@@ -93,4 +93,4 @@ test.skip('UPSTREAM PENDING SYNC: src/gateway/system-run-approval-binding.contra
 //     });
 //   }
 // });
-// 
+//

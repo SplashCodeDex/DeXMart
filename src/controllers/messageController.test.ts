@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { Request, Response } from 'express';
-import { MessageController } from './messageController.js';
-import { db } from '../lib/firebase.js';
+import { Request, Response } from "express";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { db } from "../lib/firebase.js";
+import { MessageController } from "./messageController.js";
 
 // ── Hoisted mocks ─────────────────────────────────────────────────────────────
 const { mockJobQueue } = vi.hoisted(() => ({
@@ -10,11 +10,11 @@ const { mockJobQueue } = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('../services/jobQueue.js', () => ({
+vi.mock("../services/jobQueue.js", () => ({
   default: mockJobQueue,
 }));
 
-vi.mock('../lib/firebase.js', () => ({
+vi.mock("../lib/firebase.js", () => ({
   db: {
     collection: vi.fn().mockReturnThis(),
     doc: vi.fn().mockReturnThis(),
@@ -22,14 +22,14 @@ vi.mock('../lib/firebase.js', () => ({
   },
 }));
 
-vi.mock('../utils/logger.js', () => ({
+vi.mock("../utils/logger.js", () => ({
   default: {
     info: vi.fn(),
     error: vi.fn(),
   },
 }));
 
-describe('MessageController', () => {
+describe("MessageController", () => {
   let mockReq: Partial<Request>;
   let mockRes: Partial<Response>;
 
@@ -37,7 +37,7 @@ describe('MessageController', () => {
     vi.clearAllMocks();
     mockJobQueue.addJob.mockResolvedValue(undefined);
     mockReq = {
-      user: { tenantId: 'tenant-123' } as any,
+      user: { tenantId: "tenant-123" } as any,
     };
     mockRes = {
       status: vi.fn().mockReturnThis(),
@@ -45,39 +45,39 @@ describe('MessageController', () => {
     };
   });
 
-  describe('reply', () => {
-    it('should enqueue a reply via the job queue', async () => {
+  describe("reply", () => {
+    it("should enqueue a reply via the job queue", async () => {
       mockReq.body = {
-        messageId: 'msg-original',
-        text: 'This is a reply',
+        messageId: "msg-original",
+        text: "This is a reply",
       };
 
       // Mock fetching the original message
-      (db.collection('').doc('').get as any).mockResolvedValue({
+      (db.collection("").doc("").get as any).mockResolvedValue({
         exists: true,
         data: () => ({
-          channelId: 'chan-456',
-          remoteJid: 'user-789@s.whatsapp.net',
+          channelId: "chan-456",
+          remoteJid: "user-789@s.whatsapp.net",
         }),
       });
 
       await (MessageController as any).reply(mockReq as Request, mockRes as Response);
 
       expect(mockJobQueue.addJob).toHaveBeenCalledWith(
-        'whatsapp-outbound',
-        'reply',
+        "whatsapp-outbound",
+        "reply",
         expect.objectContaining({
-          channelId: 'chan-456',
-          jid: 'user-789@s.whatsapp.net',
-          message: 'This is a reply',
+          channelId: "chan-456",
+          jid: "user-789@s.whatsapp.net",
+          message: "This is a reply",
         }),
       );
       expect(mockRes.json).toHaveBeenCalledWith(expect.objectContaining({ success: true }));
     });
 
-    it('should return 404 if original message not found', async () => {
-      mockReq.body = { messageId: 'missing', text: 'hi' };
-      (db.collection('').doc('').get as any).mockResolvedValue({ exists: false });
+    it("should return 404 if original message not found", async () => {
+      mockReq.body = { messageId: "missing", text: "hi" };
+      (db.collection("").doc("").get as any).mockResolvedValue({ exists: false });
 
       await (MessageController as any).reply(mockReq as Request, mockRes as Response);
       expect(mockRes.status).toHaveBeenCalledWith(404);

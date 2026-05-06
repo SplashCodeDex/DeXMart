@@ -1,9 +1,8 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from "vitest";
+import { isApiSuccess, isApiError, type ApiResponse } from "./api";
 
-import { isApiSuccess, isApiError, type ApiResponse } from './api';
-
-describe('API Type Guards', () => {
-  it('should correctly identify success responses', () => {
+describe("API Type Guards", () => {
+  it("should correctly identify success responses", () => {
     const successResponse: ApiResponse<{ id: number }> = {
       success: true,
       data: { id: 1 },
@@ -13,12 +12,12 @@ describe('API Type Guards', () => {
     expect(isApiError(successResponse)).toBe(false);
   });
 
-  it('should correctly identify error responses', () => {
+  it("should correctly identify error responses", () => {
     const errorResponse: ApiResponse<null> = {
       success: false,
       error: {
-        code: 'ERROR_CODE',
-        message: 'Something went wrong',
+        code: "ERROR_CODE",
+        message: "Something went wrong",
       },
     };
 

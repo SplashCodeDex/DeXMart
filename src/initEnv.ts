@@ -6,14 +6,16 @@
  * immediately proceed to evaluate sibling imports (like logger and ConfigManager)
  * before the environment variables are actually loaded.
  */
-import { loadCentralEnv } from '@splashcodex/api-key-manager/env';
-import dotenv from 'dotenv';
+import { loadCentralEnv } from "@splashcodex/api-key-manager/env";
+import dotenv from "dotenv";
 
 // 1. Load shared developer keys (~/codedex/env/)
 try {
   const result: any = loadCentralEnv({ silent: false });
   if (result && result.loaded) {
-    console.log(`[Env] ✅ Loaded central env from ${result.envDir} (${result.filesLoaded.join(', ')})`);
+    console.log(
+      `[Env] ✅ Loaded central env from ${result.envDir} (${result.filesLoaded.join(", ")})`,
+    );
   }
 } catch (error: any) {
   // Not available in CI or prod environments, or missing dir

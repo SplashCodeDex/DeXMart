@@ -4,28 +4,28 @@
  * Zero-Trust Data Layer: All IO must be validated via Zod
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
 // Plan Types
-export const PlanSchema = z.enum(['starter', 'pro', 'enterprise']);
+export const PlanSchema = z.enum(["starter", "pro", "enterprise"]);
 export type Plan = z.infer<typeof PlanSchema>;
 
 export const SubscriptionStatusSchema = z.enum([
-  'trialing',
-  'active',
-  'past_due',
-  'unpaid',
-  'canceled',
-  'incomplete',
-  'incomplete_expired',
-  'paused',
+  "trialing",
+  "active",
+  "past_due",
+  "unpaid",
+  "canceled",
+  "incomplete",
+  "incomplete_expired",
+  "paused",
 ]);
 export type SubscriptionStatus = z.infer<typeof SubscriptionStatusSchema>;
 
 // Request Schemas
 export const CreateCheckoutSessionRequestSchema = z.object({
   planId: PlanSchema,
-  interval: z.enum(['month', 'year']),
+  interval: z.enum(["month", "year"]),
 });
 export type CreateCheckoutSessionRequest = z.infer<typeof CreateCheckoutSessionRequestSchema>;
 
@@ -44,7 +44,7 @@ export const CheckoutSessionResponseSchema = z.object({
 });
 export type CheckoutSessionResponse = z.infer<typeof CheckoutSessionResponseSchema>;
 
-export const InvoiceStatusSchema = z.enum(['paid', 'pending', 'failed']);
+export const InvoiceStatusSchema = z.enum(["paid", "pending", "failed"]);
 export type InvoiceStatus = z.infer<typeof InvoiceStatusSchema>;
 
 export const InvoiceResponseSchema = z.object({

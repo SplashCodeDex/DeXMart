@@ -1,9 +1,9 @@
-import { MessageContext } from '../../types/index.js';
-import axios from 'axios';
+import axios from "axios";
+import { MessageContext } from "../../types/index.js";
 
 export default {
-  name: 'sfiledl',
-  category: 'downloader',
+  name: "sfiledl",
+  category: "downloader",
   permissions: {
     premium: true,
   },
@@ -13,16 +13,16 @@ export default {
 
     if (!url)
       return await ctx.reply(
-        `${formatter.quote(tools.msg.generateInstruction(['send'], ['text']))}\n${formatter.quote(
-          tools.msg.generateCmdExample(ctx.used, 'https://sfile.mobi/a1NTccB8T6m')
-        )}`
+        `${formatter.quote(tools.msg.generateInstruction(["send"], ["text"]))}\n${formatter.quote(
+          tools.msg.generateCmdExample(ctx.used, "https://sfile.mobi/a1NTccB8T6m"),
+        )}`,
       );
 
     const isUrl = tools.cmd.isUrl(url);
     if (!isUrl) return await ctx.reply(config.msg.urlInvalid);
 
     try {
-      const apiUrl = tools.api.createUrl('zell', '/download/sfile', {
+      const apiUrl = tools.api.createUrl("zell", "/download/sfile", {
         url,
       });
       const { result } = (await axios.get(apiUrl)).data;
@@ -32,7 +32,7 @@ export default {
           url: result.download_url,
         },
         fileName: result.metadata.filename,
-        mimetype: result.metadata.mimetype || 'application/octet-stream',
+        mimetype: result.metadata.mimetype || "application/octet-stream",
         caption: formatter.quote(`URL: ${url}`),
         footer: config.msg.footer,
       });

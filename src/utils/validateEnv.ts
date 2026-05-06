@@ -1,4 +1,4 @@
-import logger from './logger.js';
+import logger from "./logger.js";
 
 /**
  * Environment Variable Validation
@@ -17,93 +17,93 @@ interface EnvValidationRule {
 const envRules: EnvValidationRule[] = [
   // Firebase Configuration
   {
-    name: 'FIREBASE_SERVICE_ACCOUNT_PATH',
+    name: "FIREBASE_SERVICE_ACCOUNT_PATH",
     required: false,
-    description: 'Path to Firebase service account JSON file'
+    description: "Path to Firebase service account JSON file",
   },
   {
-    name: 'FIREBASE_PROJECT_ID',
+    name: "FIREBASE_PROJECT_ID",
     required: false,
-    description: 'Firebase project ID for database and authentication'
+    description: "Firebase project ID for database and authentication",
   },
   {
-    name: 'FIREBASE_CLIENT_EMAIL',
+    name: "FIREBASE_CLIENT_EMAIL",
     required: false,
-    description: 'Firebase service account client email'
+    description: "Firebase service account client email",
   },
   {
-    name: 'FIREBASE_PRIVATE_KEY',
+    name: "FIREBASE_PRIVATE_KEY",
     required: false,
-    description: 'Firebase service account private key'
+    description: "Firebase service account private key",
   },
 
   // Google AI Configuration
   {
-    name: 'GOOGLE_GEMINI_API_KEY',
+    name: "GOOGLE_GEMINI_API_KEY",
     required: true,
-    description: 'Google Gemini AI API key for AI features'
+    description: "Google Gemini AI API key for AI features",
   },
 
   // Server Configuration
   {
-    name: 'PORT',
+    name: "PORT",
     required: false,
-    defaultValue: '3001',
+    defaultValue: "3001",
     validator: (value) => !isNaN(parseInt(value)) && parseInt(value) > 0 && parseInt(value) < 65536,
-    description: 'Server port number'
+    description: "Server port number",
   },
   {
-    name: 'NODE_ENV',
+    name: "NODE_ENV",
     required: false,
-    defaultValue: 'development',
-    validator: (value) => ['development', 'production', 'test'].includes(value),
-    description: 'Node environment (development, production, test)'
+    defaultValue: "development",
+    validator: (value) => ["development", "production", "test"].includes(value),
+    description: "Node environment (development, production, test)",
   },
 
   // JWT Configuration
   {
-    name: 'JWT_SECRET',
+    name: "JWT_SECRET",
     required: true,
     validator: (value) => value.length >= 32,
-    description: 'JWT secret key (minimum 32 characters)'
+    description: "JWT secret key (minimum 32 characters)",
   },
 
   // Stripe Configuration (optional but recommended for production)
   {
-    name: 'STRIPE_SECRET_KEY',
+    name: "STRIPE_SECRET_KEY",
     required: false,
-    description: 'Stripe secret key for payment processing'
+    description: "Stripe secret key for payment processing",
   },
   {
-    name: 'STRIPE_WEBHOOK_SECRET',
+    name: "STRIPE_WEBHOOK_SECRET",
     required: false,
-    description: 'Stripe webhook secret for secure webhook verification'
+    description: "Stripe webhook secret for secure webhook verification",
   },
 
   // Redis Configuration (optional)
   {
-    name: 'REDIS_URL',
+    name: "REDIS_URL",
     required: false,
-    description: 'Redis connection URL for caching'
+    description: "Redis connection URL for caching",
   },
 
   // Rate Limiting
   {
-    name: 'RATE_LIMIT_AI_REQ',
+    name: "RATE_LIMIT_AI_REQ",
     required: false,
-    defaultValue: '10',
+    defaultValue: "10",
     validator: (value) => !isNaN(parseInt(value)) && parseInt(value) > 0,
-    description: 'AI requests rate limit per window'
+    description: "AI requests rate limit per window",
   },
 
   // Baileys Configuration
   {
-    name: 'USE_BAILEYS_DIRECT',
+    name: "USE_BAILEYS_DIRECT",
     required: false,
-    defaultValue: 'false',
-    validator: (value) => ['true', 'false'].includes(value.toLowerCase()),
-    description: 'Use Baileys direct connection mode'
-  }
+    defaultValue: "false",
+    validator: (value) => ["true", "false"].includes(value.toLowerCase()),
+    description: "Use Baileys direct connection mode",
+  },
 ];
 
 interface ValidationResult {
@@ -123,7 +123,7 @@ export function validateEnvironment(): ValidationResult {
   const missingRequired: string[] = [];
   const invalidValues: string[] = [];
 
-  logger.info('🔍 Validating environment variables...');
+  logger.info("🔍 Validating environment variables...");
 
   for (const rule of envRules) {
     const value = process.env[rule.name];
@@ -158,20 +158,26 @@ export function validateEnvironment(): ValidationResult {
 
     // Log successful validation
     if (value) {
-      const displayValue = rule.name.toLowerCase().includes('key') || rule.name.toLowerCase().includes('secret')
-        ? '***[REDACTED]***'
-        : value;
+      const displayValue =
+        rule.name.toLowerCase().includes("key") || rule.name.toLowerCase().includes("secret")
+          ? "***[REDACTED]***"
+          : value;
       logger.info(`✅ ${rule.name}: ${displayValue}`);
     }
   }
 
   // Custom multi-variable dependency checks
   const hasFirebasePath = !!process.env.FIREBASE_SERVICE_ACCOUNT_PATH;
-  const hasFirebaseVars = !!(process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PRIVATE_KEY);
+  const hasFirebaseVars = !!(
+    process.env.FIREBASE_PROJECT_ID &&
+    process.env.FIREBASE_CLIENT_EMAIL &&
+    process.env.FIREBASE_PRIVATE_KEY
+  );
 
   if (!hasFirebasePath && !hasFirebaseVars) {
-    const error = 'Missing Firebase credentials. Provide either FIREBASE_SERVICE_ACCOUNT_PATH or (FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY)';
-    if (process.env.NODE_ENV === 'development') {
+    const error =
+      "Missing Firebase credentials. Provide either FIREBASE_SERVICE_ACCOUNT_PATH or (FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY)";
+    if (process.env.NODE_ENV === "development") {
       warnings.push(error);
       logger.warn(`⚠️ ${error}`);
     } else {
@@ -182,21 +188,23 @@ export function validateEnvironment(): ValidationResult {
 
   // Log warnings for optional but recommended variables
   const productionWarnings = [];
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === "production") {
     if (!process.env.STRIPE_SECRET_KEY) {
-      productionWarnings.push('STRIPE_SECRET_KEY not set - payment processing will be disabled');
+      productionWarnings.push("STRIPE_SECRET_KEY not set - payment processing will be disabled");
     }
     if (!process.env.REDIS_URL) {
-      productionWarnings.push('REDIS_URL not set - using in-memory cache (not recommended for production)');
+      productionWarnings.push(
+        "REDIS_URL not set - using in-memory cache (not recommended for production)",
+      );
     }
     if (!process.env.STRIPE_WEBHOOK_SECRET) {
-      productionWarnings.push('STRIPE_WEBHOOK_SECRET not set - webhook verification will fail');
+      productionWarnings.push("STRIPE_WEBHOOK_SECRET not set - webhook verification will fail");
     }
   }
 
   if (productionWarnings.length > 0) {
-    logger.warn('⚠️  Production warnings:');
-    productionWarnings.forEach(warning => {
+    logger.warn("⚠️  Production warnings:");
+    productionWarnings.forEach((warning) => {
       logger.warn(`   - ${warning}`);
       warnings.push(warning);
     });
@@ -205,12 +213,12 @@ export function validateEnvironment(): ValidationResult {
   const success = errors.length === 0;
 
   if (success) {
-    logger.info('✅ Environment validation passed!');
+    logger.info("✅ Environment validation passed!");
   } else {
-    logger.error('❌ Environment validation failed!');
-    logger.error(`   Missing required variables: ${missingRequired.join(', ')}`);
+    logger.error("❌ Environment validation failed!");
+    logger.error(`   Missing required variables: ${missingRequired.join(", ")}`);
     if (invalidValues.length > 0) {
-      logger.error(`   Invalid values: ${invalidValues.join(', ')}`);
+      logger.error(`   Invalid values: ${invalidValues.join(", ")}`);
     }
   }
 
@@ -219,7 +227,7 @@ export function validateEnvironment(): ValidationResult {
     errors,
     warnings,
     missingRequired,
-    invalidValues
+    invalidValues,
   };
 }
 
@@ -240,15 +248,18 @@ export function validateEnvironmentOrThrow(): void {
 ║                                                                ║
 ╠════════════════════════════════════════════════════════════════╣
 ║  ERRORS:                                                       ║
-${result.errors.map(e => `║  - ${e.padEnd(60)} ║`).join('\n')}
+${result.errors.map((e) => `║  - ${e.padEnd(60)} ║`).join("\n")}
 ║                                                                ║
 ╠════════════════════════════════════════════════════════════════╣
 ║  REQUIRED VARIABLES:                                           ║
-${envRules.filter(r => r.required).map(r => `║  - ${r.name.padEnd(30)} ${r.description.substring(0, 28).padEnd(28)} ║`).join('\n')}
+${envRules
+  .filter((r) => r.required)
+  .map((r) => `║  - ${r.name.padEnd(30)} ${r.description.substring(0, 28).padEnd(28)} ║`)
+  .join("\n")}
 ╚════════════════════════════════════════════════════════════════╝
 `;
     console.error(errorMessage);
-    throw new Error('Environment validation failed. Application cannot start.');
+    throw new Error("Environment validation failed. Application cannot start.");
   }
 
   if (result.warnings.length > 0) {

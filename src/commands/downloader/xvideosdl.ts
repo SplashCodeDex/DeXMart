@@ -1,9 +1,9 @@
-import { MessageContext } from '../../types/index.js';
-import axios from 'axios';
+import axios from "axios";
+import { MessageContext } from "../../types/index.js";
 
 export default {
-  name: 'xvideosdl',
-  category: 'downloader',
+  name: "xvideosdl",
+  category: "downloader",
   permissions: {
     premium: true,
   },
@@ -13,19 +13,19 @@ export default {
 
     if (!url)
       return await ctx.reply(
-        `${formatter.quote(tools.msg.generateInstruction(['send'], ['text']))}\n${formatter.quote(
+        `${formatter.quote(tools.msg.generateInstruction(["send"], ["text"]))}\n${formatter.quote(
           tools.msg.generateCmdExample(
             ctx.used,
-            'https://www.xvideos.com/video.kfhcdpb267b/evangelion_hentai'
-          )
-        )}`
+            "https://www.xvideos.com/video.kfhcdpb267b/evangelion_hentai",
+          ),
+        )}`,
       );
 
     const isUrl = tools.cmd.isUrl(url);
     if (!isUrl) return await ctx.reply(config.msg.urlInvalid);
 
     try {
-      const apiUrl = tools.api.createUrl('neko', '/downloader/xvideos', {
+      const apiUrl = tools.api.createUrl("neko", "/downloader/xvideos", {
         url,
       });
       const result = (await axios.get(apiUrl)).data.result.videos;
@@ -34,7 +34,7 @@ export default {
         video: {
           url: result.high || result.low,
         },
-        mimetype: tools.mime.lookup('mp4'),
+        mimetype: tools.mime.lookup("mp4"),
         caption: formatter.quote(`URL: ${url}`),
         footer: config.msg.footer,
       });

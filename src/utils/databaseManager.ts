@@ -1,5 +1,5 @@
-import { db } from '../lib/firebase.js';
-import logger from './logger.js';
+import { db } from "../lib/firebase.js";
+import logger from "./logger.js";
 
 export class DatabaseManager {
   private static instance: DatabaseManager;
@@ -19,18 +19,18 @@ export class DatabaseManager {
   async healthCheck() {
     try {
       // Try to list a small collection or just check connectivity
-      await db.collection('tenants').limit(1).get();
+      await db.collection("tenants").limit(1).get();
       return {
         connected: true,
-        type: 'firestore',
-        latency: 0 // Could measure if needed
+        type: "firestore",
+        latency: 0, // Could measure if needed
       };
     } catch (error: any) {
-      logger.error('Firestore health check failed:', error);
+      logger.error("Firestore health check failed:", error);
       return {
         connected: false,
-        type: 'firestore',
-        error: error.message
+        type: "firestore",
+        error: error.message,
       };
     }
   }
@@ -42,7 +42,7 @@ export class DatabaseManager {
     return {
       $disconnect: async () => {
         // No-op for Firestore admin SDK in this context
-      }
+      },
     };
   }
 }

@@ -78,10 +78,10 @@ export async function withTempHome<T>(
     env?: Record<string, ((home: string) => string) | string>;
   },
 ): Promise<T> {
-  const env = await createTempHomeEnv(opts?.prefix ?? 'openclaw-test-');
+  const env = await createTempHomeEnv(opts?.prefix ?? "openclaw-test-");
   if (opts?.env) {
     for (const [key, value] of Object.entries(opts.env)) {
-      process.env[key] = typeof value === 'function' ? value(env.home) : value;
+      process.env[key] = typeof value === "function" ? value(env.home) : value;
     }
   }
   try {

@@ -3,10 +3,10 @@
  * Provides comprehensive performance tracking and optimization insights
  */
 
-import { performance, PerformanceObserver, PerformanceEntry } from 'node:perf_hooks';
+import { performance, PerformanceObserver, PerformanceEntry } from "node:perf_hooks";
 const setImmediate = globalThis.setImmediate || ((fn: any) => setTimeout(fn, 0));
-import { EventEmitter } from 'events';
-import logger from './logger.js';
+import { EventEmitter } from "events";
+import logger from "./logger.js";
 
 interface Metric {
   name: string;
@@ -36,12 +36,12 @@ export class PerformanceMonitor extends EventEmitter {
     super();
     this.metrics = new Map();
     this.thresholds = {
-      slow_operation: 1000,    // 1 second
+      slow_operation: 1000, // 1 second
       very_slow_operation: 5000, // 5 seconds
-      memory_warning: 1536,     // 1.5 GB
-      memory_critical: 2048,   // 2 GB
-      cpu_warning: 80,         // 80%
-      cpu_critical: 95         // 95%
+      memory_warning: 1536, // 1.5 GB
+      memory_critical: 2048, // 2 GB
+      cpu_warning: 80, // 80%
+      cpu_critical: 95, // 95%
     };
 
     this.observerActive = false;
@@ -58,11 +58,11 @@ export class PerformanceMonitor extends EventEmitter {
           }
         });
 
-        obs.observe({ entryTypes: ['measure', 'mark'] });
+        obs.observe({ entryTypes: ["measure", "mark"] });
         this.observerActive = true;
-        logger.debug('Performance monitoring started');
+        logger.debug("Performance monitoring started");
       } catch (error: any) {
-        logger.warn('Failed to start performance observer', { error: error.message });
+        logger.warn("Failed to start performance observer", { error: error.message });
       }
     }
 
@@ -97,25 +97,33 @@ export class PerformanceMonitor extends EventEmitter {
         const latestEntry = entries[entries.length - 1];
 
         if (latestEntry) {
-          this.recordMetric(name, latestEntry.duration, 'duration', metadata);
+          this.recordMetric(name, latestEntry.duration, "duration", metadata);
 
           // Check for slow operations
           if (latestEntry.duration > this.thresholds.very_slow_operation) {
-            logger.warn('Very slow operation detected', {
+            logger.warn("Very slow operation detected", {
               operation: name,
               duration: Math.round(latestEntry.duration),
               threshold: this.thresholds.very_slow_operation,
-              ...metadata
+              ...metadata,
             });
-            this.emit('slow_operation', { name, duration: latestEntry.duration, severity: 'critical' });
+            this.emit("slow_operation", {
+              name,
+              duration: latestEntry.duration,
+              severity: "critical",
+            });
           } else if (latestEntry.duration > this.thresholds.slow_operation) {
-            logger.info('Slow operation detected', {
+            logger.info("Slow operation detected", {
               operation: name,
               duration: Math.round(latestEntry.duration),
               threshold: this.thresholds.slow_operation,
-              ...metadata
+              ...metadata,
             });
-            this.emit('slow_operation', { name, duration: latestEntry.duration, severity: 'warning' });
+            this.emit("slow_operation", {
+              name,
+              duration: latestEntry.duration,
+              severity: "warning",
+            });
           }
         }
 
@@ -127,7 +135,7 @@ export class PerformanceMonitor extends EventEmitter {
         performance.clearMeasures(name);
 
         return latestEntry ? latestEntry.duration : null;
-      }
+      },
     };
   }
 
@@ -139,7 +147,12 @@ export class PerformanceMonitor extends EventEmitter {
       descriptor.value = async function (...args: any[]) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        const timer = this.startTimer ? this.startTimer(name || `${target.constructor.name}.${propertyKey}`, metadata) : performanceMonitor.startTimer(name || `${target.constructor.name}.${propertyKey}`, metadata);
+        const timer = this.startTimer
+          ? this.startTimer(name || `${target.constructor.name}.${propertyKey}`, metadata)
+          : performanceMonitor.startTimer(
+              name || `${target.constructor.name}.${propertyKey}`,
+              metadata,
+            );
         try {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
@@ -182,19 +195,19 @@ export class PerformanceMonitor extends EventEmitter {
   }
 
   recordPerformanceEntry(entry: PerformanceEntry) {
-    this.recordMetric(entry.name, entry.duration, 'duration', {
+    this.recordMetric(entry.name, entry.duration, "duration", {
       entryType: entry.entryType,
-      startTime: entry.startTime
+      startTime: entry.startTime,
     });
   }
 
-  recordMetric(name: string, value: number, unit: string = 'count', metadata: any = {}) {
+  recordMetric(name: string, value: number, unit: string = "count", metadata: any = {}) {
     const metric: Metric = {
       name,
       value,
       unit,
       timestamp: Date.now(),
-      metadata
+      metadata,
     };
 
     if (!this.metrics.has(name)) {
@@ -210,7 +223,7 @@ export class PerformanceMonitor extends EventEmitter {
     }
 
     // Emit metric event
-    this.emit('metric', metric);
+    this.emit("metric", metric);
 
     logger.performance(name, value, { ...metadata, unit });
   }
@@ -220,31 +233,32 @@ export class PerformanceMonitor extends EventEmitter {
     const cpuUsage = process.cpuUsage();
 
     // Memory metrics
-    this.recordMetric('memory_heap_used', memUsage.heapUsed, 'bytes');
-    this.recordMetric('memory_heap_total', memUsage.heapTotal, 'bytes');
-    this.recordMetric('memory_rss', memUsage.rss, 'bytes');
-    this.recordMetric('memory_external', memUsage.external, 'bytes');
+    this.recordMetric("memory_heap_used", memUsage.heapUsed, "bytes");
+    this.recordMetric("memory_heap_total", memUsage.heapTotal, "bytes");
+    this.recordMetric("memory_rss", memUsage.rss, "bytes");
+    this.recordMetric("memory_external", memUsage.external, "bytes");
 
     // CPU metrics (these are cumulative since process start)
-    this.recordMetric('cpu_user_time', cpuUsage.user, 'microseconds');
-    this.recordMetric('cpu_system_time', cpuUsage.system, 'microseconds');
+    this.recordMetric("cpu_user_time", cpuUsage.user, "microseconds");
+    this.recordMetric("cpu_system_time", cpuUsage.system, "microseconds");
 
     // Event loop lag
     this.measureEventLoopLag();
 
     // Process uptime
-    this.recordMetric('process_uptime', process.uptime(), 'seconds');
+    this.recordMetric("process_uptime", process.uptime(), "seconds");
   }
 
   measureEventLoopLag() {
     const start = process.hrtime.bigint();
     setImmediate(() => {
       const lag = Number(process.hrtime.bigint() - start) / 1e6; // Convert to milliseconds
-      this.recordMetric('event_loop_lag', lag, 'milliseconds');
+      this.recordMetric("event_loop_lag", lag, "milliseconds");
 
-      if (lag > 100) { // More than 100ms lag
-        logger.warn('High event loop lag detected', { lag: Math.round(lag) });
-        this.emit('event_loop_lag', { lag, severity: lag > 1000 ? 'critical' : 'warning' });
+      if (lag > 100) {
+        // More than 100ms lag
+        logger.warn("High event loop lag detected", { lag: Math.round(lag) });
+        this.emit("event_loop_lag", { lag, severity: lag > 1000 ? "critical" : "warning" });
       }
     });
   }
@@ -255,37 +269,38 @@ export class PerformanceMonitor extends EventEmitter {
     const rssMB = usage.rss / 1024 / 1024;
 
     if (rssMB > this.thresholds.memory_critical) {
-      logger.error('Critical memory usage detected', {
+      logger.error("Critical memory usage detected", {
         rss: Math.round(rssMB),
         heapUsed: Math.round(heapUsedMB),
-        threshold: this.thresholds.memory_critical
+        threshold: this.thresholds.memory_critical,
       });
-      this.emit('memory_pressure', { level: 'critical', rss: rssMB, heapUsed: heapUsedMB });
+      this.emit("memory_pressure", { level: "critical", rss: rssMB, heapUsed: heapUsedMB });
     } else if (rssMB > this.thresholds.memory_warning) {
-      logger.warn('High memory usage detected', {
+      logger.warn("High memory usage detected", {
         rss: Math.round(rssMB),
         heapUsed: Math.round(heapUsedMB),
-        threshold: this.thresholds.memory_warning
+        threshold: this.thresholds.memory_warning,
       });
-      this.emit('memory_pressure', { level: 'warning', rss: rssMB, heapUsed: heapUsedMB });
+      this.emit("memory_pressure", { level: "warning", rss: rssMB, heapUsed: heapUsedMB });
     }
   }
 
   // Get metric statistics
-  getMetricStats(name: string, timeWindow = 300000) { // Last 5 minutes by default
+  getMetricStats(name: string, timeWindow = 300000) {
+    // Last 5 minutes by default
     const metrics = this.metrics.get(name);
     if (!metrics || metrics.length === 0) {
       return null;
     }
 
     const cutoff = Date.now() - timeWindow;
-    const recentMetrics = metrics.filter(m => m.timestamp > cutoff);
+    const recentMetrics = metrics.filter((m) => m.timestamp > cutoff);
 
     if (recentMetrics.length === 0) {
       return null;
     }
 
-    const values = recentMetrics.map(m => m.value);
+    const values = recentMetrics.map((m) => m.value);
     const sum = values.reduce((a, b) => a + b, 0);
     const avg = sum / values.length;
     const min = Math.min(...values);
@@ -306,12 +321,12 @@ export class PerformanceMonitor extends EventEmitter {
       avg,
       min,
       max,
-      percentiles: { p50, p90, p95, p99 }
+      percentiles: { p50, p90, p95, p99 },
     };
   }
 
   percentile(sortedArray: number[], p: number) {
-    const index = (p * (sortedArray.length - 1));
+    const index = p * (sortedArray.length - 1);
     const lower = Math.floor(index);
     const upper = Math.ceil(index);
     const weight = index % 1;
@@ -336,40 +351,45 @@ export class PerformanceMonitor extends EventEmitter {
   }
 
   // Database query performance tracking
-  trackDatabaseQuery(operation: string, table: string, duration: number, rowCount: number | null = null) {
-    this.recordMetric('database_query_duration', duration, 'milliseconds', {
+  trackDatabaseQuery(
+    operation: string,
+    table: string,
+    duration: number,
+    rowCount: number | null = null,
+  ) {
+    this.recordMetric("database_query_duration", duration, "milliseconds", {
       operation,
       table,
-      rowCount
+      rowCount,
     });
 
-    this.recordMetric(`database_${operation}_duration`, duration, 'milliseconds', {
+    this.recordMetric(`database_${operation}_duration`, duration, "milliseconds", {
       table,
-      rowCount
+      rowCount,
     });
 
     if (duration > 1000) {
-      logger.warn('Slow database query detected', {
+      logger.warn("Slow database query detected", {
         operation,
         table,
         duration: Math.round(duration),
-        rowCount
+        rowCount,
       });
     }
   }
 
   // API call performance tracking
   trackApiCall(service: string, endpoint: string, duration: number, statusCode: number) {
-    this.recordMetric('external_api_duration', duration, 'milliseconds', {
+    this.recordMetric("external_api_duration", duration, "milliseconds", {
       service,
       endpoint,
       statusCode,
-      success: statusCode >= 200 && statusCode < 300
+      success: statusCode >= 200 && statusCode < 300,
     });
 
-    this.recordMetric(`api_${service}_duration`, duration, 'milliseconds', {
+    this.recordMetric(`api_${service}_duration`, duration, "milliseconds", {
       endpoint,
-      statusCode
+      statusCode,
     });
   }
 
@@ -386,25 +406,27 @@ export class PerformanceMonitor extends EventEmitter {
     const growth = currentHeapUsed - this.baselineMemory;
     const growthPercent = (growth / this.baselineMemory) * 100;
 
-    if (growthPercent > 50) { // 50% growth
-      logger.warn('Potential memory leak detected', {
+    if (growthPercent > 50) {
+      // 50% growth
+      logger.warn("Potential memory leak detected", {
         baseline: Math.round(this.baselineMemory),
         current: Math.round(currentHeapUsed),
         growth: Math.round(growth),
-        growthPercent: Math.round(growthPercent)
+        growthPercent: Math.round(growthPercent),
       });
 
-      this.emit('memory_leak_warning', {
+      this.emit("memory_leak_warning", {
         baseline: this.baselineMemory,
         current: currentHeapUsed,
         growth,
-        growthPercent
+        growthPercent,
       });
     }
   }
 
   // Performance report generation
-  generateReport(timeWindow = 3600000) { // Last hour
+  generateReport(timeWindow = 3600000) {
+    // Last hour
     const summary = this.getMetricsSummary(timeWindow);
     const memoryUsage = process.memoryUsage();
 
@@ -416,21 +438,22 @@ export class PerformanceMonitor extends EventEmitter {
           rss: Math.round(memoryUsage.rss / 1024 / 1024),
           heapTotal: Math.round(memoryUsage.heapTotal / 1024 / 1024),
           heapUsed: Math.round(memoryUsage.heapUsed / 1024 / 1024),
-          external: Math.round(memoryUsage.external / 1024 / 1024)
+          external: Math.round(memoryUsage.external / 1024 / 1024),
         },
-        uptime: process.uptime()
+        uptime: process.uptime(),
       },
       metrics: summary,
-      thresholds: this.thresholds
+      thresholds: this.thresholds,
     };
   }
 
   // Clear old metrics
-  clearOldMetrics(olderThan = 3600000) { // 1 hour
+  clearOldMetrics(olderThan = 3600000) {
+    // 1 hour
     const cutoff = Date.now() - olderThan;
 
     for (const [name, metrics] of this.metrics) {
-      const filtered = metrics.filter(m => m.timestamp > cutoff);
+      const filtered = metrics.filter((m) => m.timestamp > cutoff);
       this.metrics.set(name, filtered);
     }
   }

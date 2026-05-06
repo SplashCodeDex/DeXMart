@@ -1,8 +1,5 @@
-import { db, admin } from '@/lib/firebase.js';
-import logger from '@/utils/logger.js';
-import {
-  FirestoreSchema
-} from '@/types/index.js';
+import { z } from "zod";
+import { db, admin } from "@/lib/firebase.js";
 import {
   TenantSchema,
   TenantUserSchema,
@@ -18,39 +15,40 @@ import {
   TemplateSchema,
   AuthSchema,
   LearningSchema,
-  AnalyticsSchema
-} from '@/types/contracts.js';
-import { z } from 'zod';
+  AnalyticsSchema,
+} from "@/types/contracts.js";
+import { FirestoreSchema } from "@/types/index.js";
+import logger from "@/utils/logger.js";
 
 type CollectionKey = keyof FirestoreSchema;
 
 const SchemaMap: Record<CollectionKey, z.ZodSchema<any>> = {
-  'tenants': TenantSchema as any,
-  'users/{userId}/users': TenantUserSchema as any,
-  'users/{userId}/channels': ChannelSchema as any,
-  'users/{userId}/agents': AgentSchema as any,
-  'users/{userId}/agents/{agentId}/channels': ChannelSchema as any,
-  'users/{userId}/slots': ChannelSchema as any,
-  'users/{userId}/members': z.any(),
-  'users/{userId}/groups': z.any(),
-  'users/{userId}/subscriptions': SubscriptionSchema as any,
-  'users/{userId}/moderation': ModerationItemSchema as any,
-  'users/{userId}/violations': ViolationSchema as any,
-  'users/{userId}/campaigns': CampaignSchema as any,
-  'users/{userId}/webhooks': WebhookSchema as any,
-  'users/{userId}/contacts': ContactSchema as any,
-  'users/{userId}/audiences': AudienceSchema as any,
-  'users/{userId}/templates': TemplateSchema as any,
-  'users/{userId}/channels/{channelId}/auth': AuthSchema as any,
-  'users/{userId}/agents/{agentId}/channels/{channelId}/auth': AuthSchema as any,
-  'users/{userId}/learning': LearningSchema as any,
-  'users/{userId}/analytics': AnalyticsSchema as any,
+  tenants: TenantSchema as any,
+  "users/{userId}/users": TenantUserSchema as any,
+  "users/{userId}/channels": ChannelSchema as any,
+  "users/{userId}/agents": AgentSchema as any,
+  "users/{userId}/agents/{agentId}/channels": ChannelSchema as any,
+  "users/{userId}/slots": ChannelSchema as any,
+  "users/{userId}/members": z.any(),
+  "users/{userId}/groups": z.any(),
+  "users/{userId}/subscriptions": SubscriptionSchema as any,
+  "users/{userId}/moderation": ModerationItemSchema as any,
+  "users/{userId}/violations": ViolationSchema as any,
+  "users/{userId}/campaigns": CampaignSchema as any,
+  "users/{userId}/webhooks": WebhookSchema as any,
+  "users/{userId}/contacts": ContactSchema as any,
+  "users/{userId}/audiences": AudienceSchema as any,
+  "users/{userId}/templates": TemplateSchema as any,
+  "users/{userId}/channels/{channelId}/auth": AuthSchema as any,
+  "users/{userId}/agents/{agentId}/channels/{channelId}/auth": AuthSchema as any,
+  "users/{userId}/learning": LearningSchema as any,
+  "users/{userId}/analytics": AnalyticsSchema as any,
 };
 
 export class FirebaseService {
   private static instance: FirebaseService;
 
-  private constructor() { }
+  private constructor() {}
 
   public static getInstance(): FirebaseService {
     if (!FirebaseService.instance) {
@@ -65,14 +63,14 @@ export class FirebaseService {
   public async verifyIdToken(idToken: string): Promise<admin.auth.DecodedIdToken> {
     try {
       if (!idToken) {
-        throw new Error('ID Token is required');
+        throw new Error("ID Token is required");
       }
       return await admin.auth().verifyIdToken(idToken);
     } catch (error: unknown) {
       const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('Firebase Auth verifyIdToken error:', {
+      logger.error("Firebase Auth verifyIdToken error:", {
         message: err.message,
-        stack: err.stack
+        stack: err.stack,
       });
       throw err;
     }
@@ -84,20 +82,22 @@ export class FirebaseService {
    */
   private validatePath(path: string | undefined | null): void {
     if (!path) {
-      logger.error('Firestore path is missing or empty', { path });
-      throw new Error('Firestore path is required');
+      logger.error("Firestore path is missing or empty", { path });
+      throw new Error("Firestore path is required");
     }
 
-    const segments = path.split('/');
+    const segments = path.split("/");
     for (const segment of segments) {
       const trimmed = segment.trim();
       // Block common bypass/traversal attempts (Scenario 33)
-      if (!trimmed || 
-          trimmed === 'undefined' || 
-          trimmed === 'null' || 
-          trimmed === '..' || 
-          trimmed === '.' ||
-          /[\[\]\*\?]/.test(trimmed)) {
+      if (
+        !trimmed ||
+        trimmed === "undefined" ||
+        trimmed === "null" ||
+        trimmed === ".." ||
+        trimmed === "." ||
+        /[\[\]\*\?]/.test(trimmed)
+      ) {
         const errorMsg = `Illegal Firestore path segment detected in "${path}": "${trimmed}"`;
         logger.error(`[FirebaseService] ${errorMsg}`);
         throw new Error(errorMsg);
@@ -112,31 +112,31 @@ export class FirebaseService {
     let path: string;
     let schemaKey: CollectionKey;
 
-    if (typeof tenantId === 'string') {
+    if (typeof tenantId === "string") {
       this.validatePath(tenantId);
       // Special handling for nested subcollections
-      if (collection.includes('/')) {
-        const parts = collection.split('/');
+      if (collection.includes("/")) {
+        const parts = collection.split("/");
 
         // Ensure all parts are valid before interpolation
-        parts.forEach(p => this.validatePath(p));
+        parts.forEach((p) => this.validatePath(p));
 
         // Pattern: agents/{agentId}/channels/{channelId}/auth
-        if (parts[0] === 'agents' && parts[2] === 'channels' && parts[4] === 'auth') {
+        if (parts[0] === "agents" && parts[2] === "channels" && parts[4] === "auth") {
           path = `users/${tenantId}/agents/${parts[1]}/channels/${parts[3]}/auth`;
           schemaKey = `users/{userId}/agents/{agentId}/channels/{channelId}/auth` as CollectionKey;
         }
         // Pattern: agents/{agentId}/channels
-        else if (parts[0] === 'agents' && parts[2] === 'channels') {
+        else if (parts[0] === "agents" && parts[2] === "channels") {
           path = `users/${tenantId}/agents/${parts[1]}/channels`;
           schemaKey = `users/{userId}/agents/{agentId}/channels` as CollectionKey;
         }
         // Pattern: channels/{id}/auth (Legacy/Top-level)
-        else if (parts[0] === 'channels' && parts[2] === 'auth') {
+        else if (parts[0] === "channels" && parts[2] === "auth") {
           const type = parts[0];
           path = `users/${tenantId}/${type}/${parts[1]}/auth`;
           schemaKey = `users/{userId}/${type}/{channelId}/auth` as CollectionKey;
-        } else if (parts[0] === 'slots') {
+        } else if (parts[0] === "slots") {
           path = `users/${tenantId}/slots`;
           schemaKey = `users/{userId}/slots` as CollectionKey;
         } else {
@@ -169,7 +169,7 @@ export class FirebaseService {
   public async getDoc<K extends CollectionKey>(
     collection: string,
     docId: string,
-    tenantId?: string
+    tenantId?: string,
   ): Promise<FirestoreSchema[K] | null> {
     try {
       this.validatePath(docId);
@@ -181,7 +181,7 @@ export class FirebaseService {
 
       const data = {
         ...doc.data(),
-        id: doc.id
+        id: doc.id,
       };
 
       const result = schema.safeParse(data);
@@ -195,7 +195,7 @@ export class FirebaseService {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error(`Firestore getDoc error [${collection}/${docId}] (Tenant: ${tenantId}):`, {
         message: err.message,
-        stack: err.stack
+        stack: err.stack,
       });
       throw err;
     }
@@ -209,7 +209,7 @@ export class FirebaseService {
     docId: string,
     data: Partial<FirestoreSchema[K]>,
     tenantId?: string,
-    merge = true
+    merge = true,
   ): Promise<void> {
     try {
       this.validatePath(docId);
@@ -222,9 +222,12 @@ export class FirebaseService {
         // Note: Zod doesn't easily support dynamic partial validation against a deep schema
         // but for our flat-ish documents, it works well enough.
         // We safely check if .partial() exists (e.g. not a preprocessed or readonly schema)
-        if (typeof (schema as any).partial === 'function') {
+        if (typeof (schema as any).partial === "function") {
           (schema as any).partial().parse(data);
-        } else if (typeof (schema as any).unwrap === 'function' && typeof (schema as any).unwrap().partial === 'function') {
+        } else if (
+          typeof (schema as any).unwrap === "function" &&
+          typeof (schema as any).unwrap().partial === "function"
+        ) {
           // Handle Readonly schemas
           (schema as any).unwrap().partial().parse(data);
         }
@@ -239,7 +242,7 @@ export class FirebaseService {
       logger.error(`Firestore setDoc error [${collection}/${docId}] (Tenant: ${tenantId}):`, {
         message: err.message,
         stack: err.stack,
-        data: JSON.stringify(data).substring(0, 500)
+        data: JSON.stringify(data).substring(0, 500),
       });
       throw err;
     }
@@ -250,22 +253,25 @@ export class FirebaseService {
    */
   public async getCollection<K extends CollectionKey>(
     collection: string,
-    tenantId?: string
+    tenantId?: string,
   ): Promise<FirestoreSchema[K][]> {
     try {
       const { path, schema } = this.getCollectionInfo(collection, tenantId);
       const colRef = db.collection(path);
       const snapshot = await colRef.get();
 
-      return snapshot.docs.map(doc => {
+      return snapshot.docs.map((doc) => {
         const data = {
           ...doc.data(),
-          id: doc.id
+          id: doc.id,
         };
         try {
           return schema.parse(data) as FirestoreSchema[K];
         } catch (parsingError) {
-          logger.warn(`Firestore parsing error in getCollection [${path}/${doc.id}]:`, parsingError);
+          logger.warn(
+            `Firestore parsing error in getCollection [${path}/${doc.id}]:`,
+            parsingError,
+          );
           return data as FirestoreSchema[K]; // Fallback to raw data with ID in production but log warning
         }
       });
@@ -282,7 +288,7 @@ export class FirebaseService {
   public async deleteDoc<K extends CollectionKey>(
     collection: string,
     docId: string,
-    tenantId?: string
+    tenantId?: string,
   ): Promise<void> {
     try {
       this.validatePath(docId);
@@ -291,7 +297,10 @@ export class FirebaseService {
       await docRef.delete();
     } catch (error: unknown) {
       const err = error instanceof Error ? error : new Error(String(error));
-      logger.error(`Firestore deleteDoc error [${collection}/${docId}] (Tenant: ${tenantId}):`, err);
+      logger.error(
+        `Firestore deleteDoc error [${collection}/${docId}] (Tenant: ${tenantId}):`,
+        err,
+      );
       throw err;
     }
   }
@@ -318,7 +327,10 @@ export class FirebaseService {
       logger.info(`Firestore collection deleted recursively: ${path}`);
     } catch (error: unknown) {
       const err = error instanceof Error ? error : new Error(String(error));
-      logger.error(`Firestore deleteCollection error [${collectionPath}] (Tenant: ${tenantId}):`, err);
+      logger.error(
+        `Firestore deleteCollection error [${collectionPath}] (Tenant: ${tenantId}):`,
+        err,
+      );
       // We don't throw here to allow partial cleanup to continue, but we log it
     }
   }

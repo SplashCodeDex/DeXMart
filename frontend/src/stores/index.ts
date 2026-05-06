@@ -5,4 +5,4 @@
  * Remember: Server state should use Server Components or TanStack Query.
  */
 
-export { useUIStore } from './useUIStore';
+export { useUIStore } from "./useUIStore";

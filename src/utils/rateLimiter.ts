@@ -2,8 +2,8 @@
  * Persistent Rate Limiter using Redis
  * Fixes primitive rate limiting that resets on restart
  */
-import { Redis } from 'ioredis';
-import logger from './logger.js';
+import { Redis } from "ioredis";
+import logger from "./logger.js";
 
 interface RateLimitConfig {
   requests: number;
@@ -37,7 +37,7 @@ export class RateLimiter {
 
   constructor(redisClient: Redis, options: any = {}) {
     if (!redisClient) {
-      throw new Error('RateLimiter requires a valid redisClient instance.');
+      throw new Error("RateLimiter requires a valid redisClient instance.");
     }
     this.redis = redisClient;
 
@@ -48,11 +48,15 @@ export class RateLimiter {
       command: { requests: 10, window: 60 },
       ai: { requests: 5, window: 300 },
       download: { requests: 3, window: 60 },
-      premium: { requests: 100, window: 60 }
+      premium: { requests: 100, window: 60 },
     };
   }
 
-  async checkLimit(key: string, type: string = 'user', customLimit: RateLimitConfig | null = null): Promise<RateLimitResult> {
+  async checkLimit(
+    key: string,
+    type: string = "user",
+    customLimit: RateLimitConfig | null = null,
+  ): Promise<RateLimitResult> {
     try {
       const limit = customLimit || this.defaultLimits[type];
       if (!limit) {
@@ -67,7 +71,7 @@ export class RateLimiter {
 
       const results = await multi.exec();
       if (!results) {
-        throw new Error('Redis transaction failed');
+        throw new Error("Redis transaction failed");
       }
       const currentCount = results[0][1] as number; // incr returns the new value
 
@@ -78,7 +82,7 @@ export class RateLimiter {
           current: currentCount,
           limit: limit.requests,
           remaining: 0,
-          resetTime: ttl > 0 ? Date.now() + (ttl * 1000) : null
+          resetTime: ttl > 0 ? Date.now() + ttl * 1000 : null,
         };
       }
 
@@ -87,18 +91,17 @@ export class RateLimiter {
         current: currentCount,
         limit: limit.requests,
         remaining: limit.requests - currentCount,
-        resetTime: Date.now() + (limit.window * 1000)
+        resetTime: Date.now() + limit.window * 1000,
       };
-
     } catch (error: any) {
-      logger.error('Rate limiting error:', error);
+      logger.error("Rate limiting error:", error);
       // Fail open - allow request if rate limiter is down
       return {
         allowed: true,
         current: 0,
         limit: 1000,
         remaining: 999,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -119,25 +122,33 @@ export class RateLimiter {
   }
 
   // Bridge for commands that expect checkCommandRateLimit
-  async checkCommandRateLimit(userId: string, command: string, userTier: string = 'user'): Promise<MultipleCheckResult> {
+  async checkCommandRateLimit(
+    userId: string,
+    command: string,
+    userTier: string = "user",
+  ): Promise<MultipleCheckResult> {
     return this.isRateLimited(userId, command, userTier);
   }
 
   // Refactored to accept userTier directly, removing the need for the placeholder getUserTier
-  async isRateLimited(userId: string, command: string, userTier: string = 'user'): Promise<MultipleCheckResult> {
+  async isRateLimited(
+    userId: string,
+    command: string,
+    userTier: string = "user",
+  ): Promise<MultipleCheckResult> {
     const checks: CheckItem[] = [
-      { key: 'global', type: 'global' },
+      { key: "global", type: "global" },
       { key: userId, type: userTier }, // Use the passed userTier
-      { key: `${userId}:${command}`, type: 'command' }
+      { key: `${userId}:${command}`, type: "command" },
     ];
 
     // Special limits for resource-intensive commands
-    if (['gemini', 'dalle', 'gpt'].includes(command)) {
-      checks.push({ key: `${userId}:ai`, type: 'ai' });
+    if (["gemini", "dalle", "gpt"].includes(command)) {
+      checks.push({ key: `${userId}:ai`, type: "ai" });
     }
 
-    if (['youtubedl', 'tiktokedl', 'instagramdl'].includes(command)) {
-      checks.push({ key: `${userId}:download`, type: 'download' });
+    if (["youtubedl", "tiktokedl", "instagramdl"].includes(command)) {
+      checks.push({ key: `${userId}:download`, type: "download" });
     }
 
     return this.checkMultiple(checks);
@@ -153,7 +164,7 @@ export class RateLimiter {
       const multi = this.redis.multi();
 
       // Remove old entries
-      multi.zremrangebyscore(redisKey, '-inf', windowStart);
+      multi.zremrangebyscore(redisKey, "-inf", windowStart);
 
       // Count current requests
       multi.zcard(redisKey);
@@ -166,7 +177,7 @@ export class RateLimiter {
 
       const results = await multi.exec();
       if (!results) {
-        throw new Error('Redis transaction failed');
+        throw new Error("Redis transaction failed");
       }
       const currentCount = results[1][1] as number; // zcard result
 
@@ -175,7 +186,7 @@ export class RateLimiter {
           allowed: false,
           current: currentCount + 1, // +1 for the current request that was just added
           limit,
-          remaining: 0
+          remaining: 0,
         };
       }
 
@@ -183,52 +194,56 @@ export class RateLimiter {
         allowed: true,
         current: currentCount + 1,
         limit,
-        remaining: limit - currentCount - 1
+        remaining: limit - currentCount - 1,
       };
-
     } catch (error: any) {
-      logger.error('Sliding window rate limit error:', error);
+      logger.error("Sliding window rate limit error:", error);
       return { allowed: true, error: error.message, current: 0, limit: 0, remaining: 0 }; // Return a full RateLimitResult
     }
   }
 
   // Get rate limit status for user
-  async getStatus(userId: string, userTier: string = 'user'): Promise<{ tier: string; limits: { [key: string]: { current: number; resetIn: number } } } | { error: string }> {
+  async getStatus(
+    userId: string,
+    userTier: string = "user",
+  ): Promise<
+    | { tier: string; limits: { [key: string]: { current: number; resetIn: number } } }
+    | { error: string }
+  > {
     try {
       const keys = [
         `ratelimit:${userTier}:${userId}`,
         `ratelimit:command:${userId}`,
         `ratelimit:ai:${userId}:ai`, // This key format seems inconsistent with checkCommandRateLimit
-        `ratelimit:download:${userId}:download` // This key format seems inconsistent with checkCommandRateLimit
+        `ratelimit:download:${userId}:download`, // This key format seems inconsistent with checkCommandRateLimit
       ];
 
       const pipeline = this.redis.pipeline();
-      keys.forEach(key => {
+      keys.forEach((key) => {
         pipeline.get(key);
         pipeline.ttl(key);
       });
 
       const results = await pipeline.exec();
       if (!results) {
-        return { error: 'Redis pipeline failed' };
+        return { error: "Redis pipeline failed" };
       }
       const status: { [key: string]: { current: number; resetIn: number } } = {};
 
       for (let i = 0; i < keys.length; i += 2) {
-        const keyName = keys[i / 2].split(':').pop() || 'unknown';
+        const keyName = keys[i / 2].split(":").pop() || "unknown";
         const count = results[i] ? (results[i][1] as string | null) : null;
         const ttl = results[i + 1] ? (results[i + 1][1] as number) : 0;
 
         status[keyName] = {
-          current: parseInt(count || '0', 10),
-          resetIn: ttl > 0 ? ttl : 0
+          current: parseInt(count || "0", 10),
+          resetIn: ttl > 0 ? ttl : 0,
         };
       }
 
       return { tier: userTier, limits: status };
-
     } catch (error: any) {
-      logger.error('Error getting rate limit status:', error);
+      logger.error("Error getting rate limit status:", error);
       return { error: error.message };
     }
   }
@@ -244,7 +259,7 @@ export class RateLimiter {
 
       return { reset: keys.length };
     } catch (error: any) {
-      logger.error('Error resetting rate limits:', error);
+      logger.error("Error resetting rate limits:", error);
       return { error: error.message };
     }
   }

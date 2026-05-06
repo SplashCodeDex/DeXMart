@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import crypto from "crypto";
 
 /**
  * Validate WhatsApp webhook signature
@@ -12,15 +12,15 @@ export function validateWhatsAppSignature(body: any, signature: string) {
   }
 
   const expectedSignature = crypto
-    .createHmac('sha256', process.env.WHATSAPP_APP_SECRET)
+    .createHmac("sha256", process.env.WHATSAPP_APP_SECRET)
     .update(JSON.stringify(body))
-    .digest('hex');
+    .digest("hex");
 
-  const signatureHash = signature.replace('sha256=', '');
+  const signatureHash = signature.replace("sha256=", "");
 
   return crypto.timingSafeEqual(
-    Buffer.from(signatureHash, 'hex'),
-    Buffer.from(expectedSignature, 'hex')
+    Buffer.from(signatureHash, "hex"),
+    Buffer.from(expectedSignature, "hex"),
   );
 }
 
@@ -30,7 +30,7 @@ export function validateWhatsAppSignature(body: any, signature: string) {
  * @returns {string} - Random token
  */
 export function generateSecureToken(length = 32) {
-  return crypto.randomBytes(length).toString('hex');
+  return crypto.randomBytes(length).toString("hex");
 }
 
 /**
@@ -39,7 +39,7 @@ export function generateSecureToken(length = 32) {
  * @returns {string} - Hashed data
  */
 export function hashData(data: string) {
-  return crypto.createHash('sha256').update(data).digest('hex');
+  return crypto.createHash("sha256").update(data).digest("hex");
 }
 
 /**

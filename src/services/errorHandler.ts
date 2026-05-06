@@ -2,8 +2,8 @@
  * Centralized Error Handling Service
  */
 
-import logger from '../utils/logger.js';
-import { Result } from '../types/index.js';
+import { Result } from "../types/index.js";
+import logger from "../utils/logger.js";
 
 export class AppError extends Error {
   public statusCode: number;
@@ -22,7 +22,7 @@ export class AppError extends Error {
 export class ErrorHandler {
   private static instance: ErrorHandler;
 
-  private constructor() { }
+  private constructor() {}
 
   public static getInstance(): ErrorHandler {
     if (!ErrorHandler.instance) {
@@ -33,15 +33,15 @@ export class ErrorHandler {
 
   public handleOperationalError(error: Error | unknown, context = {}): Result<never> {
     const err = error instanceof Error ? error : new Error(String(error));
-    logger.error('Operational Error:', { message: err.message, context });
+    logger.error("Operational Error:", { message: err.message, context });
     return { success: false, error: err };
   }
 
   public getUserFriendlyMessage(error: unknown): string {
     if (error instanceof AppError) return error.message;
     if (error instanceof Error) return error.message;
-    if (typeof error === 'string') return error;
-    return 'An unexpected error occurred';
+    if (typeof error === "string") return error;
+    return "An unexpected error occurred";
   }
 
   /**
@@ -49,10 +49,10 @@ export class ErrorHandler {
    */
   public async handleCommandError(ctx: any, error: unknown): Promise<void> {
     const err = error instanceof Error ? error : new Error(String(error));
-    logger.error('Command Error:', {
+    logger.error("Command Error:", {
       command: ctx.used?.command,
       user: ctx.sender?.jid,
-      message: err.message
+      message: err.message,
     });
 
     const userMessage = `❎ Error: ${this.getUserFriendlyMessage(err)}`;

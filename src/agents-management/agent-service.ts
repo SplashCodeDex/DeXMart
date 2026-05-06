@@ -1,12 +1,12 @@
-import { firebaseService } from '@/persistence/firebase.js';
-import { Agent, AgentSchema, Result } from '../types/contracts.js';
-import { Timestamp } from 'firebase-admin/firestore';
-import logger from '@/utils/logger.js';
-import channelService from '../services/ChannelService.js';
-import { userContextResolver } from '../tenancy/resolver-instance.js';
-import { createAuthGuard } from '../tenancy/tenant-context.js';
-import { assertCan } from '../billing/auth-guard.js';
-import { trackUsage } from '../billing/usage-tracker.js';
+import { Timestamp } from "firebase-admin/firestore";
+import { firebaseService } from "@/persistence/firebase.js";
+import logger from "@/utils/logger.js";
+import { assertCan } from "../billing/auth-guard.js";
+import { trackUsage } from "../billing/usage-tracker.js";
+import channelService from "../services/ChannelService.js";
+import { userContextResolver } from "../tenancy/resolver-instance.js";
+import { createAuthGuard } from "../tenancy/tenant-context.js";
+import { Agent, AgentSchema, Result } from "../types/contracts.js";
 
 /**
  * Agent Service
@@ -16,7 +16,7 @@ import { trackUsage } from '../billing/usage-tracker.js';
 export class AgentService {
   private static instance: AgentService;
 
-  private constructor() { }
+  private constructor() {}
 
   public static getInstance(): AgentService {
     if (!AgentService.instance) {
@@ -31,8 +31,12 @@ export class AgentService {
    */
   async ensureSystemAgent(tenantId: string): Promise<Result<Agent>> {
     try {
-      const systemAgentId = 'system_default';
-      const existing = await firebaseService.getDoc<'users/{userId}/agents'>('agents', systemAgentId, tenantId);
+      const systemAgentId = "system_default";
+      const existing = await firebaseService.getDoc<"users/{userId}/agents">(
+        "agents",
+        systemAgentId,
+        tenantId,
+      );
 
       if (existing) {
         return { success: true, data: existing as Agent };
@@ -40,17 +44,22 @@ export class AgentService {
 
       const rawAgent = {
         id: systemAgentId,
-        name: 'System Default Agent',
-        personality: 'A background system agent for standard connectivity.',
+        name: "System Default Agent",
+        personality: "A background system agent for standard connectivity.",
         memorySearch: false,
         boundChannels: [],
         skills: [],
         createdAt: Timestamp.now(),
-        updatedAt: Timestamp.now()
+        updatedAt: Timestamp.now(),
       };
 
       const agent = AgentSchema.parse(rawAgent);
-      await firebaseService.setDoc<'users/{userId}/agents'>('agents', systemAgentId, agent as any, tenantId);
+      await firebaseService.setDoc<"users/{userId}/agents">(
+        "agents",
+        systemAgentId,
+        agent as any,
+        tenantId,
+      );
 
       logger.info(`System Default Agent created for tenant ${tenantId}`);
       return { success: true, data: agent };
@@ -65,7 +74,11 @@ export class AgentService {
    */
   async getAgent(tenantId: string, agentId: string): Promise<Result<Agent>> {
     try {
-      const doc = await firebaseService.getDoc<'users/{userId}/agents'>('agents', agentId, tenantId);
+      const doc = await firebaseService.getDoc<"users/{userId}/agents">(
+        "agents",
+        agentId,
+        tenantId,
+      );
       if (!doc) {
         return { success: false, error: new Error(`Agent not found: ${agentId}`) };
       }
@@ -80,7 +93,7 @@ export class AgentService {
    */
   async getAllAgents(tenantId: string): Promise<Result<Agent[]>> {
     try {
-      const docs = await firebaseService.getCollection<'users/{userId}/agents'>('agents', tenantId);
+      const docs = await firebaseService.getCollection<"users/{userId}/agents">("agents", tenantId);
       return { success: true, data: docs as Agent[] };
     } catch (error: any) {
       return { success: false, error };
@@ -97,9 +110,9 @@ export class AgentService {
       const guard = createAuthGuard(ctx);
 
       try {
-        assertCan(guard.canCreateAgent(), 'agent', ctx);
+        assertCan(guard.canCreateAgent(), "agent", ctx);
       } catch (err: any) {
-        return { success: false, error: new Error(err.message || 'Agent creation limit reached') };
+        return { success: false, error: new Error(err.message || "Agent creation limit reached") };
       }
 
       const agentId = agentData.id || `agent_${Date.now()}`;
@@ -110,14 +123,19 @@ export class AgentService {
         updatedAt: Timestamp.now(),
         boundChannels: [],
         skills: agentData.skills || [],
-        memorySearch: agentData.memorySearch ?? true
+        memorySearch: agentData.memorySearch ?? true,
       };
 
       const agent = AgentSchema.parse(rawAgent);
-      await firebaseService.setDoc<'users/{userId}/agents'>('agents', agentId, agent as any, tenantId);
+      await firebaseService.setDoc<"users/{userId}/agents">(
+        "agents",
+        agentId,
+        agent as any,
+        tenantId,
+      );
 
       // 2. Record usage
-      trackUsage(tenantId, 'agents', 1);
+      trackUsage(tenantId, "agents", 1);
 
       return { success: true, data: agent };
     } catch (error: any) {
@@ -130,8 +148,8 @@ export class AgentService {
    */
   async deleteAgent(tenantId: string, agentId: string): Promise<Result<void>> {
     try {
-      if (agentId === 'system_default') {
-        throw new Error('Cannot delete the system default agent.');
+      if (agentId === "system_default") {
+        throw new Error("Cannot delete the system default agent.");
       }
 
       // 1. Get all child channels
@@ -145,10 +163,10 @@ export class AgentService {
       }
 
       // 3. Delete the agent itself
-      await firebaseService.deleteDoc<'users/{userId}/agents'>('agents', agentId, tenantId);
+      await firebaseService.deleteDoc<"users/{userId}/agents">("agents", agentId, tenantId);
 
       // 4. Record usage decrement
-      trackUsage(tenantId, 'agents', -1);
+      trackUsage(tenantId, "agents", -1);
 
       logger.info(`Agent ${agentId} deleted for tenant ${tenantId}`);
       return { success: true, data: undefined };

@@ -1,5 +1,5 @@
-import { MessageContext } from '../../types/index.js';
-import axios from 'axios';
+import axios from "axios";
+import { MessageContext } from "../../types/index.js";
 
 interface InstagramMedia {
   url: string;
@@ -8,9 +8,9 @@ interface InstagramMedia {
 }
 
 export default {
-  name: 'instagramdl',
-  aliases: ['ig', 'igdl', 'instagram'],
-  category: 'downloader',
+  name: "instagramdl",
+  aliases: ["ig", "igdl", "instagram"],
+  category: "downloader",
   permissions: {
     coin: 10,
   },
@@ -20,24 +20,24 @@ export default {
 
     if (!url)
       return await ctx.reply(
-        `${formatter.quote(tools.msg.generateInstruction(['send'], ['text']))}\n${formatter.quote(
-          tools.msg.generateCmdExample(ctx.used, 'https://www.instagram.com/p/DLzgi9pORzS')
-        )}`
+        `${formatter.quote(tools.msg.generateInstruction(["send"], ["text"]))}\n${formatter.quote(
+          tools.msg.generateCmdExample(ctx.used, "https://www.instagram.com/p/DLzgi9pORzS"),
+        )}`,
       );
 
     const isUrl = tools.cmd.isUrl(url);
     if (!isUrl) return await ctx.reply(config.msg.urlInvalid);
 
     try {
-      const apiUrl = tools.api.createUrl('zell', '/download/instagram', {
+      const apiUrl = tools.api.createUrl("zell", "/download/instagram", {
         url,
       });
       const response = await axios.get(apiUrl);
       const result: InstagramMedia[] = response.data.result.url;
       const album = result.map((res: InstagramMedia) => {
-        const isVideo = res.type === 'mp4';
+        const isVideo = res.type === "mp4";
         return {
-          [isVideo ? 'video' : 'image']: {
+          [isVideo ? "video" : "image"]: {
             url: res.url,
           },
           mimetype: tools.mime.lookup(res.ext),

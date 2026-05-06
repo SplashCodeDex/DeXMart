@@ -3,6 +3,6 @@ declare global {
   type BullJob<T = any> = any;
 }
 
-declare module 'yt-search';
-declare module 'qrcode';
-declare module 'file-type';
+declare module "yt-search";
+declare module "qrcode";
+declare module "file-type";

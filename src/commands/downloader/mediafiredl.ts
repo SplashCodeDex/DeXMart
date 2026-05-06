@@ -1,10 +1,10 @@
-import { MessageContext } from '../../types/index.js';
-import axios from 'axios';
+import axios from "axios";
+import { MessageContext } from "../../types/index.js";
 
 export default {
-  name: 'mediafiredl',
-  aliases: ['mediafire', 'mf', 'mfdl'],
-  category: 'downloader',
+  name: "mediafiredl",
+  aliases: ["mediafire", "mf", "mfdl"],
+  category: "downloader",
   permissions: {
     premium: true,
   },
@@ -14,19 +14,19 @@ export default {
 
     if (!url)
       return await ctx.reply(
-        `${formatter.quote(tools.msg.generateInstruction(['send'], ['text']))}\n${formatter.quote(
+        `${formatter.quote(tools.msg.generateInstruction(["send"], ["text"]))}\n${formatter.quote(
           tools.msg.generateCmdExample(
             ctx.used,
-            'https://www.mediafire.com/file/on2jvy5540bi22u/humanity-turned-into-lcl-scene.mp4/file'
-          )
-        )}`
+            "https://www.mediafire.com/file/on2jvy5540bi22u/humanity-turned-into-lcl-scene.mp4/file",
+          ),
+        )}`,
       );
 
     const isUrl = tools.cmd.isUrl(url);
     if (!isUrl) return await ctx.reply(config.msg.urlInvalid);
 
     try {
-      const apiUrl = tools.api.createUrl('neko', '/downloader/mediafire', {
+      const apiUrl = tools.api.createUrl("neko", "/downloader/mediafire", {
         url,
       });
       const { result } = (await axios.get(apiUrl)).data;
@@ -36,7 +36,7 @@ export default {
           url: result.download.url,
         },
         fileName: result.fileName,
-        mimetype: result.mimetype || 'application/octet-stream',
+        mimetype: result.mimetype || "application/octet-stream",
         caption: formatter.quote(`URL: ${url}`),
         footer: config.msg.footer,
       });

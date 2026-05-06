@@ -1,5 +1,5 @@
-import { MessageContext, GlobalContext } from '../../types/index.js';
-import axios from 'axios';
+import axios from "axios";
+import { MessageContext, GlobalContext } from "../../types/index.js";
 
 interface NpmResult {
   title: string;
@@ -10,19 +10,19 @@ interface NpmResult {
 }
 
 export default {
-  name: 'npmsearch',
-  aliases: ['npm', 'npms'],
-  category: 'search',
+  name: "npmsearch",
+  aliases: ["npm", "npms"],
+  category: "search",
   permissions: {
     coin: 10,
   },
   code: async (ctx: MessageContext) => {
     const { formatter, tools, config } = ctx.channel.context as GlobalContext;
-    const input = ctx.args.join(' ') || null;
+    const input = ctx.args.join(" ") || null;
 
     if (!input) {
-      const instruction = tools.msg.generateInstruction(['send'], ['text']);
-      const example = tools.msg.generateCmdExample(ctx.used, 'baileys');
+      const instruction = tools.msg.generateInstruction(["send"], ["text"]);
+      const example = tools.msg.generateCmdExample(ctx.used, "baileys");
       return await ctx.reply(`${formatter.quote(instruction)}
 ${formatter.quote(example)}`);
     }
@@ -38,13 +38,11 @@ ${formatter.quote(example)}`);
             `${formatter.quote(`Name: ${res.title}`)}
 ` +
             `${formatter.quote(`Developer: ${res.author}`)}
-${formatter.quote(
-              `URL: ${res.links.npm}`
-            )}`
+${formatter.quote(`URL: ${res.links.npm}`)}`,
         )
-        .join('\n' + `${formatter.quote('· · ─ ·✶· ─ · ·')}\n`);
+        .join("\n" + `${formatter.quote("· · ─ ·✶· ─ · ·")}\n`);
       await ctx.reply({
-        text: resultText || config.msg.notFound || 'No results found',
+        text: resultText || config.msg.notFound || "No results found",
         footer: config.msg.footer,
       });
     } catch (error: unknown) {

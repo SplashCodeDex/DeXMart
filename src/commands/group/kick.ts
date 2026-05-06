@@ -1,13 +1,13 @@
-import { MessageContext } from '../../types/index.js';
+import { MessageContext } from "../../types/index.js";
 
 export default {
-  name: 'kick',
-  aliases: ['dor', 'remove'],
-  category: 'group',
+  name: "kick",
+  aliases: ["dor", "remove"],
+  category: "group",
   permissions: {
     admin: true,
     channelAdmin: true,
-    group: true
+    group: true,
   },
   code: async (ctx: MessageContext) => {
     const { formatter } = ctx.channel.context;
@@ -18,7 +18,7 @@ export default {
     const accountJid = quotedJid || mentions[0] || null;
 
     if (!accountJid) {
-      return await ctx.reply(formatter.quote('⚠️ Please reply to a user or mention them to kick.'));
+      return await ctx.reply(formatter.quote("⚠️ Please reply to a user or mention them to kick."));
     }
 
     // Check if target is owner (safety check)
@@ -27,15 +27,15 @@ export default {
     // GroupFunctions interface has `owner(): Promise<string | null>`
     const groupOwner = await ctx.group().owner();
     if (groupOwner === accountJid) {
-      return await ctx.reply(formatter.quote('❎ Cannot kick the group owner!'));
+      return await ctx.reply(formatter.quote("❎ Cannot kick the group owner!"));
     }
 
     try {
       await ctx.group().kick([accountJid]);
-      await ctx.reply(formatter.quote('✅ User kicked successfully!'));
+      await ctx.reply(formatter.quote("✅ User kicked successfully!"));
     } catch (error: unknown) {
       const err = error instanceof Error ? error.message : String(error);
-      ctx.channel.context.logger.error('Kick command failed', { error: err });
+      ctx.channel.context.logger.error("Kick command failed", { error: err });
       await ctx.reply(formatter.quote(`❌ Failed to kick user: ${err}`));
     }
   },

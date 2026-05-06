@@ -17,9 +17,9 @@
  * The 45MB model is downloaded once and cached permanently by the browser.
  */
 
-'use client';
+"use client";
 
-import { useEffect, useRef, useCallback, useState } from 'react';
+import { useEffect, useRef, useCallback, useState } from "react";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -38,14 +38,17 @@ export interface MemoryStatus {
 }
 
 export interface MemoryInitProgress {
-  stage: 'loading_model' | 'rehydrating';
+  stage: "loading_model" | "rehydrating";
   pct: number;
 }
 
 export interface FirestoreClient {
   collection(path: string): {
     add(data: Record<string, unknown>): Promise<{ id: string }>;
-    orderBy(field: string, dir?: string): {
+    orderBy(
+      field: string,
+      dir?: string,
+    ): {
       limit(n: number): {
         get(): Promise<{ docs: Array<{ id: string; data(): Record<string, unknown> }> }>;
       };
@@ -73,12 +76,12 @@ type PendingRequest = {
   onProgress?: (p: MemoryInitProgress) => void;
 };
 
-import { z } from 'zod';
+import { z } from "zod";
 
 export const WorkerResponseSchema = z.object({
-  type: z.enum(['result', 'error', 'progress', 'firestore:response']),
+  type: z.enum(["result", "error", "progress", "firestore:response"]),
   id: z.string().optional(),
-  payload: z.unknown()
+  payload: z.unknown(),
 });
 export type WorkerResponse = z.infer<typeof WorkerResponseSchema>;
 
@@ -101,49 +104,58 @@ class MemoryWorkerClient {
     try {
       eventData = WorkerResponseSchema.parse(rawEvent.data);
     } catch (err) {
-      console.error('[MemoryWorkerClient] Invalid worker response:', err);
+      console.error("[MemoryWorkerClient] Invalid worker response:", err);
       return;
     }
 
     const { type, id, payload } = eventData;
 
     // Handle Firestore proxy requests from worker
-    if (id?.startsWith('firestore:write:')) {
-      const requestId = id.replace('firestore:write:', '');
-      const { collection: path, data } = payload as { collection: string; data: Record<string, unknown> };
-      this.firestoreClient.collection(path).add(data)
+    if (id?.startsWith("firestore:write:")) {
+      const requestId = id.replace("firestore:write:", "");
+      const { collection: path, data } = payload as {
+        collection: string;
+        data: Record<string, unknown>;
+      };
+      this.firestoreClient
+        .collection(path)
+        .add(data)
         .then((ref) => {
           this.worker.postMessage({
-            type: 'firestore:response',
-            id: 'firestore:response',
+            type: "firestore:response",
+            id: "firestore:response",
             payload: { requestId, data: { id: ref.id } },
           });
         })
         .catch((err) => {
           this.worker.postMessage({
-            type: 'firestore:response',
-            id: 'firestore:response',
+            type: "firestore:response",
+            id: "firestore:response",
             payload: { requestId, error: String(err) },
           });
         });
       return;
     }
 
-    if (id?.startsWith('firestore:read:')) {
-      const requestId = id.replace('firestore:read:', '');
+    if (id?.startsWith("firestore:read:")) {
+      const requestId = id.replace("firestore:read:", "");
       const { collection: path, limit } = payload as { collection: string; limit: number };
-      this.firestoreClient.collection(path).orderBy('createdAt', 'desc').limit(limit).get()
+      this.firestoreClient
+        .collection(path)
+        .orderBy("createdAt", "desc")
+        .limit(limit)
+        .get()
         .then((snapshot) => {
           this.worker.postMessage({
-            type: 'firestore:response',
-            id: 'firestore:response',
-            payload: { requestId, data: snapshot.docs.map(d => ({ id: d.id, ...d.data() })) },
+            type: "firestore:response",
+            id: "firestore:response",
+            payload: { requestId, data: snapshot.docs.map((d) => ({ id: d.id, ...d.data() })) },
           });
         })
         .catch((err) => {
           this.worker.postMessage({
-            type: 'firestore:response',
-            id: 'firestore:response',
+            type: "firestore:response",
+            id: "firestore:response",
             payload: { requestId, error: String(err) },
           });
         });
@@ -154,13 +166,13 @@ class MemoryWorkerClient {
     const pending = this.pending.get(id);
     if (!pending) return;
 
-    if (type === 'progress' && pending.onProgress) {
+    if (type === "progress" && pending.onProgress) {
       pending.onProgress(payload as MemoryInitProgress);
       return; // Don't resolve — wait for 'result'
     }
 
     this.pending.delete(id);
-    if (type === 'error') {
+    if (type === "error") {
       pending.reject(new Error(String(payload)));
     } else {
       pending.resolve(payload);
@@ -180,24 +192,27 @@ class MemoryWorkerClient {
   }
 
   async init(onProgress?: (p: MemoryInitProgress) => void): Promise<void> {
-    await this.send('init', { userId: this.userId }, onProgress);
+    await this.send("init", { userId: this.userId }, onProgress);
   }
 
   async remember(text: string, metadata?: Record<string, unknown>): Promise<void> {
-    await this.send('remember', { text, metadata: metadata ?? {} });
+    await this.send("remember", { text, metadata: metadata ?? {} });
   }
 
   async search(query: string, maxResults = 5): Promise<MemorySearchResult[]> {
-    const result = await this.send<{ results: MemorySearchResult[] }>('search', { query, maxResults });
+    const result = await this.send<{ results: MemorySearchResult[] }>("search", {
+      query,
+      maxResults,
+    });
     return result.results;
   }
 
   async status(): Promise<MemoryStatus> {
-    return this.send<MemoryStatus>('status', {});
+    return this.send<MemoryStatus>("status", {});
   }
 
   async clear(): Promise<void> {
-    await this.send('clear', {});
+    await this.send("clear", {});
   }
 
   terminate(): void {
@@ -233,10 +248,7 @@ export function useMemory(
     setError(null);
 
     // Create worker — Next.js requires the Worker constructor with module type
-    const worker = new Worker(
-      new URL('./memory-worker.ts', import.meta.url),
-      { type: 'module' },
-    );
+    const worker = new Worker(new URL("./memory-worker.ts", import.meta.url), { type: "module" });
     const client = new MemoryWorkerClient(worker, firestore, userId);
     clientRef.current = client;
 
@@ -260,7 +272,7 @@ export function useMemory(
   }, [userId, firestore]);
 
   const remember = useCallback(async (text: string, metadata?: Record<string, unknown>) => {
-    if (!clientRef.current) throw new Error('Memory worker not ready');
+    if (!clientRef.current) throw new Error("Memory worker not ready");
     return clientRef.current.remember(text, metadata);
   }, []);
 
@@ -270,12 +282,12 @@ export function useMemory(
   }, []);
 
   const status = useCallback(async () => {
-    if (!clientRef.current) throw new Error('Memory worker not ready');
+    if (!clientRef.current) throw new Error("Memory worker not ready");
     return clientRef.current.status();
   }, []);
 
   const clear = useCallback(async () => {
-    if (!clientRef.current) throw new Error('Memory worker not ready');
+    if (!clientRef.current) throw new Error("Memory worker not ready");
     return clientRef.current.clear();
   }, []);
 

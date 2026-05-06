@@ -1,31 +1,31 @@
-import { db } from '../lib/firebase.js';
-import { firebaseService } from '@/persistence/firebase.js';
-import { ContactSchema, Result, type Contact } from '../types/contracts.js';
-import logger from '../utils/logger.js';
-import crypto from 'node:crypto';
-import { parse } from 'csv-parse';
-import fs from 'node:fs';
-import { FieldValue } from 'firebase-admin/firestore';
-import { FIELD_ALIASES } from '../../shared/fieldAliases.js';
-import { existsSync } from 'node:fs';
+import crypto from "node:crypto";
+import fs from "node:fs";
+import { existsSync } from "node:fs";
+import { parse } from "csv-parse";
+import { FieldValue } from "firebase-admin/firestore";
+import { firebaseService } from "@/persistence/firebase.js";
+import { FIELD_ALIASES } from "../../shared/fieldAliases.js";
+import { db } from "../lib/firebase.js";
+import { ContactSchema, Result, type Contact } from "../types/contracts.js";
+import logger from "../utils/logger.js";
 
 const normalizePhoneNumber = (phone: string): string => {
   if (
-    phone.includes('@s.whatsapp.net') ||
-    phone.includes('@g.us') ||
-    phone.includes('@lid') ||
-    phone.includes('@hosted.lid')
+    phone.includes("@s.whatsapp.net") ||
+    phone.includes("@g.us") ||
+    phone.includes("@lid") ||
+    phone.includes("@hosted.lid")
   ) {
     return phone;
   }
-  const digits = phone.replace(/\D/g, '');
+  const digits = phone.replace(/\D/g, "");
   return `${digits}@s.whatsapp.net`;
-}
+};
 
 export class ContactService {
   private static instance: ContactService;
 
-  private constructor() { }
+  private constructor() {}
 
   public static getInstance(): ContactService {
     if (!ContactService.instance) {
@@ -40,7 +40,7 @@ export class ContactService {
   public async importContacts(
     tenantId: string,
     filePath: string,
-    channelId?: string
+    channelId?: string,
   ): Promise<Result<{ count: number; errors: string[]; contactIds: string[] }>> {
     const errors: string[] = [];
     const contactIds: string[] = [];
@@ -52,11 +52,13 @@ export class ContactService {
     const batchPromises: Promise<any>[] = [];
 
     try {
-      const parser = fs.createReadStream(filePath).pipe(parse({
-        columns: true,
-        skip_empty_lines: true,
-        trim: true,
-      }));
+      const parser = fs.createReadStream(filePath).pipe(
+        parse({
+          columns: true,
+          skip_empty_lines: true,
+          trim: true,
+        }),
+      );
 
       for await (const record of parser) {
         rowIndex++;
@@ -66,38 +68,41 @@ export class ContactService {
         // helper to get value from first matching alias
         const getVal = (field: keyof typeof FIELD_ALIASES) => {
           const aliases = FIELD_ALIASES[field];
-          const matchKey = keys.find(k => {
+          const matchKey = keys.find((k) => {
             const nk = k.toLowerCase().trim();
             return (aliases as readonly string[]).some((a: string) => nk === a || nk.includes(a));
           });
           return matchKey ? rawData[matchKey] : undefined;
         };
 
-        const name = getVal('name') || 'Unknown';
-        const phone = getVal('phone') || '';
-        const email = getVal('email') || '';
-        const tagsRaw = getVal('tags') || '';
+        const name = getVal("name") || "Unknown";
+        const phone = getVal("phone") || "";
+        const email = getVal("email") || "";
+        const tagsRaw = getVal("tags") || "";
 
         const contactData = {
           id: `cont_${crypto.randomUUID()}`,
           tenantId,
           name,
-          phone: phone ? normalizePhoneNumber(phone) : '',
+          phone: phone ? normalizePhoneNumber(phone) : "",
           email,
-          tags: tagsRaw ? tagsRaw.split('|').map((t: string) => t.trim()) : [],
+          tags: tagsRaw ? tagsRaw.split("|").map((t: string) => t.trim()) : [],
           attributes: rawData,
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
         };
 
         const validation = ContactSchema.safeParse(contactData);
         if (!validation.success) {
-          const msg = validation.error.issues.map(e => `${e.path.join('.')}: ${e.message}`).join(', ');
+          const msg = validation.error.issues
+            .map((e) => `${e.path.join(".")}: ${e.message}`)
+            .join(", ");
           errors.push(`Row ${rowIndex + 1}: ${msg}`);
         } else {
-          const contactRef = db.collection('tenants')
+          const contactRef = db
+            .collection("tenants")
             .doc(tenantId)
-            .collection('contacts')
+            .collection("contacts")
             .doc(contactData.id);
           currentBatch.set(contactRef, validation.data);
           count++;
@@ -120,22 +125,23 @@ export class ContactService {
       // Record Import History
       const importId = `imp_${crypto.randomUUID()}`;
       try {
-        await db.collection('tenants')
+        await db
+          .collection("tenants")
           .doc(tenantId)
-          .collection('importHistory')
+          .collection("importHistory")
           .doc(importId)
           .set({
             id: importId,
             timestamp: FieldValue.serverTimestamp(),
-            fileName: filePath.split(/[\\/]/).pop() || 'unknown.csv',
+            fileName: filePath.split(/[\\/]/).pop() || "unknown.csv",
             totalRows: rowIndex,
             importedCount: count,
             errors,
             contactIds,
-            status: 'completed'
+            status: "completed",
           });
       } catch (historyError) {
-        logger.error('Failed to record import history', historyError);
+        logger.error("Failed to record import history", historyError);
       }
 
       // Update channel statistics (contactsCount)
@@ -143,28 +149,31 @@ export class ContactService {
         try {
           if (channelId) {
             // Update specific channel
-            await firebaseService.setDoc<'users/{userId}/channels'>(
-              'channels',
+            await firebaseService.setDoc<"users/{userId}/channels">(
+              "channels",
               channelId,
-              { 'stats.contactsCount': FieldValue.increment(count) } as any,
+              { "stats.contactsCount": FieldValue.increment(count) } as any,
               tenantId,
-              true
+              true,
             );
           } else {
-            const channels = await firebaseService.getCollection<'users/{userId}/channels'>('channels', tenantId);
-            const statsPromises = channels.map(channel =>
-              firebaseService.setDoc<'users/{userId}/channels'>(
-                'channels',
+            const channels = await firebaseService.getCollection<"users/{userId}/channels">(
+              "channels",
+              tenantId,
+            );
+            const statsPromises = channels.map((channel) =>
+              firebaseService.setDoc<"users/{userId}/channels">(
+                "channels",
                 channel.id,
-                { 'stats.contactsCount': FieldValue.increment(count) } as any,
+                { "stats.contactsCount": FieldValue.increment(count) } as any,
                 tenantId,
-                true
-              )
+                true,
+              ),
             );
             await Promise.all(statsPromises);
           }
         } catch (statsError) {
-          logger.error('Failed to update channel stats after import', statsError);
+          logger.error("Failed to update channel stats after import", statsError);
         }
       }
 
@@ -174,10 +183,13 @@ export class ContactService {
 
       return { success: true, data: { count, errors, contactIds } };
     } catch (error: unknown) {
-      logger.error('Error parsing CSV', error);
+      logger.error("Error parsing CSV", error);
       const err = error as { code?: string; message?: string };
-      if (err.code === 'CSV_INVALID_COLUMN_NAME') {
-        return { success: false, error: new Error('Invalid CSV headers. Please check for duplicates.') };
+      if (err.code === "CSV_INVALID_COLUMN_NAME") {
+        return {
+          success: false,
+          error: new Error("Invalid CSV headers. Please check for duplicates."),
+        };
       }
       return { success: false, error: error instanceof Error ? error : new Error(String(error)) };
     }
@@ -188,10 +200,13 @@ export class ContactService {
    */
   public async listContacts(tenantId: string, limit: number = 100): Promise<Result<Contact[]>> {
     try {
-      const contacts = await firebaseService.getCollection('contacts' as any, tenantId) as Contact[];
+      const contacts = (await firebaseService.getCollection(
+        "contacts" as any,
+        tenantId,
+      )) as Contact[];
       return { success: true, data: contacts.slice(0, limit) };
     } catch (error: unknown) {
-      logger.error('ContactService.listContacts error', error);
+      logger.error("ContactService.listContacts error", error);
       return { success: false, error: error instanceof Error ? error : new Error(String(error)) };
     }
   }
@@ -207,14 +222,14 @@ export class ContactService {
         id,
         tenantId,
         createdAt: data.createdAt || new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
 
       const validated = ContactSchema.parse(contactData);
-      await firebaseService.setDoc('contacts' as any, id, validated, tenantId, false);
+      await firebaseService.setDoc("contacts" as any, id, validated, tenantId, false);
       return { success: true, data: validated };
     } catch (error: unknown) {
-      logger.error('ContactService.createContact error', error);
+      logger.error("ContactService.createContact error", error);
       return { success: false, error: error instanceof Error ? error : new Error(String(error)) };
     }
   }
@@ -222,16 +237,20 @@ export class ContactService {
   /**
    * Update a contact
    */
-  public async updateContact(tenantId: string, contactId: string, updates: Partial<Contact>): Promise<Result<void>> {
+  public async updateContact(
+    tenantId: string,
+    contactId: string,
+    updates: Partial<Contact>,
+  ): Promise<Result<void>> {
     try {
       const contactData = {
         ...updates,
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
-      await firebaseService.setDoc('contacts' as any, contactId, contactData, tenantId, true);
+      await firebaseService.setDoc("contacts" as any, contactId, contactData, tenantId, true);
       return { success: true, data: undefined };
     } catch (error: unknown) {
-      logger.error('ContactService.updateContact error', error);
+      logger.error("ContactService.updateContact error", error);
       return { success: false, error: error instanceof Error ? error : new Error(String(error)) };
     }
   }
@@ -241,10 +260,10 @@ export class ContactService {
    */
   public async deleteContact(tenantId: string, contactId: string): Promise<Result<void>> {
     try {
-      await firebaseService.deleteDoc('contacts' as any, contactId, tenantId);
+      await firebaseService.deleteDoc("contacts" as any, contactId, tenantId);
       return { success: true, data: undefined };
     } catch (error: unknown) {
-      logger.error('ContactService.deleteContact error', error);
+      logger.error("ContactService.deleteContact error", error);
       return { success: false, error: error instanceof Error ? error : new Error(String(error)) };
     }
   }
@@ -255,19 +274,20 @@ export class ContactService {
    */
   public async checkDuplicates(tenantId: string, phones: string[]): Promise<Result<string[]>> {
     try {
-      const uniquePhones = [...new Set(phones)].filter(p => p.length > 0);
+      const uniquePhones = [...new Set(phones)].filter((p) => p.length > 0);
       const duplicates: string[] = [];
       const CHUNK_SIZE = 30;
 
       for (let i = 0; i < uniquePhones.length; i += CHUNK_SIZE) {
         const chunk = uniquePhones.slice(i, i + CHUNK_SIZE);
-        const snapshot = await db.collection('tenants')
+        const snapshot = await db
+          .collection("tenants")
           .doc(tenantId)
-          .collection('contacts')
-          .where('phone', 'in', chunk)
+          .collection("contacts")
+          .where("phone", "in", chunk)
           .get();
 
-        snapshot.forEach(doc => {
+        snapshot.forEach((doc) => {
           const data = doc.data();
           if (data.phone) duplicates.push(data.phone);
         });
@@ -275,7 +295,7 @@ export class ContactService {
 
       return { success: true, data: duplicates };
     } catch (error: unknown) {
-      logger.error('ContactService.checkDuplicates error', error);
+      logger.error("ContactService.checkDuplicates error", error);
       return { success: false, error: error instanceof Error ? error : new Error(String(error)) };
     }
   }
@@ -285,19 +305,20 @@ export class ContactService {
    */
   public async undoImport(tenantId: string, importId: string): Promise<Result<void>> {
     try {
-      const historyRef = db.collection('tenants')
+      const historyRef = db
+        .collection("tenants")
         .doc(tenantId)
-        .collection('importHistory')
+        .collection("importHistory")
         .doc(importId);
 
       const historyDoc = await historyRef.get();
       if (!historyDoc.exists) {
-        return { success: false, error: new Error('Import history not found') };
+        return { success: false, error: new Error("Import history not found") };
       }
 
       const historyData = historyDoc.data()!;
-      if (historyData.status === 'rolled_back') {
-        return { success: false, error: new Error('Import already rolled back') };
+      if (historyData.status === "rolled_back") {
+        return { success: false, error: new Error("Import already rolled back") };
       }
 
       const contactIds = historyData.contactIds || [];
@@ -308,10 +329,7 @@ export class ContactService {
         const chunk = contactIds.slice(i, i + BATCH_SIZE);
         const batch = db.batch();
         chunk.forEach((id: string) => {
-          const contactRef = db.collection('tenants')
-            .doc(tenantId)
-            .collection('contacts')
-            .doc(id);
+          const contactRef = db.collection("tenants").doc(tenantId).collection("contacts").doc(id);
           batch.delete(contactRef);
         });
         await batch.commit();
@@ -319,32 +337,35 @@ export class ContactService {
 
       // Update history status
       await historyRef.update({
-        status: 'rolled_back',
-        updatedAt: FieldValue.serverTimestamp()
+        status: "rolled_back",
+        updatedAt: FieldValue.serverTimestamp(),
       });
 
       // Update channel stats (decrement)
       if (historyData.importedCount > 0) {
         try {
-          const channels = await firebaseService.getCollection<'users/{userId}/channels'>('channels', tenantId);
-          const statsPromises = channels.map(channel =>
-            firebaseService.setDoc<'users/{userId}/channels'>(
-              'channels',
+          const channels = await firebaseService.getCollection<"users/{userId}/channels">(
+            "channels",
+            tenantId,
+          );
+          const statsPromises = channels.map((channel) =>
+            firebaseService.setDoc<"users/{userId}/channels">(
+              "channels",
               channel.id,
-              { 'stats.contactsCount': FieldValue.increment(-historyData.importedCount) } as any,
+              { "stats.contactsCount": FieldValue.increment(-historyData.importedCount) } as any,
               tenantId,
-              true
-            )
+              true,
+            ),
           );
           await Promise.all(statsPromises);
         } catch (statsError) {
-          logger.error('Failed to decrement channel stats after undo', statsError);
+          logger.error("Failed to decrement channel stats after undo", statsError);
         }
       }
 
       return { success: true, data: undefined };
     } catch (error: unknown) {
-      logger.error('ContactService.undoImport error', error);
+      logger.error("ContactService.undoImport error", error);
       return { success: false, error: error instanceof Error ? error : new Error(String(error)) };
     }
   }
@@ -354,17 +375,18 @@ export class ContactService {
    */
   public async listImportHistory(tenantId: string, limit: number = 50): Promise<Result<any[]>> {
     try {
-      const snapshot = await db.collection('tenants')
+      const snapshot = await db
+        .collection("tenants")
         .doc(tenantId)
-        .collection('importHistory')
-        .orderBy('timestamp', 'desc')
+        .collection("importHistory")
+        .orderBy("timestamp", "desc")
         .limit(limit)
         .get();
 
-      const history = snapshot.docs.map(doc => doc.data());
+      const history = snapshot.docs.map((doc) => doc.data());
       return { success: true, data: history };
     } catch (error: unknown) {
-      logger.error('ContactService.listImportHistory error', error);
+      logger.error("ContactService.listImportHistory error", error);
       return { success: false, error: error instanceof Error ? error : new Error(String(error)) };
     }
   }
@@ -374,10 +396,10 @@ export class ContactService {
    */
   public async getAudience(tenantId: string): Promise<Result<any[]>> {
     try {
-      const audiences = await firebaseService.getCollection('audiences' as any, tenantId);
+      const audiences = await firebaseService.getCollection("audiences" as any, tenantId);
       return { success: true, data: audiences };
     } catch (error: unknown) {
-      logger.error('Error fetching audience', error);
+      logger.error("Error fetching audience", error);
       return { success: false, error: error instanceof Error ? error : new Error(String(error)) };
     }
   }

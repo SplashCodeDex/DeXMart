@@ -1,18 +1,18 @@
 /**
  * UserContext — The Core Authorization Abstraction for DeXMart
- * 
+ *
  * DeXMart follows the B2C multi-tenant model (like Spotify, CapCut, Notion):
  * - The User IS the Tenant — no teams, no orgs, no admin/editor roles
  * - Every piece of data (channels, agents, sessions, messages) is tagged with userId
  * - Shared infrastructure — same app, same database for everyone
  * - Logical isolation — the authorization layer ensures User A can't touch User B's data
- * 
+ *
  * This context flows through EVERY request. OpenClaw's engine functions receive
  * it to know WHO they're operating for, and the billing gate checks WHAT
  * the user's plan allows.
  */
 
-export type PlanTier = 'free' | 'starter' | 'pro' | 'enterprise';
+export type PlanTier = "free" | "starter" | "pro" | "enterprise";
 
 export interface UserCapabilities {
   /** Which AI model providers this user can access based on their plan */
@@ -74,13 +74,13 @@ export interface UserSubscription {
 /**
  * UserContext is the single object that flows through every
  * user-scoped operation in DeXMart.
- * 
+ *
  * How it gets created:
  * - Gateway receives a request → JWT decoded → userId extracted → UserContext resolved from Firestore
  * - Channel receives a message → channelId maps to userId → UserContext resolved
  * - Agent starts a run → UserContext passed for model gating
  * - Tool executes → UserContext checked for feature permissions
- * 
+ *
  * How data is isolated:
  * - Every Firestore document is stored under /users/{userId}/...
  * - Every query filters by userId
@@ -88,7 +88,7 @@ export interface UserSubscription {
  * - If resource.userId !== context.userId → 403 Forbidden
  */
 export interface UserContext {
-  /** 
+  /**
    * Unique user identifier (Firestore document ID).
    * This is the ISOLATION KEY — every piece of data is tagged with this.
    * Maps to what was previously called "tenantId" in the codebase.
@@ -132,7 +132,7 @@ export interface UserContextResolver {
   /** Resolve from a JWT token (decode → extract userId → resolve) */
   fromToken(token: string): Promise<UserContext>;
 
-  /** 
+  /**
    * Resolve from a channel ID.
    * Channels are stored under /users/{userId}/agents/{agentId}/channels/{channelId}
    * This reverse-looks up the userId from the channel mapping.
@@ -146,7 +146,7 @@ export interface UserContextResolver {
 /**
  * Authorization guard — the "wall" between users.
  * Every data access goes through this.
- * 
+ *
  * Usage:
  *   const guard = createAuthGuard(currentUser);
  *   guard.assertOwns(channel); // throws 403 if channel.userId !== currentUser.userId
@@ -170,17 +170,16 @@ export interface AuthGuard {
   canSendMessage(): boolean;
 
   /** Check if a specific feature is available on the user's plan */
-  hasFeature(feature: keyof UserCapabilities['features']): boolean;
+  hasFeature(feature: keyof UserCapabilities["features"]): boolean;
 }
 
 export function createAuthGuard(ctx: UserContext): AuthGuard {
   return {
     assertOwns(resource: { userId: string }): void {
       if (resource.userId !== ctx.userId) {
-        throw Object.assign(
-          new Error(`Forbidden: user ${ctx.userId} does not own this resource`),
-          { statusCode: 403 },
-        );
+        throw Object.assign(new Error(`Forbidden: user ${ctx.userId} does not own this resource`), {
+          statusCode: 403,
+        });
       }
     },
 
@@ -203,7 +202,7 @@ export function createAuthGuard(ctx: UserContext): AuthGuard {
       return ctx.usage.messagesThisPeriod < ctx.capabilities.maxMessagesPerMonth;
     },
 
-    hasFeature(feature: keyof UserCapabilities['features']): boolean {
+    hasFeature(feature: keyof UserCapabilities["features"]): boolean {
       return ctx.capabilities.features[feature] === true;
     },
   };
@@ -215,7 +214,7 @@ export function createAuthGuard(ctx: UserContext): AuthGuard {
  */
 export const PLAN_CAPABILITIES: Record<PlanTier, UserCapabilities> = {
   free: {
-    models: ['gemini-2.0-flash'],
+    models: ["gemini-2.0-flash"],
     maxChannels: 1,
     maxAgents: 1,
     maxMessagesPerMonth: 100,
@@ -235,7 +234,7 @@ export const PLAN_CAPABILITIES: Record<PlanTier, UserCapabilities> = {
     },
   },
   starter: {
-    models: ['gemini-2.0-flash', 'gemini-2.5-flash'],
+    models: ["gemini-2.0-flash", "gemini-2.5-flash"],
     maxChannels: 3,
     maxAgents: 2,
     maxMessagesPerMonth: 5_000,
@@ -256,8 +255,11 @@ export const PLAN_CAPABILITIES: Record<PlanTier, UserCapabilities> = {
   },
   pro: {
     models: [
-      'gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-2.5-pro',
-      'claude-sonnet-4-20250514', 'gpt-4o',
+      "gemini-2.0-flash",
+      "gemini-2.5-flash",
+      "gemini-2.5-pro",
+      "claude-sonnet-4-20250514",
+      "gpt-4o",
     ],
     maxChannels: 10,
     maxAgents: 5,
@@ -279,9 +281,13 @@ export const PLAN_CAPABILITIES: Record<PlanTier, UserCapabilities> = {
   },
   enterprise: {
     models: [
-      'gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-2.5-pro',
-      'claude-sonnet-4-20250514', 'claude-opus-4-20250514',
-      'gpt-4o', 'gpt-4.1',
+      "gemini-2.0-flash",
+      "gemini-2.5-flash",
+      "gemini-2.5-pro",
+      "claude-sonnet-4-20250514",
+      "claude-opus-4-20250514",
+      "gpt-4o",
+      "gpt-4.1",
     ],
     maxChannels: -1,
     maxAgents: -1,

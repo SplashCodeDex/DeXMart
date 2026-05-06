@@ -3,20 +3,25 @@
  * 2026 Mastermind Edition - Stateless & Multi-Tenant Optimized & Strictly Typed
  */
 
-import fs from 'fs/promises';
-import path from 'path';
-import { fileURLToPath, pathToFileURL } from 'url';
-import { trace, SpanStatusCode } from '@opentelemetry/api';
-
-import performanceMonitor from '../utils/performanceMonitor.js';
-import { proto, downloadContentFromMessage, getContentType } from 'baileys';
-import { type ActiveChannel, type Command, type MessageContext, type GlobalContext, type GroupFunctions } from '../types/index.js';
-import { MessageNormalizer } from '../utils/messageNormalizer.js';
+import fs from "fs/promises";
+import path from "path";
+import { fileURLToPath, pathToFileURL } from "url";
+import { trace, SpanStatusCode } from "@opentelemetry/api";
+import { proto, downloadContentFromMessage, getContentType } from "baileys";
+import {
+  type ActiveChannel,
+  type Command,
+  type MessageContext,
+  type GlobalContext,
+  type GroupFunctions,
+} from "../types/index.js";
+import { MessageNormalizer } from "../utils/messageNormalizer.js";
+import performanceMonitor from "../utils/performanceMonitor.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const tracer = trace.getTracer('DeXMart-command-system');
+const tracer = trace.getTracer("DeXMart-command-system");
 
 export class CommandSystem {
   private context: GlobalContext;
@@ -34,9 +39,9 @@ export class CommandSystem {
     this.categories = new Map();
 
     // Command prefixes
-    this.prefixes = ['.', '!', '/', '#'];
+    this.prefixes = [".", "!", "/", "#"];
 
-    this.context.logger.info('🔧 Unified Command System initialized');
+    this.context.logger.info("🔧 Unified Command System initialized");
   }
 
   /**
@@ -45,12 +50,12 @@ export class CommandSystem {
    * since they'll all fail validateCommand() anyway (no {name, code} export).
    */
   private static readonly SKIP_CATEGORIES = new Set([
-    'models',                 // Claude Code model-management CLI internals
-    'channels',               // OpenClaw channel-registry CLI (not bot commands)
-    'status-all',             // OpenClaw status-report internals
-    'onboard-non-interactive',// OpenClaw onboarding flow
-    'onboarding',             // OpenClaw plugin-install flow
-    'gateway-status',         // OpenClaw gateway helpers (no command export)
+    "models", // Claude Code model-management CLI internals
+    "channels", // OpenClaw channel-registry CLI (not bot commands)
+    "status-all", // OpenClaw status-report internals
+    "onboard-non-interactive", // OpenClaw onboarding flow
+    "onboarding", // OpenClaw plugin-install flow
+    "gateway-status", // OpenClaw gateway helpers (no command export)
   ]);
 
   /**
@@ -65,49 +70,62 @@ export class CommandSystem {
     this.aliases.clear();
     this.categories.clear();
 
-    const commandsDir = path.join(__dirname, '..', 'commands');
-    this.context.logger.info('🔄 Parallelizing command loading...');
+    const commandsDir = path.join(__dirname, "..", "commands");
+    this.context.logger.info("🔄 Parallelizing command loading...");
 
     try {
       const categories = await fs.readdir(commandsDir, { withFileTypes: true });
 
       // Parallelize category loading
-      await Promise.all(categories.map(async (category) => {
-        if (!category.isDirectory()) return;
-        if (CommandSystem.SKIP_CATEGORIES.has(category.name)) return;
+      await Promise.all(
+        categories.map(async (category) => {
+          if (!category.isDirectory()) return;
+          if (CommandSystem.SKIP_CATEGORIES.has(category.name)) return;
 
-        const categoryPath = path.join(commandsDir, category.name);
-        const commandFiles = await fs.readdir(categoryPath);
+          const categoryPath = path.join(commandsDir, category.name);
+          const commandFiles = await fs.readdir(categoryPath);
 
-        this.categories.set(category.name, []);
+          this.categories.set(category.name, []);
 
-        // Parallelize file loading within category
-        await Promise.all(commandFiles.map(async (file) => {
-          const isTestFile = file.endsWith('.test.ts') || file.endsWith('.spec.ts') || file.endsWith('.test.js') || file.endsWith('.spec.js');
-          if ((file.endsWith('.js') || file.endsWith('.ts')) && !file.endsWith('.d.ts') && !isTestFile) {
-            try {
-              const commandPath = path.join(categoryPath, file);
-              const command = await this.loadSingleCommand(commandPath, category.name);
+          // Parallelize file loading within category
+          await Promise.all(
+            commandFiles.map(async (file) => {
+              const isTestFile =
+                file.endsWith(".test.ts") ||
+                file.endsWith(".spec.ts") ||
+                file.endsWith(".test.js") ||
+                file.endsWith(".spec.js");
+              if (
+                (file.endsWith(".js") || file.endsWith(".ts")) &&
+                !file.endsWith(".d.ts") &&
+                !isTestFile
+              ) {
+                try {
+                  const commandPath = path.join(categoryPath, file);
+                  const command = await this.loadSingleCommand(commandPath, category.name);
 
-              if (command) {
-                // Since this is asynchronous, we use a synchronized registration
-                this.registerCommand(command, category.name);
+                  if (command) {
+                    // Since this is asynchronous, we use a synchronized registration
+                    this.registerCommand(command, category.name);
+                  }
+                } catch (error: unknown) {
+                  const err = error instanceof Error ? error.message : String(error);
+                  this.context.logger.error(`  ❌ Error loading ${file}:`, { error: err });
+                }
               }
-            } catch (error: unknown) {
-              const err = error instanceof Error ? error.message : String(error);
-              this.context.logger.error(`  ❌ Error loading ${file}:`, { error: err });
-            }
-          }
-        }));
-      }));
+            }),
+          );
+        }),
+      );
 
       const duration = Date.now() - startTime;
-      const failMsg = this.failedCount > 0 ? ` (${this.failedCount} failed)` : '';
-      this.context.logger.info(`🎉 High-Speed Load Complete: ${this.loadedCount} commands in ${duration}ms${failMsg}`);
-
+      const failMsg = this.failedCount > 0 ? ` (${this.failedCount} failed)` : "";
+      this.context.logger.info(
+        `🎉 High-Speed Load Complete: ${this.loadedCount} commands in ${duration}ms${failMsg}`,
+      );
     } catch (error: unknown) {
       const err = error instanceof Error ? error.message : String(error);
-      this.context.logger.error('❌ Command loading failed:', { error: err });
+      this.context.logger.error("❌ Command loading failed:", { error: err });
     }
   }
 
@@ -137,13 +155,12 @@ export class CommandSystem {
         filePath: commandPath,
         loadedAt: Date.now(),
         // Default values for robustness
-        description: command.description || 'No description',
-        usage: command.usage || command.name
+        description: command.description || "No description",
+        usage: command.usage || command.name,
       };
 
       this.loadedCount += 1;
       return enhancedCommand;
-
     } catch (error: unknown) {
       const err = error instanceof Error ? error.message : String(error);
       this.failedCount += 1;
@@ -161,7 +178,7 @@ export class CommandSystem {
 
     for (const [category, commandNames] of this.categories.entries()) {
       categorized[category] = commandNames
-        .map(name => {
+        .map((name) => {
           const cmd = this.commands.get(name);
           return cmd ? { name: cmd.name, desc: cmd.description } : null;
         })
@@ -183,7 +200,12 @@ export class CommandSystem {
   }
 
   validateCommand(command: unknown): command is Command {
-    return !!(command && typeof command === 'object' && 'name' in command && typeof (command as Command).code === 'function');
+    return !!(
+      command &&
+      typeof command === "object" &&
+      "name" in command &&
+      typeof (command as Command).code === "function"
+    );
   }
 
   async processMessage(bot: ActiveChannel, messageData: proto.IWebMessageInfo) {
@@ -203,7 +225,7 @@ export class CommandSystem {
 
   parseCommand(text: string) {
     const trimmed = text.trim();
-    const prefix = this.prefixes.find(p => trimmed.startsWith(p));
+    const prefix = this.prefixes.find((p) => trimmed.startsWith(p));
     if (!prefix) return null;
 
     const withoutPrefix = trimmed.substring(prefix.length);
@@ -214,91 +236,142 @@ export class CommandSystem {
     return { name, args, fullText: text, prefix };
   }
 
-  async executeCommand(bot: ActiveChannel, command: Command, messageData: proto.IWebMessageInfo, commandInfo: { name: string; args: string[]; prefix: string }) {
-    const timer = performanceMonitor.startTimer('command_execution', {
+  async executeCommand(
+    bot: ActiveChannel,
+    command: Command,
+    messageData: proto.IWebMessageInfo,
+    commandInfo: { name: string; args: string[]; prefix: string },
+  ) {
+    const timer = performanceMonitor.startTimer("command_execution", {
       command: command.name,
-      userId: messageData.key?.remoteJid || 'unknown',
-      tenantId: bot.tenantId
+      userId: messageData.key?.remoteJid || "unknown",
+      tenantId: bot.tenantId,
     });
 
-    return await tracer.startActiveSpan(`command:${command.name}`, {
-      attributes: {
-        'app.command': command.name,
-        'app.tenant_id': bot.tenantId,
-        'app.user_jid': messageData.key?.remoteJid || 'unknown',
-        'app.is_group': !!messageData.key?.remoteJid?.endsWith('@g.us')
-      }
-    }, async (span) => {
-      try {
-        const ctx = await this.createContext(bot, messageData, commandInfo, command);
+    return await tracer.startActiveSpan(
+      `command:${command.name}`,
+      {
+        attributes: {
+          "app.command": command.name,
+          "app.tenant_id": bot.tenantId,
+          "app.user_jid": messageData.key?.remoteJid || "unknown",
+          "app.is_group": !!messageData.key?.remoteJid?.endsWith("@g.us"),
+        },
+      },
+      async (span) => {
+        try {
+          const ctx = await this.createContext(bot, messageData, commandInfo, command);
 
-        // Execute command through middleware pipeline
-        await bot.executeMiddleware(ctx, async () => {
-          if (command.code) {
-            await command.code(ctx);
+          // Execute command through middleware pipeline
+          await bot.executeMiddleware(ctx, async () => {
+            if (command.code) {
+              await command.code(ctx);
+            }
+          });
+
+          const duration = timer.end();
+          this.context.logger.command(
+            command.name,
+            messageData.key?.remoteJid || "unknown",
+            true,
+            duration,
+          );
+          span.setStatus({ code: SpanStatusCode.OK });
+          span.end();
+          return true;
+        } catch (error: unknown) {
+          timer.end();
+          const err = error instanceof Error ? error : new Error(String(error));
+          this.context.logger.command(
+            command.name,
+            messageData.key?.remoteJid || "unknown",
+            false,
+            null,
+            err,
+          );
+
+          span.setStatus({
+            code: SpanStatusCode.ERROR,
+            message: err.message,
+          });
+          span.recordException(err);
+          span.end();
+
+          if (messageData.key?.remoteJid) {
+            await bot.sendMessage(
+              messageData.key.remoteJid,
+              { text: `❌ Error: ${err.message}` },
+              { quoted: messageData },
+            );
           }
-        });
-
-        const duration = timer.end();
-        this.context.logger.command(command.name, messageData.key?.remoteJid || 'unknown', true, duration);
-        span.setStatus({ code: SpanStatusCode.OK });
-        span.end();
-        return true;
-
-      } catch (error: unknown) {
-        timer.end();
-        const err = error instanceof Error ? error : new Error(String(error));
-        this.context.logger.command(command.name, messageData.key?.remoteJid || 'unknown', false, null, err);
-
-        span.setStatus({
-          code: SpanStatusCode.ERROR,
-          message: err.message
-        });
-        span.recordException(err);
-        span.end();
-
-        if (messageData.key?.remoteJid) {
-          await bot.sendMessage(messageData.key.remoteJid, { text: `❌ Error: ${err.message}` }, { quoted: messageData });
+          return true;
         }
-        return true;
-      }
-    });
+      },
+    );
   }
 
-  async createContext(bot: ActiveChannel, messageData: proto.IWebMessageInfo, commandInfo: { args: string[]; prefix: string }, command: Command): Promise<MessageContext> {
+  async createContext(
+    bot: ActiveChannel,
+    messageData: proto.IWebMessageInfo,
+    commandInfo: { args: string[]; prefix: string },
+    command: Command,
+  ): Promise<MessageContext> {
     const text = MessageNormalizer.getText(messageData);
-    const jid = messageData.key?.remoteJid || '';
+    const jid = messageData.key?.remoteJid || "";
 
     const getGroupFunctions = (targetJid?: string): GroupFunctions => {
-      const effectiveJid = targetJid || (jid.endsWith('@g.us') ? jid : '');
+      const effectiveJid = targetJid || (jid.endsWith("@g.us") ? jid : "");
 
       if (!effectiveJid) {
-        return this.context.groupService.createFunctions(bot, bot.tenantId, 'invalid@g.us', messageData.key?.participant || jid);
+        return this.context.groupService.createFunctions(
+          bot,
+          bot.tenantId,
+          "invalid@g.us",
+          messageData.key?.participant || jid,
+        );
       }
-      return this.context.groupService.createFunctions(bot, bot.tenantId, effectiveJid, messageData.key?.participant || jid);
+      return this.context.groupService.createFunctions(
+        bot,
+        bot.tenantId,
+        effectiveJid,
+        messageData.key?.participant || jid,
+      );
     };
 
     // Extract quoted message if available
     const quotedMsg = messageData.message?.extendedTextMessage?.contextInfo?.quotedMessage;
-    const quotedContext = quotedMsg ? {
-      content: quotedMsg.conversation || quotedMsg.extendedTextMessage?.text || quotedMsg.imageMessage?.caption || '',
-      contentType: getContentType(quotedMsg) || Object.keys(quotedMsg)[0],
-      senderJid: messageData.message?.extendedTextMessage?.contextInfo?.participant || '',
-      media: quotedMsg.imageMessage || quotedMsg.videoMessage || quotedMsg.audioMessage || quotedMsg.stickerMessage || quotedMsg.documentMessage,
-      key: {
-        id: messageData.message?.extendedTextMessage?.contextInfo?.stanzaId,
-        remoteJid: jid,
-        participant: messageData.message?.extendedTextMessage?.contextInfo?.participant
-      }
-    } : undefined;
+    const quotedContext = quotedMsg
+      ? {
+          content:
+            quotedMsg.conversation ||
+            quotedMsg.extendedTextMessage?.text ||
+            quotedMsg.imageMessage?.caption ||
+            "",
+          contentType: getContentType(quotedMsg) || Object.keys(quotedMsg)[0],
+          senderJid: messageData.message?.extendedTextMessage?.contextInfo?.participant || "",
+          media:
+            quotedMsg.imageMessage ||
+            quotedMsg.videoMessage ||
+            quotedMsg.audioMessage ||
+            quotedMsg.stickerMessage ||
+            quotedMsg.documentMessage,
+          key: {
+            id: messageData.message?.extendedTextMessage?.contextInfo?.stanzaId,
+            remoteJid: jid,
+            participant: messageData.message?.extendedTextMessage?.contextInfo?.participant,
+          },
+        }
+      : undefined;
 
     // Fetch tenant settings for this bot's tenant
-    const tenantResult = await (bot.context as GlobalContext).tenantConfigService.getTenantSettings(bot.tenantId);
+    const tenantResult = await (bot.context as GlobalContext).tenantConfigService.getTenantSettings(
+      bot.tenantId,
+    );
     const tenantSettings = tenantResult.success ? tenantResult.data : ({} as any);
 
-    const senderNumber = messageData.key?.participant?.split('@')[0] || jid.split('@')[0];
+    const senderNumber = messageData.key?.participant?.split("@")[0] || jid.split("@")[0];
     const isOwner = tenantSettings.ownerNumber
-      ? senderNumber === tenantSettings.ownerNumber.replace(/[^0-9]/g, '')
+      ? senderNumber === tenantSettings.ownerNumber.replace(/[^0-9]/g, "")
       : false;
 
     const msgContext: MessageContext = {
@@ -313,54 +386,61 @@ export class CommandSystem {
       commandDef: command,
       sender: {
         jid,
-        name: messageData.pushName || 'Unknown',
+        name: messageData.pushName || "Unknown",
         pushName: messageData.pushName ?? undefined,
         isOwner,
       },
       author: {
-        id: jid // Legacy alias for sender.jid
+        id: jid, // Legacy alias for sender.jid
       },
       quoted: quotedContext as any,
       msg: messageData as any,
       channel: bot,
-      getContentType: () => (messageData.message ? getContentType(messageData.message) : undefined) || '',
+      getContentType: () =>
+        (messageData.message ? getContentType(messageData.message) : undefined) || "",
       getBody: () => text,
       getMedia: () => {
         const type = messageData.message ? getContentType(messageData.message) : undefined;
         return type ? (messageData.message as any)[type] : undefined;
       },
-      getPlatform: () => 'whatsapp', // Baileys specific createContext
+      getPlatform: () => "whatsapp", // Baileys specific createContext
       getSenderJid: () => jid,
       getQuoted: () => quotedContext as any,
       isFromMe: () => !!messageData.key?.fromMe,
-      reply: async (msg: string | { text?: string;[key: string]: unknown }) => {
-        const content = typeof msg === 'string' ? { text: msg } : msg;
+      reply: async (msg: string | { text?: string; [key: string]: unknown }) => {
+        const content = typeof msg === "string" ? { text: msg } : msg;
         return await bot.sendMessage(jid, content, { quoted: messageData });
       },
-      sendMessage: async (targetJid: string, content: Record<string, unknown>, options?: Record<string, unknown>) => {
+      sendMessage: async (
+        targetJid: string,
+        content: Record<string, unknown>,
+        options?: Record<string, unknown>,
+      ) => {
         return await bot.sendMessage(targetJid, content, options);
       },
       replyReact: async (emoji: string) => {
         return await bot.sendMessage(jid, { react: { text: emoji, key: messageData.key } });
       },
-      isGroup: () => jid.endsWith('@g.us'),
+      isGroup: () => jid.endsWith("@g.us"),
       usage: {},
-      getId: (target: string) => target.split('@')[0],
+      getId: (target: string) => target.split("@")[0],
       simulateTyping: async () => {
         if (bot.sendPresenceUpdate) {
-          await bot.sendPresenceUpdate('composing', jid).catch(() => { });
+          await bot.sendPresenceUpdate("composing", jid).catch(() => {});
         }
       },
       sendPresenceUpdate: async (presence: any, jid?: string) => {
         if (bot.sendPresenceUpdate) {
-          await bot.sendPresenceUpdate(presence, jid || messageData.key?.remoteJid || '').catch(() => { });
+          await bot
+            .sendPresenceUpdate(presence, jid || messageData.key?.remoteJid || "")
+            .catch(() => {});
         }
       },
       used: {
         command: command.name,
         prefix: commandInfo.prefix,
         args: commandInfo.args,
-        text: commandInfo.args.join(' ')
+        text: commandInfo.args.join(" "),
       },
       cooldown: null,
 
@@ -369,18 +449,18 @@ export class CommandSystem {
 
       download: async () => {
         // 2026: Functional Media Download
-        const messageToDownload = msgContext.quoted?.media ?
-          { [msgContext.quoted.contentType]: msgContext.quoted.media } :
-          messageData.message;
+        const messageToDownload = msgContext.quoted?.media
+          ? { [msgContext.quoted.contentType]: msgContext.quoted.media }
+          : messageData.message;
 
-        if (!messageToDownload) throw new Error('No media found to download');
+        if (!messageToDownload) throw new Error("No media found to download");
 
         const type = getContentType(messageToDownload);
-        if (!type) throw new Error('Could not determine media type');
+        if (!type) throw new Error("Could not determine media type");
 
         const stream = await downloadContentFromMessage(
           (messageToDownload as any)[type],
-          type.replace('Message', '') as any
+          type.replace("Message", "") as any,
         );
 
         let buffer = Buffer.from([]);
@@ -388,7 +468,7 @@ export class CommandSystem {
           buffer = Buffer.concat([buffer, chunk]);
         }
         return buffer;
-      }
+      },
     };
 
     return msgContext;

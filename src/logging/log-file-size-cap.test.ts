@@ -64,16 +64,16 @@ describe("log file size cap", () => {
         break;
       }
     }
-    
+
     // One more log should trigger rotation
     logger.error("trigger-rotation");
-    
+
     // Verification: backup file should exist and primary file should be fresh
     expect(fs.existsSync(`${logPath}.1`), "Backup file should be created").toBe(true);
     const sizeAfterRotation = fs.statSync(logPath).size;
     expect(sizeAfterRotation).toBeLessThan(1000);
     expect(fs.statSync(`${logPath}.1`).size).toBe(lastSize);
-    
+
     try {
       fs.rmSync(`${logPath}.1`, { force: true });
     } catch {

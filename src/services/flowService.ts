@@ -1,7 +1,7 @@
-import { db } from '../lib/firebase.js';
-import logger from '../utils/logger.js';
-import { Result } from '../types/index.js';
-import { Timestamp } from 'firebase-admin/firestore';
+import { Timestamp } from "firebase-admin/firestore";
+import { db } from "../lib/firebase.js";
+import { Result } from "../types/index.js";
+import logger from "../utils/logger.js";
 
 export interface FlowData {
   id: string;
@@ -37,39 +37,51 @@ export class FlowService {
         id,
         tenantId,
         updatedAt: Timestamp.fromDate(now),
-        createdAt: flowData.createdAt ? Timestamp.fromDate(flowData.createdAt) : Timestamp.fromDate(now),
+        createdAt: flowData.createdAt
+          ? Timestamp.fromDate(flowData.createdAt)
+          : Timestamp.fromDate(now),
       };
 
-      await db.collection('tenants').doc(tenantId).collection('flows').doc(id).set(data, { merge: true });
+      await db
+        .collection("tenants")
+        .doc(tenantId)
+        .collection("flows")
+        .doc(id)
+        .set(data, { merge: true });
 
       logger.info(`Flow ${id} saved for tenant ${tenantId}`);
-      
-      return { 
-        success: true, 
-        data: { ...data, createdAt: now, updatedAt: now } as unknown as FlowData 
+
+      return {
+        success: true,
+        data: { ...data, createdAt: now, updatedAt: now } as unknown as FlowData,
       };
     } catch (error: any) {
-      logger.error('FlowService.saveFlow error:', error);
+      logger.error("FlowService.saveFlow error:", error);
       return { success: false, error };
     }
   }
 
   async getFlow(tenantId: string, flowId: string): Promise<Result<FlowData>> {
     try {
-      const doc = await db.collection('tenants').doc(tenantId).collection('flows').doc(flowId).get();
-      
+      const doc = await db
+        .collection("tenants")
+        .doc(tenantId)
+        .collection("flows")
+        .doc(flowId)
+        .get();
+
       if (!doc.exists) {
-        return { success: false, error: new Error('Flow not found') };
+        return { success: false, error: new Error("Flow not found") };
       }
 
       const data = doc.data();
-      return { 
-        success: true, 
+      return {
+        success: true,
         data: {
           ...data,
           createdAt: data?.createdAt?.toDate?.() || data?.createdAt,
           updatedAt: data?.updatedAt?.toDate?.() || data?.updatedAt,
-        } as FlowData 
+        } as FlowData,
       };
     } catch (error: any) {
       return { success: false, error };
@@ -78,8 +90,8 @@ export class FlowService {
 
   async listFlows(tenantId: string): Promise<Result<FlowData[]>> {
     try {
-      const snapshot = await db.collection('tenants').doc(tenantId).collection('flows').get();
-      const flows = snapshot.docs.map(doc => {
+      const snapshot = await db.collection("tenants").doc(tenantId).collection("flows").get();
+      const flows = snapshot.docs.map((doc) => {
         const data = doc.data();
         return {
           ...data,
@@ -95,11 +107,14 @@ export class FlowService {
 
   async listActiveFlows(tenantId: string): Promise<Result<FlowData[]>> {
     try {
-      const snapshot = await db.collection('tenants').doc(tenantId).collection('flows')
-        .where('isActive', '==', true)
+      const snapshot = await db
+        .collection("tenants")
+        .doc(tenantId)
+        .collection("flows")
+        .where("isActive", "==", true)
         .get();
-      
-      const flows = snapshot.docs.map(doc => {
+
+      const flows = snapshot.docs.map((doc) => {
         const data = doc.data();
         return {
           ...data,
@@ -115,7 +130,7 @@ export class FlowService {
 
   async deleteFlow(tenantId: string, flowId: string): Promise<Result<void>> {
     try {
-      await db.collection('tenants').doc(tenantId).collection('flows').doc(flowId).delete();
+      await db.collection("tenants").doc(tenantId).collection("flows").doc(flowId).delete();
       return { success: true, data: undefined };
     } catch (error: any) {
       return { success: false, error };

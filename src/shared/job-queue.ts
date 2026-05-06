@@ -1,7 +1,7 @@
-import { Queue, Worker, Job, JobsOptions, ConnectionOptions } from 'bullmq';
-import logger from '../utils/logger.js';
-import { Result } from '../types/index.js';
-import configManager from '../dexmart-config/ConfigManager.js';
+import { Queue, Worker, Job, JobsOptions, ConnectionOptions } from "bullmq";
+import configManager from "../dexmart-config/ConfigManager.js";
+import { Result } from "../types/index.js";
+import logger from "../utils/logger.js";
 
 interface QueueConfig {
   concurrency: number;
@@ -27,19 +27,19 @@ export class JobQueueService {
       removeOnComplete: 50,
       removeOnFail: 100,
       attempts: 3,
-      backoff: { type: 'exponential', delay: 5000 },
+      backoff: { type: "exponential", delay: 5000 },
     };
 
     this.queueConfigs = {
       // Scenario 22: lockDuration caps how long a worker can hold a job lock before BullMQ
       // marks it stalled and requeues it — prevents long-running AI skills from starving other workers.
-      'ai-processing': { concurrency: 2, priority: 10, lockDuration: 120_000 },
-      'media-processing': { concurrency: 3, priority: 8, lockDuration: 60_000 },
+      "ai-processing": { concurrency: 2, priority: 10, lockDuration: 120_000 },
+      "media-processing": { concurrency: 3, priority: 8, lockDuration: 60_000 },
       notification: { concurrency: 5, priority: 5 },
       analytics: { concurrency: 1, priority: 3 },
       cleanup: { concurrency: 1, priority: 1 },
-      'whatsapp-outbound': { concurrency: 1, priority: 10 },
-      'group-sync': { concurrency: 2, priority: 1 }, // Default low, but individual jobs can override priority
+      "whatsapp-outbound": { concurrency: 1, priority: 10 },
+      "group-sync": { concurrency: 2, priority: 1 }, // Default low, but individual jobs can override priority
     };
 
     this.redisOptions = {
@@ -49,22 +49,22 @@ export class JobQueueService {
       maxRetriesPerRequest: null, // Required by BullMQ
     };
 
-    logger.info('BullMQ Job Queue Service initialized');
+    logger.info("BullMQ Job Queue Service initialized");
   }
 
   async initialize(): Promise<void> {
     if (this.isInitialized) return;
 
     try {
-      logger.info('Initializing job queues...');
+      logger.info("Initializing job queues...");
       for (const [queueName, config] of Object.entries(this.queueConfigs)) {
         await this.createQueue(queueName, config);
       }
       this.isInitialized = true;
-      logger.info('All job queues initialized successfully');
+      logger.info("All job queues initialized successfully");
     } catch (error: unknown) {
       const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('Failed to initialize job queues', { error: err.message });
+      logger.error("Failed to initialize job queues", { error: err.message });
       throw err;
     }
   }
@@ -89,7 +89,12 @@ export class JobQueueService {
     }
   }
 
-  async addJob(queueName: string, jobName: string, data: any = {}, options: JobsOptions = {}): Promise<Result<Job>> {
+  async addJob(
+    queueName: string,
+    jobName: string,
+    data: any = {},
+    options: JobsOptions = {},
+  ): Promise<Result<Job>> {
     try {
       const queue = this.queues.get(queueName);
       if (!queue) throw new Error(`Queue '${queueName}' not found`);
@@ -105,8 +110,10 @@ export class JobQueueService {
       logger.error(`Failed to add job to queue '${queueName}'`, { jobName, error: err.message });
 
       // MASTERMIND Resilience: Redis Crash Fallback (Scenario 21)
-      if (queueName === 'whatsapp-outbound' || queueName === 'notification') {
-        logger.warn(`CRITICAL: Redis unreachable. Falling back to immediate processing for ${jobName}`);
+      if (queueName === "whatsapp-outbound" || queueName === "notification") {
+        logger.warn(
+          `CRITICAL: Redis unreachable. Falling back to immediate processing for ${jobName}`,
+        );
         // Note: In a real scenario, we might use an in-memory queue or EventEmitter here.
         // For now, we return success: false but log the data for manual recovery/audit.
       }
@@ -123,9 +130,9 @@ export class JobQueueService {
     if (!queue) return;
 
     try {
-      const jobs = await queue.getJobs(['waiting', 'delayed', 'active']);
-      const toRemove = jobs.filter(job => job.data?.channelId === channelId);
-      
+      const jobs = await queue.getJobs(["waiting", "delayed", "active"]);
+      const toRemove = jobs.filter((job) => job.data?.channelId === channelId);
+
       for (const job of toRemove) {
         await job.remove();
         logger.info(`[JobQueue] Removed orphaned job ${job.id} for channel ${channelId}`);
@@ -156,14 +163,14 @@ export class JobQueueService {
         concurrency: config.concurrency,
         // Scenario 22: enforce lock expiry so stalled long-running jobs are requeued
         ...(config.lockDuration ? { lockDuration: config.lockDuration } : {}),
-      }
+      },
     );
 
-    worker.on('completed', (job) => {
+    worker.on("completed", (job) => {
       logger.debug(`Job ${job.id} completed in queue '${queueName}'`);
     });
 
-    worker.on('failed', (job, err) => {
+    worker.on("failed", (job, err) => {
       logger.error(`Job ${job?.id} failed in queue '${queueName}':`, { error: err.message });
     });
 
@@ -172,10 +179,10 @@ export class JobQueueService {
   }
 
   async closeAllQueues(): Promise<void> {
-    logger.info('Closing all job queues and workers...');
-    await Promise.all(Array.from(this.queues.values()).map(q => q.close()));
-    await Promise.all(Array.from(this.workers.values()).map(w => w.close()));
-    logger.info('All job queues and workers closed');
+    logger.info("Closing all job queues and workers...");
+    await Promise.all(Array.from(this.queues.values()).map((q) => q.close()));
+    await Promise.all(Array.from(this.workers.values()).map((w) => w.close()));
+    logger.info("All job queues and workers closed");
   }
 }
 

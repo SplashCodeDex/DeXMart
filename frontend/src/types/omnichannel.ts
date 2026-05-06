@@ -1,8 +1,7 @@
 /**
  * Omnichannel Frontend Types
  */
-export type { AgentIdentityResponse as AgentIdentityResult } from '@DeXMart/shared';
-
+export type { AgentIdentityResponse as AgentIdentityResult } from "@DeXMart/shared";
 
 export type ChannelType = string;
 
@@ -10,7 +9,7 @@ export interface PlatformField {
   id: string;
   label: string;
   placeholder: string;
-  type?: 'text' | 'password' | 'number';
+  type?: "text" | "password" | "number";
 }
 
 export interface PlatformMetadata {
@@ -23,16 +22,16 @@ export interface PlatformMetadata {
 }
 
 export type ChannelStatus =
-  | 'connected'
-  | 'connecting'
-  | 'disconnected'
-  | 'error'
-  | 'qr_pending'
-  | 'initializing'
-  | 'archived'
-  | 'banned'
-  | 'logged_out'
-  | 'reconnect_exhausted';
+  | "connected"
+  | "connecting"
+  | "disconnected"
+  | "error"
+  | "qr_pending"
+  | "initializing"
+  | "archived"
+  | "banned"
+  | "logged_out"
+  | "reconnect_exhausted";
 
 export interface Channel {
   id: string;
@@ -44,7 +43,7 @@ export interface Channel {
   assignedAgentId?: string | null;
   lastProgress?: {
     step: string;
-    status: BotProgressUpdate['status'];
+    status: BotProgressUpdate["status"];
   };
 }
 
@@ -52,7 +51,7 @@ export interface ActivityEvent {
   id: string;
   botId: string;
   channel: string;
-  type: 'inbound' | 'outbound' | 'system' | 'skill' | 'agent_thinking' | 'tool_start' | 'tool_end';
+  type: "inbound" | "outbound" | "system" | "skill" | "agent_thinking" | "tool_start" | "tool_end";
   message: string;
   timestamp: string;
   metadata?: Record<string, unknown>;
@@ -61,7 +60,7 @@ export interface ActivityEvent {
 export interface BotProgressUpdate {
   botId: string;
   step: string;
-  status: 'pending' | 'in_progress' | 'complete' | 'error';
+  status: "pending" | "in_progress" | "complete" | "error";
   timestamp: string;
 }
 
@@ -78,11 +77,11 @@ export type CronWakeMode = "next-heartbeat" | "now";
 export type CronPayload =
   | { kind: "systemEvent"; text: string }
   | {
-    kind: "agentTurn";
-    message: string;
-    thinking?: string;
-    timeoutSeconds?: number;
-  };
+      kind: "agentTurn";
+      message: string;
+      thinking?: string;
+      timeoutSeconds?: number;
+    };
 
 export type CronDelivery = {
   mode: "none" | "announce";
@@ -208,8 +207,6 @@ export interface AgentsListResult {
   scope: string;
   agents: GatewayAgentRow[];
 }
-
-
 
 export interface AgentFileEntry {
   name: string;

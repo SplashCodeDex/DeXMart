@@ -1,6 +1,6 @@
-import { Queue } from 'bullmq';
-import configManager from '../dexmart-config/ConfigManager.js';
-import logger from '../utils/logger.js';
+import { Queue } from "bullmq";
+import configManager from "../dexmart-config/ConfigManager.js";
+import logger from "../utils/logger.js";
 
 /**
  * Shared Redis connection options for BullMQ
@@ -15,24 +15,24 @@ export const redisConnection = {
 /**
  * Image Generation Queue
  */
-export const imageGenerationQueue = new Queue('image-generation', {
+export const imageGenerationQueue = new Queue("image-generation", {
   connection: redisConnection,
   defaultJobOptions: {
     attempts: 3,
     backoff: {
-      type: 'exponential',
+      type: "exponential",
       delay: 1000,
     },
     removeOnComplete: true,
     removeOnFail: 1000,
-  }
+  },
 });
 
 /**
  * Job Results Queue
  */
-export const jobResultsQueue = new Queue('job-results', {
-  connection: redisConnection
+export const jobResultsQueue = new Queue("job-results", {
+  connection: redisConnection,
 });
 
-logger.info('BullMQ Queues initialized with unified Redis connection');
+logger.info("BullMQ Queues initialized with unified Redis connection");

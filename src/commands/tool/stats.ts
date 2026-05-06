@@ -1,25 +1,26 @@
-import { MessageContext, GlobalContext } from '../../types/index.js';
-import redisClient from '../../lib/redis.js';
-import logger from '../../utils/logger.js';
+import redisClient from "../../lib/redis.js";
+import { MessageContext, GlobalContext } from "../../types/index.js";
+import logger from "../../utils/logger.js";
 
 export default {
-  name: 'stats',
-  category: 'tool',
-  description: 'Displays usage statistics for the bot.',
-  permissions: { // Updated to use permissions object
+  name: "stats",
+  category: "tool",
+  description: "Displays usage statistics for the bot.",
+  permissions: {
+    // Updated to use permissions object
     owner: true,
   },
   code: async (ctx: MessageContext) => {
     const { formatter } = ctx.channel.context as GlobalContext;
 
     try {
-      await ctx.replyReact('📊');
+      await ctx.replyReact("📊");
 
       // Fetch total commands
-      const totalCommands = await redisClient.get('analytics:totalCommands') || '0';
+      const totalCommands = (await redisClient.get("analytics:totalCommands")) || "0";
 
       // Fetch all command counts from the hash
-      const commandCounts = await redisClient.hgetall('analytics:commands') || {};
+      const commandCounts = (await redisClient.hgetall("analytics:commands")) || {};
 
       let responseText = `*📊 Bot Usage Statistics*\n\n`;
       responseText += `*Total Commands Executed:* ${totalCommands}\n\n`;
@@ -41,8 +42,8 @@ export default {
       await ctx.reply(formatter.quote(responseText));
     } catch (error: unknown) {
       const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('Error fetching stats:', err);
-      await ctx.reply('❌ An error occurred while fetching statistics.');
+      logger.error("Error fetching stats:", err);
+      await ctx.reply("❌ An error occurred while fetching statistics.");
     }
   },
 };

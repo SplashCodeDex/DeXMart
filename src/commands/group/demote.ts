@@ -1,8 +1,8 @@
-import { MessageContext } from '../../types/index.js';
+import { MessageContext } from "../../types/index.js";
 
 export default {
-  name: 'demote',
-  category: 'group',
+  name: "demote",
+  category: "group",
   permissions: {
     admin: true,
     channelAdmin: true,
@@ -17,7 +17,9 @@ export default {
     const accountJid = quotedJid || mentions[0] || null;
 
     if (!accountJid) {
-      return await ctx.reply(formatter.quote('⚠️ Please reply to a user or mention them to demote.'));
+      return await ctx.reply(
+        formatter.quote("⚠️ Please reply to a user or mention them to demote."),
+      );
     }
 
     // Check if target is actually an admin
@@ -36,16 +38,16 @@ export default {
 
       const isTargetAdmin = await ctx.group().matchAdmin(accountJid);
       if (!isTargetAdmin) {
-        return await ctx.reply(formatter.quote('❎ User is already not an admin!'));
+        return await ctx.reply(formatter.quote("❎ User is already not an admin!"));
       }
     }
 
     try {
       await ctx.group().demote([accountJid]);
-      await ctx.reply(formatter.quote('✅ User demoted to member successfully!'));
+      await ctx.reply(formatter.quote("✅ User demoted to member successfully!"));
     } catch (error: unknown) {
       const err = error instanceof Error ? error.message : String(error);
-      ctx.channel.context.logger.error('Demote command failed', { error: err });
+      ctx.channel.context.logger.error("Demote command failed", { error: err });
       await ctx.reply(formatter.quote(`❌ Failed to demote user: ${err}`));
     }
   },

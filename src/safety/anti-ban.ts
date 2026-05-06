@@ -1,21 +1,21 @@
-import { Redis } from 'ioredis';
-import crypto from 'crypto';
-import configManager from '../dexmart-config/ConfigManager.js';
-import logger from '../utils/logger.js';
-import { socketService } from '../services/socketService.js';
-import { firebaseService } from '../persistence/firebase.js';
+import crypto from "crypto";
+import { Redis } from "ioredis";
+import configManager from "../dexmart-config/ConfigManager.js";
+import { firebaseService } from "../persistence/firebase.js";
+import { socketService } from "../services/socketService.js";
+import logger from "../utils/logger.js";
 
 /**
  * AntiBanService
- * 
+ *
  * Centralized Anti-Ban Engine for DeXMart.
  * Protects the server's public IP from WhatsApp bans by intercepting
  * outbound traffic at the Application Layer.
- * 
+ *
  * Two core rules:
  * 1. Velocity Rule  — Redis sliding window rate limiter per tenant.
  * 2. Content Rule   — Message body hash deduplication for campaigns.
- * 
+ *
  * Modeled after enterprise ESPs (SendGrid, Mailchimp) that protect
  * shared IP reputation by moderating outbound traffic.
  */
@@ -43,16 +43,21 @@ class AntiBanService {
         lazyConnect: true,
       });
 
-      this.redis.on('error', (err: Error) => {
-        logger.warn('[AntiBanService] Redis connection error (Anti-Ban features degraded):', err.message);
+      this.redis.on("error", (err: Error) => {
+        logger.warn(
+          "[AntiBanService] Redis connection error (Anti-Ban features degraded):",
+          err.message,
+        );
       });
 
       this.redis.connect().catch(() => {
-        logger.warn('[AntiBanService] Could not connect to Redis. Anti-Ban features will be disabled.');
+        logger.warn(
+          "[AntiBanService] Could not connect to Redis. Anti-Ban features will be disabled.",
+        );
         this.redis = null;
       });
     } catch {
-      logger.warn('[AntiBanService] Redis unavailable. Anti-Ban features disabled.');
+      logger.warn("[AntiBanService] Redis unavailable. Anti-Ban features disabled.");
       this.redis = null;
     }
   }
@@ -103,10 +108,10 @@ class AntiBanService {
   /**
    * Reserva a velocity slot for a specific WhatsApp channel.
    * Returns the number of milliseconds the worker MUST wait before sending.
-   * 
+   *
    * This is ATOMIC. Even if 100 workers call this at once, they will
    * each get a unique, non-overlapping time slot.
-   * 
+   *
    * @param channelId The unique ID of the WhatsApp number (channel)
    * @returns Wait time in milliseconds.
    */
@@ -119,17 +124,20 @@ class AntiBanService {
 
     try {
       // Define the script if not already loaded (ioredis handles caching)
-      const waitMsStr = await this.redis.eval(
+      const waitMsStr = (await this.redis.eval(
         this.RESERVE_SLOT_SCRIPT,
         1,
         key,
         now.toString(),
-        delay.toString()
-      ) as string;
+        delay.toString(),
+      )) as string;
 
       return parseInt(waitMsStr, 10);
     } catch (err) {
-      logger.warn('[AntiBanService] Velocity reservation failed, falling back to instant send:', err);
+      logger.warn(
+        "[AntiBanService] Velocity reservation failed, falling back to instant send:",
+        err,
+      );
       return 0;
     }
   }
@@ -145,8 +153,10 @@ class AntiBanService {
    * Returns a randomized delay between MIN and MAX seconds.
    */
   private randomDelay(): number {
-    return this.DEFAULT_MIN_DELAY_SEC +
-      Math.random() * (this.DEFAULT_MAX_DELAY_SEC - this.DEFAULT_MIN_DELAY_SEC);
+    return (
+      this.DEFAULT_MIN_DELAY_SEC +
+      Math.random() * (this.DEFAULT_MAX_DELAY_SEC - this.DEFAULT_MIN_DELAY_SEC)
+    );
   }
 
   // ─────────────────────────────────────────────────────────
@@ -155,19 +165,23 @@ class AntiBanService {
 
   /**
    * Checks if a campaign is sending too many identical messages.
-   * 
+   *
    * Hashes the message body and increments a Redis counter.
    * If the counter exceeds the threshold, returns true (should pause).
-   * 
+   *
    * @param tenantId    The tenant sending the campaign
    * @param campaignId  The campaign ID
    * @param messageBody The rendered message text (after variable substitution)
    * @returns true if the content threshold is exceeded (should pause)
    */
-  public async checkContentHash(tenantId: string, campaignId: string, messageBody: string): Promise<boolean> {
+  public async checkContentHash(
+    tenantId: string,
+    campaignId: string,
+    messageBody: string,
+  ): Promise<boolean> {
     if (!this.redis) return false; // Graceful degradation
 
-    const hash = crypto.createHash('md5').update(messageBody.trim().toLowerCase()).digest('hex');
+    const hash = crypto.createHash("md5").update(messageBody.trim().toLowerCase()).digest("hex");
     const key = `antiban:content:${tenantId}:${campaignId}:${hash}`;
 
     try {
@@ -181,14 +195,14 @@ class AntiBanService {
       if (count >= this.DEFAULT_CONTENT_THRESHOLD) {
         logger.warn(
           `[AntiBanService] Content Rule triggered for tenant ${tenantId}, campaign ${campaignId}. ` +
-          `${count} identical messages detected (hash: ${hash.substring(0, 8)}...).`
+            `${count} identical messages detected (hash: ${hash.substring(0, 8)}...).`,
         );
         return true;
       }
 
       return false;
     } catch (err) {
-      logger.warn('[AntiBanService] Content hash check failed, allowing message:', err);
+      logger.warn("[AntiBanService] Content hash check failed, allowing message:", err);
       return false;
     }
   }
@@ -202,7 +216,7 @@ class AntiBanService {
    * - Pauses the campaign in Firebase.
    * - Emits a real-time socket alert to the tenant's dashboard.
    * - Stores cooldown metadata in Redis for the "Resume" timer.
-   * 
+   *
    * @param tenantId    The tenant owning the campaign
    * @param campaignId  The campaign to pause
    * @param reason      Human-readable reason for the pause
@@ -212,21 +226,21 @@ class AntiBanService {
     tenantId: string,
     campaignId: string,
     reason: string,
-    autoResume: boolean = false
+    autoResume: boolean = false,
   ): Promise<void> {
     const cooldownSeconds = this.DEFAULT_COOLDOWN_SEC;
 
     // 1. Pause the campaign in Firebase
     try {
-      await firebaseService.setDoc<'users/{userId}/campaigns'>(
-        'campaigns',
+      await firebaseService.setDoc<"users/{userId}/campaigns">(
+        "campaigns",
         campaignId,
         {
-          status: 'paused',
+          status: "paused",
           updatedAt: new Date(),
         },
         tenantId,
-        true // merge
+        true, // merge
       );
       logger.info(`[AntiBanService] Campaign ${campaignId} paused (reason: ${reason})`);
     } catch (err) {
@@ -237,26 +251,32 @@ class AntiBanService {
     if (this.redis) {
       const cooldownKey = `antiban:cooldown:${tenantId}:${campaignId}`;
       try {
-        await this.redis.set(cooldownKey, JSON.stringify({
-          reason,
-          pausedAt: Date.now(),
-          cooldownSeconds,
-          expiresAt: Date.now() + (cooldownSeconds * 1000),
-          autoResume,
-          tenantId,
-        }), 'EX', cooldownSeconds + 60); // Extra 60s buffer
+        await this.redis.set(
+          cooldownKey,
+          JSON.stringify({
+            reason,
+            pausedAt: Date.now(),
+            cooldownSeconds,
+            expiresAt: Date.now() + cooldownSeconds * 1000,
+            autoResume,
+            tenantId,
+          }),
+          "EX",
+          cooldownSeconds + 60,
+        ); // Extra 60s buffer
       } catch (err) {
-        logger.warn('[AntiBanService] Failed to store cooldown metadata:', err);
+        logger.warn("[AntiBanService] Failed to store cooldown metadata:", err);
       }
     }
 
     // 3. Emit real-time alert to the tenant's dashboard
-    socketService.emitToTenant(tenantId, 'antiban_alert', {
+    socketService.emitToTenant(tenantId, "antiban_alert", {
       campaignId,
-      action: 'paused',
+      action: "paused",
       reason,
       cooldownSeconds,
-      message: `⚠️ Campaign paused to protect your WhatsApp number from being banned. ` +
+      message:
+        `⚠️ Campaign paused to protect your WhatsApp number from being banned. ` +
         `Reason: ${reason}. ` +
         `Pausing helps WhatsApp see your traffic as normal human activity. ` +
         `You can resume in ${Math.ceil(cooldownSeconds / 60)} minutes.`,
@@ -269,20 +289,20 @@ class AntiBanService {
    */
   private async scanKeys(pattern: string): Promise<string[]> {
     if (!this.redis) return [];
-    
-    let cursor = '0';
+
+    let cursor = "0";
     const foundKeys: string[] = [];
-    
+
     try {
       do {
-        const [nextCursor, keys] = await this.redis.scan(cursor, 'MATCH', pattern, 'COUNT', 100);
+        const [nextCursor, keys] = await this.redis.scan(cursor, "MATCH", pattern, "COUNT", 100);
         cursor = nextCursor;
         foundKeys.push(...keys);
-      } while (cursor !== '0');
-      
+      } while (cursor !== "0");
+
       return foundKeys;
     } catch (err) {
-      logger.error('[AntiBanService] Redis SCAN failed:', err);
+      logger.error("[AntiBanService] Redis SCAN failed:", err);
       return [];
     }
   }
@@ -293,10 +313,10 @@ class AntiBanService {
    */
   public async getExpiredCooldowns(): Promise<any[]> {
     if (!this.redis) return [];
-    
+
     const expired: any[] = [];
     try {
-      const keys = await this.scanKeys('antiban:cooldown:*');
+      const keys = await this.scanKeys("antiban:cooldown:*");
 
       for (const key of keys) {
         const data = await this.redis.get(key);
@@ -309,7 +329,7 @@ class AntiBanService {
       }
       return expired;
     } catch (err) {
-      logger.error('[AntiBanService] Error scanning for expired cooldowns:', err);
+      logger.error("[AntiBanService] Error scanning for expired cooldowns:", err);
       return [];
     }
   }
@@ -358,7 +378,7 @@ class AntiBanService {
       const cooldownKey = `antiban:cooldown:${tenantId}:${campaignId}`;
       await this.redis.del(cooldownKey);
     } catch (err) {
-      logger.warn('[AntiBanService] Cleanup failed:', err);
+      logger.warn("[AntiBanService] Cleanup failed:", err);
     }
   }
 

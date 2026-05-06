@@ -1,7 +1,7 @@
-import { MessageContext } from '../../types/index.js';
+import { MessageContext } from "../../types/index.js";
 export default {
-  name: 'intro',
-  category: 'group',
+  name: "intro",
+  category: "group",
   permissions: {
     channelAdmin: true,
     group: true,
@@ -12,7 +12,7 @@ export default {
       const groupId = ctx.getId(ctx.id);
       const introText =
         (await db.get(`group.${groupId}.text.intro`)) ||
-        formatter.quote('❎ Grup ini tidak memiliki intro.');
+        formatter.quote("❎ Grup ini tidak memiliki intro.");
 
       await ctx.reply(introText);
     } catch (error: any) {

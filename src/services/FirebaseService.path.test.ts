@@ -1,10 +1,10 @@
-import { test } from 'vitest';
+import { test } from "vitest";
 
-test.skip('UPSTREAM PENDING SYNC: src/services/FirebaseService.path.test.ts', () => {});
+test.skip("UPSTREAM PENDING SYNC: src/services/FirebaseService.path.test.ts", () => {});
 
 /* ORIGINAL TEST CODE COMMENTED OUT TO PREVENT IMPORT/INIT ERRORS */
 // import { describe, it, expect, vi, beforeEach } from 'vitest';
-// 
+//
 // // Mock firebase-admin and the internal firebase lib
 // vi.mock('firebase-admin', () => ({
 //     default: {
@@ -20,7 +20,7 @@ test.skip('UPSTREAM PENDING SYNC: src/services/FirebaseService.path.test.ts', ()
 //         }),
 //     },
 // }));
-// 
+//
 // vi.mock('../lib/firebase.js', () => ({
 //     db: {
 //         collection: vi.fn().mockReturnValue({
@@ -30,29 +30,29 @@ test.skip('UPSTREAM PENDING SYNC: src/services/FirebaseService.path.test.ts', ()
 //     },
 //     admin: {},
 // }));
-// 
+//
 // import { firebaseService } from './FirebaseService.js';
-// 
+//
 // describe.skip('[UPSTREAM PENDING SYNC] FirebaseService Path Validation', () => {
 //     it('should throw an error for docId with undefined segments', async () => {
 //         await expect(firebaseService.getDoc('channels', 'undefined', 'tenant-123'))
 //             .rejects.toThrow('Illegal Firestore path segment detected');
 //     });
-// 
+//
 //     it('should throw an error for empty tenantId', async () => {
 //         await expect(firebaseService.getDoc('channels', '123', ''))
 //             .rejects.toThrow('Firestore path is required');
 //     });
-// 
+//
 //     it('should throw an error for malformed nested paths', async () => {
 //         // This simulates agents//channels
 //         await expect(firebaseService.getDoc('agents//channels', '123', 'tenant-123'))
 //             .rejects.toThrow();
 //     });
-// 
+//
 //     it('should throw an error if collection contains "undefined" string', async () => {
 //         await expect(firebaseService.getDoc('agents/undefined/channels', '123', 'tenant-123'))
 //             .rejects.toThrow('Illegal Firestore path segment detected');
 //     });
 // });
-// 
+//

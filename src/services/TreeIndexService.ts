@@ -1,10 +1,10 @@
-import { db } from '../lib/firebase.js';
-import { embeddingService } from './embeddingService.js';
-import { aiUtility as geminiAI } from './ai-utility.js'; // For summarization
-import logger from '../utils/logger.js';
-import { Result } from '../types/index.js';
-import { Timestamp } from 'firebase-admin/firestore';
-import crypto from 'crypto';
+import crypto from "crypto";
+import { Timestamp } from "firebase-admin/firestore";
+import { db } from "../lib/firebase.js";
+import { Result } from "../types/index.js";
+import logger from "../utils/logger.js";
+import { aiUtility as geminiAI } from "./ai-utility.js"; // For summarization
+import { embeddingService } from "./embeddingService.js";
 
 export interface TreeNode {
   id: string;
@@ -22,7 +22,7 @@ export interface TreeNode {
 export class TreeIndexService {
   private static instance: TreeIndexService;
 
-  private constructor() { }
+  private constructor() {}
 
   public static getInstance(): TreeIndexService {
     if (!TreeIndexService.instance) {
@@ -34,29 +34,47 @@ export class TreeIndexService {
   /**
    * Create a new Root Node for a conversation or document
    */
-  async createRoot(scopeId: string, content: string, metadata: any = {}): Promise<Result<TreeNode>> {
+  async createRoot(
+    scopeId: string,
+    content: string,
+    metadata: any = {},
+  ): Promise<Result<TreeNode>> {
     return this.createNode(scopeId, null, content, 0, metadata);
   }
 
   /**
    * Add a child node to an existing parent
    */
-  async addChild(scopeId: string, parentId: string, content: string, metadata: any = {}): Promise<Result<TreeNode>> {
+  async addChild(
+    scopeId: string,
+    parentId: string,
+    content: string,
+    metadata: any = {},
+  ): Promise<Result<TreeNode>> {
     // 1. Verify parent exists
-    const parentDoc = await db.collection('tree_nodes').doc(parentId).get();
+    const parentDoc = await db.collection("tree_nodes").doc(parentId).get();
     if (!parentDoc.exists) {
       return { success: false, error: new Error(`Parent node ${parentId} not found`) };
     }
     const parentData = parentDoc.data() as TreeNode;
 
     // 2. Create child
-    const result = await this.createNode(scopeId, parentId, content, parentData.depth + 1, metadata);
-    
+    const result = await this.createNode(
+      scopeId,
+      parentId,
+      content,
+      parentData.depth + 1,
+      metadata,
+    );
+
     // 3. Update parent's children list
     if (result.success && result.data) {
-      await db.collection('tree_nodes').doc(parentId).update({
-        children: [...(parentData.children || []), result.data.id]
-      });
+      await db
+        .collection("tree_nodes")
+        .doc(parentId)
+        .update({
+          children: [...(parentData.children || []), result.data.id],
+        });
     }
 
     return result;
@@ -65,17 +83,25 @@ export class TreeIndexService {
   /**
    * Core logic to create and index a node
    */
-  private async createNode(scopeId: string, parentId: string | null, content: string, depth: number, metadata: any): Promise<Result<TreeNode>> {
+  private async createNode(
+    scopeId: string,
+    parentId: string | null,
+    content: string,
+    depth: number,
+    metadata: any,
+  ): Promise<Result<TreeNode>> {
     try {
       // 1. Generate Summary (The "Reasoning Key")
       // We summarize the content to create a dense semantic representation
-      const summaryResult = await geminiAI.generateText(`Summarize this context in one dense sentence for retrieval:\n\n"${content}"`);
+      const summaryResult = await geminiAI.generateText(
+        `Summarize this context in one dense sentence for retrieval:\n\n"${content}"`,
+      );
       const summary = summaryResult || content.substring(0, 200);
 
       // 2. Generate Embedding from SUMMARY
       const embeddingResult = await embeddingService.generateEmbedding(summary);
       if (!embeddingResult.success || !embeddingResult.data) {
-        throw new Error('Failed to generate embedding');
+        throw new Error("Failed to generate embedding");
       }
 
       const nodeId = `node_${crypto.randomUUID()}`;
@@ -89,15 +115,15 @@ export class TreeIndexService {
         depth,
         scopeId,
         metadata,
-        createdAt: Timestamp.now()
+        createdAt: Timestamp.now(),
       };
 
-      await db.collection('tree_nodes').doc(nodeId).set(node);
+      await db.collection("tree_nodes").doc(nodeId).set(node);
       logger.info(`[TreeIndex] Created node ${nodeId} (Depth: ${depth})`);
 
       return { success: true, data: node };
     } catch (error: any) {
-      logger.error('TreeIndexService.createNode error:', error);
+      logger.error("TreeIndexService.createNode error:", error);
       return { success: false, error };
     }
   }
@@ -106,17 +132,22 @@ export class TreeIndexService {
    * Recursive Tree Search (The "Reasoning Retrieval")
    * Finds the best matching path down the tree.
    */
-  async searchTree(scopeId: string, query: string, similarityThreshold = 0.75): Promise<Result<TreeNode[]>> {
+  async searchTree(
+    scopeId: string,
+    query: string,
+    similarityThreshold = 0.75,
+  ): Promise<Result<TreeNode[]>> {
     try {
       // 1. Embed Query
       const queryResult = await embeddingService.generateEmbedding(query);
-      if (!queryResult.success || !queryResult.data) throw new Error('Failed to embed query');
+      if (!queryResult.success || !queryResult.data) throw new Error("Failed to embed query");
       const queryVec = queryResult.data;
 
       // 2. Fetch Roots (Depth 0)
-      const rootsSnap = await db.collection('tree_nodes')
-        .where('scopeId', '==', scopeId)
-        .where('depth', '==', 0)
+      const rootsSnap = await db
+        .collection("tree_nodes")
+        .where("scopeId", "==", scopeId)
+        .where("depth", "==", 0)
         .get();
 
       if (rootsSnap.empty) return { success: true, data: [] };
@@ -145,10 +176,11 @@ export class TreeIndexService {
       while (current.children && current.children.length > 0) {
         // Fetch children
         // Note: In prod, use `whereIn` or parallel gets. For now, strict fetch.
-        const childrenSnap = await db.collection('tree_nodes')
-          .where('parentId', '==', current.id)
+        const childrenSnap = await db
+          .collection("tree_nodes")
+          .where("parentId", "==", current.id)
           .get();
-        
+
         if (childrenSnap.empty) break;
 
         let bestChild: TreeNode | null = null;
@@ -165,7 +197,7 @@ export class TreeIndexService {
 
         // If best child is relevant enough, go deeper
         // We relax threshold slightly for children as they are more specific
-        if (bestChild && bestChildSim > (similarityThreshold - 0.1)) {
+        if (bestChild && bestChildSim > similarityThreshold - 0.1) {
           path.push(bestChild);
           current = bestChild;
         } else {
@@ -174,9 +206,8 @@ export class TreeIndexService {
       }
 
       return { success: true, data: path };
-
     } catch (error: any) {
-      logger.error('TreeIndexService.searchTree error:', error);
+      logger.error("TreeIndexService.searchTree error:", error);
       return { success: false, error };
     }
   }

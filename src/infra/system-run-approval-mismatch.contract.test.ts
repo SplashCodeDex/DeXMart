@@ -1,6 +1,6 @@
-import { test } from 'vitest';
+import { test } from "vitest";
 
-test.skip('UPSTREAM PENDING SYNC: src/infra/system-run-approval-mismatch.contract.test.ts', () => {});
+test.skip("UPSTREAM PENDING SYNC: src/infra/system-run-approval-mismatch.contract.test.ts", () => {});
 
 /* ORIGINAL TEST CODE COMMENTED OUT TO PREVENT IMPORT/INIT ERRORS */
 // import fs from "node:fs";
@@ -11,7 +11,7 @@ test.skip('UPSTREAM PENDING SYNC: src/infra/system-run-approval-mismatch.contrac
 //   toSystemRunApprovalMismatchError,
 //   type SystemRunApprovalMatchResult,
 // } from "./system-run-approval-binding.js";
-// 
+//
 // type FixtureCase = {
 //   name: string;
 //   runId: string;
@@ -22,17 +22,17 @@ test.skip('UPSTREAM PENDING SYNC: src/infra/system-run-approval-mismatch.contrac
 //     details: Record<string, unknown>;
 //   };
 // };
-// 
+//
 // type Fixture = {
 //   cases: FixtureCase[];
 // };
-// 
+//
 // const fixturePath = path.resolve(
 //   path.dirname(fileURLToPath(import.meta.url)),
 //   "../../test/fixtures/system-run-approval-mismatch-contract.json",
 // );
 // const fixture = JSON.parse(fs.readFileSync(fixturePath, "utf8")) as Fixture;
-// 
+//
 // describe.skip("[UPSTREAM PENDING SYNC] system-run approval mismatch contract fixtures", () => {
 //   for (const entry of fixture.cases) {
 //     test(entry.name, () => {
@@ -44,4 +44,4 @@ test.skip('UPSTREAM PENDING SYNC: src/infra/system-run-approval-mismatch.contrac
 //     });
 //   }
 // });
-// 
+//

@@ -18,5 +18,5 @@ export interface FacebookSendPayload {
     text?: string;
     attachment?: any;
   };
-  messaging_type?: 'RESPONSE' | 'UPDATE' | 'MESSAGE_TAG';
+  messaging_type?: "RESPONSE" | "UPDATE" | "MESSAGE_TAG";
 }

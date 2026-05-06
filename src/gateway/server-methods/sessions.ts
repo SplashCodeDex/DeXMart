@@ -1459,7 +1459,7 @@ export const sessionsHandlers: GatewayRequestHandlers = {
       respond(true, { messages: [] }, undefined);
       return;
     }
-    
+
     const cfg = loadConfig();
     const session = buildGatewaySessionRow({
       cfg,

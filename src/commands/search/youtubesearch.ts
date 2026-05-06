@@ -1,5 +1,5 @@
-import { MessageContext, GlobalContext } from '../../types/index.js';
-import axios from 'axios';
+import axios from "axios";
+import { MessageContext, GlobalContext } from "../../types/index.js";
 
 interface YoutubeResult {
   title: string;
@@ -8,19 +8,19 @@ interface YoutubeResult {
 }
 
 export default {
-  name: 'youtubesearch',
-  aliases: ['youtube', 'youtubes', 'yt', 'yts', 'ytsearch'],
-  category: 'search',
+  name: "youtubesearch",
+  aliases: ["youtube", "youtubes", "yt", "yts", "ytsearch"],
+  category: "search",
   permissions: {
     coin: 10,
   },
   code: async (ctx: MessageContext) => {
     const { formatter, tools, config } = ctx.channel.context as GlobalContext;
-    const input = ctx.args.join(' ') || null;
+    const input = ctx.args.join(" ") || null;
 
     if (!input) {
-      const instruction = tools.msg.generateInstruction(['send'], ['text']);
-      const example = tools.msg.generateCmdExample(ctx.used, 'one last kiss - hikaru utada');
+      const instruction = tools.msg.generateInstruction(["send"], ["text"]);
+      const example = tools.msg.generateCmdExample(ctx.used, "one last kiss - hikaru utada");
       return await ctx.reply(`${formatter.quote(instruction)}
 ${formatter.quote(example)}`);
     }
@@ -36,11 +36,11 @@ ${formatter.quote(example)}`);
             `${formatter.quote(`Judul: ${res.title}`)}
 ` +
             `${formatter.quote(`Durasi: ${res.duration}`)}
-${formatter.quote(`URL: ${res.url}`)}`
+${formatter.quote(`URL: ${res.url}`)}`,
         )
-        .join('\n' + `${formatter.quote('· · ─ ·✶· ─ · ·')}\n`);
+        .join("\n" + `${formatter.quote("· · ─ ·✶· ─ · ·")}\n`);
       await ctx.reply({
-        text: resultText || config.msg.notFound || 'No results found',
+        text: resultText || config.msg.notFound || "No results found",
         footer: config.msg.footer,
       });
     } catch (error: unknown) {

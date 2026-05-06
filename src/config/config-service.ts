@@ -1,6 +1,6 @@
-import configManager, { Config } from '../dexmart-config/ConfigManager.js';
-import logger from '../utils/logger.js';
-import { Job } from 'bullmq';
+import { Job } from "bullmq";
+import configManager, { Config } from "../dexmart-config/ConfigManager.js";
+import logger from "../utils/logger.js";
 
 /**
  * Singleton service for managing application configuration.
@@ -9,11 +9,11 @@ import { Job } from 'bullmq';
 export class ConfigService {
   private static instance: ConfigService;
   private config: Config;
-  private _jid: string = '';
+  private _jid: string = "";
 
   private constructor() {
     this.config = configManager.config;
-    logger.info('ConfigService initialized as wrapper for ConfigManager');
+    logger.info("ConfigService initialized as wrapper for ConfigManager");
   }
 
   /**
@@ -56,44 +56,44 @@ export class ConfigService {
       ...this.config.channel,
       jid: this._jid,
       id: this._jid,
-      groupJid: this.get('GROUP_JID'),
+      groupJid: this.get("GROUP_JID"),
       readyAt: new Date(),
-      uptime: '0s',
-      dbSize: '0B',
-      groupLink: this.get('GROUP_LINK') || 'https://chat.whatsapp.com/CodeDeX'
+      uptime: "0s",
+      dbSize: "0B",
+      groupLink: this.get("GROUP_LINK") || "https://chat.whatsapp.com/CodeDeX",
     };
   }
 
   /**
    * Getter for message/comestics configuration.
    */
-  public get msg(): import('../types/index.js').Config['msg'] {
+  public get msg(): import("../types/index.js").Config["msg"] {
     return {
       name: this.config.channel.name,
       footer: `© ${new Date().getFullYear()} ${this.config.channel.name}`,
-      notFound: '❎ Result not found!',
+      notFound: "❎ Result not found!",
       readmore: String.fromCharCode(8206).repeat(4001),
-      wait: '⏳ Please wait...',
-      error: '❌ Internal Error',
-      success: '✅ Success',
-      admin: '⚠️ You are not an admin!',
-      channelAdmin: '⚠️ I am not an admin!',
-      owner: '⚠️ Owner only command!',
-      group: '⚠️ Group only command!',
-      private: '⚠️ Private chat only command!',
-      channel: '⚠️ Channel only command!',
-      premium: '⚠️ Premium only!',
-      nsfw: '🔞 NSFW disabled!',
-      banned: '❌ You are banned!',
-      gamerestrict: '🎮 Game restricted!',
-      privatePremiumOnly: '💎 Premium only feature!',
-      groupPremiumOnly: '💎 Group premium only!',
-      urlInvalid: '🔗 Invalid URL provided!',
-      channelGroupMembership: '🚫 You must join our official group first!',
-      groupSewa: '🔒 This group is not registered for full access!',
-      unavailableAtNight: '😴 The channel is sleeping, try again tomorrow!',
-      coin: '🪙 Not enough coins!',
-      restrict: '⚠️ This command is restricted in this chat!',
+      wait: "⏳ Please wait...",
+      error: "❌ Internal Error",
+      success: "✅ Success",
+      admin: "⚠️ You are not an admin!",
+      channelAdmin: "⚠️ I am not an admin!",
+      owner: "⚠️ Owner only command!",
+      group: "⚠️ Group only command!",
+      private: "⚠️ Private chat only command!",
+      channel: "⚠️ Channel only command!",
+      premium: "⚠️ Premium only!",
+      nsfw: "🔞 NSFW disabled!",
+      banned: "❌ You are banned!",
+      gamerestrict: "🎮 Game restricted!",
+      privatePremiumOnly: "💎 Premium only feature!",
+      groupPremiumOnly: "💎 Group premium only!",
+      urlInvalid: "🔗 Invalid URL provided!",
+      channelGroupMembership: "🚫 You must join our official group first!",
+      groupSewa: "🔒 This group is not registered for full access!",
+      unavailableAtNight: "😴 The channel is sleeping, try again tomorrow!",
+      coin: "🪙 Not enough coins!",
+      restrict: "⚠️ This command is restricted in this chat!",
     };
   }
 
@@ -103,12 +103,12 @@ export class ConfigService {
   public get system() {
     return {
       ...this.config.system,
-      requireChannelGroupMembership: this.get('system.requireChannelGroupMembership'),
-      requireGroupSewa: this.get('REQUIRE_GROUP_SEWA'),
-      unavailableAtNight: this.get('UNAVAILABLE_AT_NIGHT'),
-      privatePremiumOnly: this.get('PRIVATE_PREMIUM_ONLY'),
-      restrict: this.get('RESTRICT_COMMANDS'),
-      useCoin: this.get('USE_COIN')
+      requireChannelGroupMembership: this.get("system.requireChannelGroupMembership"),
+      requireGroupSewa: this.get("REQUIRE_GROUP_SEWA"),
+      unavailableAtNight: this.get("UNAVAILABLE_AT_NIGHT"),
+      privatePremiumOnly: this.get("PRIVATE_PREMIUM_ONLY"),
+      restrict: this.get("RESTRICT_COMMANDS"),
+      useCoin: this.get("USE_COIN"),
     };
   }
 
@@ -119,19 +119,19 @@ export class ConfigService {
     return {
       ...this.config.ai,
       geminiKey: this.config.ai.google.apiKey,
-      metaKey: this.get('META_AI_KEY'),
+      metaKey: this.get("META_AI_KEY"),
       gemini: {
         model: this.config.ai.google.model,
         generationConfig: {
           temperature: this.config.ai.google.temperature,
           maxOutputTokens: this.config.ai.google.maxTokens,
-        }
+        },
       },
       memory: {
-        maxSize: this.get('AI_MEMORY_MAX_SIZE'),
-        ttl: this.get('AI_MEMORY_TTL'),
-        cleanupInterval: this.get('AI_MEMORY_CLEANUP_INTERVAL'),
-      }
+        maxSize: this.get("AI_MEMORY_MAX_SIZE"),
+        ttl: this.get("AI_MEMORY_TTL"),
+        cleanupInterval: this.get("AI_MEMORY_CLEANUP_INTERVAL"),
+      },
     };
   }
 

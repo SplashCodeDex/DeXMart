@@ -1,13 +1,13 @@
-import { test } from 'vitest';
+import { test } from "vitest";
 
-test.skip('UPSTREAM PENDING SYNC: src/services/campaignService.test.ts', () => {});
+test.skip("UPSTREAM PENDING SYNC: src/services/campaignService.test.ts", () => {});
 
 /* ORIGINAL TEST CODE COMMENTED OUT TO PREVENT IMPORT/INIT ERRORS */
 // import { describe, it, expect, beforeEach, vi } from 'vitest';
 // import { CampaignService } from './campaignService.js';
 // import { FirebaseService } from './FirebaseService.js';
 // import { queueService } from './queueService.js';
-// 
+//
 // // Hoist mocks
 // const { mockFirebase, mockQueueService } = vi.hoisted(() => ({
 //   mockFirebase: {
@@ -20,17 +20,17 @@ test.skip('UPSTREAM PENDING SYNC: src/services/campaignService.test.ts', () => {
 //     addCampaignJob: vi.fn(),
 //   }
 // }));
-// 
+//
 // // Mock dependencies
 // vi.mock('./FirebaseService.js', () => ({
 //   firebaseService: mockFirebase,
 //   FirebaseService: { getInstance: () => mockFirebase }
 // }));
-// 
+//
 // vi.mock('./queueService.js', () => ({
 //   queueService: mockQueueService
 // }));
-// 
+//
 // // Mock logger
 // vi.mock('../utils/logger.js', () => ({
 //   default: {
@@ -40,15 +40,15 @@ test.skip('UPSTREAM PENDING SYNC: src/services/campaignService.test.ts', () => {
 //     debug: vi.fn()
 //   }
 // }));
-// 
+//
 // describe.skip('[UPSTREAM PENDING SYNC] CampaignService', () => {
 //   let service: CampaignService;
-// 
+//
 //   beforeEach(() => {
 //     vi.clearAllMocks();
 //     service = CampaignService.getInstance();
 //   });
-// 
+//
 //   const tenantId = 'tenant_1';
 //   const campaignId = 'camp_123';
 //   const mockCampaign = {
@@ -62,33 +62,33 @@ test.skip('UPSTREAM PENDING SYNC: src/services/campaignService.test.ts', () => {
 //     stats: { total: 0, sent: 0, failed: 0, pending: 0 },
 //     status: 'draft'
 //   };
-// 
+//
 //   describe.skip('[UPSTREAM PENDING SYNC] createCampaign', () => {
 //     it('should create and start immediate campaign', async () => {
 //       mockFirebase.setDoc.mockResolvedValue(undefined);
 //       mockFirebase.getDoc.mockResolvedValue(mockCampaign);
 //       mockQueueService.addCampaignJob.mockResolvedValue(undefined);
-// 
+//
 //       const result = await service.createCampaign(tenantId, mockCampaign as any);
-// 
+//
 //       expect(result.success).toBe(true);
 //       expect(mockFirebase.setDoc).toHaveBeenCalledWith('campaigns', expect.any(String), expect.anything(), tenantId);
 //       expect(mockQueueService.addCampaignJob).toHaveBeenCalled();
 //     });
 //   });
-// 
+//
 //   describe.skip('[UPSTREAM PENDING SYNC] startCampaign', () => {
 //     it('should add job to queue', async () => {
 //       mockFirebase.getDoc.mockResolvedValue(mockCampaign);
 //       mockQueueService.addCampaignJob.mockResolvedValue(undefined);
-// 
+//
 //       const result = await service.startCampaign(tenantId, campaignId);
-// 
+//
 //       expect(result.success).toBe(true);
 //       expect(mockQueueService.addCampaignJob).toHaveBeenCalled();
 //     });
 //   });
-// 
+//
 //   describe.skip('[UPSTREAM PENDING SYNC] pauseCampaign', () => {
 //     it('should update status to paused', async () => {
 //       mockFirebase.setDoc.mockResolvedValue(undefined);
@@ -98,4 +98,4 @@ test.skip('UPSTREAM PENDING SYNC: src/services/campaignService.test.ts', () => {
 //     });
 //   });
 // });
-// 
+//

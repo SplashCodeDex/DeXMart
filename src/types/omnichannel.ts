@@ -1,21 +1,21 @@
-import { z } from 'zod';
-import { getPlatformMetadata } from '../services/channels/platform-metadata.js';
+import { z } from "zod";
+import { getPlatformMetadata } from "../services/channels/platform-metadata.js";
 
 export const PlatformSchema = z.string().refine(
-  (val) => !!getPlatformMetadata(val) || val === 'system', // Allow 'system' for internal routing
-  { message: "Unsupported omnichannel platform" }
+  (val) => !!getPlatformMetadata(val) || val === "system", // Allow 'system' for internal routing
+  { message: "Unsupported omnichannel platform" },
 );
 
 export type Platform = z.infer<typeof PlatformSchema>;
 
 export const AttachmentTypeSchema = z.enum([
-  'image',
-  'video',
-  'audio',
-  'document',
-  'location',
-  'contact',
-  'sticker'
+  "image",
+  "video",
+  "audio",
+  "document",
+  "location",
+  "contact",
+  "sticker",
 ]);
 
 export type AttachmentType = z.infer<typeof AttachmentTypeSchema>;
@@ -32,7 +32,7 @@ export const CommonAttachmentSchema = z.object({
   latitude: z.number().optional(),
   longitude: z.number().optional(),
   // Contact specific
-  vcard: z.string().optional()
+  vcard: z.string().optional(),
 });
 
 export type CommonAttachment = z.infer<typeof CommonAttachmentSchema>;
@@ -46,18 +46,25 @@ export const CommonMessageSchema = z.object({
   content: z.object({
     text: z.string().optional(),
     attachments: z.array(CommonAttachmentSchema).optional(),
-    poll: z.object({
-      question: z.string(),
-      options: z.array(z.string()),
-      multipleAnswers: z.boolean().default(false)
-    }).optional()
+    poll: z
+      .object({
+        question: z.string(),
+        options: z.array(z.string()),
+        multipleAnswers: z.boolean().default(false),
+      })
+      .optional(),
   }),
-  metadata: z.record(z.string(), z.any()).and(z.object({
-    simulateTyping: z.any().optional(),
-    sendPresenceUpdate: z.any().optional(),
-  })).optional(),
+  metadata: z
+    .record(z.string(), z.any())
+    .and(
+      z.object({
+        simulateTyping: z.any().optional(),
+        sendPresenceUpdate: z.any().optional(),
+      }),
+    )
+    .optional(),
   timestamp: z.number().default(() => Date.now()),
-  replyTo: z.string().optional()
+  replyTo: z.string().optional(),
 });
 
 export type CommonMessage = z.infer<typeof CommonMessageSchema>;

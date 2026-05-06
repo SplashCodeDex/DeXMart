@@ -1,5 +1,5 @@
-import express from 'express';
-import { AuthorityController } from '../controllers/authorityController.js';
+import express from "express";
+import { AuthorityController } from "../controllers/authorityController.js";
 
 const router = express.Router();
 
@@ -9,6 +9,6 @@ const router = express.Router();
  * ═══════════════════════════════════════════════════════
  */
 
-router.get('/capabilities', AuthorityController.getCapabilities);
+router.get("/capabilities", AuthorityController.getCapabilities);
 
 export default router;

@@ -1,10 +1,10 @@
-import { MessageContext } from '../../types/index.js';
-import axios from 'axios';
+import axios from "axios";
+import { MessageContext } from "../../types/index.js";
 
 export default {
-  name: 'douyindl',
-  aliases: ['douyin'],
-  category: 'downloader',
+  name: "douyindl",
+  aliases: ["douyin"],
+  category: "downloader",
   permissions: {
     premium: true,
   },
@@ -14,16 +14,16 @@ export default {
 
     if (!url)
       return await ctx.reply(
-        `${formatter.quote(tools.msg.generateInstruction(['send'], ['text']))}\n${formatter.quote(
-          tools.msg.generateCmdExample(ctx.used, 'https://v.douyin.com/YEdqwg7JeAQ')
-        )}`
+        `${formatter.quote(tools.msg.generateInstruction(["send"], ["text"]))}\n${formatter.quote(
+          tools.msg.generateCmdExample(ctx.used, "https://v.douyin.com/YEdqwg7JeAQ"),
+        )}`,
       );
 
     const isUrl = tools.cmd.isUrl(url);
     if (!isUrl) return await ctx.reply(config.msg.urlInvalid);
 
     try {
-      const apiUrl = tools.api.createUrl('diibot', '/api/download/douyin', {
+      const apiUrl = tools.api.createUrl("diibot", "/api/download/douyin", {
         url,
       });
       const { result } = (await axios.get(apiUrl)).data;
@@ -32,7 +32,7 @@ export default {
         video: {
           url: result.Video_HD || result.Video,
         },
-        mimetype: tools.mime.lookup('mp4'),
+        mimetype: tools.mime.lookup("mp4"),
         caption: formatter.quote(`URL: ${url}`),
         footer: config.msg.footer,
       });

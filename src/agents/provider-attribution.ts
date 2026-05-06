@@ -621,7 +621,9 @@ export function resolveProviderRequestCapabilities(
         ? false
         : input.compat?.supportsPromptCacheKey === false
           ? api !== undefined && OPENAI_RESPONSES_APIS.has(api)
-          : api !== undefined && OPENAI_RESPONSES_APIS.has(api) && policy.usesExplicitProxyLikeEndpoint,
+          : api !== undefined &&
+            OPENAI_RESPONSES_APIS.has(api) &&
+            policy.usesExplicitProxyLikeEndpoint,
     // Native endpoint class is the real signal here. Users can point a generic
     // provider key at Moonshot or DashScope and still need streaming usage.
     supportsNativeStreamingUsageCompat:

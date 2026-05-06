@@ -16,14 +16,14 @@
  *   4. Call createAuthGuard(ctx).canSendMessage() before OpenClaw processes inbound msg
  */
 
-import type { UserContext } from '../tenancy/tenant-context.js';
-import logger from '../utils/logger.js';
-import { db } from '../lib/firebase.js';
-import { Timestamp, FieldValue } from 'firebase-admin/firestore';
+import { Timestamp, FieldValue } from "firebase-admin/firestore";
+import { db } from "../lib/firebase.js";
+import type { UserContext } from "../tenancy/tenant-context.js";
+import logger from "../utils/logger.js";
 
 // ── Capability matrix (consolidated from SystemAuthorityService) ──────────────
 
-export type PlanTier = 'starter' | 'pro' | 'enterprise';
+export type PlanTier = "starter" | "pro" | "enterprise";
 
 export interface Capabilities {
   maxMessages: number;
@@ -46,27 +46,43 @@ const CAPABILITY_MATRIX: Record<PlanTier, Capabilities> = {
     maxAgents: 1,
     maxChannelSlots: 1,
     minCronIntervalMs: 60 * 60 * 1000,
-    allowedSkills: ['basic_reply', 'summarize', 'translate'],
+    allowedSkills: ["basic_reply", "summarize", "translate"],
     features: { marketing: false, backups: false, aiReasoning: true, aiMessageSpinning: false },
-    models: ['gemini-1.5-flash'],
+    models: ["gemini-1.5-flash"],
   },
   pro: {
     maxMessages: 10000,
     maxAgents: 5,
     maxChannelSlots: 3,
     minCronIntervalMs: 15 * 60 * 1000,
-    allowedSkills: ['basic_reply', 'summarize', 'translate', 'web_search', 'file_analysis', 'image_generation'],
+    allowedSkills: [
+      "basic_reply",
+      "summarize",
+      "translate",
+      "web_search",
+      "file_analysis",
+      "image_generation",
+    ],
     features: { marketing: true, backups: true, aiReasoning: true, aiMessageSpinning: false },
-    models: ['gemini-1.5-flash', 'gemini-1.5-pro'],
+    models: ["gemini-1.5-flash", "gemini-1.5-pro"],
   },
   enterprise: {
     maxMessages: 10000000,
     maxAgents: 100,
     maxChannelSlots: 100,
     minCronIntervalMs: 1 * 60 * 1000,
-    allowedSkills: ['basic_reply', 'summarize', 'translate', 'web_search', 'file_analysis', 'image_generation', 'custom_scripting', 'database_query'],
+    allowedSkills: [
+      "basic_reply",
+      "summarize",
+      "translate",
+      "web_search",
+      "file_analysis",
+      "image_generation",
+      "custom_scripting",
+      "database_query",
+    ],
     features: { marketing: true, backups: true, aiReasoning: true, aiMessageSpinning: true },
-    models: ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-2.0-flash-exp'],
+    models: ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.0-flash-exp"],
   },
 };
 
@@ -120,20 +136,20 @@ export function filterModelsForUser(ctx: UserContext, configuredModels: string[]
  * @param ctx        - The user's context (for plan name in the message).
  */
 export function buildGateDeniedMessage(
-  capability: 'model' | 'channel' | 'agent' | 'message' | 'feature',
+  capability: "model" | "channel" | "agent" | "message" | "feature",
   ctx: UserContext,
 ): string {
   const plan = ctx.plan.charAt(0).toUpperCase() + ctx.plan.slice(1);
   switch (capability) {
-    case 'model':
+    case "model":
       return `Your ${plan} plan does not include access to this AI model. Upgrade to unlock more models.`;
-    case 'channel':
+    case "channel":
       return `You've reached the channel limit for your ${plan} plan. Upgrade to add more channels.`;
-    case 'agent':
+    case "agent":
       return `You've reached the agent limit for your ${plan} plan. Upgrade to create more agents.`;
-    case 'message':
+    case "message":
       return `You've reached your monthly message limit on the ${plan} plan. Upgrade for more messages.`;
-    case 'feature':
+    case "feature":
       return `This feature is not available on your ${plan} plan. Upgrade to unlock it.`;
   }
 }
@@ -151,14 +167,14 @@ export function buildGateDeniedMessage(
  */
 export function assertCan(
   allowed: boolean,
-  capability: 'model' | 'channel' | 'agent' | 'message' | 'feature',
+  capability: "model" | "channel" | "agent" | "message" | "feature",
   ctx: UserContext,
 ): void {
   if (!allowed) {
-    throw Object.assign(
-      new Error(buildGateDeniedMessage(capability, ctx)),
-      { statusCode: 402, code: `PLAN_LIMIT_${capability.toUpperCase()}` },
-    );
+    throw Object.assign(new Error(buildGateDeniedMessage(capability, ctx)), {
+      statusCode: 402,
+      code: `PLAN_LIMIT_${capability.toUpperCase()}`,
+    });
   }
 }
 
@@ -166,13 +182,19 @@ export function assertCan(
 
 const GRACE_THRESHOLD_PCT = 90;
 
-type GatedCapability = 'channel' | 'message' | 'agent';
+type GatedCapability = "channel" | "message" | "agent";
 
-function getUsageRatio(ctx: UserContext, capability: GatedCapability): { used: number; limit: number } {
+function getUsageRatio(
+  ctx: UserContext,
+  capability: GatedCapability,
+): { used: number; limit: number } {
   switch (capability) {
-    case 'channel': return { used: ctx.usage.activeChannels, limit: ctx.capabilities.maxChannels };
-    case 'message': return { used: ctx.usage.messagesThisPeriod, limit: ctx.capabilities.maxMessagesPerMonth };
-    case 'agent':   return { used: ctx.usage.activeAgents, limit: ctx.capabilities.maxAgents };
+    case "channel":
+      return { used: ctx.usage.activeChannels, limit: ctx.capabilities.maxChannels };
+    case "message":
+      return { used: ctx.usage.messagesThisPeriod, limit: ctx.capabilities.maxMessagesPerMonth };
+    case "agent":
+      return { used: ctx.usage.activeAgents, limit: ctx.capabilities.maxAgents };
   }
 }
 
@@ -220,10 +242,10 @@ export function assertCanWithGrace(
 
   if (usedPercent >= 100) {
     // Hard block: at or over the limit
-    throw Object.assign(
-      new Error(buildGateDeniedMessage(capability, ctx)),
-      { statusCode: 402, code: `PLAN_LIMIT_${capability.toUpperCase()}` },
-    );
+    throw Object.assign(new Error(buildGateDeniedMessage(capability, ctx)), {
+      statusCode: 402,
+      code: `PLAN_LIMIT_${capability.toUpperCase()}`,
+    });
   }
 
   if (usedPercent >= GRACE_THRESHOLD_PCT) {
@@ -261,39 +283,39 @@ export class SystemAuthorityService {
 
   public async checkAuthority(
     userId: string,
-    action: 'send_message' | 'create_agent' | 'add_channel',
+    action: "send_message" | "create_agent" | "add_channel",
   ): Promise<{ allowed: boolean; error?: string }> {
     try {
       const userRef = db.doc(`users/${userId}`);
       const doc = await userRef.get();
 
       if (!doc.exists) {
-        return { allowed: false, error: 'User not found' };
+        return { allowed: false, error: "User not found" };
       }
 
       const data = doc.data()!;
-      const tier = (data.plan || 'starter') as PlanTier;
+      const tier = (data.plan || "starter") as PlanTier;
       const caps = this.getCapabilities(tier);
 
       switch (action) {
-        case 'send_message': {
+        case "send_message": {
           const currentUsage = data.usage?.messagesThisPeriod || data.stats?.totalMessagesSent || 0;
           if (caps.maxMessages !== -1 && currentUsage >= caps.maxMessages) {
-            return { allowed: false, error: 'Monthly message limit reached' };
+            return { allowed: false, error: "Monthly message limit reached" };
           }
           break;
         }
-        case 'create_agent': {
+        case "create_agent": {
           const counterRef = db.doc(`users/${userId}/usage/counters`);
           const counterSnap = await counterRef.get();
-          const currentCount = counterSnap.exists ? (counterSnap.data()?.agentCount || 0) : 0;
+          const currentCount = counterSnap.exists ? counterSnap.data()?.agentCount || 0 : 0;
 
           if (caps.maxAgents !== -1 && currentCount >= caps.maxAgents) {
             return { allowed: false, error: `Agent limit reached for ${tier} plan.` };
           }
           break;
         }
-        case 'add_channel': {
+        case "add_channel": {
           const currentCount = data.usage?.activeChannels || data.stats?.activeChannels || 0;
           if (caps.maxChannelSlots !== -1 && currentCount >= caps.maxChannelSlots) {
             return { allowed: false, error: `Channel slot limit reached for ${tier} plan.` };
@@ -311,15 +333,15 @@ export class SystemAuthorityService {
 
   public async recordUsage(
     userId: string,
-    metric: 'messages' | 'agents' | 'channels',
+    metric: "messages" | "agents" | "channels",
     amount: number = 1,
   ): Promise<void> {
     const userRef = db.doc(`users/${userId}`);
     const batch = db.batch();
 
     try {
-      if (metric === 'messages') {
-        const today = new Date().toISOString().split('T')[0];
+      if (metric === "messages") {
+        const today = new Date().toISOString().split("T")[0];
         const analyticsRef = db.doc(`users/${userId}/analytics/${today}`);
 
         batch.set(
@@ -335,12 +357,12 @@ export class SystemAuthorityService {
         batch.set(
           userRef,
           {
-            'usage.messagesThisPeriod': FieldValue.increment(amount),
+            "usage.messagesThisPeriod": FieldValue.increment(amount),
             updatedAt: Timestamp.now(),
           },
           { merge: true },
         );
-      } else if (metric === 'agents') {
+      } else if (metric === "agents") {
         const counterRef = db.doc(`users/${userId}/usage/counters`);
         batch.set(
           counterRef,
@@ -350,11 +372,11 @@ export class SystemAuthorityService {
           },
           { merge: true },
         );
-      } else if (metric === 'channels') {
+      } else if (metric === "channels") {
         batch.set(
           userRef,
           {
-            'usage.activeChannels': FieldValue.increment(amount),
+            "usage.activeChannels": FieldValue.increment(amount),
             updatedAt: Timestamp.now(),
           },
           { merge: true },
@@ -370,5 +392,3 @@ export class SystemAuthorityService {
 }
 
 export const systemAuthorityService = SystemAuthorityService.getInstance();
-
-

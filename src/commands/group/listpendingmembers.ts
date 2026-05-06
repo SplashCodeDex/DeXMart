@@ -1,8 +1,8 @@
-import { MessageContext } from '../../types/index.js';
+import { MessageContext } from "../../types/index.js";
 export default {
-  name: 'listpendingmembers',
-  aliases: ['pendingmembers'],
-  category: 'group',
+  name: "listpendingmembers",
+  aliases: ["pendingmembers"],
+  category: "group",
   permissions: {
     admin: true,
     channelAdmin: true,
@@ -13,7 +13,7 @@ export default {
     const pending = await ctx.group().pendingMembers();
 
     if (!pending || pending.length === 0)
-      return await ctx.reply(formatter.quote('✅ Tidak ada anggota yang menunggu persetujuan.'));
+      return await ctx.reply(formatter.quote("✅ Tidak ada anggota yang menunggu persetujuan."));
 
     try {
       const resultText = pending
@@ -21,7 +21,7 @@ export default {
           const id = ctx.getId(member.jid);
           return formatter.quote(`${index + 1}. ${id}`);
         })
-        .join('\n');
+        .join("\n");
 
       await ctx.reply({
         text: resultText,

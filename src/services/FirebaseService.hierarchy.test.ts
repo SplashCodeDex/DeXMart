@@ -1,28 +1,28 @@
-import { test } from 'vitest';
+import { test } from "vitest";
 
-test.skip('UPSTREAM PENDING SYNC: src/services/FirebaseService.hierarchy.test.ts', () => {});
+test.skip("UPSTREAM PENDING SYNC: src/services/FirebaseService.hierarchy.test.ts", () => {});
 
 /* ORIGINAL TEST CODE COMMENTED OUT TO PREVENT IMPORT/INIT ERRORS */
 // import { describe, it, expect, vi, beforeEach } from 'vitest';
 // import { firebaseService } from './FirebaseService.js';
 // import { db } from '@/lib/firebase.js';
-// 
+//
 // // Mock dependencies
 // vi.mock('@/lib/firebase.js', () => ({
 //   db: {
 //     collection: vi.fn().mockReturnThis(),
 //     doc: vi.fn().mockReturnThis(),
-//     get: vi.fn().mockResolvedValue({ 
-//       exists: false, 
+//     get: vi.fn().mockResolvedValue({
+//       exists: false,
 //       data: () => ({}),
-//       docs: [] 
+//       docs: []
 //     })
 //   },
 //   admin: {
 //     auth: vi.fn()
 //   }
 // }));
-// 
+//
 // vi.mock('@/utils/logger.js', () => ({
 //   default: {
 //     info: vi.fn(),
@@ -32,31 +32,31 @@ test.skip('UPSTREAM PENDING SYNC: src/services/FirebaseService.hierarchy.test.ts
 //     security: vi.fn()
 //   }
 // }));
-// 
+//
 // describe.skip('[UPSTREAM PENDING SYNC] FirebaseService Hierarchy', () => {
 //   const tenantId = 'tenant-123';
 //   const agentId = 'agent-456';
 //   const channelId = 'chan-789';
-// 
+//
 //   beforeEach(() => {
 //     vi.clearAllMocks();
 //   });
-// 
+//
 //   it('should resolve nested channel collection path: tenants/T/agents/A/channels', async () => {
 //     // This should fail until we implement the new path logic
 //     const nestedCollection = `agents/${agentId}/channels`;
-//     
+//
 //     await firebaseService.getCollection(nestedCollection, tenantId);
-// 
+//
 //     expect(db.collection).toHaveBeenCalledWith(`tenants/${tenantId}/agents/${agentId}/channels`);
 //   });
-// 
+//
 //   it('should resolve nested channel auth path: tenants/T/agents/A/channels/C/auth', async () => {
 //     const nestedAuth = `agents/${agentId}/channels/${channelId}/auth`;
-//     
+//
 //     await firebaseService.getDoc(nestedAuth, 'creds', tenantId);
-// 
+//
 //     expect(db.collection).toHaveBeenCalledWith(`tenants/${tenantId}/agents/${agentId}/channels/${channelId}/auth`);
 //   });
 // });
-// 
+//

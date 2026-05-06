@@ -1,5 +1,5 @@
-import logger from '../utils/logger.js';
-import { ActiveChannel, Command, Result } from '../types/index.js';
+import { ActiveChannel, Command, Result } from "../types/index.js";
+import logger from "../utils/logger.js";
 
 interface ToolSchema {
   type: string;
@@ -35,7 +35,7 @@ export class DynamicToolRegistry {
     this.tools = new Map();
     this.categories = new Map();
     this.toolSchemas = [];
-    logger.info('Initializing Dynamic Tool Registry');
+    logger.info("Initializing Dynamic Tool Registry");
   }
 
   async registerAllCommands(): Promise<number> {
@@ -49,8 +49,8 @@ export class DynamicToolRegistry {
           schema,
           category: command.category,
           enabled: true,
-          usage: command.usage || '',
-          description: command.description || `Execute ${name}`
+          usage: command.usage || "",
+          description: command.description || `Execute ${name}`,
         });
         this.toolSchemas.push(schema);
         registered++;
@@ -65,28 +65,31 @@ export class DynamicToolRegistry {
   private async createToolSchema(name: string, command: Command): Promise<ToolSchema> {
     const params = await this.inferParameters(name, command.category);
     return {
-      type: 'function',
+      type: "function",
       function: {
         name,
         description: command.description || `Execute ${name}`,
         parameters: {
-          type: 'object',
+          type: "object",
           properties: params.properties,
-          required: params.required
-        }
-      }
+          required: params.required,
+        },
+      },
     };
   }
 
-  private async inferParameters(name: string, category: string): Promise<{ properties: Record<string, any>; required: string[] }> {
+  private async inferParameters(
+    name: string,
+    category: string,
+  ): Promise<{ properties: Record<string, any>; required: string[] }> {
     const properties: Record<string, any> = {};
     const required: string[] = [];
 
-    if (category === 'downloader' || name.includes('dl')) {
-      properties.url = { type: 'string', description: 'URL' };
-      required.push('url');
+    if (category === "downloader" || name.includes("dl")) {
+      properties.url = { type: "string", description: "URL" };
+      required.push("url");
     } else {
-      properties.input = { type: 'string', description: 'Input' };
+      properties.input = { type: "string", description: "Input" };
     }
 
     return { properties, required };
@@ -100,7 +103,7 @@ export class DynamicToolRegistry {
   }
 
   public getToolSchemas(): ToolSchema[] {
-    return this.toolSchemas.filter(s => this.tools.get(s.function.name)?.enabled);
+    return this.toolSchemas.filter((s) => this.tools.get(s.function.name)?.enabled);
   }
 
   public setToolEnabled(name: string, enabled: boolean): void {
