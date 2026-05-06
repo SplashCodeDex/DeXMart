@@ -202,7 +202,7 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [x] Task 6.1.B.1: "Files" tab — CodeMirror 6 tree + editor, unsaved-changes guard 8a2f1cf
 - [x] Task 6.1.B.2: "Identity" tab — name, avatar preview, ID badge, ModelSelector (Phase 2.2) [checkpoint: 4347327dea]
 - [x] Task 6.1.B.3: Channel assignment multi-select — sources from `channels.status` [checkpoint: 4347327dea]
-- [~] Task 6.1.B.4: Agent CRUD — create/update/delete (AlertDialog for delete)
+- [x] Task 6.1.B.4: Agent CRUD — create/update/delete (AlertDialog for delete) 14e1674
 - [ ] Task 6.1.B.5: Wire `agent.wait` for async agent startup UI
 - [ ] Task 6.1.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
 
