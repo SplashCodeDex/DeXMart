@@ -1,5 +1,5 @@
 import { renderHook, act, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { useChannelStatus } from "./useChannelStatus";
 
 // Mock the gateway rpc
@@ -19,11 +19,6 @@ vi.mock("@/lib/gateway/gateway-hooks", () => ({
 describe("useChannelStatus", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.useFakeTimers();
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
   });
 
   it("should fetch status on mount", async () => {
@@ -42,6 +37,7 @@ describe("useChannelStatus", () => {
   });
 
   it("should poll status at the specified interval", async () => {
+    vi.useFakeTimers();
     mockCall.mockResolvedValue({
       ts: Date.now(),
       channels: {},
@@ -62,6 +58,7 @@ describe("useChannelStatus", () => {
     });
 
     expect(mockCall).toHaveBeenCalledTimes(2);
+    vi.useRealTimers();
   });
 
   it("should expose formatted channel data and decode QR", async () => {
@@ -86,7 +83,11 @@ describe("useChannelStatus", () => {
       channelDefaultAccountId: { whatsapp: "acc-1" },
     });
 
-    const { result } = renderHook(() => useChannelStatus());
+    const { result } = renderHook(() => useChannelStatus({ enabled: false }));
+
+    await act(async () => {
+      await result.current.refresh();
+    });
 
     await waitFor(() => {
       expect(result.current.channels.whatsapp).toBeDefined();
@@ -102,7 +103,11 @@ describe("useChannelStatus", () => {
   it("should handle error in polling gracefully", async () => {
     mockCall.mockRejectedValueOnce(new Error("RPC error"));
 
-    const { result } = renderHook(() => useChannelStatus({ interval: 1000 }));
+    const { result } = renderHook(() => useChannelStatus({ enabled: false }));
+
+    await act(async () => {
+      await result.current.refresh();
+    });
 
     await waitFor(() => {
       expect(result.current.error).toBeDefined();
@@ -118,9 +123,9 @@ describe("useChannelStatus", () => {
       channelDefaultAccountId: {},
     });
 
-    // Advance time for next poll
+    // Refresh again
     await act(async () => {
-      vi.advanceTimersByTime(1000);
+      await result.current.refresh();
     });
 
     await waitFor(() => {
@@ -129,5 +134,39 @@ describe("useChannelStatus", () => {
 
     // Error should be cleared on success
     expect(result.current.error).toBeNull();
+  });
+
+  it("should call channels.logout RPC and refresh", async () => {
+    mockCall.mockResolvedValue({
+      ts: Date.now(),
+      channels: {},
+      channelAccounts: {
+        whatsapp: [{ accountId: "acc-1", status: "connected" }],
+      },
+      channelOrder: ["whatsapp"],
+      channelLabels: { whatsapp: "WhatsApp" },
+      channelDefaultAccountId: { whatsapp: "acc-1" },
+    });
+
+    const { result } = renderHook(() => useChannelStatus({ enabled: false }));
+
+    await act(async () => {
+      await result.current.refresh();
+    });
+
+    await waitFor(() => {
+      expect(result.current.channelAccounts.whatsapp).toBeDefined();
+    });
+
+    await act(async () => {
+      await result.current.logout("whatsapp", "acc-1");
+    });
+
+    expect(mockCall).toHaveBeenCalledWith("channels.logout", {
+      channel: "whatsapp",
+      accountId: "acc-1",
+    });
+    // First call on mount, second call for logout, third call for refresh
+    expect(mockCall).toHaveBeenCalledTimes(3);
   });
 });

@@ -33,6 +33,24 @@ import type {
   AgentsFilesGetResult,
   AgentsFilesSetParams,
   AgentsFilesSetResult,
+  NodeListParams,
+  NodeDescribeParams,
+  NodeInvokeParams,
+  NodeRenameParams,
+  NodePairRequestParams,
+  NodePairListParams,
+  NodePairApproveParams,
+  NodePairRejectParams,
+  NodePairVerifyParams,
+  NodePendingAckParams,
+  NodePendingDrainParams,
+  NodePendingEnqueueParams,
+  ExecApprovalsGetParams,
+  ExecApprovalsSetParams,
+  ExecApprovalsNodeGetParams,
+  ExecApprovalsNodeSetParams,
+  ExecApprovalGetParams,
+  ExecApprovalResolveParams,
 } from "@openclaw/protocol/index";
 // For schemas that don't have an explicit 'export type' in index.ts, we infer them:
 import {
@@ -238,6 +256,125 @@ export interface MethodMap {
     params: DeviceTokenRevokeParams;
     result: { ok: boolean };
   };
+  "node.list": {
+    params: NodeListParams;
+    result: {
+      ts: number;
+      nodes: any[];
+    };
+  };
+  "node.describe": {
+    params: NodeDescribeParams;
+    result: any;
+  };
+  "node.invoke": {
+    params: NodeInvokeParams;
+    result: {
+      ok: boolean;
+      nodeId: string;
+      command: string;
+      payload?: any;
+      payloadJSON?: string | null;
+    };
+  };
+  "node.rename": {
+    params: NodeRenameParams;
+    result: {
+      nodeId: string;
+      displayName: string;
+    };
+  };
+  "node.pair.request": {
+    params: NodePairRequestParams;
+    result: any;
+  };
+  "node.pair.list": {
+    params: NodePairListParams;
+    result: {
+      pending: any[];
+      paired: any[];
+    };
+  };
+  "node.pair.approve": {
+    params: NodePairApproveParams;
+    result: any;
+  };
+  "node.pair.reject": {
+    params: NodePairRejectParams;
+    result: any;
+  };
+  "node.pair.verify": {
+    params: NodePairVerifyParams;
+    result: any;
+  };
+  "node.pending.pull": {
+    params: Record<string, never>;
+    result: {
+      nodeId: string;
+      actions: any[];
+    };
+  };
+  "node.pending.ack": {
+    params: NodePendingAckParams;
+    result: {
+      nodeId: string;
+      ackedIds: string[];
+      remainingCount: number;
+    };
+  };
+  "node.pending.drain": {
+    params: NodePendingDrainParams;
+    result: any;
+  };
+  "node.pending.enqueue": {
+    params: NodePendingEnqueueParams;
+    result: any;
+  };
+  "exec.approvals.get": {
+    params: ExecApprovalsGetParams;
+    result: any;
+  };
+  "exec.approvals.set": {
+    params: ExecApprovalsSetParams;
+    result: any;
+  };
+  "exec.approvals.node.get": {
+    params: ExecApprovalsNodeGetParams;
+    result: any;
+  };
+  "exec.approvals.node.set": {
+    params: ExecApprovalsNodeSetParams;
+    result: any;
+  };
+  "exec.approval.list": {
+    params: Record<string, never>;
+    result: any[];
+  };
+  "exec.approval.list": {
+    params: Record<string, never>;
+    result: Array<{
+      id: string;
+      request: any;
+      createdAtMs: number;
+      expiresAtMs: number;
+    }>;
+  };
+  "exec.approval.get": {
+    params: ExecApprovalGetParams;
+    result: any;
+  };
+  "exec.approval.resolve": {
+    params: ExecApprovalResolveParams;
+    result: any;
+  };
+  "node.canvas.capability.refresh": {
+    params: Record<string, never>;
+    result: {
+      canvasCapability: string;
+      canvasCapabilityExpiresAtMs: number;
+      canvasHostUrl: string;
+    };
+  };
 }
 
 export interface EventMap {
@@ -261,6 +398,10 @@ export interface EventMap {
     errorMessage?: string;
     usage?: any;
   };
+  "node.pair.requested": any;
+  "node.pair.resolved": any;
+  "exec.approval.requested": any;
+  "exec.approval.resolved": any;
 }
 
 export class GatewayRpc {

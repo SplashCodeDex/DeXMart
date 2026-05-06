@@ -16,9 +16,21 @@ import {
   Unlink,
   DollarSign,
   MessageSquare,
+  Trash2,
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,12 +42,14 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AgentFilesFeature } from "@/features/agents/components/AgentFilesFeature";
+import { AgentIdentityFeature } from "@/features/agents/components/AgentIdentityFeature";
 import { ChannelLinker } from "@/features/agents/components/ChannelLinker";
 import { LiveStatusBadge } from "@/features/agents/components/LiveStatusBadge";
 import { RecursiveTraceView } from "@/features/agents/components/RecursiveTraceView";
 import { SkillToggle } from "@/features/agents/components/SkillToggle";
 import { TemplateSelector } from "@/features/agents/components/TemplateSelector";
-import { useCreateAgent } from "@/features/agents/hooks/useCreateAgent";
+import { useAgentsCrud } from "@/features/agents/hooks/useAgentsCrud";
 import { AgentTemplate } from "@/features/agents/types";
 import { MemoryPanel } from "@/features/memory";
 import { cn } from "@/lib/utils";
@@ -59,12 +73,13 @@ export function AgentsDashboard(): React.JSX.Element {
     toggleSkill,
   } = useOmnichannelStore();
   const { tier, getLimit } = useAuthorityStore();
-  const { createAgent } = useCreateAgent();
+  const { createAgent, deleteAgent, isLoading: isCrudLoading } = useAgentsCrud();
 
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [showTrace, setShowTrace] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const handleRefresh = async (): Promise<void> => {
     setIsRefreshing(true);
@@ -96,6 +111,28 @@ export function AgentsDashboard(): React.JSX.Element {
         throw new Error(result.error?.message);
       },
       error: (err) => err.message || "Failed to create agent",
+    });
+  };
+
+  const handleDeleteAgent = async (): Promise<void> => {
+    if (!selectedAgent) return;
+
+    setIsDeleteDialogOpen(false);
+    const agentName = identity?.name || selectedAgent.name || selectedAgent.id;
+
+    const promise = deleteAgent(selectedAgent.id);
+
+    toast.promise(promise, {
+      loading: `Deleting agent "${agentName}"...`,
+      success: (success) => {
+        if (success) {
+          setSelectedAgentId(null);
+          handleRefresh();
+          return `Agent "${agentName}" deleted successfully`;
+        }
+        throw new Error("Delete failed on gateway");
+      },
+      error: (err) => err.message || "Failed to delete agent",
     });
   };
 
@@ -296,16 +333,53 @@ export function AgentsDashboard(): React.JSX.Element {
                     <Settings className="mr-2 h-4 w-4" />
                     Configure
                   </Button>
+                  <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="destructive" size="sm" className="shadow-md">
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Delete
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent className="rounded-2xl border-none shadow-2xl">
+                      <AlertDialogHeader>
+                        <AlertDialogTitle className="text-xl font-black">
+                          Are you absolutely sure?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This will permanently delete the agent{" "}
+                          <span className="font-bold text-foreground">
+                            "{identity?.name || selectedAgent.name}"
+                          </span>{" "}
+                          and all its configuration. This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel className="rounded-xl">Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={handleDeleteAgent}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-xl font-bold"
+                        >
+                          Delete Agent
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </CardHeader>
               <CardContent className="px-8">
                 <Tabs defaultValue="overview" className="w-full">
-                  <TabsList className="grid w-full grid-cols-5 bg-muted/30 p-1 h-11">
+                  <TabsList className="grid w-full grid-cols-6 bg-muted/30 p-1 h-11">
                     <TabsTrigger
                       value="overview"
                       className="data-[state=active]:bg-background data-[state=active]:shadow-sm"
                     >
                       Overview
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="identity"
+                      className="data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                    >
+                      Identity
                     </TabsTrigger>
                     <TabsTrigger
                       value="workspace"
@@ -541,29 +615,17 @@ export function AgentsDashboard(): React.JSX.Element {
                   </TabsContent>
 
                   <TabsContent
+                    value="identity"
+                    className="pt-6 animate-in fade-in slide-in-from-bottom-2 duration-300"
+                  >
+                    <AgentIdentityFeature agentId={selectedAgent.id} />
+                  </TabsContent>
+
+                  <TabsContent
                     value="workspace"
                     className="pt-6 animate-in fade-in slide-in-from-bottom-2 duration-300"
                   >
-                    <div className="flex h-[250px] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border/40 p-12 text-center bg-muted/5 overflow-hidden relative">
-                      <div className="absolute top-0 right-0 p-4 opacity-5">
-                        <Files className="h-40 w-40 rotate-12" />
-                      </div>
-                      <Files className="h-12 w-12 text-muted-foreground/30 mb-4" />
-                      <h5 className="font-bold text-sm tracking-tight">
-                        Agent Knowledge Matrix (RAG)
-                      </h5>
-                      <p className="text-xs text-muted-foreground/80 mt-2 max-w-xs leading-relaxed">
-                        Local source files and semantic knowledge indexes will be managed within
-                        this secure boundary.
-                      </p>
-                      <Button
-                        variant="link"
-                        size="sm"
-                        className="mt-4 text-xs font-bold text-primary"
-                      >
-                        Provision Data Store
-                      </Button>
-                    </div>
+                    <AgentFilesFeature agentId={selectedAgent.id} />
                   </TabsContent>
 
                   <TabsContent

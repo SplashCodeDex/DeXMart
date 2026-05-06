@@ -9,6 +9,7 @@ import {
   Loader2,
   ShieldAlert,
   UserCircle2,
+  LogOut,
 } from "lucide-react";
 import React, { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
@@ -55,8 +56,14 @@ export function ChannelSettingsDialog({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showQrModal, setShowQrModal] = useState(false);
   const [shouldArchive, setShouldArchive] = useState(true);
-  const { disconnectChannel, deleteChannel, moveChannel, agentsResult, fetchAgents } =
-    useOmnichannelStore();
+  const {
+    disconnectChannel,
+    logoutChannel,
+    deleteChannel,
+    moveChannel,
+    agentsResult,
+    fetchAgents,
+  } = useOmnichannelStore();
   const { logout: rpcLogout, refresh: refreshStatus } = useChannelStatus({ enabled: false });
 
   const agentId = channel.assignedAgentId || "system_default";
@@ -75,22 +82,40 @@ export function ChannelSettingsDialog({
   const handleDisconnect = async (): Promise<void> => {
     setIsActionLoading(true);
     try {
-      // Prefer RPC logout if we have an account ID
-      if (channel.account) {
-        await rpcLogout(channel.type, channel.account);
-        toast.success(`Successfully logged out ${channel.name}`);
+      const success = await disconnectChannel(agentId, channel.id);
+      if (success) {
+        toast.success(`Successfully disconnected ${channel.name}`);
       } else {
-        const success = await disconnectChannel(agentId, channel.id);
-        if (success) {
-          toast.success(`Successfully disconnected ${channel.name}`);
-        } else {
-          toast.error("Failed to disconnect channel");
-        }
+        toast.error("Failed to disconnect channel");
       }
       onOpenChange(false);
     } catch (err) {
-      console.error("Logout failed:", err);
+      console.error("Disconnect failed:", err);
       toast.error("Failed to disconnect channel");
+    } finally {
+      setIsActionLoading(false);
+    }
+  };
+
+  const handleLogout = async (): Promise<void> => {
+    if (!channel.account) {
+      toast.error("No active session found to logout");
+      return;
+    }
+    setIsActionLoading(true);
+    try {
+      // Optimistic update
+      logoutChannel(channel.id);
+
+      await rpcLogout(channel.type, channel.account);
+      toast.success(`Successfully logged out ${channel.name}`);
+      onOpenChange(false);
+    } catch (err) {
+      console.error("Logout failed:", err);
+      toast.error("Failed to logout channel session");
+      // refresh to restore actual state
+      const { fetchAllChannels } = useOmnichannelStore.getState();
+      await fetchAllChannels();
     } finally {
       setIsActionLoading(false);
     }
@@ -318,6 +343,31 @@ export function ChannelSettingsDialog({
                   {isActionLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
                 </Button>
               </div>
+
+              {channel.account && (
+                <div className="group">
+                  <Button
+                    variant="outline"
+                    className="w-full justify-between h-12 border-yellow-500/20 hover:bg-yellow-500/10 hover:text-yellow-600 hover:border-yellow-500/50 group-hover:shadow-md transition-all"
+                    onClick={handleLogout}
+                    disabled={
+                      isActionLoading ||
+                      ["logged_out", "banned", "archived"].includes(channel.status)
+                    }
+                  >
+                    <div className="flex items-center gap-3">
+                      <LogOut className="h-4 w-4" />
+                      <div className="text-left">
+                        <p className="font-bold text-sm">Logout Account</p>
+                        <p className="text-[10px] text-muted-foreground">
+                          Clear paired session / unpair device
+                        </p>
+                      </div>
+                    </div>
+                    {isActionLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                  </Button>
+                </div>
+              )}
 
               <div className="group">
                 <Button

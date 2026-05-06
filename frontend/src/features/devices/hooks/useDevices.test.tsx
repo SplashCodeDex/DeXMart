@@ -91,21 +91,35 @@ describe("useDevices", () => {
 
   it("should provide rotate functionality", async () => {
     const { result } = renderHook(() => useDevices());
+    const mockResponse = { ok: true, token: "new-token-123" };
+    mockCall.mockResolvedValueOnce(mockResponse);
 
+    let rotateResult;
     await act(async () => {
-      await result.current.rotate("d2");
+      rotateResult = await result.current.rotate("d2", "master");
     });
 
-    expect(mockCall).toHaveBeenCalledWith("device.token.rotate", { deviceId: "d2" });
+    expect(mockCall).toHaveBeenCalledWith("device.token.rotate", {
+      deviceId: "d2",
+      role: "master",
+    });
+    expect(rotateResult).toEqual(mockResponse);
   });
 
   it("should provide revoke functionality", async () => {
     const { result } = renderHook(() => useDevices());
+    const mockResponse = { ok: true };
+    mockCall.mockResolvedValueOnce(mockResponse);
 
+    let revokeResult;
     await act(async () => {
-      await result.current.revoke("d2");
+      revokeResult = await result.current.revoke("d2", "master");
     });
 
-    expect(mockCall).toHaveBeenCalledWith("device.token.revoke", { deviceId: "d2" });
+    expect(mockCall).toHaveBeenCalledWith("device.token.revoke", {
+      deviceId: "d2",
+      role: "master",
+    });
+    expect(revokeResult).toEqual(mockResponse);
   });
 });

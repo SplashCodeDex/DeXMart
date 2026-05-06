@@ -69,27 +69,27 @@ export function useDevices() {
     }
   };
 
-  const rotate = async (deviceId: string) => {
-    if (!rpc) return false;
+  const rotate = async (deviceId: string, role: string) => {
+    if (!rpc) return null;
     try {
-      await rpc.call("device.token.rotate", { deviceId });
+      const result = await rpc.call("device.token.rotate", { deviceId, role });
       await fetchDevices();
-      return true;
+      return result;
     } catch (err) {
       console.error("Failed to rotate token:", err);
-      return false;
+      return null;
     }
   };
 
-  const revoke = async (deviceId: string) => {
-    if (!rpc) return false;
+  const revoke = async (deviceId: string, role: string) => {
+    if (!rpc) return null;
     try {
-      await rpc.call("device.token.revoke", { deviceId });
+      const result = await rpc.call("device.token.revoke", { deviceId, role });
       await fetchDevices();
-      return true;
+      return result;
     } catch (err) {
       console.error("Failed to revoke token:", err);
-      return false;
+      return null;
     }
   };
 

@@ -10,8 +10,11 @@ import {
   MoreVertical,
   RotateCw,
   Trash2,
+  KeyRound,
+  Copy,
+  Check,
 } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -27,6 +30,14 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,6 +57,8 @@ import { useDevices } from "../hooks/useDevices";
 
 export function DevicePairingTable() {
   const { pending, paired, isLoading, approve, reject, remove, rotate, revoke } = useDevices();
+  const [newToken, setNewToken] = useState<string | null>(null);
+  const [hasCopied, setHasCopied] = useState(false);
 
   const handleApprove = async (id: string) => {
     const success = await approve(id);
@@ -62,18 +75,80 @@ export function DevicePairingTable() {
     if (success) toast.success("Device removed");
   };
 
-  const handleRotate = async (id: string) => {
-    const success = await rotate(id);
-    if (success) toast.success("Token rotated");
+  const handleRotate = async (id: string, role: string) => {
+    const result = await rotate(id, role);
+    if (result?.ok) {
+      toast.success("Token rotated successfully");
+      if (result.token) {
+        setNewToken(result.token);
+      }
+    } else {
+      toast.error("Failed to rotate token");
+    }
   };
 
-  const handleRevoke = async (id: string) => {
-    const success = await revoke(id);
-    if (success) toast.success("Token revoked");
+  const handleRevoke = async (id: string, role: string) => {
+    const result = await revoke(id, role);
+    if (result?.ok) {
+      toast.success("All tokens revoked");
+    } else {
+      toast.error("Failed to revoke tokens");
+    }
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setHasCopied(true);
+    toast.success("Token copied to clipboard");
+    setTimeout(() => setHasCopied(false), 2000);
   };
 
   return (
     <div className="space-y-8">
+      {/* Token Result Dialog */}
+      <Dialog open={!!newToken} onOpenChange={(open) => !open && setNewToken(null)}>
+        <DialogContent className="sm:max-w-[450px] border-border/50 bg-card/95 backdrop-blur-xl">
+          <DialogHeader>
+            <div className="flex items-center space-x-2 mb-2">
+              <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                <KeyRound className="h-5 w-5" />
+              </div>
+              <DialogTitle className="text-xl">New Access Token</DialogTitle>
+            </div>
+            <DialogDescription>
+              A new token has been generated. Please update your device configuration immediately.
+              For security, this token will not be shown again.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="py-4">
+            <div className="relative group">
+              <div className="absolute inset-0 bg-primary/5 rounded-xl blur-sm group-hover:bg-primary/10 transition-colors" />
+              <div className="relative flex items-center gap-2 p-4 rounded-xl bg-background/50 border border-primary/20 font-mono text-sm break-all">
+                <code className="flex-1 text-primary">{newToken}</code>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 shrink-0 hover:bg-primary/20"
+                  onClick={() => newToken && copyToClipboard(newToken)}
+                >
+                  {hasCopied ? (
+                    <Check className="h-4 w-4 text-green-500" />
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button className="w-full font-bold" onClick={() => setNewToken(null)}>
+              I've saved the token
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       {/* Pending Pairing Requests */}
       {pending.length > 0 && (
         <Card className="border-orange-500/50 bg-card/60 backdrop-blur-sm border-border/50 overflow-hidden relative">
@@ -214,6 +289,67 @@ export function DevicePairingTable() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                <RotateCw className="mr-2 h-4 w-4" />
+                                Rotate Token
+                              </DropdownMenuItem>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Rotate Access Token?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This will invalidate the current token and generate a new one for{" "}
+                                  <strong>{device.name || device.deviceId}</strong>. The hardware
+                                  will need to be updated with the new token to maintain connection.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleRotate(device.deviceId, device.role)}
+                                >
+                                  Rotate Token
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <DropdownMenuItem
+                                onSelect={(e) => e.preventDefault()}
+                                className="text-orange-600 focus:text-orange-600"
+                              >
+                                <Power className="mr-2 h-4 w-4" />
+                                Revoke Tokens
+                              </DropdownMenuItem>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Revoke All Tokens?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This will immediately invalidate all active access tokens for{" "}
+                                  <strong>{device.name || device.deviceId}</strong>. The device will
+                                  stay paired but will be unable to communicate until a new token is
+                                  generated.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  className="bg-orange-500 hover:bg-orange-600"
+                                  onClick={() => handleRevoke(device.deviceId, device.role)}
+                                >
+                                  Revoke
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+
+                          <DropdownMenuSeparator />
+
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <DropdownMenuItem

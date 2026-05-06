@@ -60,6 +60,27 @@ export function useChannelStatus(options: UseChannelStatusOptions = {}) {
     async (channel: string, accountId?: string) => {
       if (!rpc) return;
       try {
+        // Optimistic update
+        setData((prev) => {
+          if (!prev || !prev.channelAccounts[channel]) return prev;
+          const updatedAccounts = prev.channelAccounts[channel].map((acc) => {
+            if (
+              acc.accountId === accountId ||
+              (!accountId && acc.accountId === prev.channelDefaultAccountId[channel])
+            ) {
+              return { ...acc, status: "logged_out" as any, connected: false };
+            }
+            return acc;
+          });
+          return {
+            ...prev,
+            channelAccounts: {
+              ...prev.channelAccounts,
+              [channel]: updatedAccounts,
+            },
+          };
+        });
+
         await rpc.call("channels.logout", { channel, accountId });
         await fetchStatus(); // Refresh status after logout
       } catch (err) {
