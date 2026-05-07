@@ -33,9 +33,22 @@ describe("useAgentsCrud", () => {
     expect(mockRpc.call).toHaveBeenCalledWith("agents.create", { name: "New Agent" });
     expect(response).toEqual({
       success: true,
-      data: "new-agent-id",
+      data: { id: "new-agent-id", runId: undefined },
       message: "Agent created successfully",
     });
+  });
+
+  it("should return runId if provided by backend", async () => {
+    mockRpc.call.mockResolvedValue({ ok: true, agentId: "new-agent-id", runId: "run-123" });
+
+    const { result } = renderHook(() => useAgentsCrud());
+
+    let response: any;
+    await act(async () => {
+      response = await result.current.createAgent({ name: "New Agent" });
+    });
+
+    expect(response.data).toEqual({ id: "new-agent-id", runId: "run-123" });
   });
 
   it("should delete an agent successfully", async () => {

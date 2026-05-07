@@ -529,9 +529,18 @@ export const agentsHandlers: GatewayRequestHandlers = {
         return;
       }
     }
-    await writeConfigFile(nextConfig);
-
-    respond(true, { ok: true, agentId, name: safeName, workspace: workspaceDir, model }, undefined);
+    respond(
+      true,
+      {
+        ok: true,
+        agentId,
+        agent: { id: agentId },
+        name: safeName,
+        workspace: workspaceDir,
+        model,
+      },
+      undefined,
+    );
   },
   "agents.update": async ({ params, respond }) => {
     if (!validateAgentsUpdateParams(params)) {

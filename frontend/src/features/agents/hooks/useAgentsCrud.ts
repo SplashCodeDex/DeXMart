@@ -24,7 +24,7 @@ export function useAgentsCrud() {
   const [isLoading, setIsLoading] = useState(false);
 
   const createAgent = useCallback(
-    async (input: CreateAgentInput): Promise<ActionResult<string>> => {
+    async (input: CreateAgentInput): Promise<ActionResult<{ id: string; runId?: string }>> => {
       if (status !== "connected" || !rpc) {
         return {
           success: false,
@@ -38,7 +38,10 @@ export function useAgentsCrud() {
         if (result.ok) {
           return {
             success: true,
-            data: result.agent.id,
+            data: {
+              id: result.agent?.id || result.agentId,
+              runId: result.runId,
+            },
             message: "Agent created successfully",
           };
         }

@@ -73,7 +73,7 @@ export function AgentsDashboard(): React.JSX.Element {
     toggleSkill,
   } = useOmnichannelStore();
   const { tier, getLimit } = useAuthorityStore();
-  const { createAgent, deleteAgent, isLoading: isCrudLoading } = useAgentsCrud();
+  const { createAgent, deleteAgent, waitAndRefresh, isLoading: isCrudLoading } = useAgentsCrud();
 
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("overview");
@@ -109,10 +109,16 @@ export function AgentsDashboard(): React.JSX.Element {
       }
 
       // Task 6.1.B.5: Wire agent.wait for async agent startup
-      // The backend agents.create returns { agentId, runId? } or similar if it starts a background job
-      // However, current agents.create implementation returns { agentId, ... } but no runId.
-      // If the backend is enhanced to start the agent, we wait.
-      // For now, we refresh and toast success.
+      if (result.data.runId) {
+        toast.info(`Agent "${template.title}" created. Waiting for startup...`, {
+          icon: <RefreshCw className="h-4 w-4 animate-spin" />,
+        });
+        const started = await waitAndRefresh(result.data.runId);
+        if (!started) {
+          console.warn("Agent startup wait timed out or failed, refreshing anyway.");
+        }
+      }
+
       await handleRefresh();
       return `Agent "${template.title}" created successfully!`;
     })();
