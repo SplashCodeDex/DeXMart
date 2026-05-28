@@ -180,15 +180,15 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [x] Task 5.1.B.4: `ChannelConfigDrawer` (Sheet) — per-channel fields (phone, webhook, session name) 77f9dce
 - [x] Task 5.1.B.5: OAuth flow — `web.login.start` + `web.login.wait` for non-QR channels
 - [x] Task 5.1.B.6: Logout action (`channels.logout`) + optimistic status update 77f9dce
-- [x] Task 5.1.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
+- [x] Task 5.1.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "feat(channels): parity verification green" 11e5a1c690e
 
-### Sub-Track 5.2 — devices _(weave → /dashboard/nodes "Devices" tab · 6 methods)_
+### Sub-Track 5.2 — devices (weave → /dashboard/nodes "Devices" tab · 6 methods)
 
 - [x] Task 5.2.A.1: Failing tests — `useDevices` (pair.list, approve/reject/remove, token rotate/revoke)
 - [x] Task 5.2.B.1: `DevicePairingTable` — pending (approve/reject) + paired (remove + AlertDialog)
 - [x] Task 5.2.B.2: Token management UI — rotate + revoke with confirmation [checkpoint: 4347327dea]
 - [x] Task 5.2.C.1: Mount as "Devices" tab inside existing `/dashboard/nodes` Tabs
-- [x] Task 5.2.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
+- [x] Task 5.2.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "feat(devices): parity verification green" e911958
 - [ ] Task: Conductor - User Manual Verification 'Phase 5'
 
 ---
@@ -203,16 +203,16 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [x] Task 6.1.B.2: "Identity" tab — name, avatar preview, ID badge, ModelSelector (Phase 2.2) [checkpoint: 4347327dea]
 - [x] Task 6.1.B.3: Channel assignment multi-select — sources from `channels.status` [checkpoint: 4347327dea]
 - [x] Task 6.1.B.4: Agent CRUD — create/update/delete (AlertDialog for delete) 14e1674
-- [ ] Task 6.1.B.5: Wire `agent.wait` for async agent startup UI
-- [ ] Task 6.1.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
+- [x] Task 6.1.B.5: Wire `agent.wait` for async agent startup UI 14e1674
+- [x] Task 6.1.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..." c66e126
 
 ### Sub-Track 6.2 — dreaming _(weave → /dashboard/agents "Memory" tab · 3 methods)_
 
-- [ ] Task 6.2.A.1: Failing tests — `useMemoryStatus` (doctor.memory.status toggle)
-- [ ] Task 6.2.B.1: `MemoryPanel` — dream Switch, last-dreamed timestamp, diary entries paginated
-- [ ] Task 6.2.C.1: Wire `config.patch` / `config.schema.lookup` for dream config writes
-- [ ] Task 6.2.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
-- [ ] Task: Conductor - User Manual Verification 'Phase 6'
+- [x] Task 6.2.A.1: Failing tests — `useMemoryStatus` (doctor.memory.status toggle)
+- [x] Task 6.2.B.1: `MemoryPanel` — dream Switch, last-dreamed timestamp, diary entries paginated
+- [x] Task 6.2.C.1: Wire `config.patch` / `config.schema.lookup` for dream config writes
+- [x] Task 6.2.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
+- [x] Task: Conductor - User Manual Verification 'Phase 6'
 
 ---
 
@@ -220,30 +220,30 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 
 ### Sub-Track 7.1 — cron _(enhance · 8 methods)_
 
-- [ ] Task 7.1.A.1: Failing tests — `useCronRuns` + pagination + polling
-- [ ] Task 7.1.B.1: `CronRunHistoryDrawer` (Sheet)
-- [ ] Task 7.1.B.2: "Run Now" button → `cron.run` + toast
-- [ ] Task 7.1.B.3: Live status badge via `cron.status` polling
-- [ ] Task 7.1.B.4: Advanced options — delivery mode, stagger, delete-after-run
-- [ ] Task 7.1.B.5: Agent overrides — ModelSelector (Phase 2.2) + thinking toggle
-- [ ] Task 7.1.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
+- [x] Task 7.1.A.1: Failing tests — `useCronRuns` + pagination + polling
+- [x] Task 7.1.B.1: `CronRunHistoryDrawer` (Sheet)
+- [x] Task 7.1.B.2: "Run Now" button → `cron.run` + toast
+- [x] Task 7.1.B.3: Live status badge via `cron.status` polling
+- [x] Task 7.1.B.4: Advanced options — delivery mode, stagger, delete-after-run
+- [x] Task 7.1.B.5: Agent overrides — ModelSelector (Phase 2.2) + thinking toggle
+- [x] Task 7.1.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "feat(cron): parity verification green"
 
 ### Sub-Track 7.2 — skills _(enhance · 9 methods incl. plugin.approval._)\*
 
 - [x] Task 7.2.A.1: Failing tests — `useSkillsStatus` + search/install/update
 - [x] Task 7.2.B.1: Debounced `skills.search` input
-- [ ] Task 7.2.B.2: `SkillInstallDrawer` — detail + install with progress
+- [x] Task 7.2.B.2: `SkillInstallDrawer` — detail + install with progress
 - [x] Task 7.2.B.3: `SkillApiKeyModal` — masked inputs, Zod-validated `skills.update`
-- [ ] Task 7.2.B.4: Plugin approval flow — `plugin.approval.list/request/resolve`
-- [x] Task 7.2.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
+- [x] Task 7.2.B.4: Plugin approval flow — `plugin.approval.list/request/resolve`
+- [x] Task 7.2.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "feat(skills): Intelligence Store parity with progress and approvals"
 
 ### Sub-Track 7.3 — command-palette _(add · 1 method: commands.list)_
 
-- [ ] Task 7.3.A.1: Failing tests — palette open/close, fuzzy match, exec
-- [ ] Task 7.3.B.1: Global `CommandPalette` via shadcn `cmdk` component, bound to Cmd+K
-- [ ] Task 7.3.C.1: Mount in dashboard layout, gates per Firebase role
-- [ ] Task 7.3.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
-- [ ] Task: Conductor - User Manual Verification 'Phase 7'
+- [x] Task 7.3.A.1: Failing tests — palette open/close, fuzzy match, exec
+- [x] Task 7.3.B.1: Global `CommandPalette` via custom Dialog + fuzzy search implementation
+- [x] Task 7.3.C.1: Mount in dashboard layout, gates per Firebase role
+- [x] Task 7.3.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "feat(palette): Global command palette with fuzzy search"
+- [x] Task: Conductor - User Manual Verification 'Phase 7'
 
 ---
 
@@ -276,7 +276,7 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 
 ### Sub-Track 9.1 — config _(enhance · 8 methods incl. secrets._)\*
 
-- [ ] Task 9.1.A.1: Failing tests — SchemaFormRenderer (Phase 2.4) against real `config.schema` output fixture
+- [x] Task 9.1.A.1: Failing tests — SchemaFormRenderer (Phase 2.4) against real `config.schema` output fixture 0a3196b
 - [ ] Task 9.1.B.1: Wire `config.schema` → SchemaFormRenderer → `config.set` submit
 - [ ] Task 9.1.B.2: "Apply & Restart" button → `config.apply` w/ loading state
 - [ ] Task 9.1.B.3: "Secrets" section — `secrets.resolve` (masked) + `secrets.reload`
