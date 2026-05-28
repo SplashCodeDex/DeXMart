@@ -8,6 +8,7 @@ import { z } from "zod";
 export type JsonSchema = {
   type?: string;
   properties?: Record<string, JsonSchema>;
+  additionalProperties?: JsonSchema | boolean;
   items?: JsonSchema;
   enum?: string[];
   required?: string[];
@@ -37,6 +38,13 @@ function buildZodSchema(schema: JsonSchema, isRequired = false): z.ZodTypeAny {
     case "boolean":
       return z.boolean().default(false);
     case "object": {
+      if (schema.additionalProperties && !schema.properties) {
+        const valSchema =
+          typeof schema.additionalProperties === "object"
+            ? buildZodSchema(schema.additionalProperties)
+            : z.unknown();
+        return z.record(z.string(), valSchema).default({});
+      }
       const reqSet = new Set(schema.required ?? []);
       const shape = Object.fromEntries(
         Object.entries(schema.properties ?? {}).map(([k, v]) => [
@@ -44,7 +52,7 @@ function buildZodSchema(schema: JsonSchema, isRequired = false): z.ZodTypeAny {
           buildZodSchema(v, reqSet.has(k)),
         ]),
       );
-      return z.object(shape);
+      return z.object(shape).passthrough();
     }
     case "array": {
       const itemSchema = schema.items ? buildZodSchema(schema.items) : z.unknown();
@@ -65,6 +73,9 @@ function buildDefaultValues(schema: JsonSchema): unknown {
     case "integer":
       return undefined;
     case "object":
+      if (schema.additionalProperties && !schema.properties) {
+        return {};
+      }
       return Object.fromEntries(
         Object.entries(schema.properties ?? {}).map(([k, v]) => [k, buildDefaultValues(v)]),
       );
@@ -120,6 +131,57 @@ function ArrayField({
   );
 }
 
+function MapField({
+  name,
+  schema,
+  control,
+  register,
+}: {
+  name: string;
+  schema: JsonSchema;
+  control: Control<FormValues>;
+  register: UseFormRegister<FormValues>;
+}) {
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: `_map_${name}` as never,
+  });
+  const label = schema.title ?? name;
+
+  return (
+    <div className="mb-2 border rounded-md p-3">
+      <p className="text-sm font-medium mb-2">{label}</p>
+      <div className="flex flex-col gap-2 mb-2">
+        {fields.map((field, idx) => (
+          <div key={field.id} className="flex items-center gap-2">
+            <input
+              placeholder="Key"
+              {...register(`_map_${name}.${idx}.key` as never)}
+              className="flex-1 h-8 rounded-md border border-input bg-background px-2 text-xs"
+            />
+            <input
+              placeholder="Value"
+              {...register(`_map_${name}.${idx}.value` as never)}
+              className="flex-1 h-8 rounded-md border border-input bg-background px-2 text-xs"
+            />
+            <button type="button" onClick={() => remove(idx)} className="text-xs text-destructive">
+              Remove
+            </button>
+          </div>
+        ))}
+      </div>
+      <button
+        type="button"
+        onClick={() => append({ key: "", value: "" } as never)}
+        className="text-xs text-primary"
+        aria-label={`Add ${label}`}
+      >
+        Add {label}
+      </button>
+    </div>
+  );
+}
+
 function FieldRenderer({
   name,
   schema,
@@ -138,6 +200,10 @@ function FieldRenderer({
 
   if (schema.type === "array") {
     return <ArrayField name={name} schema={schema} control={control} register={register} />;
+  }
+
+  if (schema.type === "object" && schema.additionalProperties && !schema.properties) {
+    return <MapField name={name} schema={schema} control={control} register={register} />;
   }
 
   if (schema.type === "object" && schema.properties) {
@@ -227,6 +293,28 @@ export function SchemaFormRenderer({ schema, defaultValues, onSubmit }: SchemaFo
   const zodSchema = buildZodSchema(schema) as z.ZodObject<z.ZodRawShape>;
   const schemaDefaults = buildDefaultValues(schema) as Record<string, unknown>;
 
+  const initialValues = { ...schemaDefaults, ...defaultValues };
+
+  // Transform incoming maps to _map_ internal representation
+  const flattenedInitial = { ...initialValues };
+  const findMaps = (s: JsonSchema, path: string, val: any) => {
+    if (s.type === "object") {
+      if (s.additionalProperties && !s.properties) {
+        if (val && typeof val === "object") {
+          flattenedInitial[`_map_${path}`] = Object.entries(val).map(([k, v]) => ({
+            key: k,
+            value: v,
+          }));
+        }
+      } else if (s.properties) {
+        Object.entries(s.properties).forEach(([k, ps]) => {
+          findMaps(ps, path ? `${path}.${k}` : k, val?.[k]);
+        });
+      }
+    }
+  };
+  findMaps(schema, "", initialValues);
+
   const {
     register,
     control,
@@ -234,13 +322,37 @@ export function SchemaFormRenderer({ schema, defaultValues, onSubmit }: SchemaFo
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(zodSchema),
-    defaultValues: { ...schemaDefaults, ...defaultValues },
+    defaultValues: flattenedInitial,
   });
+
+  const handleFormSubmit = (data: FormValues) => {
+    const result = { ...data };
+    Object.keys(data).forEach((key) => {
+      if (key.startsWith("_map_")) {
+        const originalName = key.slice(5);
+        const entries = data[key] as { key: string; value: string }[];
+        const map: Record<string, unknown> = {};
+        entries.forEach((e) => {
+          if (e.key) map[e.key] = e.value;
+        });
+        // Handle nested paths if necessary
+        const parts = originalName.split(".");
+        let target = result;
+        for (let i = 0; i < parts.length - 1; i++) {
+          if (!target[parts[i]]) target[parts[i]] = {};
+          target = target[parts[i]] as any;
+        }
+        target[parts[parts.length - 1]] = map;
+        delete result[key];
+      }
+    });
+    onSubmit(result);
+  };
 
   const properties = schema.properties ?? {};
 
   return (
-    <form onSubmit={handleSubmit((data) => onSubmit(data as Record<string, unknown>))} noValidate>
+    <form onSubmit={handleSubmit(handleFormSubmit)} noValidate>
       {Object.entries(properties).map(([key, propSchema]) => (
         <FieldRenderer
           key={key}
