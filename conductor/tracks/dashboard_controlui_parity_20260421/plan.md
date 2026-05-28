@@ -277,7 +277,7 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 ### Sub-Track 9.1 — config _(enhance · 8 methods incl. secrets._)\*
 
 - [x] Task 9.1.A.1: Failing tests — SchemaFormRenderer (Phase 2.4) against real `config.schema` output fixture 0a3196b
-- [ ] Task 9.1.B.1: Wire `config.schema` → SchemaFormRenderer → `config.set` submit
+- [x] Task 9.1.B.1: Wire `config.schema` → SchemaFormRenderer → `config.set` submit 4a8b4b7
 - [ ] Task 9.1.B.2: "Apply & Restart" button → `config.apply` w/ loading state
 - [ ] Task 9.1.B.3: "Secrets" section — `secrets.resolve` (masked) + `secrets.reload`
 - [ ] Task 9.1.C.1: Add Tabs: General / Security / System / Voice (shells for 8.2, 9.2, 9.3)
