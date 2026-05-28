@@ -348,10 +348,6 @@ export interface MethodMap {
   };
   "exec.approval.list": {
     params: Record<string, never>;
-    result: any[];
-  };
-  "exec.approval.list": {
-    params: Record<string, never>;
     result: Array<{
       id: string;
       request: any;
@@ -374,6 +370,38 @@ export interface MethodMap {
       canvasCapabilityExpiresAtMs: number;
       canvasHostUrl: string;
     };
+  };
+  "doctor.memory.status": {
+    params: Record<string, never>;
+    result: any;
+  };
+  "doctor.memory.dreamDiary": {
+    params: Record<string, never>;
+    result: any;
+  };
+  "config.get": {
+    params: Record<string, never>;
+    result: { baseHash: string; config: any; exists: boolean };
+  };
+  "config.set": {
+    params: { raw: string; baseHash?: string };
+    result: { ok: boolean; config?: any; path?: string };
+  };
+  "config.patch": {
+    params: { raw: string; baseHash?: string; note?: string };
+    result: { ok: boolean; config?: any; path?: string };
+  };
+  "config.apply": {
+    params: { raw: string; baseHash?: string; note?: string };
+    result: { ok: boolean; config?: any; path?: string };
+  };
+  "config.schema": {
+    params: Record<string, never>;
+    result: { schema: any; uiHints: any; version: string; generatedAt: string };
+  };
+  "config.schema.lookup": {
+    params: { path: string };
+    result: any;
   };
 }
 

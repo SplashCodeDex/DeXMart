@@ -15,6 +15,7 @@ import { ApprovalInbox } from "@/features/nodes/components/ApprovalInbox";
 import { ExecApprovalsCard } from "@/features/nodes/components/ExecApprovalsCard";
 import { api, API_ENDPOINTS } from "@/lib/api";
 import { TenantSettings } from "../types";
+import { GatewayConfigForm } from "./GatewayConfigForm";
 
 export function ConfigManager(): React.JSX.Element | null {
   const [settings, setSettings] = useState<TenantSettings | null>(null);
@@ -128,6 +129,13 @@ export function ConfigManager(): React.JSX.Element | null {
           >
             <Globe className="h-4 w-4 mr-2" />
             Organization
+          </TabsTrigger>
+          <TabsTrigger
+            value="gateway"
+            className="rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm"
+          >
+            <Cpu className="h-4 w-4 mr-2" />
+            Gateway
           </TabsTrigger>
           <TabsTrigger
             value="features"
@@ -257,6 +265,22 @@ export function ConfigManager(): React.JSX.Element | null {
                   }
                 />
               </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="gateway" className="space-y-4">
+          <Card className="border-border/50 bg-card/50">
+            <CardHeader>
+              <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
+                Engine Configuration
+              </CardTitle>
+              <CardDescription>
+                Core OpenClaw gateway settings. These changes are saved to your configuration file.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <GatewayConfigForm />
             </CardContent>
           </Card>
         </TabsContent>
