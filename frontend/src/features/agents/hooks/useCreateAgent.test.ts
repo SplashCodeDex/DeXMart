@@ -47,8 +47,10 @@ describe("useCreateAgent", () => {
         maxMessages: 1000,
         maxAgents: 1,
         maxChannelSlots: 1,
+        minCronIntervalMs: 3600000,
         allowedSkills: [],
         features: {} as any,
+        models: ["gemini-1.5-flash"],
       },
     });
   });
@@ -119,8 +121,10 @@ describe("useCreateAgent", () => {
         maxMessages: 10000,
         maxAgents: 5,
         maxChannelSlots: 3,
+        minCronIntervalMs: 900000,
         allowedSkills: [],
         features: {} as any,
+        models: ["gemini-1.5-flash", "gemini-1.5-pro"],
       },
     });
 

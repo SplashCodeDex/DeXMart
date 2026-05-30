@@ -122,4 +122,38 @@ describe("useDevices", () => {
     });
     expect(revokeResult).toEqual(mockResponse);
   });
+
+  it("should handle errors when fetching devices", async () => {
+    mockCall.mockRejectedValueOnce(new Error("Network Error"));
+
+    renderHook(() => useDevices());
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    const state = useDevicesStore.getState();
+    expect(state.error).toBe("Network Error");
+  });
+
+  it("should return false/null when rpc is missing", async () => {
+    mockUseGateway.mockReturnValue({
+      rpc: null,
+      status: "error",
+    } as any);
+
+    const { result } = renderHook(() => useDevices());
+
+    let approveResult;
+    await act(async () => {
+      approveResult = await result.current.approve("req1");
+    });
+    expect(approveResult).toBe(false);
+
+    let rotateResult;
+    await act(async () => {
+      rotateResult = await result.current.rotate("d2", "role");
+    });
+    expect(rotateResult).toBe(null);
+  });
 });

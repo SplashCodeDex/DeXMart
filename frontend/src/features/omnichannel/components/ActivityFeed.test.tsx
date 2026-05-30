@@ -8,6 +8,16 @@ vi.mock("@/stores/useOmnichannelStore", () => ({
   useOmnichannelStore: vi.fn(),
 }));
 
+// Mock next/navigation
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+  }),
+  usePathname: () => "/",
+}));
+
 describe("ActivityFeed", () => {
   const mockActivity = [
     {

@@ -23,6 +23,8 @@ class AnalyticsService {
   private cache: Map<string, { data: any; timestamp: number }>;
   private metrics: Map<string, AnalyticsMetrics>; // Per tenant
 
+  private metricsIntervalId: ReturnType<typeof setInterval> | null = null;
+
   constructor() {
     this.wss = null;
     this.clients = new Map();
@@ -69,6 +71,23 @@ class AnalyticsService {
     }
   }
 
+  async shutdown() {
+    logger.info("Shutting down Analytics service...");
+    if (this.metricsIntervalId) {
+      clearInterval(this.metricsIntervalId);
+      this.metricsIntervalId = null;
+    }
+    if (this.wss) {
+      await new Promise<void>((resolve) => {
+        this.wss!.close(() => {
+          logger.info("Analytics WebSocket server closed");
+          resolve();
+        });
+      });
+    }
+    this.isInitialized = false;
+  }
+
   async broadcastToTenant(tenantId: string, data: any) {
     const message = JSON.stringify(data);
     this.clients.get(tenantId)?.forEach((ws) => {
@@ -77,7 +96,7 @@ class AnalyticsService {
   }
 
   startMetricsCollection() {
-    setInterval(async () => {
+    this.metricsIntervalId = setInterval(async () => {
       // Collect metrics for active tenants
       for (const tenantId of this.clients.keys()) {
         try {

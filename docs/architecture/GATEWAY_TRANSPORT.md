@@ -33,7 +33,7 @@ Browser
   │  wss://dexmart.app/gateway/ws
   ▼
 Next.js server (reverse proxy at /gateway/ws)
-  │  ws://localhost:<gateway_port>/
+  │  ws://localhost:19001/
   ▼
 Single shared OpenClaw Gateway
   │  ConnectParams.auth.token = Firebase JWT (tenantId = uid)
@@ -144,3 +144,4 @@ If absent, add it in Phase 1.B.C.1 before importing schemas.
 | Role          | Name                  | Confirmed     |
 | ------------- | --------------------- | ------------- |
 | Product owner | Adema (SplashCodeDex) | ✅ Task 1.A.4 |
+ 1.A.4 |

@@ -11,7 +11,7 @@
  * Phase 1.B — Dashboard ControlUI Parity track
  */
 
-import { GATEWAY_CLIENT_IDS, GATEWAY_CLIENT_MODES } from "@openclaw/protocol/client-info.js";
+import { GATEWAY_CLIENT_IDS, GATEWAY_CLIENT_MODES } from "@openclaw/protocol/client-info";
 
 // ---------------------------------------------------------------------------
 // Types (thin wrappers only — no schema redefinition)

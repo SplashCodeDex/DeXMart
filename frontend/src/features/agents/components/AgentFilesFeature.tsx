@@ -28,7 +28,13 @@ export function AgentFilesFeature({ agentId }: AgentFilesFeatureProps) {
     refetch: refetchList,
   } = useQuery({
     queryKey: ["agents", agentId, "files"],
-    queryFn: listFiles,
+    queryFn: async () => {
+      const rawFiles = await listFiles();
+      return rawFiles.map((f) => ({
+        ...f,
+        isDirectory: false, // Currently all entries are files
+      }));
+    },
     enabled: !!agentId,
   });
 

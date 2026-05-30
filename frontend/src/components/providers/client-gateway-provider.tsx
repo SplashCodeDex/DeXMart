@@ -9,7 +9,7 @@ export function ClientGatewayProvider({
 }: {
   children: React.ReactNode;
 }): React.JSX.Element {
-  const url = process.env.NEXT_PUBLIC_GATEWAY_URL || "ws://localhost:18789";
+  const url = process.env.NEXT_PUBLIC_GATEWAY_URL || "ws://localhost:19001";
 
   const getToken = async (): Promise<string> => {
     const auth = getClientAuth();

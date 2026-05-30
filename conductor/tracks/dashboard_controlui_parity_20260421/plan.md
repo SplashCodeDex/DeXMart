@@ -283,7 +283,18 @@ _Lane — reusable building blocks. Built once, used by every later lane. Preven
 - [ ] Task 9.1.C.1: Add Tabs: General / Security / System / Voice (shells for 8.2, 9.2, 9.3)
 - [ ] Task 9.1.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
 
-### Sub-Track 9.2 — tts _(weave → Config "Voice" tab · 10 methods incl. talk._, voicewake._)_
+### Sub-Track 9.2 — tts _(weave → Config "Voice" tab · 10 methods incl. talk._, voicewake._)_ [MANUAL DIRECTION REQUIRED]
+
+_ALL implementations for Phases 9, 10, and 12 will be handled with manual direction from project owner. These phases require special attention and will be implemented according to the owner's specific plan._
+
+- [ ] Task 9.2.A.1: Failing tests — `useTtsConfig` (status, providers, enable/disable, test speak)
+- [ ] Task 9.2.B.1: `TtsConfigSection` — Switch, provider Select, voice selector
+- [ ] Task 9.2.B.2: `talk.speak` test button — plays audio via Web Audio API
+- [ ] Task 9.2.B.3: Voicewake config — `voicewake.get/set`
+- [ ] Task 9.2.B.4: `talk.mode` + `talk.config` UI
+- [ ] Task 9.2.C.1: Mount in Config "Voice" tab
+- [ ] Task 9.2.D.1..4: Scenarios, visual-diff, parity:check, FAST_COMMIT=1 git commit -m "..."
+- [ ] Task: Conductor - User Manual Verification 'Phase 9'
 
 - [ ] Task 9.2.A.1: Failing tests — `useTtsConfig` (status, providers, enable/disable, test speak)
 - [ ] Task 9.2.B.1: `TtsConfigSection` — Switch, provider Select, voice selector

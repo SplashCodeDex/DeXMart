@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { z } from "zod";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -42,6 +43,10 @@ import { getIcon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import { useOmnichannelStore } from "@/stores/useOmnichannelStore";
 import { useSkillsStatus } from "../hooks/useSkillsStatus";
+import { PluginApprovalTab } from "./PluginApprovalTab";
+import { SkillInstallDrawer } from "./SkillInstallDrawer";
+
+const apiKeySchema = z.string().min(1, "API Key is required").max(256, "API Key too long");
 
 interface SkillItem {
   id?: string;
@@ -66,6 +71,7 @@ export function SkillsDashboard(): React.JSX.Element {
   const {
     skillReport,
     toolsCatalog,
+    pluginApprovals,
     isLoading: isHookLoading,
     refresh: refreshRpc,
     toggleSkill: rpcToggle,
@@ -82,6 +88,9 @@ export function SkillsDashboard(): React.JSX.Element {
   const [keyDialogOpen, setKeyDialogOpen] = useState(false);
   const [selectedSkillKey, setSelectedSkillKey] = useState<string | null>(null);
   const [apiKey, setApiKey] = useState("");
+
+  const [installDrawerOpen, setInstallDrawerOpen] = useState(false);
+  const [selectedInstallSkill, setSelectedInstallSkill] = useState<any>(null);
 
   const [activeTab, setActiveTab] = useState("all");
 
@@ -154,15 +163,20 @@ export function SkillsDashboard(): React.JSX.Element {
     }
   };
 
-  const handleInstall = async (key: string, installId: string): Promise<void> => {
-    const success = await rpcInstall(key, installId);
-    if (success) {
-      toast.success("Skill installation initiated");
-    }
+  const handleInstallClick = (skillStatus: any) => {
+    setSelectedInstallSkill(skillStatus);
+    setInstallDrawerOpen(true);
   };
 
   const handleSaveKey = async (): Promise<void> => {
     if (!selectedSkillKey) return;
+
+    const validation = apiKeySchema.safeParse(apiKey);
+    if (!validation.success) {
+      toast.error(validation.error.errors[0]?.message || "Invalid API key");
+      return;
+    }
+
     const success = await rpcSaveKey(selectedSkillKey, apiKey);
     if (success) {
       toast.success("API key saved successfully");
@@ -212,6 +226,15 @@ export function SkillsDashboard(): React.JSX.Element {
               <ShoppingCart className="mr-2 h-3.5 w-3.5" />
               Marketplace
             </TabsTrigger>
+            <TabsTrigger value="approvals" className="flex items-center relative">
+              <ShieldAlert className="mr-2 h-3.5 w-3.5" />
+              Approvals
+              {pluginApprovals.length > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] text-destructive-foreground animate-pulse">
+                  {pluginApprovals.length}
+                </span>
+              )}
+            </TabsTrigger>
           </TabsList>
 
           <div className="relative w-full md:max-w-xs">
@@ -244,6 +267,11 @@ export function SkillsDashboard(): React.JSX.Element {
                 const isInstalled = statusInfo ? statusInfo.missing.bins.length === 0 : true;
                 const isDisabled = !skill.enabled;
                 const needsKey = Boolean(statusInfo?.primaryEnv || skill.primaryEnv);
+                const hasKey = Boolean(
+                  statusInfo?.configChecks?.some(
+                    (c: any) => c.key === statusInfo.primaryEnv && c.status === "ok",
+                  ),
+                );
                 const category =
                   skill.category || (skill.source === "openclaw" ? "Intelligence" : "System");
 
@@ -262,7 +290,17 @@ export function SkillsDashboard(): React.JSX.Element {
                             {getIcon(skillKey)}
                           </div>
                           <div>
-                            <CardTitle className="text-lg">{skill.name}</CardTitle>
+                            <div className="flex items-center space-x-2">
+                              <CardTitle className="text-lg">{skill.name}</CardTitle>
+                              {hasKey && (
+                                <Badge
+                                  variant="secondary"
+                                  className="h-4 px-1 text-[8px] bg-green-500/10 text-green-500 border-green-500/20"
+                                >
+                                  Configured
+                                </Badge>
+                              )}
+                            </div>
                             <CardDescription className="text-xs uppercase tracking-wider font-semibold opacity-70">
                               {category}
                             </CardDescription>
@@ -312,20 +350,14 @@ export function SkillsDashboard(): React.JSX.Element {
                                 {isDisabled ? "Enable Skill" : "Disable Skill"}
                               </Button>
                             ) : (
-                              statusInfo?.install &&
-                              statusInfo.install.length > 0 &&
-                              statusInfo.install[0] && (
-                                <Button
-                                  variant="default"
-                                  className="flex-1"
-                                  onClick={() =>
-                                    skillKey && handleInstall(skillKey, statusInfo.install[0]!.id)
-                                  }
-                                >
-                                  <Download className="mr-2 h-4 w-4" />
-                                  Install {statusInfo.install[0]!.label}
-                                </Button>
-                              )
+                              <Button
+                                variant="default"
+                                className="flex-1"
+                                onClick={() => handleInstallClick(statusInfo)}
+                              >
+                                <Download className="mr-2 h-4 w-4" />
+                                Install Details
+                              </Button>
                             )}
                             {needsKey ? (
                               <Button
@@ -364,6 +396,20 @@ export function SkillsDashboard(): React.JSX.Element {
             )}
           </div>
         </TabsContent>
+        <TabsContent value="commerce" className="mt-0">
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {filteredSkills.length === 0 && !isLoading ? (
+              <div className="col-span-full py-12 text-center border-2 border-dashed rounded-xl">
+                <Zap className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
+                <p className="text-muted-foreground">No marketplace skills found.</p>
+              </div>
+            ) : null}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="approvals" className="mt-0">
+          <PluginApprovalTab />
+        </TabsContent>
       </Tabs>
 
       <Dialog open={keyDialogOpen} onOpenChange={setKeyDialogOpen}>
@@ -395,6 +441,12 @@ export function SkillsDashboard(): React.JSX.Element {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <SkillInstallDrawer
+        skill={selectedInstallSkill}
+        open={installDrawerOpen}
+        onOpenChange={setInstallDrawerOpen}
+      />
     </div>
   );
 }

@@ -15,6 +15,9 @@ export const GENERATED_BASE_CONFIG_SCHEMA: BaseConfigSchemaResponse = {
             title: "Config Last Touched Version",
             description: "Auto-set when OpenClaw writes the config.",
           },
+          integrity: {
+            type: "string",
+          },
           lastTouchedAt: {
             anyOf: [
               {

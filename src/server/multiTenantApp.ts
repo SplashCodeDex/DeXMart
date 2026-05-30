@@ -270,26 +270,6 @@ export class MultiTenantApp {
     // Client Logs
     this.app.use("/api/logs", logsRoutes);
 
-    // MASTERMIND: OpenClaw UI Proxy (Phase 3)
-    this.app.use(
-      "/api/openclaw-ui",
-      authenticateToken,
-      createProxyMiddleware({
-        target: "http://localhost:18789", // OpenClaw Dashboard Port
-        changeOrigin: true,
-        ws: true, // Proxy WebSockets
-        pathRewrite: {
-          "^/api/openclaw-ui": "", // Remove base path
-        },
-        on: {
-          proxyReq: (proxyReq, req, res) => {
-            // Optional: Inject auth headers if OpenClaw requires them
-            // proxyReq.setHeader('X-OpenClaw-Auth', 'internal-secret');
-          },
-        },
-      }),
-    );
-
     // 404 handler
     this.app.use(notFoundHandler);
 
@@ -334,9 +314,6 @@ export class MultiTenantApp {
       this.httpServer.listen(this.port, () => {
         logger.info(`>>> [MASTERMIND] Multi-tenant DeXMart server running on port ${this.port}`);
       });
-
-      process.on("SIGTERM", () => this.shutdown());
-      process.on("SIGINT", () => this.shutdown());
     } catch (error: unknown) {
       logger.error("Failed to start server", {
         error: error instanceof Error ? error.message : String(error),
@@ -348,11 +325,18 @@ export class MultiTenantApp {
   async shutdown(): Promise<void> {
     logger.info("Shutting down multi-tenant server...");
     try {
-      // Stop channel healing watchdog
+      // 1. Stop Analytics Service
+      try {
+        await AnalyticsService.shutdown();
+      } catch (err) {
+        logger.error("AnalyticsService shutdown failed:", err);
+      }
+
+      // 2. Stop channel healing watchdog
       const { channelService } = await import("../services/ChannelService.js");
       channelService.stopWatchdog();
 
-      // Drain pending usage increments before exit (Phase 2 fusion hook)
+      // 3. Drain pending usage increments before exit (Phase 2 fusion hook)
       try {
         const { flushAllUsage, stopUsageFlushScheduler } =
           await import("../billing/usage-tracker.js");
@@ -360,21 +344,28 @@ export class MultiTenantApp {
         stopUsageFlushScheduler();
         await flushAllUsage(db as any);
         logger.info("Usage tracker flushed.");
-      } catch {
-        // Non-fatal: usage data will recover from in-flight TTL
+      } catch (err) {
+        logger.error("Usage tracker flush failed:", err);
       }
 
+      // 4. Close HTTP Server
       if (this.httpServer) {
-        this.httpServer.close(() => {
-          logger.info("Server closed successfully");
-          process.exit(0);
+        await new Promise<void>((resolve, reject) => {
+          this.httpServer.close((err) => {
+            if (err) {
+              logger.error("Error closing HTTP server:", err);
+              reject(err);
+            } else {
+              logger.info("HTTP Server closed successfully");
+              resolve();
+            }
+          });
         });
       }
     } catch (error: unknown) {
-      logger.error("Error during shutdown", {
+      logger.error("Error during MultiTenantApp shutdown:", {
         error: error instanceof Error ? error.message : String(error),
       });
-      process.exit(1);
     }
   }
 }

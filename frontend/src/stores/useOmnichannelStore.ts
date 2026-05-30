@@ -51,6 +51,8 @@ interface OmnichannelState {
   nodes: NodeRegistryEntry[];
   devices: DevicePairingList | null;
   logs: LogEntry[];
+  commands: any[]; // Phase 7: Command Palette
+  pluginApprovals: any[]; // Phase 7: Plugin Approval Flow
   gatewayHealth: unknown;
   nestedTrace: NestedAgentTrace[]; // Phase 2: Visual Trace
   platforms: PlatformMetadata[];
@@ -133,6 +135,9 @@ interface OmnichannelState {
 
   // Gateway Actions
   fetchGatewayHealth: () => Promise<void>;
+  fetchPluginApprovals: () => Promise<void>;
+  fetchCommands: (agentId?: string) => Promise<void>;
+  resolvePluginApproval: (id: string, decision: string) => Promise<boolean>;
   getSkillCount: () => number;
   addLogEntry: (entry: LogEntry) => void;
 }
@@ -163,6 +168,8 @@ export const useOmnichannelStore = create<OmnichannelState>((set, get) => ({
   nodes: [],
   devices: null,
   logs: [],
+  pluginApprovals: [],
+  commands: [],
   gatewayHealth: null,
   nestedTrace: [],
   platforms: [],
@@ -794,6 +801,46 @@ export const useOmnichannelStore = create<OmnichannelState>((set, get) => ({
       circuitBreaker.recordFailure("omnichannel");
     }
   },
+
+  fetchPluginApprovals: async () => {
+    try {
+      const response = await api.get<any[]>(API_ENDPOINTS.OMNICHANNEL.SKILLS.APPROVALS.LIST);
+      if (response.success) {
+        set({ pluginApprovals: response.data });
+      }
+    } catch (err) {
+      console.error("Failed to fetch plugin approvals:", err);
+    }
+  },
+
+  fetchCommands: async (agentId?: string) => {
+    try {
+      const response = await api.get<{ commands: any[] }>(
+        API_ENDPOINTS.OMNICHANNEL.COMMANDS.LIST(agentId),
+      );
+      if (response.success) {
+        set({ commands: response.data?.commands || [] });
+      }
+    } catch (err) {
+      console.error("Failed to fetch commands:", err);
+    }
+  },
+
+  resolvePluginApproval: async (id: string, decision: string) => {
+    try {
+      const response = await api.post(API_ENDPOINTS.OMNICHANNEL.SKILLS.APPROVALS.RESOLVE(id), {
+        decision,
+      });
+      if (response.success) {
+        await get().fetchPluginApprovals();
+        return true;
+      }
+    } catch (err) {
+      console.error(`Failed to resolve plugin approval ${id}:`, err);
+    }
+    return false;
+  },
+
   getSkillCount: () => {
     const { skillReport, skills } = get();
     // Fallback to 51 if not loaded, but try to use real data

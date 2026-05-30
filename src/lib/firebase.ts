@@ -1,4 +1,5 @@
 import { readFileSync } from "fs";
+import path from "path";
 import admin from "firebase-admin";
 import { ConfigService } from "../services/ConfigService.js";
 import logger from "../utils/logger.js";
@@ -19,13 +20,14 @@ function getDbInstance(): admin.firestore.Firestore {
       const clientEmail = config.get("FIREBASE_CLIENT_EMAIL");
       const privateKey = config.get("FIREBASE_PRIVATE_KEY");
 
+      logger.info(`Firebase Config: path=${serviceAccountPath}, projectId=${projectId}, hasEmail=${!!clientEmail}, hasKey=${!!privateKey}`);
+
       if (serviceAccountPath) {
-        logger.info(`Loading service account from: ${serviceAccountPath}`);
-        const serviceAccount = JSON.parse(readFileSync(serviceAccountPath, "utf8"));
-        options.credential = admin.credential.cert(serviceAccount);
-        options.projectId = serviceAccount.project_id || projectId;
-        logger.info(`Using service account for project: ${options.projectId}`);
+        logger.info(`Loading service account via direct path: ${serviceAccountPath}`);
+        options.credential = admin.credential.cert(path.resolve(serviceAccountPath));
+        options.projectId = projectId; // SDK will favor file content, but this provides a fallback
       } else if (projectId && clientEmail && privateKey) {
+
         logger.info(`Using explicit credentials for project: ${projectId}`);
         options.credential = admin.credential.cert({
           projectId,

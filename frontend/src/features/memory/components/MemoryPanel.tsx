@@ -1,225 +1,428 @@
 "use client";
 
-import { Brain, Trash2, Plus } from "lucide-react";
-import React, { useState, useCallback } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
+  Brain,
+  Moon,
+  Sun,
+  Clock,
+  Database,
+  ChevronDown,
+  ChevronUp,
+  RefreshCw,
+  AlertTriangle,
+  FileText,
+  Settings,
+} from "lucide-react";
+import React, { useState, useMemo } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { useMemoryStatus } from "@/features/agents/hooks/useMemoryStatus";
 import { cn } from "@/lib/utils";
-import { useMemoryPanel } from "../hooks/useMemoryPanel";
-import { useMemoryStore } from "../stores/useMemoryStore";
-import { MemorySearchBar } from "./MemorySearchBar";
-import { MemoryStatusBadge } from "./MemoryStatusBadge";
 
 interface MemoryPanelProps {
   className?: string;
 }
 
-/**
- * MemoryPanel
- *
- * The primary UI surface for the agent's on-device hybrid memory.
- * Surfaces:
- *   - MemoryStatusBadge: model loading state, ready/error indicator
- *   - MemorySearchBar: semantic search across the agent's active context
- *   - Recent memories: the last N memory items stored
- *   - Add memory: manual input for the user to inject context
- *   - Clear all: resets local DB (Firestore history is preserved)
- *
- * Layout: Card with header (status + controls) and scrollable content area.
- * Follows Hybrid FSD pattern: thin component, all logic in useMemoryPanel hook.
- */
 export function MemoryPanel({ className }: MemoryPanelProps): React.JSX.Element {
-  const { ready, loading, progress, error, search, remember, clear } = useMemoryPanel();
+  const { status, diary, isDreaming, isLoading, error, refresh, toggleDreaming, updateConfig } =
+    useMemoryStatus();
+  const [expandedEntries, setExpandedEntries] = useState<Record<number, boolean>>({});
+  const [showSettings, setShowSettings] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 5;
 
-  const { recentMemories, searchResults, searchQuery, isSearching, clearSearch } = useMemoryStore();
+  const diaryEntries = useMemo(() => {
+    if (!diary?.content) return [];
+    // Basic parser: split by markdown headers
+    return diary.content
+      .split(/(?=### )/)
+      .filter(Boolean)
+      .map((e: string) => e.trim())
+      .reverse(); // Newest first
+  }, [diary]);
 
-  const [isAddOpen, setIsAddOpen] = useState(false);
-  const [addText, setAddText] = useState("");
-  const [isAdding, setIsAdding] = useState(false);
-  const [isClearing, setIsClearing] = useState(false);
+  const totalPages = Math.ceil(diaryEntries.length / pageSize);
+  const paginatedEntries = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return diaryEntries.slice(start, start + pageSize);
+  }, [diaryEntries, currentPage, pageSize]);
 
-  const handleAddMemory = useCallback(async (): Promise<void> => {
-    if (!addText.trim()) return;
-    setIsAdding(true);
-    try {
-      await remember(addText.trim());
-      setAddText("");
-      setIsAddOpen(false);
-    } finally {
-      setIsAdding(false);
-    }
-  }, [addText, remember]);
+  const toggleEntry = (index: number) => {
+    const actualIndex = (currentPage - 1) * pageSize + index;
+    setExpandedEntries((prev) => ({ ...prev, [actualIndex]: !prev[actualIndex] }));
+  };
 
-  const handleClear = useCallback(async (): Promise<void> => {
-    setIsClearing(true);
-    try {
-      await clear();
-    } finally {
-      setIsClearing(false);
-    }
-  }, [clear]);
+  const goToNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
 
-  const showRecent = !searchQuery && recentMemories.length > 0;
-  const showEmpty = !searchQuery && recentMemories.length === 0 && ready && !loading;
+  const goToPrevPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
 
-  return (
-    <>
-      <Card className={cn("flex flex-col", className)}>
-        {/* Header */}
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <Brain className="h-4 w-4 text-muted-foreground" aria-hidden />
-              <span className="text-sm font-semibold">Agent Memory</span>
-            </div>
-            <MemoryStatusBadge ready={ready} loading={loading} progress={progress} error={error} />
-          </div>
-
-          {/* Search */}
-          <div className="mt-3">
-            <MemorySearchBar
-              onSearch={search}
-              onClear={clearSearch}
-              results={searchResults}
-              isSearching={isSearching}
-              query={searchQuery}
-              disabled={!ready}
-            />
+  if (isLoading && !status) {
+    return (
+      <Card className={cn("border-border/50 bg-card/50", className)}>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground flex items-center">
+              <Brain className="mr-2 h-4 w-4" />
+              Cognitive Memory
+            </CardTitle>
+            <RefreshCw className="h-4 w-4 animate-spin text-muted-foreground" />
           </div>
         </CardHeader>
-
-        <Separator />
-
-        {/* Content */}
-        <CardContent className="flex-1 p-0">
-          <ScrollArea className="h-[320px]">
-            <div className="flex flex-col gap-0 p-4">
-              {/* Loading skeletons */}
-              {loading && !ready ? (
-                <div className="flex flex-col gap-2" aria-busy="true" aria-label="Loading memories">
-                  {[1, 2, 3].map((i) => (
-                    <Skeleton key={i} className="h-12 w-full rounded-md" />
-                  ))}
-                </div>
-              ) : null}
-
-              {/* Recent memories (shown when not searching) */}
-              {showRecent ? (
-                <ul className="flex flex-col gap-2" aria-label="Recent agent memories">
-                  {recentMemories.map((item) => (
-                    <li
-                      key={item.id}
-                      className="rounded-md border border-border bg-muted/30 px-3 py-2 text-sm"
-                    >
-                      <p className="text-foreground leading-snug">{item.text}</p>
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        {new Date(item.createdAt).toLocaleDateString(undefined, {
-                          month: "short",
-                          day: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
-
-              {/* Empty state */}
-              {showEmpty ? (
-                <div className="flex flex-col items-center justify-center gap-3 py-12 text-center">
-                  <Brain className="h-8 w-8 text-muted-foreground/40" aria-hidden />
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">No memories yet</p>
-                    <p className="text-xs text-muted-foreground/70 mt-1">
-                      Your agent will build context as it processes messages.
-                    </p>
-                  </div>
-                </div>
-              ) : null}
-
-              {/* Error state */}
-              {error && !loading ? (
-                <div className="flex flex-col items-center justify-center gap-2 py-8 text-center">
-                  <p className="text-sm text-red-600">{error}</p>
-                  <p className="text-xs text-muted-foreground">
-                    Memory is unavailable. The agent will still work without persistent memory.
-                  </p>
-                </div>
-              ) : null}
-            </div>
-          </ScrollArea>
+        <CardContent className="space-y-4">
+          <div className="h-20 w-full animate-pulse rounded-lg bg-muted/50" />
+          <div className="h-40 w-full animate-pulse rounded-lg bg-muted/50" />
         </CardContent>
+      </Card>
+    );
+  }
 
-        <Separator />
+  const dreaming = status?.dreaming;
 
-        {/* Footer controls */}
-        <div className="flex items-center justify-between px-4 py-3">
+  return (
+    <div className={cn("space-y-6", className)}>
+      {/* Dreaming Control Card */}
+      <Card className="border-border/50 bg-card/50 overflow-hidden relative">
+        <div className="absolute top-0 right-0 p-4 flex items-center space-x-1">
           <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setIsAddOpen(true)}
-            disabled={!ready}
-            className="gap-1.5"
+            variant="ghost"
+            size="icon"
+            onClick={() => setShowSettings(!showSettings)}
+            className={cn(
+              "h-8 w-8 transition-colors",
+              showSettings && "text-primary bg-primary/10",
+            )}
           >
-            <Plus className="h-3.5 w-3.5" aria-hidden />
-            Add memory
+            <Settings className="h-4 w-4" />
           </Button>
           <Button
             variant="ghost"
-            size="sm"
-            onClick={handleClear}
-            disabled={!ready || isClearing || recentMemories.length === 0}
-            className="gap-1.5 text-muted-foreground hover:text-red-600 hover:bg-red-50"
+            size="icon"
+            onClick={refresh}
+            disabled={isLoading}
+            className="h-8 w-8"
           >
-            <Trash2 className="h-3.5 w-3.5" aria-hidden />
-            {isClearing ? "Clearing…" : "Clear all"}
+            <RefreshCw className={cn("h-4 w-4", isLoading && "animate-spin")} />
           </Button>
         </div>
+        <CardHeader>
+          <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground flex items-center">
+            {isDreaming ? (
+              <Moon className="mr-2 h-4 w-4 text-primary" />
+            ) : (
+              <Sun className="mr-2 h-4 w-4 text-amber-500" />
+            )}
+            Dreaming State
+          </CardTitle>
+          <CardDescription>
+            Autonomous long-term memory consolidation and reflection.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {showSettings ? (
+            <div className="p-4 rounded-2xl bg-muted/20 border border-border/40 space-y-4 animate-in fade-in slide-in-from-top-2 duration-200">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <div className="text-sm font-bold">Verbose Logging</div>
+                  <p className="text-[10px] text-muted-foreground">
+                    Detailed debug logs during dreaming phases.
+                  </p>
+                </div>
+                <Switch
+                  checked={dreaming?.verboseLogging}
+                  onCheckedChange={(checked) => updateConfig({ verboseLogging: checked })}
+                  disabled={isLoading}
+                />
+              </div>
+              <Separator className="bg-border/10" />
+              <div className="flex items-center justify-between opacity-50 cursor-not-allowed">
+                <div className="space-y-0.5">
+                  <div className="text-sm font-bold">Dreaming Frequency</div>
+                  <p className="text-[10px] text-muted-foreground">
+                    How often the agent should dream. (Coming Soon)
+                  </p>
+                </div>
+                <Badge variant="outline" className="text-[10px]">
+                  {dreaming?.frequency || "daily"}
+                </Badge>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full h-8 text-[10px] uppercase font-bold mt-2"
+                onClick={() => setShowSettings(false)}
+              >
+                Back to Status
+              </Button>
+            </div>
+          ) : (
+            <>
+              <div className="flex items-center justify-between p-4 rounded-2xl bg-muted/20 border border-border/40">
+                <div className="space-y-1">
+                  <div className="text-sm font-bold">Dreaming Engine</div>
+                  <p className="text-xs text-muted-foreground">
+                    Consolidates short-term signals into long-term knowledge while the agent is
+                    idle.
+                  </p>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Badge
+                    variant={isDreaming ? "default" : "outline"}
+                    className={cn(
+                      "text-[10px] uppercase font-bold px-2 py-0.5",
+                      isDreaming && "bg-primary text-primary-foreground",
+                    )}
+                  >
+                    {isDreaming ? "Active" : "Paused"}
+                  </Badge>
+                  <Switch
+                    checked={isDreaming}
+                    onCheckedChange={toggleDreaming}
+                    disabled={isLoading}
+                  />
+                </div>
+              </div>
+
+              {error && (
+                <div className="mt-4 flex items-center gap-2 p-3 rounded-xl bg-destructive/10 text-destructive text-xs border border-destructive/20">
+                  <AlertTriangle className="h-4 w-4" />
+                  {error}
+                </div>
+              )}
+
+              {dreaming && (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                      Short-Term
+                    </span>
+                    <div className="text-xl font-black tabular-nums">
+                      {dreaming.shortTermCount || 0}
+                    </div>
+                    <div className="text-[9px] text-muted-foreground italic">Pending signals</div>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                      Consolidated
+                    </span>
+                    <div className="text-xl font-black tabular-nums">
+                      {dreaming.totalSignalCount || 0}
+                    </div>
+                    <div className="text-[9px] text-muted-foreground italic">Long-term vectors</div>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                      Last Dream
+                    </span>
+                    <div className="text-sm font-bold flex items-center">
+                      <Clock className="mr-1 h-3 w-3" />
+                      {dreaming.lastDreamAtMs
+                        ? new Date(dreaming.lastDreamAtMs).toLocaleTimeString()
+                        : "Never"}
+                    </div>
+                    <div className="text-[9px] text-muted-foreground italic">
+                      {dreaming.lastDreamAtMs
+                        ? new Date(dreaming.lastDreamAtMs).toLocaleDateString()
+                        : "-"}
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                      Provider
+                    </span>
+                    <div className="text-sm font-bold flex items-center">
+                      <Database className="mr-1 h-3 w-3" />
+                      {status?.provider || "Local Vector"}
+                    </div>
+                    <div className="text-[9px] text-muted-foreground italic">
+                      Memory tier: Premium
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+
+          {dreaming?.phases && (
+            <div className="mt-6 space-y-4">
+              <Separator className="bg-border/10" />
+              <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                Dreaming Phases
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Light Sleep */}
+                <div className="p-3 rounded-xl bg-muted/10 border border-border/30 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold flex items-center">
+                      <Sun className="mr-1 h-3 w-3 text-amber-500" />
+                      Light
+                    </span>
+                    <Badge variant="outline" className="text-[9px] px-1 py-0 border-border/50">
+                      {dreaming.phases.light.enabled ? "Active" : "Off"}
+                    </Badge>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <div className="text-[10px] text-muted-foreground flex justify-between">
+                      <span>Lookback</span>
+                      <span className="font-bold">{dreaming.phases.light.lookbackDays}d</span>
+                    </div>
+                    <div className="text-[10px] text-muted-foreground flex justify-between">
+                      <span>Limit</span>
+                      <span className="font-bold">{dreaming.phases.light.limit}</span>
+                    </div>
+                  </div>
+                </div>
+                {/* REM Sleep */}
+                <div className="p-3 rounded-xl bg-muted/10 border border-border/30 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold flex items-center">
+                      <Moon className="mr-1 h-3 w-3 text-primary" />
+                      REM
+                    </span>
+                    <Badge variant="outline" className="text-[9px] px-1 py-0 border-border/50">
+                      {dreaming.phases.rem.enabled ? "Active" : "Off"}
+                    </Badge>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <div className="text-[10px] text-muted-foreground flex justify-between">
+                      <span>Pattern Strength</span>
+                      <span className="font-bold">{dreaming.phases.rem.minPatternStrength}</span>
+                    </div>
+                    <div className="text-[10px] text-muted-foreground flex justify-between">
+                      <span>Lookback</span>
+                      <span className="font-bold">{dreaming.phases.rem.lookbackDays}d</span>
+                    </div>
+                  </div>
+                </div>
+                {/* Deep Sleep */}
+                <div className="p-3 rounded-xl bg-muted/10 border border-border/30 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold flex items-center">
+                      <Brain className="mr-1 h-3 w-3 text-purple-500" />
+                      Deep
+                    </span>
+                    <Badge variant="outline" className="text-[9px] px-1 py-0 border-border/50">
+                      {dreaming.phases.deep.enabled ? "Active" : "Off"}
+                    </Badge>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <div className="text-[10px] text-muted-foreground flex justify-between">
+                      <span>Min Score</span>
+                      <span className="font-bold">{dreaming.phases.deep.minScore}</span>
+                    </div>
+                    <div className="text-[10px] text-muted-foreground flex justify-between">
+                      <span>Recall Count</span>
+                      <span className="font-bold">{dreaming.phases.deep.minRecallCount}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </CardContent>
       </Card>
 
-      {/* Add memory dialog */}
-      <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Add to memory</DialogTitle>
-            <DialogDescription>
-              Add context your agent should remember. This is stored privately on your device and
-              backed up as text in the cloud.
-            </DialogDescription>
-          </DialogHeader>
-          <Textarea
-            value={addText}
-            onChange={(e) => setAddText(e.target.value)}
-            placeholder="e.g. The user prefers concise responses and uses metric units."
-            rows={4}
-            className="resize-none"
-            aria-label="Memory content"
-            maxLength={500}
-          />
-          <p className="text-xs text-muted-foreground text-right">{addText.length}/500</p>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsAddOpen(false)} disabled={isAdding}>
-              Cancel
-            </Button>
-            <Button onClick={handleAddMemory} disabled={!addText.trim() || isAdding}>
-              {isAdding ? "Adding…" : "Add memory"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
+      {/* Dream Diary Section */}
+      <Card className="border-border/50 bg-card/50">
+        <CardHeader className="pb-3 border-b border-border/10">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground flex items-center">
+              <FileText className="mr-2 h-4 w-4" />
+              Dream Diary
+            </CardTitle>
+            {diary?.updatedAtMs && (
+              <span className="text-[10px] text-muted-foreground font-mono italic">
+                Updated {new Date(diary.updatedAtMs).toLocaleString()}
+              </span>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent className="p-0">
+          <ScrollArea className="h-[400px]">
+            {paginatedEntries.length > 0 ? (
+              <div className="divide-y divide-border/30">
+                {paginatedEntries.map((entry: string, idx: number) => {
+                  const isExpanded = expandedEntries[(currentPage - 1) * pageSize + idx];
+                  const title = entry.split("\n")[0]?.replace("### ", "") || "Reflection Entry";
+                  const body = entry.split("\n").slice(1).join("\n").trim();
+
+                  return (
+                    <div key={idx} className="p-4 hover:bg-muted/10 transition-colors">
+                      <button
+                        onClick={() => toggleEntry(idx)}
+                        className="flex items-start justify-between w-full text-left group"
+                      >
+                        <div className="space-y-1">
+                          <div className="text-sm font-bold group-hover:text-primary transition-colors">
+                            {title}
+                          </div>
+                          {!isExpanded && (
+                            <p className="text-xs text-muted-foreground line-clamp-1 italic">
+                              {body}
+                            </p>
+                          )}
+                        </div>
+                        {isExpanded ? (
+                          <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                        ) : (
+                          <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                        )}
+                      </button>
+                      {isExpanded && (
+                        <div className="mt-3 text-xs text-foreground leading-relaxed animate-in fade-in slide-in-from-top-1 duration-200 whitespace-pre-wrap font-serif bg-muted/20 p-4 rounded-xl border border-border/50">
+                          {body}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-20 text-center opacity-40">
+                <Moon className="h-10 w-10 mb-4" />
+                <p className="text-sm font-medium">No diary entries yet.</p>
+                <p className="text-xs mt-1">
+                  The agent will record its reflections after each dream cycle.
+                </p>
+              </div>
+            )}
+          </ScrollArea>
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between p-4 border-t border-border/10 bg-muted/5">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                Page {currentPage} of {totalPages}
+              </span>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-[10px] uppercase font-bold"
+                  onClick={goToPrevPage}
+                  disabled={currentPage === 1}
+                >
+                  Prev
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-[10px] uppercase font-bold"
+                  onClick={goToNextPage}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }

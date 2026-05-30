@@ -17,8 +17,10 @@ describe("ChannelSlotGuard", () => {
         maxMessages: 1000,
         maxAgents: 1,
         maxChannelSlots: 1,
+        minCronIntervalMs: 3600000,
         allowedSkills: [],
         features: {} as any,
+        models: ["gemini-1.5-flash"],
       },
     });
     expect(canAddChannelSlot("starter", 0)).toBe(true);
@@ -32,8 +34,10 @@ describe("ChannelSlotGuard", () => {
         maxMessages: 10000,
         maxAgents: 5,
         maxChannelSlots: 3,
+        minCronIntervalMs: 900000,
         allowedSkills: [],
         features: {} as any,
+        models: ["gemini-1.5-flash", "gemini-1.5-pro"],
       },
     });
     expect(canAddChannelSlot("pro", 2)).toBe(true);
@@ -47,8 +51,10 @@ describe("ChannelSlotGuard", () => {
         maxMessages: 100000,
         maxAgents: 100,
         maxChannelSlots: 100,
+        minCronIntervalMs: 60000,
         allowedSkills: [],
         features: {} as any,
+        models: ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.0-flash-thinking-exp"],
       },
     });
     expect(canAddChannelSlot("enterprise", 10)).toBe(true);

@@ -10,6 +10,7 @@ import { ScrollArea } from "../ui/scroll-area";
 import { ScrollToTop } from "../ui/ScrollToTop";
 import { Header } from "./Header";
 import { Sidebar } from "./Sidebar";
+import { CommandPalette } from "@/features/dashboard/components/CommandPalette";
 
 export function DashboardShell({ children }: { children: React.ReactNode }): React.JSX.Element {
   const { isSidebarCollapsed } = useUIStore();
@@ -24,6 +25,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }): Rea
 
   return (
     <div className="flex h-screen bg-mesh-premium text-foreground overflow-hidden relative">
+      <CommandPalette />
       {/* Premium Mesh Background handles the ambient tints (top-left, top-mid, top-right, bottom-right) */}
 
       <Sidebar />

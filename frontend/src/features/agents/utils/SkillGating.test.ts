@@ -17,8 +17,10 @@ describe("SkillGating Logic", () => {
         maxMessages: 1000,
         maxAgents: 1,
         maxChannelSlots: 1,
+        minCronIntervalMs: 3600000,
         allowedSkills: ["basic_reply"],
         features: {} as any,
+        models: ["gemini-1.5-flash"],
       },
     });
     expect(isSkillAllowed("starter", "basic_reply")).toBe(true);
@@ -29,8 +31,10 @@ describe("SkillGating Logic", () => {
         maxMessages: 10000,
         maxAgents: 5,
         maxChannelSlots: 3,
+        minCronIntervalMs: 900000,
         allowedSkills: ["basic_reply"],
         features: {} as any,
+        models: ["gemini-1.5-flash", "gemini-1.5-pro"],
       },
     });
     expect(isSkillAllowed("pro", "basic_reply")).toBe(true);
@@ -43,8 +47,10 @@ describe("SkillGating Logic", () => {
         maxMessages: 1000,
         maxAgents: 1,
         maxChannelSlots: 1,
+        minCronIntervalMs: 3600000,
         allowedSkills: ["basic_reply"],
         features: {} as any,
+        models: ["gemini-1.5-flash"],
       },
     });
     expect(isSkillAllowed("starter", "web_search")).toBe(false);
@@ -55,8 +61,10 @@ describe("SkillGating Logic", () => {
         maxMessages: 10000,
         maxAgents: 5,
         maxChannelSlots: 3,
+        minCronIntervalMs: 900000,
         allowedSkills: ["basic_reply", "web_search"],
         features: {} as any,
+        models: ["gemini-1.5-flash", "gemini-1.5-pro"],
       },
     });
     expect(isSkillAllowed("pro", "web_search")).toBe(true);
@@ -67,8 +75,10 @@ describe("SkillGating Logic", () => {
         maxMessages: 100000,
         maxAgents: 100,
         maxChannelSlots: 100,
+        minCronIntervalMs: 60000,
         allowedSkills: ["basic_reply", "web_search"],
         features: {} as any,
+        models: ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.0-flash-thinking-exp"],
       },
     });
     expect(isSkillAllowed("enterprise", "web_search")).toBe(true);
@@ -81,8 +91,10 @@ describe("SkillGating Logic", () => {
         maxMessages: 1000,
         maxAgents: 1,
         maxChannelSlots: 1,
+        minCronIntervalMs: 3600000,
         allowedSkills: ["basic_reply"],
         features: {} as any,
+        models: ["gemini-1.5-flash"],
       },
     });
     expect(isSkillAllowed("starter", "file_analysis")).toBe(false);
@@ -93,8 +105,10 @@ describe("SkillGating Logic", () => {
         maxMessages: 10000,
         maxAgents: 5,
         maxChannelSlots: 3,
+        minCronIntervalMs: 900000,
         allowedSkills: ["basic_reply", "file_analysis"],
         features: {} as any,
+        models: ["gemini-1.5-flash", "gemini-1.5-pro"],
       },
     });
     expect(isSkillAllowed("pro", "file_analysis")).toBe(true);
@@ -107,8 +121,10 @@ describe("SkillGating Logic", () => {
         maxMessages: 1000,
         maxAgents: 1,
         maxChannelSlots: 1,
+        minCronIntervalMs: 3600000,
         allowedSkills: ["basic_reply"],
         features: {} as any,
+        models: ["gemini-1.5-flash"],
       },
     });
     expect(isSkillAllowed("starter", "custom_scripting")).toBe(false);
@@ -119,8 +135,10 @@ describe("SkillGating Logic", () => {
         maxMessages: 10000,
         maxAgents: 5,
         maxChannelSlots: 3,
+        minCronIntervalMs: 900000,
         allowedSkills: ["basic_reply", "web_search"],
         features: {} as any,
+        models: ["gemini-1.5-flash", "gemini-1.5-pro"],
       },
     });
     expect(isSkillAllowed("pro", "custom_scripting")).toBe(false);
@@ -131,8 +149,10 @@ describe("SkillGating Logic", () => {
         maxMessages: 100000,
         maxAgents: 100,
         maxChannelSlots: 100,
+        minCronIntervalMs: 60000,
         allowedSkills: ["basic_reply", "web_search", "custom_scripting"],
         features: {} as any,
+        models: ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.0-flash-thinking-exp"],
       },
     });
     expect(isSkillAllowed("enterprise", "custom_scripting")).toBe(true);

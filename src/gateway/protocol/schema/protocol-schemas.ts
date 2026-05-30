@@ -107,6 +107,7 @@ import {
   ExecApprovalGetParamsSchema,
   ExecApprovalRequestParamsSchema,
   ExecApprovalResolveParamsSchema,
+  ExecApprovalsFileSchema,
 } from "./exec-approvals.js";
 import {
   ConnectParamsSchema,
@@ -146,6 +147,11 @@ import {
   NodePairRequestParamsSchema,
   NodePairVerifyParamsSchema,
   NodeRenameParamsSchema,
+  NodeListNodeSchema,
+  PendingRequestSchema,
+  PairedNodeSchema,
+  PairingListSchema,
+  NodeListResultSchema,
 } from "./nodes.js";
 import {
   PluginApprovalRequestParamsSchema,
@@ -231,6 +237,11 @@ export const ProtocolSchemas = {
   NodePendingEnqueueParams: NodePendingEnqueueParamsSchema,
   NodePendingEnqueueResult: NodePendingEnqueueResultSchema,
   NodeInvokeRequestEvent: NodeInvokeRequestEventSchema,
+  NodeListNode: NodeListNodeSchema,
+  PendingRequest: PendingRequestSchema,
+  PairedNode: PairedNodeSchema,
+  PairingList: PairingListSchema,
+  NodeListResult: NodeListResultSchema,
   PushTestParams: PushTestParamsSchema,
   PushTestResult: PushTestResultSchema,
   SecretsReloadParams: SecretsReloadParamsSchema,

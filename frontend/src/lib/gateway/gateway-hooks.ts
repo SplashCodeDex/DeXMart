@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import type { GatewayRpc, MethodMap, EventMap } from "./gateway-rpc";
 
 export type GatewayConnectionStatus = "connecting" | "connected" | "reconnecting" | "error";
@@ -25,12 +25,15 @@ export function useGateway(): GatewayContextState {
 export function useRpcCall<M extends keyof MethodMap>(method: M) {
   const { rpc } = useGateway();
 
-  return async (params: MethodMap[M]["params"]): Promise<MethodMap[M]["result"]> => {
-    if (!rpc) {
-      throw new Error("Gateway RPC is not available");
-    }
-    return rpc.call(method, params);
-  };
+  return useCallback(
+    async (params: MethodMap[M]["params"]): Promise<MethodMap[M]["result"]> => {
+      if (!rpc) {
+        throw new Error("Gateway RPC is not available");
+      }
+      return rpc.call(method, params);
+    },
+    [rpc, method],
+  );
 }
 
 export function useGatewayStream<E extends keyof EventMap>(event: E) {

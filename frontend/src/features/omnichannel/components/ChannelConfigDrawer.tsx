@@ -15,6 +15,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { useGateway } from "@/lib/gateway/gateway-hooks";
+import { useConfig } from "@/lib/gateway/useConfig";
 import type { Channel } from "@/types/omnichannel";
 
 interface ChannelConfigDrawerProps {
@@ -30,6 +31,7 @@ export function ChannelConfigDrawer({
 }: ChannelConfigDrawerProps): React.JSX.Element {
   const [isSaving, setIsSaving] = useState(false);
   const { rpc } = useGateway();
+  const { baseHash, refresh: refreshConfig } = useConfig();
 
   // These would ideally come from the channel's actual config
   const [phone, setPhone] = useState("");
@@ -40,9 +42,23 @@ export function ChannelConfigDrawer({
     if (!rpc) return;
     setIsSaving(true);
     try {
-      // Logic for config.set or specific channel update RPC
-      // For now, simulating the intent
+      // For config.patch, we need to send a raw JSON5 string of the patch
+      const patchObj = {
+        channels: {
+          [channel.id]: {
+            phoneNumber: phone || undefined,
+            webhook: webhook || undefined,
+            name: sessionName,
+          },
+        },
+      };
+
+      await rpc.call("config.patch", {
+        raw: JSON.stringify(patchObj),
+        baseHash,
+      });
       toast.success("Channel configuration updated");
+      await refreshConfig();
       onOpenChange(false);
     } catch (err) {
       console.error("Failed to save channel config:", err);

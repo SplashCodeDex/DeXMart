@@ -67,12 +67,19 @@ const nextConfig: NextConfig = {
         ];
     },
 
-    // Proxy API requests to Backend
+    // Proxy API and Gateway requests
     async rewrites() {
+        const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:3001';
+        const GATEWAY_URL = process.env.GATEWAY_URL || 'http://localhost:19001';
+
         return [
             {
                 source: '/api/:path*',
-                destination: `${process.env.BACKEND_URL || 'http://localhost:3001'}/api/:path*`,
+                destination: `${BACKEND_URL}/api/:path*`,
+            },
+            {
+                source: '/gateway/ws',
+                destination: `${GATEWAY_URL}/`,
             },
         ];
     },

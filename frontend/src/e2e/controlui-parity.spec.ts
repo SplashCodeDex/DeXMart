@@ -203,6 +203,17 @@ test.describe("Channels Parity (Sub-Track 5.1)", () => {
     }
   });
 
+  test("web.login.start + wait: handles OAuth login flow (non-QR)", async ({ page }) => {
+    // Find a channel that doesn't use QR (e.g. Discord, Slack)
+    const connectButton = page.locator("button:has-text('Connect')").nth(1);
+    if (await connectButton.isVisible()) {
+      await connectButton.click();
+      // For OAuth, we expect a redirect or a new window/popup start
+      // But in the UI, we might just check if the "Connecting..." state appears
+      await expect(page.getByText(/Connecting/i)).toBeVisible();
+    }
+  });
+
   test("channels.logout: handles account disconnection", async ({ page }) => {
     const settingsButton = page.locator("button:has(.lucide-settings)").first();
     if (await settingsButton.isVisible()) {
@@ -213,6 +224,180 @@ test.describe("Channels Parity (Sub-Track 5.1)", () => {
         page.on("dialog", (dialog) => dialog.accept());
         await expect(page.getByText(/Disconnected/i)).toBeVisible();
       }
+    }
+  });
+});
+
+test.describe("Devices Parity (Sub-Track 5.2)", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/dashboard/nodes");
+    // Switch to Devices tab
+    await page.getByRole("tab", { name: /Devices/i }).click();
+    await page.waitForLoadState("networkidle");
+  });
+
+  test("device.pair.list: displays paired and pending devices", async ({ page }) => {
+    await expect(page.getByText(/Authorized Hardware/i)).toBeVisible();
+    // Table should be present
+    const tables = page.locator("table");
+    await expect(tables.first()).toBeVisible();
+  });
+
+  test("device.pair.approve: authorizes a pending device", async ({ page }) => {
+    const authorizeButton = page.getByRole("button", { name: /Authorize/i }).first();
+    if (await authorizeButton.isVisible()) {
+      await authorizeButton.click();
+      await expect(page.getByText(/Device authorized/i)).toBeVisible();
+    }
+  });
+
+  test("device.pair.reject: denies a pending device", async ({ page }) => {
+    const denyButton = page.getByRole("button", { name: /Deny/i }).first();
+    if (await denyButton.isVisible()) {
+      await denyButton.click();
+      await expect(page.getByText(/Pairing request rejected/i)).toBeVisible();
+    }
+  });
+
+  test("device.token.rotate: generates new access token", async ({ page }) => {
+    const menuButton = page.locator("button:has(.lucide-more-vertical)").first();
+    if (await menuButton.isVisible()) {
+      await menuButton.click();
+      await page.getByText(/Rotate Token/i).click();
+
+      // Handle AlertDialog
+      await page.getByRole("button", { name: "Rotate Token" }).click();
+
+      // Should show the new token dialog
+      await expect(page.getByText(/New Access Token/i)).toBeVisible();
+      await expect(page.locator("code")).toBeVisible();
+    }
+  });
+
+  test("device.token.revoke: invalidates device tokens", async ({ page }) => {
+    const menuButton = page.locator("button:has(.lucide-more-vertical)").first();
+    if (await menuButton.isVisible()) {
+      await menuButton.click();
+      await page.getByText(/Revoke Tokens/i).click();
+
+      // Handle AlertDialog
+      await page.getByRole("button", { name: "Revoke" }).click();
+
+      await expect(page.getByText(/All tokens revoked/i)).toBeVisible();
+    }
+  });
+
+  test("device.pair.remove: permanently removes a device", async ({ page }) => {
+    const menuButton = page.locator("button:has(.lucide-more-vertical)").first();
+    if (await menuButton.isVisible()) {
+      await menuButton.click();
+      await page.getByText(/Remove Permanently/i).click();
+
+      // Handle AlertDialog
+      await page.getByRole("button", { name: "Remove" }).click();
+
+      await expect(page.getByText(/Device removed/i)).toBeVisible();
+    }
+  });
+});
+
+test.describe("Cron Parity (Sub-Track 7.1)", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/dashboard/cron");
+    await page.waitForLoadState("networkidle");
+  });
+
+  test("cron.list + cron.status: displays scheduler state and jobs", async ({ page }) => {
+    await expect(page.getByText(/Scheduler Status/i)).toBeVisible();
+    await expect(page.getByText(/Total Jobs/i)).toBeVisible();
+    await expect(page.locator("table")).toBeVisible();
+  });
+
+  test("cron.add: creates a new scheduled job", async ({ page }) => {
+    await page.getByRole("button", { name: /Create Job/i }).click();
+
+    await page.locator('input[id="name"]').fill("E2E Test Job");
+    await page.locator('input[id="payloadText"]').fill("ping");
+
+    await page.getByRole("button", { name: "Create Job" }).click();
+    await expect(page.getByText(/Cron job created successfully/i)).toBeVisible();
+  });
+
+  test("cron.run: triggers immediate job execution", async ({ page }) => {
+    const runButton = page.locator("button[title='Run Now']").first();
+    if (await runButton.isVisible()) {
+      await runButton.click();
+      await expect(page.getByText(/Job execution triggered/i)).toBeVisible();
+    }
+  });
+
+  test("cron.runs: displays job run history", async ({ page }) => {
+    const historyButton = page.locator("button[title='View History']").first();
+    if (await historyButton.isVisible()) {
+      await historyButton.click();
+      await expect(page.getByText(/Run History:/i)).toBeVisible();
+      // Should show the history list
+      await expect(page.locator(".sheet-content")).toBeVisible();
+    }
+  });
+
+  test("cron.remove: deletes a job", async ({ page }) => {
+    const deleteButton = page.locator("button[title='Delete']").first();
+    if (await deleteButton.isVisible()) {
+      // Hover to make it visible if needed, but it's already in the DOM
+      await deleteButton.click();
+
+      // Handle confirm dialog
+      page.on("dialog", (dialog) => dialog.accept());
+
+      await expect(page.getByText(/Job deleted/i)).toBeVisible();
+    }
+  });
+});
+
+test.describe("Skills Parity (Sub-Track 7.2)", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/dashboard/skills");
+    await page.waitForLoadState("networkidle");
+  });
+
+  test("skills.status + list: displays intelligence store", async ({ page }) => {
+    await expect(page.getByText(/Intelligence Store/i)).toBeVisible();
+    await expect(page.locator(".grid")).toBeVisible();
+  });
+
+  test("skills.search: filters skill list", async ({ page }) => {
+    const searchInput = page.locator('input[placeholder*="Search skills"]');
+    await searchInput.fill("web-search");
+    // Should filter cards
+    await expect(page.locator(".card").first()).toBeVisible();
+  });
+
+  test("skills.update: configures API key", async ({ page }) => {
+    const keyButton = page.locator("button[title='Configure API Key']").first();
+    if (await keyButton.isVisible()) {
+      await keyButton.click();
+      await page.locator('input[id="apiKey"]').fill("sk-test-key");
+      await page.getByRole("button", { name: /Save Changes/i }).click();
+      await expect(page.getByText(/API key saved successfully/i)).toBeVisible();
+    }
+  });
+
+  test("plugin.approval lifecycle: list and resolve", async ({ page }) => {
+    await page.getByRole("tab", { name: /Approvals/i }).click();
+
+    // Check if empty state or list is present
+    const noApprovals = page.getByText(/No Pending Approvals/i);
+    const hasApprovals = page.locator(".card");
+
+    if (await noApprovals.isVisible()) {
+      await expect(noApprovals).toBeVisible();
+    } else {
+      await expect(hasApprovals.first()).toBeVisible();
+      // Try to approve one
+      const approveButton = page.getByRole("button", { name: /Always/i }).first();
+      await approveButton.click();
+      await expect(page.getByText(/approved successfully/i)).toBeVisible();
     }
   });
 });

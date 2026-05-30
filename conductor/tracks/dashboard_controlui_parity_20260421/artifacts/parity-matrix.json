@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-04-30T01:32:09.448Z",
-  "source_commit": "8fdfebf843",
+  "generated_at": "2026-05-30T14:34:51.109Z",
+  "source_commit": "b00cf89f09",
   "summary": {
     "rpc_method_count": 119,
     "rpc_domain_count": 28,
     "controlui_view_count": 58,
     "controlui_controller_count": 28,
     "dexmart_route_count": 21,
-    "dexmart_feature_count": 16,
+    "dexmart_feature_count": 18,
     "parity_feature_count": 22,
     "coverage_pct": 82
   },
@@ -34,25 +34,25 @@
       "method": "agents.delete",
       "domain": "agents",
       "file": "src/gateway/server-methods/agents.ts",
-      "line": 624
+      "line": 633
     },
     {
       "method": "agents.files.get",
       "domain": "agents",
       "file": "src/gateway/server-methods/agents.ts",
-      "line": 693
+      "line": 702
     },
     {
       "method": "agents.files.list",
       "domain": "agents",
       "file": "src/gateway/server-methods/agents.ts",
-      "line": 663
+      "line": 672
     },
     {
       "method": "agents.files.set",
       "domain": "agents",
       "file": "src/gateway/server-methods/agents.ts",
-      "line": 740
+      "line": 749
     },
     {
       "method": "agents.list",
@@ -64,7 +64,7 @@
       "method": "agents.update",
       "domain": "agents",
       "file": "src/gateway/server-methods/agents.ts",
-      "line": 536
+      "line": 545
     },
     {
       "method": "channels.logout",
@@ -906,7 +906,9 @@
       "name": "cron",
       "file": "ui/src/ui/views/cron.ts",
       "methodsUsed": [],
-      "controllersReferenced": ["cron"]
+      "controllersReferenced": [
+        "cron"
+      ]
     },
     {
       "name": "debug",
@@ -918,13 +920,17 @@
       "name": "dreaming",
       "file": "ui/src/ui/views/dreaming.ts",
       "methodsUsed": [],
-      "controllersReferenced": ["dreaming"]
+      "controllersReferenced": [
+        "dreaming"
+      ]
     },
     {
       "name": "exec-approval",
       "file": "ui/src/ui/views/exec-approval.ts",
       "methodsUsed": [],
-      "controllersReferenced": ["exec-approval"]
+      "controllersReferenced": [
+        "exec-approval"
+      ]
     },
     {
       "name": "gateway-url-confirmation",
@@ -960,13 +966,17 @@
       "name": "nodes",
       "file": "ui/src/ui/views/nodes.ts",
       "methodsUsed": [],
-      "controllersReferenced": ["devices"]
+      "controllersReferenced": [
+        "devices"
+      ]
     },
     {
       "name": "nodes-exec-approvals",
       "file": "ui/src/ui/views/nodes-exec-approvals.ts",
       "methodsUsed": [],
-      "controllersReferenced": ["exec-approvals"]
+      "controllersReferenced": [
+        "exec-approvals"
+      ]
     },
     {
       "name": "nodes-shared",
@@ -978,7 +988,10 @@
       "name": "nodes.types",
       "file": "ui/src/ui/views/nodes.types.ts",
       "methodsUsed": [],
-      "controllersReferenced": ["devices", "exec-approvals"]
+      "controllersReferenced": [
+        "devices",
+        "exec-approvals"
+      ]
     },
     {
       "name": "overview",
@@ -1026,7 +1039,9 @@
       "name": "skills",
       "file": "ui/src/ui/views/skills.ts",
       "methodsUsed": [],
-      "controllersReferenced": ["skills"]
+      "controllersReferenced": [
+        "skills"
+      ]
     },
     {
       "name": "skills-grouping",
@@ -1091,7 +1106,9 @@
     {
       "name": "agent-skills",
       "file": "ui/src/ui/controllers/agent-skills.ts",
-      "methodsUsed": ["skills.status"]
+      "methodsUsed": [
+        "skills.status"
+      ]
     },
     {
       "name": "agents",
@@ -1101,12 +1118,16 @@
     {
       "name": "assistant-identity",
       "file": "ui/src/ui/controllers/assistant-identity.ts",
-      "methodsUsed": ["agent.identity.get"]
+      "methodsUsed": [
+        "agent.identity.get"
+      ]
     },
     {
       "name": "channels",
       "file": "ui/src/ui/controllers/channels.ts",
-      "methodsUsed": ["channels.logout"]
+      "methodsUsed": [
+        "channels.logout"
+      ]
     },
     {
       "name": "channels.types",
@@ -1116,7 +1137,10 @@
     {
       "name": "chat",
       "file": "ui/src/ui/controllers/chat.ts",
-      "methodsUsed": ["chat.abort", "chat.send"]
+      "methodsUsed": [
+        "chat.abort",
+        "chat.send"
+      ]
     },
     {
       "name": "config",
@@ -1131,22 +1155,37 @@
     {
       "name": "cron",
       "file": "ui/src/ui/controllers/cron.ts",
-      "methodsUsed": ["cron.add", "cron.remove", "cron.run", "cron.update", "models.list"]
+      "methodsUsed": [
+        "cron.add",
+        "cron.remove",
+        "cron.run",
+        "cron.update",
+        "models.list"
+      ]
     },
     {
       "name": "debug",
       "file": "ui/src/ui/controllers/debug.ts",
-      "methodsUsed": ["models.list"]
+      "methodsUsed": [
+        "models.list"
+      ]
     },
     {
       "name": "devices",
       "file": "ui/src/ui/controllers/devices.ts",
-      "methodsUsed": ["device.pair.approve", "device.pair.reject", "device.token.revoke"]
+      "methodsUsed": [
+        "device.pair.approve",
+        "device.pair.reject",
+        "device.token.revoke"
+      ]
     },
     {
       "name": "dreaming",
       "file": "ui/src/ui/controllers/dreaming.ts",
-      "methodsUsed": ["config.patch", "config.schema.lookup"]
+      "methodsUsed": [
+        "config.patch",
+        "config.schema.lookup"
+      ]
     },
     {
       "name": "exec-approval",
@@ -1176,7 +1215,9 @@
     {
       "name": "logs",
       "file": "ui/src/ui/controllers/logs.ts",
-      "methodsUsed": ["logs.tail"]
+      "methodsUsed": [
+        "logs.tail"
+      ]
     },
     {
       "name": "model-auth-status",
@@ -1206,12 +1247,19 @@
     {
       "name": "sessions",
       "file": "ui/src/ui/controllers/sessions.ts",
-      "methodsUsed": ["sessions.delete", "sessions.patch", "sessions.subscribe"]
+      "methodsUsed": [
+        "sessions.delete",
+        "sessions.patch",
+        "sessions.subscribe"
+      ]
     },
     {
       "name": "skills",
       "file": "ui/src/ui/controllers/skills.ts",
-      "methodsUsed": ["skills.install", "skills.update"]
+      "methodsUsed": [
+        "skills.install",
+        "skills.update"
+      ]
     },
     {
       "name": "usage",
@@ -1253,7 +1301,7 @@
     {
       "route": "/dashboard/cron",
       "pageFile": "frontend/src/app/(dashboard)/dashboard/cron/page.tsx",
-      "featureDir": null
+      "featureDir": "frontend/src/features/cron"
     },
     {
       "route": "/dashboard/flows",
@@ -1278,7 +1326,7 @@
     {
       "route": "/dashboard/nodes",
       "pageFile": "frontend/src/app/(dashboard)/dashboard/nodes/page.tsx",
-      "featureDir": null
+      "featureDir": "frontend/src/features/nodes"
     },
     {
       "route": "/dashboard/omnichannel",
@@ -1357,6 +1405,10 @@
       "file": "frontend/src/features/contacts"
     },
     {
+      "name": "cron",
+      "file": "frontend/src/features/cron"
+    },
+    {
       "name": "dashboard",
       "file": "frontend/src/features/dashboard"
     },
@@ -1381,6 +1433,10 @@
       "file": "frontend/src/features/messages"
     },
     {
+      "name": "nodes",
+      "file": "frontend/src/features/nodes"
+    },
+    {
       "name": "omnichannel",
       "file": "frontend/src/features/omnichannel"
     },
@@ -1401,9 +1457,18 @@
     {
       "featureId": "chat",
       "label": "Mastermind Chat",
-      "controlUiViews": ["ui/src/ui/views/chat.ts"],
-      "controlUiControllers": ["ui/src/ui/controllers/chat.ts"],
-      "rpcMethods": ["chat.abort", "chat.history", "chat.inject", "chat.send"],
+      "controlUiViews": [
+        "ui/src/ui/views/chat.ts"
+      ],
+      "controlUiControllers": [
+        "ui/src/ui/controllers/chat.ts"
+      ],
+      "rpcMethods": [
+        "chat.abort",
+        "chat.history",
+        "chat.inject",
+        "chat.send"
+      ],
       "dexmartRoute": "/chat",
       "dexmartFeatureDir": "frontend/src/features/chat",
       "strategy": "add",
@@ -1428,13 +1493,22 @@
         "ui/src/ui/views/channels.types.ts",
         "ui/src/ui/views/channels.whatsapp.ts"
       ],
-      "controlUiControllers": ["ui/src/ui/controllers/channels.ts"],
-      "rpcMethods": ["channels.logout", "channels.status", "web.login.start", "web.login.wait"],
+      "controlUiControllers": [
+        "ui/src/ui/controllers/channels.ts"
+      ],
+      "rpcMethods": [
+        "channels.logout",
+        "channels.status",
+        "web.login.start",
+        "web.login.wait"
+      ],
       "dexmartRoute": "/dashboard/omnichannel",
       "dexmartFeatureDir": "frontend/src/features/omnichannel",
       "strategy": "weave",
       "status": "partial",
-      "notes": ["Weave target: /dashboard/omnichannel — Connect/Status/QR lives in channel cards"]
+      "notes": [
+        "Weave target: /dashboard/omnichannel — Connect/Status/QR lives in channel cards"
+      ]
     },
     {
       "featureId": "agents",
@@ -1469,14 +1543,18 @@
       "dexmartRoute": "/dashboard/agents",
       "dexmartFeatureDir": "frontend/src/features/agents",
       "strategy": "enhance",
-      "status": "partial",
+      "status": "complete",
       "notes": []
     },
     {
       "featureId": "sessions",
       "label": "Sessions List + Detail + Compaction",
-      "controlUiViews": ["ui/src/ui/views/sessions.ts"],
-      "controlUiControllers": ["ui/src/ui/controllers/sessions.ts"],
+      "controlUiViews": [
+        "ui/src/ui/views/sessions.ts"
+      ],
+      "controlUiControllers": [
+        "ui/src/ui/controllers/sessions.ts"
+      ],
       "rpcMethods": [
         "sessions.abort",
         "sessions.compact",
@@ -1519,7 +1597,9 @@
         "ui/src/ui/views/config-form.render.ts",
         "ui/src/ui/views/config-form.shared.ts"
       ],
-      "controlUiControllers": ["ui/src/ui/controllers/config.ts"],
+      "controlUiControllers": [
+        "ui/src/ui/controllers/config.ts"
+      ],
       "rpcMethods": [
         "config.apply",
         "config.get",
@@ -1539,8 +1619,12 @@
     {
       "featureId": "cron",
       "label": "Cron Jobs",
-      "controlUiViews": ["ui/src/ui/views/cron.ts"],
-      "controlUiControllers": ["ui/src/ui/controllers/cron.ts"],
+      "controlUiViews": [
+        "ui/src/ui/views/cron.ts"
+      ],
+      "controlUiControllers": [
+        "ui/src/ui/controllers/cron.ts"
+      ],
       "rpcMethods": [
         "cron.add",
         "cron.list",
@@ -1552,9 +1636,9 @@
         "models.list"
       ],
       "dexmartRoute": "/dashboard/cron",
-      "dexmartFeatureDir": null,
+      "dexmartFeatureDir": "frontend/src/features/cron",
       "strategy": "enhance",
-      "status": "stub",
+      "status": "complete",
       "notes": []
     },
     {
@@ -1565,7 +1649,9 @@
         "ui/src/ui/views/skills-grouping.ts",
         "ui/src/ui/views/skills-shared.ts"
       ],
-      "controlUiControllers": ["ui/src/ui/controllers/skills.ts"],
+      "controlUiControllers": [
+        "ui/src/ui/controllers/skills.ts"
+      ],
       "rpcMethods": [
         "plugin.approval.list",
         "plugin.approval.request",
@@ -1580,7 +1666,7 @@
       "dexmartRoute": "/dashboard/skills",
       "dexmartFeatureDir": null,
       "strategy": "enhance",
-      "status": "stub",
+      "status": "complete",
       "notes": []
     },
     {
@@ -1592,7 +1678,9 @@
         "ui/src/ui/views/nodes-shared.ts",
         "ui/src/ui/views/nodes.types.ts"
       ],
-      "controlUiControllers": ["ui/src/ui/controllers/nodes.ts"],
+      "controlUiControllers": [
+        "ui/src/ui/controllers/nodes.ts"
+      ],
       "rpcMethods": [
         "node.canvas.capability.refresh",
         "node.describe",
@@ -1611,9 +1699,9 @@
         "node.rename"
       ],
       "dexmartRoute": "/dashboard/nodes",
-      "dexmartFeatureDir": null,
+      "dexmartFeatureDir": "frontend/src/features/nodes",
       "strategy": "enhance",
-      "status": "stub",
+      "status": "partial",
       "notes": []
     },
     {
@@ -1625,7 +1713,9 @@
         "ui/src/ui/views/nodes-shared.ts",
         "ui/src/ui/views/nodes.types.ts"
       ],
-      "controlUiControllers": ["ui/src/ui/controllers/devices.ts"],
+      "controlUiControllers": [
+        "ui/src/ui/controllers/devices.ts"
+      ],
       "rpcMethods": [
         "device.pair.approve",
         "device.pair.list",
@@ -1638,14 +1728,22 @@
       "dexmartFeatureDir": "frontend/src/features/devices",
       "strategy": "weave",
       "status": "partial",
-      "notes": ["Weave target: /dashboard/nodes — Devices tab"]
+      "notes": [
+        "Weave target: /dashboard/nodes — Devices tab"
+      ]
     },
     {
       "featureId": "logs",
       "label": "Live Logs Viewer",
-      "controlUiViews": ["ui/src/ui/views/logs.ts"],
-      "controlUiControllers": ["ui/src/ui/controllers/logs.ts"],
-      "rpcMethods": ["logs.tail"],
+      "controlUiViews": [
+        "ui/src/ui/views/logs.ts"
+      ],
+      "controlUiControllers": [
+        "ui/src/ui/controllers/logs.ts"
+      ],
+      "rpcMethods": [
+        "logs.tail"
+      ],
       "dexmartRoute": null,
       "dexmartFeatureDir": null,
       "strategy": "implement",
@@ -1655,7 +1753,9 @@
     {
       "featureId": "debug",
       "label": "Debug / Developer Panel",
-      "controlUiViews": ["ui/src/ui/views/debug.ts"],
+      "controlUiViews": [
+        "ui/src/ui/views/debug.ts"
+      ],
       "controlUiControllers": [
         "ui/src/ui/controllers/debug.ts",
         "ui/src/ui/controllers/health.ts",
@@ -1677,14 +1777,24 @@
     {
       "featureId": "dreaming",
       "label": "Doctor / Memory (Dream)",
-      "controlUiViews": ["ui/src/ui/views/dreaming.ts"],
-      "controlUiControllers": ["ui/src/ui/controllers/dreaming.ts"],
-      "rpcMethods": ["config.patch", "config.schema.lookup", "doctor.memory.status"],
+      "controlUiViews": [
+        "ui/src/ui/views/dreaming.ts"
+      ],
+      "controlUiControllers": [
+        "ui/src/ui/controllers/dreaming.ts"
+      ],
+      "rpcMethods": [
+        "config.patch",
+        "config.schema.lookup",
+        "doctor.memory.status"
+      ],
       "dexmartRoute": "/dashboard/agents",
       "dexmartFeatureDir": null,
       "strategy": "weave",
       "status": "stub",
-      "notes": ["Weave target: /dashboard/agents — Memory tab on agent detail"]
+      "notes": [
+        "Weave target: /dashboard/agents — Memory tab on agent detail"
+      ]
     },
     {
       "featureId": "tts",
@@ -1707,26 +1817,39 @@
       "dexmartFeatureDir": null,
       "strategy": "weave",
       "status": "stub",
-      "notes": ["Weave target: /dashboard/config — Voice section"]
+      "notes": [
+        "Weave target: /dashboard/config — Voice section"
+      ]
     },
     {
       "featureId": "instances",
       "label": "Instances + Presence",
-      "controlUiViews": ["ui/src/ui/views/instances.ts"],
-      "controlUiControllers": ["ui/src/ui/controllers/presence.ts"],
+      "controlUiViews": [
+        "ui/src/ui/views/instances.ts"
+      ],
+      "controlUiControllers": [
+        "ui/src/ui/controllers/presence.ts"
+      ],
       "rpcMethods": [],
       "dexmartRoute": "/dashboard/home",
       "dexmartFeatureDir": null,
       "strategy": "weave",
       "status": "stub",
-      "notes": ["Weave target: /dashboard/home — Presence card"]
+      "notes": [
+        "Weave target: /dashboard/home — Presence card"
+      ]
     },
     {
       "featureId": "setup-wizard",
       "label": "First-Run Setup Wizard",
       "controlUiViews": [],
       "controlUiControllers": [],
-      "rpcMethods": ["wizard.cancel", "wizard.next", "wizard.start", "wizard.status"],
+      "rpcMethods": [
+        "wizard.cancel",
+        "wizard.next",
+        "wizard.start",
+        "wizard.status"
+      ],
       "dexmartRoute": null,
       "dexmartFeatureDir": null,
       "strategy": "add",
@@ -1743,7 +1866,9 @@
         "ui/src/ui/views/usage-render-details.ts",
         "ui/src/ui/views/usage-render-overview.ts"
       ],
-      "controlUiControllers": ["ui/src/ui/controllers/usage.ts"],
+      "controlUiControllers": [
+        "ui/src/ui/controllers/usage.ts"
+      ],
       "rpcMethods": [
         "sessions.usage",
         "sessions.usage.logs",
@@ -1782,19 +1907,25 @@
       "dexmartFeatureDir": null,
       "strategy": "weave",
       "status": "stub",
-      "notes": ["Weave target: /dashboard/config — Security tab"]
+      "notes": [
+        "Weave target: /dashboard/config — Security tab"
+      ]
     },
     {
       "featureId": "update-runner",
       "label": "Update Runner",
       "controlUiViews": [],
       "controlUiControllers": [],
-      "rpcMethods": ["update.run"],
+      "rpcMethods": [
+        "update.run"
+      ],
       "dexmartRoute": "/dashboard/config",
       "dexmartFeatureDir": null,
       "strategy": "weave",
       "status": "stub",
-      "notes": ["Weave target: /dashboard/config — System tab"]
+      "notes": [
+        "Weave target: /dashboard/config — System tab"
+      ]
     },
     {
       "featureId": "overview",
@@ -1818,9 +1949,13 @@
     {
       "featureId": "command-palette",
       "label": "Command Palette",
-      "controlUiViews": ["ui/src/ui/views/command-palette.ts"],
+      "controlUiViews": [
+        "ui/src/ui/views/command-palette.ts"
+      ],
       "controlUiControllers": [],
-      "rpcMethods": ["commands.list"],
+      "rpcMethods": [
+        "commands.list"
+      ],
       "dexmartRoute": null,
       "dexmartFeatureDir": null,
       "strategy": "add",
@@ -1832,7 +1967,9 @@
       "label": "Message Actions (react/edit/delete)",
       "controlUiViews": [],
       "controlUiControllers": [],
-      "rpcMethods": ["message.action"],
+      "rpcMethods": [
+        "message.action"
+      ],
       "dexmartRoute": "/dashboard/messages",
       "dexmartFeatureDir": null,
       "strategy": "weave",

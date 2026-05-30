@@ -153,6 +153,90 @@ export const NodePendingEnqueueResultSchema = Type.Object(
   { additionalProperties: false },
 );
 
+export const NodeListNodeSchema = Type.Object(
+  {
+    nodeId: NonEmptyString,
+    displayName: Type.Optional(Type.String()),
+    platform: Type.Optional(Type.String()),
+    version: Type.Optional(Type.String()),
+    coreVersion: Type.Optional(Type.String()),
+    uiVersion: Type.Optional(Type.String()),
+    clientId: Type.Optional(Type.String()),
+    clientMode: Type.Optional(Type.String()),
+    remoteIp: Type.Optional(Type.String()),
+    deviceFamily: Type.Optional(Type.String()),
+    modelIdentifier: Type.Optional(Type.String()),
+    pathEnv: Type.Optional(Type.String()),
+    caps: Type.Optional(Type.Array(Type.String())),
+    commands: Type.Optional(Type.Array(Type.String())),
+    permissions: Type.Optional(Type.Record(Type.String(), Type.Boolean())),
+    paired: Type.Optional(Type.Boolean()),
+    connected: Type.Optional(Type.Boolean()),
+    connectedAtMs: Type.Optional(Type.Integer()),
+    approvedAtMs: Type.Optional(Type.Integer()),
+  },
+  { additionalProperties: false },
+);
+
+export const PendingRequestSchema = Type.Object(
+  {
+    requestId: NonEmptyString,
+    nodeId: NonEmptyString,
+    displayName: Type.Optional(Type.String()),
+    platform: Type.Optional(Type.String()),
+    version: Type.Optional(Type.String()),
+    coreVersion: Type.Optional(Type.String()),
+    uiVersion: Type.Optional(Type.String()),
+    remoteIp: Type.Optional(Type.String()),
+    ts: Type.Integer(),
+    commands: Type.Optional(Type.Array(Type.String())),
+    requiredApproveScopes: Type.Optional(
+      Type.Array(
+        Type.Union([
+          Type.Literal("operator.pairing"),
+          Type.Literal("operator.write"),
+          Type.Literal("operator.admin"),
+        ]),
+      ),
+    ),
+  },
+  { additionalProperties: false },
+);
+
+export const PairedNodeSchema = Type.Object(
+  {
+    nodeId: NonEmptyString,
+    token: Type.Optional(Type.String()),
+    displayName: Type.Optional(Type.String()),
+    platform: Type.Optional(Type.String()),
+    version: Type.Optional(Type.String()),
+    coreVersion: Type.Optional(Type.String()),
+    uiVersion: Type.Optional(Type.String()),
+    remoteIp: Type.Optional(Type.String()),
+    permissions: Type.Optional(Type.Record(Type.String(), Type.Boolean())),
+    createdAtMs: Type.Optional(Type.Integer()),
+    approvedAtMs: Type.Optional(Type.Integer()),
+    lastConnectedAtMs: Type.Optional(Type.Integer()),
+  },
+  { additionalProperties: false },
+);
+
+export const PairingListSchema = Type.Object(
+  {
+    pending: Type.Array(PendingRequestSchema),
+    paired: Type.Array(PairedNodeSchema),
+  },
+  { additionalProperties: false },
+);
+
+export const NodeListResultSchema = Type.Object(
+  {
+    ts: Type.Integer(),
+    nodes: Type.Array(NodeListNodeSchema),
+  },
+  { additionalProperties: false },
+);
+
 export const NodeInvokeRequestEventSchema = Type.Object(
   {
     id: NonEmptyString,

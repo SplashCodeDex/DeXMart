@@ -9,7 +9,10 @@
   "strategyOverrides": {},
   "statusOverrides": {
     "chat": "complete",
-    "sessions": "complete"
+    "sessions": "complete",
+    "agents": "complete",
+    "cron": "complete",
+    "skills": "complete"
   },
   "featureMapping": {
     "exec-approvals": { "route": "config" },

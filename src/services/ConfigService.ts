@@ -49,6 +49,15 @@ export class ConfigService {
   }
 
   /**
+   * Sets a configuration value by key.
+   * Supports dot notation for nested properties.
+   */
+  public set(key: string, value: any): void {
+    logger.debug(`ConfigService: Setting config key "${key}"`);
+    configManager.set(key, value);
+  }
+
+  /**
    * Getter for channel-specific configuration.
    */
   public get channel() {

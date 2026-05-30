@@ -177,6 +177,9 @@ export const API_ENDPOINTS = {
       LIST: "/api/omnichannel/logs",
       STREAM: "/api/omnichannel/logs/stream",
     },
+    COMMANDS: {
+      LIST: (agentId?: string) => `/api/internal/bots/commands${agentId ? `?agentId=${agentId}` : ""}` as const,
+    },
   },
 } as const;
 

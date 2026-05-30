@@ -1,3 +1,6 @@
+// Force standard HTTP agent for Google Auth (Node 24 compatibility)
+process.env.GCP_DISABLE_FETCH = "true";
+
 // MUST be first — populates process.env before any other module evaluates
 import "./initEnv.js";
 import logger from "./utils/logger.js";

@@ -1,5 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
+import { useGateway } from "@/lib/gateway/gateway-hooks";
+import { useConfig } from "@/lib/gateway/useConfig";
 import type { Channel } from "@/types/omnichannel";
 import { ChannelConfigDrawer } from "./ChannelConfigDrawer";
 
@@ -14,13 +16,22 @@ vi.mock("@/components/ui/sheet", () => ({
 }));
 
 // Mock useGateway hook
+const mockRpcCall = vi.fn();
 vi.mock("@/lib/gateway/gateway-hooks", () => ({
-  useGateway: () => ({
+  useGateway: vi.fn(() => ({
     rpc: {
-      call: vi.fn(),
+      call: mockRpcCall,
     },
     status: "connected",
-  }),
+  })),
+}));
+
+// Mock useConfig hook
+vi.mock("@/lib/gateway/useConfig", () => ({
+  useConfig: vi.fn(() => ({
+    baseHash: "test-hash",
+    refresh: vi.fn(),
+  })),
 }));
 
 const mockChannel: Channel = {
@@ -47,9 +58,18 @@ describe("ChannelConfigDrawer", () => {
 
   it("updates inputs when typed", () => {
     render(<ChannelConfigDrawer channel={mockChannel} open={true} onOpenChange={() => {}} />);
+
+    const sessionInput = screen.getByLabelText(/session name/i) as HTMLInputElement;
+    fireEvent.change(sessionInput, { target: { value: "New Session Name" } });
+    expect(sessionInput.value).toBe("New Session Name");
+
     const phoneInput = screen.getByLabelText(/phone number/i) as HTMLInputElement;
     fireEvent.change(phoneInput, { target: { value: "+123456789" } });
     expect(phoneInput.value).toBe("+123456789");
+
+    const webhookInput = screen.getByLabelText(/custom webhook url/i) as HTMLInputElement;
+    fireEvent.change(webhookInput, { target: { value: "https://test.com" } });
+    expect(webhookInput.value).toBe("https://test.com");
   });
 
   it("calls rpc on save", async () => {
@@ -58,5 +78,19 @@ describe("ChannelConfigDrawer", () => {
     fireEvent.click(screen.getByText(/save configuration/i));
     // Wait for the mock save to complete
     await vi.waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false));
+  });
+
+  it("handles save error", async () => {
+    mockRpcCall.mockRejectedValueOnce(new Error("RPC Failed"));
+
+    const onOpenChange = vi.fn();
+    render(<ChannelConfigDrawer channel={mockChannel} open={true} onOpenChange={onOpenChange} />);
+
+    fireEvent.click(screen.getByText(/save configuration/i));
+
+    // Wait for the mock save to fail and loading to stop
+    await vi.waitFor(() => expect(screen.queryByText(/saving/i)).toBeNull());
+    // onOpenChange should NOT be called with false on error
+    expect(onOpenChange).not.toHaveBeenCalledWith(false);
   });
 });
