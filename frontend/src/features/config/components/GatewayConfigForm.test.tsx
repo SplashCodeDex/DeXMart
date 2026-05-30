@@ -88,4 +88,39 @@ describe("GatewayConfigForm", () => {
       });
     });
   });
+
+  it("submits changes using config.apply when 'Apply & Restart' is clicked", async () => {
+    mockRpc.call.mockImplementation((method: string) => {
+      if (method === "config.schema") {
+        return Promise.resolve({ schema: { type: "object" }, uiHints: {} });
+      }
+      if (method === "config.get") {
+        return Promise.resolve({ config: { existing: true }, baseHash: "hash1" });
+      }
+      if (method === "config.apply") {
+        return Promise.resolve({ ok: true });
+      }
+      return Promise.resolve({});
+    });
+
+    render(
+      <GatewayContext.Provider value={contextValue}>
+        <GatewayConfigForm />
+      </GatewayContext.Provider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("Apply & Restart")).toBeDefined();
+    });
+
+    fireEvent.click(screen.getByText("Apply & Restart"));
+
+    await waitFor(() => {
+      expect(mockRpc.call).toHaveBeenCalledWith("config.apply", {
+        raw: JSON.stringify({ updated: true }, null, 2),
+        baseHash: "hash1",
+        note: "Applied from DeXMart Dashboard",
+      });
+    });
+  });
 });
