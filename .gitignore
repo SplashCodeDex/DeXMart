@@ -127,7 +127,6 @@ dist/protocol.schema.json
 .dev-state
 docs/superpowers/plans/2026-03-10-collapsed-side-nav.md
 docs/superpowers/specs/2026-03-10-collapsed-side-nav-design.md
-.gitignore
 test/config-form.analyze.telegram.test.ts
 ui/src/ui/theme-variants.browser.test.ts
 ui/src/ui/__screenshots__
@@ -150,3 +149,26 @@ analysis/
 .artifacts/qa-e2e/
 extensions/qa-lab/web/dist/
 *.log
+.omc/
+service-account.json
+temp_status*.txt
+merge_output.txt
+test-triage-raw.log
+tsgo_output*.log
+typecheck-*.log
+fix-imports*.js
+fix2.py
+test-channel.js
+UserPasted.logs
+TheUltimateRequest.md
+dream-diary-preview-*.html
+image.png
+image copy.png
+r_4_x_bot.spline
+*.Zone.Identifier
+dexmart-befcd0e9c376.json:Zone.Identifier
+docs.acp.md
+appcast.xml
+openclaw.podman.env
+/control-ui
+
