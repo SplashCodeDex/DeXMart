@@ -140,7 +140,9 @@ describe("GatewayClient — connect", () => {
     // Wait for async getToken
     await vi.waitFor(() => expect(ws.sentMessages.length).toBe(1));
 
-    const params = JSON.parse(ws.sentMessages[0]);
+    const message = ws.sentMessages[0];
+    if (message === undefined) throw new Error("No message sent");
+    const params = JSON.parse(message);
     expect(params.auth.token).toBe("my-token");
     expect(params.client.id).toBeDefined();
   });

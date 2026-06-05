@@ -71,8 +71,9 @@ describe("GatewayProvider", () => {
     expect(screen.getByTestId("status").textContent).toBe("Status:connecting Error: Halted:false");
 
     // Manually trigger status change (simulating client behavior)
-    const onStatusChange = vi.mocked(GatewayClientModule.createGatewayClient).mock.calls[0][0]
-      .onStatusChange!;
+    const call = vi.mocked(GatewayClientModule.createGatewayClient).mock.calls[0];
+    if (!call) throw new Error("createGatewayClient not called");
+    const onStatusChange = call[0].onStatusChange!;
     onStatusChange("connected");
 
     // Wait for the status to update
