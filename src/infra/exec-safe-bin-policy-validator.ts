@@ -100,6 +100,9 @@ function consumeShortOptionClusterToken(params: {
 }): number {
   for (let j = 0; j < params.flags.length; j += 1) {
     const flag = params.flags[j];
+    if (flag === undefined) {
+      continue;
+    }
     if (params.deniedFlags.has(flag)) {
       return -1;
     }

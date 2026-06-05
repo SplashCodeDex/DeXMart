@@ -214,7 +214,7 @@ export function NodeDetailSheet({ node, open, onOpenChange, onUpdate }: NodeDeta
                     </h3>
                     <div className="flex flex-wrap gap-2">
                       {node.caps?.length ? (
-                        node.caps.map((cap) => (
+                        node.caps.map((cap: string) => (
                           <Badge
                             key={cap}
                             variant="outline"
@@ -271,7 +271,7 @@ export function NodeDetailSheet({ node, open, onOpenChange, onUpdate }: NodeDeta
               <ScrollArea className="h-full pr-4">
                 <div className="space-y-3">
                   {node.commands?.length ? (
-                    node.commands.map((cmd) => (
+                    node.commands.map((cmd: string) => (
                       <div
                         key={cmd}
                         className="group flex items-center justify-between p-3 rounded-lg border border-border/50 bg-background/50 hover:bg-muted/50 transition-all hover:border-border"

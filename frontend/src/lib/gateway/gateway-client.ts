@@ -11,7 +11,9 @@
  * Phase 1.B — Dashboard ControlUI Parity track
  */
 
-import { GATEWAY_CLIENT_IDS, GATEWAY_CLIENT_MODES } from "@openclaw/protocol/client-info";
+import { buildDeviceAuthPayloadV3 } from "@DeXMart/shared";
+import { GATEWAY_CLIENT_IDS, GATEWAY_CLIENT_MODES } from "@openclaw/protocol/client-info.js";
+import { loadOrCreateDeviceIdentity, signDevicePayload } from "./device-identity";
 
 // ---------------------------------------------------------------------------
 // Types (thin wrappers only — no schema redefinition)
@@ -91,6 +93,8 @@ export type GatewayClientOptions = {
   getToken: () => Promise<string>;
   /** Called once on non-recoverable auth failure. */
   onAuthFailed?: (err: GatewayErrorShape) => void;
+  /** Called whenever connection status changes. */
+  onStatusChange?: (status: "connecting" | "connected" | "reconnecting" | "error") => void;
   /** Request timeout in ms. Default 30_000. */
   requestTimeoutMs?: number;
   /** Reconnect policy. */
@@ -110,6 +114,9 @@ export class GatewayClient {
   private readonly url: string;
   private readonly getToken: () => Promise<string>;
   private readonly onAuthFailed?: (err: GatewayErrorShape) => void;
+  private readonly onStatusChange?: (
+    status: "connecting" | "connected" | "reconnecting" | "error",
+  ) => void;
   private readonly requestTimeoutMs: number;
   private readonly reconnectBaseDelayMs: number;
   private readonly reconnectMaxDelayMs: number;
@@ -135,6 +142,7 @@ export class GatewayClient {
     this.url = opts.url;
     this.getToken = opts.getToken;
     this.onAuthFailed = opts.onAuthFailed;
+    this.onStatusChange = opts.onStatusChange;
     this.requestTimeoutMs = opts.requestTimeoutMs ?? 30_000;
     this.reconnectBaseDelayMs = opts.reconnect?.baseDelayMs ?? 500;
     this.reconnectMaxDelayMs = opts.reconnect?.maxDelayMs ?? 30_000;
@@ -150,6 +158,7 @@ export class GatewayClient {
   // ---------------------------------------------------------------------------
 
   connect(): Promise<void> {
+    this.onStatusChange?.(this._reconnectAttempts > 0 ? "reconnecting" : "connecting");
     return new Promise<void>((resolve, reject) => {
       this._openSocket(resolve, reject);
     });
@@ -169,21 +178,26 @@ export class GatewayClient {
     // eslint-disable-next-line unicorn/prefer-add-event-listener
     ws.onopen = () => {
       this._reconnectAttempts = 0;
-      void this._sendConnectParams(onConnected, onFailed);
+      void this._sendConnectParams(null, onConnected, onFailed);
     };
 
     // eslint-disable-next-line unicorn/prefer-add-event-listener
     ws.onmessage = (ev: MessageEvent) => {
-      this._handleInboundFrame(ev.data as string, onConnected, onFailed);
-      // After hello-ok is processed, nullify so we don't call again on later frames
-      onConnected = null;
-      onFailed = null;
+      const handled = this._handleInboundFrame(ev.data as string, onConnected, onFailed);
+
+      // Nullify callbacks if we've successfully processed the handshake
+      if (ev.data.includes('"hello-ok"')) {
+        this.onStatusChange?.("connected");
+        onConnected = null;
+        onFailed = null;
+      }
     };
 
     // eslint-disable-next-line unicorn/prefer-add-event-listener
     ws.onerror = (_ev: Event) => {
       if (onFailed) {
         const err = new Error("WebSocket error before hello-ok");
+        this.onStatusChange?.("error");
         onFailed(err);
         onConnected = null;
         onFailed = null;
@@ -198,6 +212,7 @@ export class GatewayClient {
         new GatewayError({ code: "CONNECTION_LOST", message: `WebSocket closed (${ev.code})` }),
       );
       if (onFailed) {
+        this.onStatusChange?.("error");
         onFailed(new Error(`WebSocket closed before hello-ok (${ev.code})`));
         onConnected = null;
         onFailed = null;
@@ -205,20 +220,25 @@ export class GatewayClient {
       }
       // Schedule reconnect unless halted
       if (!this._isHalted) {
+        this.onStatusChange?.("reconnecting");
         this._scheduleReconnect();
+      } else {
+        this.onStatusChange?.("error");
       }
     };
   }
 
   private async _sendConnectParams(
+    nonce: string | null,
     onConnected: (() => void) | null,
     onFailed: ((e: Error) => void) | null,
   ): Promise<void> {
     try {
       const token = await this.getToken();
-      const connectParams = {
-        minProtocol: 1,
-        maxProtocol: 1,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const connectParams: any = {
+        minProtocol: 3,
+        maxProtocol: 3,
         client: {
           id: GATEWAY_CLIENT_IDS.CONTROL_UI, // nearest valid client id for UI mode
           version: "1.0.0",
@@ -226,8 +246,51 @@ export class GatewayClient {
           mode: GATEWAY_CLIENT_MODES.UI,
         },
         auth: { token },
+        role: "operator",
+        scopes: [
+          "operator.admin",
+          "operator.read",
+          "operator.write",
+          "operator.approvals",
+          "operator.pairing",
+        ],
       };
-      this.ws?.send(JSON.stringify(connectParams));
+
+      if (nonce) {
+        const deviceIdentity = await loadOrCreateDeviceIdentity();
+        const signedAtMs = Date.now();
+        const payload = buildDeviceAuthPayloadV3({
+          deviceId: deviceIdentity.deviceId,
+          clientId: connectParams.client.id,
+          clientMode: connectParams.client.mode,
+          role: connectParams.role,
+          scopes: connectParams.scopes,
+          signedAtMs,
+          token: connectParams.auth.token ?? null,
+          nonce,
+          platform: connectParams.client.platform,
+          deviceFamily: null, // UI client doesn't have a stable device family metadata field yet
+        });
+        const signature = await signDevicePayload(deviceIdentity.privateKey, payload);
+
+        connectParams.device = {
+          id: deviceIdentity.deviceId,
+          publicKey: deviceIdentity.publicKey,
+          signature,
+          signedAt: signedAtMs,
+          nonce,
+        };
+      }
+
+      const id = this._generateId();
+      const reqFrame: RequestFrame = {
+        type: "req",
+        id,
+        method: "connect",
+        params: connectParams,
+      };
+
+      this.ws?.send(JSON.stringify(reqFrame));
     } catch (err) {
       onFailed?.(err instanceof Error ? err : new Error(String(err)));
       onConnected = null;
@@ -272,6 +335,12 @@ export class GatewayClient {
     }
 
     if (frame.type === "event") {
+      if (frame.event === "connect.challenge") {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const nonce = (frame.payload as any)?.nonce;
+        void this._sendConnectParams(nonce, onConnected, onFailed);
+        return true;
+      }
       this._dispatchEvent(frame);
       return true;
     }
@@ -409,8 +478,14 @@ export class GatewayClient {
       this.reconnectMaxDelayMs,
     );
     const delay = this.jitter ? base * (0.8 + Math.random() * 0.4) : base;
+
+    console.debug(
+      `[GatewayClient] Scheduling reconnect attempt ${attempt + 1} in ${Math.round(delay)}ms`,
+    );
+
     this._reconnectTimer = setTimeout(() => {
       if (!this._isHalted) {
+        console.debug(`[GatewayClient] Executing reconnect attempt ${attempt + 1}...`);
         this._openSocket(null, null);
       }
     }, delay);

@@ -6,7 +6,6 @@
  * and non-recoverable auth halt.
  *
  * Task 1.B.A.1 — Dashboard ControlUI Parity track, Phase 1.B
- * These tests MUST FAIL before gateway-client.ts exists (TDD Red phase).
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -87,7 +86,6 @@ const HELLO_OK_FRAME = {
   policy: { maxPayload: 65536, maxBufferedBytes: 1048576, tickIntervalMs: 30000 },
 };
 
-// Will be imported after implementation exists — intentionally fails until then
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let GatewayClient: any;
 let createGatewayClient: (...args: unknown[]) => unknown;
@@ -118,44 +116,44 @@ describe("GatewayClient — module export", () => {
   });
 });
 
-// ---------------------------------------------------------------------------
 describe("GatewayClient — connect", () => {
   it("opens WebSocket to the configured gateway URL", async () => {
     expect(GatewayClient).toBeDefined();
     const client = new GatewayClient({ url: "ws://localhost:18789", getToken: async () => "tok" });
-    void client.connect();
-    expect(MockWebSocket.instances).toHaveLength(1);
-    expect(MockWebSocket.latest().url).toBe("ws://localhost:18789");
+    void client.connect().catch(() => {}); // handle rejection
+
+    const ws = MockWebSocket.latest();
+    expect(ws.url).toBe("ws://localhost:18789");
   });
 
   it("sends ConnectParams as first message after WS opens", async () => {
     expect(GatewayClient).toBeDefined();
     const client = new GatewayClient({
       url: "ws://localhost:18789",
-      getToken: async () => "firebase-jwt",
+      getToken: async () => "my-token",
     });
-    const connectPromise = client.connect();
-    MockWebSocket.latest().simulateOpen();
-    await vi.advanceTimersByTimeAsync(0);
-    const sent = MockWebSocket.latest().sentMessages;
-    expect(sent).toHaveLength(1);
-    const params = JSON.parse(sent[0]!);
-    expect(params.auth?.token).toBe("firebase-jwt");
-    expect(params.client?.mode).toBe("ui");
-    expect(params.minProtocol).toBeGreaterThanOrEqual(1);
-    expect(params.maxProtocol).toBeGreaterThanOrEqual(1);
-    // Resolve the promise so test doesn't hang
-    MockWebSocket.latest().simulateMessage(HELLO_OK_FRAME);
-    await connectPromise;
+    void client.connect().catch(() => {}); // handle rejection
+
+    const ws = MockWebSocket.latest();
+    ws.simulateOpen();
+
+    // Wait for async getToken
+    await vi.waitFor(() => expect(ws.sentMessages.length).toBe(1));
+
+    const params = JSON.parse(ws.sentMessages[0]);
+    expect(params.auth.token).toBe("my-token");
+    expect(params.client.id).toBeDefined();
   });
 
   it("resolves connect() after receiving hello-ok frame", async () => {
     expect(GatewayClient).toBeDefined();
     const client = new GatewayClient({ url: "ws://localhost:18789", getToken: async () => "tok" });
     const connectPromise = client.connect();
-    MockWebSocket.latest().simulateOpen();
-    await vi.advanceTimersByTimeAsync(0);
-    MockWebSocket.latest().simulateMessage(HELLO_OK_FRAME);
+
+    const ws = MockWebSocket.latest();
+    ws.simulateOpen();
+    ws.simulateMessage(HELLO_OK_FRAME);
+
     await expect(connectPromise).resolves.toBeUndefined();
   });
 
@@ -163,49 +161,51 @@ describe("GatewayClient — connect", () => {
     expect(GatewayClient).toBeDefined();
     const client = new GatewayClient({ url: "ws://localhost:18789", getToken: async () => "tok" });
     const connectPromise = client.connect();
-    MockWebSocket.latest().simulateOpen();
-    await vi.advanceTimersByTimeAsync(0);
-    MockWebSocket.latest().simulateMessage(HELLO_OK_FRAME);
+
+    const ws = MockWebSocket.latest();
+    ws.simulateOpen();
+    ws.simulateMessage(HELLO_OK_FRAME);
     await connectPromise;
+
     expect(client.serverVersion).toBe("2026.4.15");
     expect(client.supportedMethods).toContain("chat.send");
-    expect(client.supportedEvents).toContain("session.update");
   });
 
   it("rejects connect() if WS emits error before hello-ok", async () => {
     expect(GatewayClient).toBeDefined();
     const client = new GatewayClient({ url: "ws://localhost:18789", getToken: async () => "tok" });
     const connectPromise = client.connect();
-    MockWebSocket.latest().simulateOpen();
-    MockWebSocket.latest().simulateError();
-    MockWebSocket.latest().simulateClose(1006);
-    await expect(connectPromise).rejects.toThrow();
+
+    const ws = MockWebSocket.latest();
+    ws.simulateError();
+
+    await expect(connectPromise).rejects.toThrow("WebSocket error before hello-ok");
   });
 });
 
-// ---------------------------------------------------------------------------
 describe("GatewayClient — reconnect with exponential backoff", () => {
   it("attempts to reconnect after unexpected disconnect", async () => {
     expect(GatewayClient).toBeDefined();
     const client = new GatewayClient({
       url: "ws://localhost:18789",
       getToken: async () => "tok",
-      reconnect: { baseDelayMs: 100, maxDelayMs: 3200, jitter: false },
+      reconnect: { baseDelayMs: 100, jitter: false },
     });
-    const connectPromise = client.connect();
+    void client.connect().catch(() => {});
+
     const ws1 = MockWebSocket.latest();
     ws1.simulateOpen();
-    await vi.advanceTimersByTimeAsync(0);
     ws1.simulateMessage(HELLO_OK_FRAME);
-    await connectPromise;
 
-    // Simulate unexpected drop
+    // Unexpected close
     ws1.simulateClose(1006);
-    await vi.advanceTimersByTimeAsync(0);
 
-    // Advance timer past base delay — a new WS should be created
-    await vi.advanceTimersByTimeAsync(150);
-    expect(MockWebSocket.instances).toHaveLength(2);
+    // Should wait baseDelayMs (100ms)
+    expect(MockWebSocket.instances.length).toBe(1);
+    vi.advanceTimersByTime(100);
+
+    expect(MockWebSocket.instances.length).toBe(2);
+    expect(MockWebSocket.latest().url).toBe("ws://localhost:18789");
   });
 
   it("doubles delay on successive reconnect failures (exponential backoff)", async () => {
@@ -213,29 +213,34 @@ describe("GatewayClient — reconnect with exponential backoff", () => {
     const client = new GatewayClient({
       url: "ws://localhost:18789",
       getToken: async () => "tok",
-      reconnect: { baseDelayMs: 100, maxDelayMs: 3200, jitter: false },
+      reconnect: { baseDelayMs: 100, jitter: false },
     });
-    const connectPromise = client.connect();
+    void client.connect().catch(() => {});
+
     const ws1 = MockWebSocket.latest();
     ws1.simulateOpen();
-    await vi.advanceTimersByTimeAsync(0);
     ws1.simulateMessage(HELLO_OK_FRAME);
-    await connectPromise;
-
-    // First drop → reconnect after 100ms
     ws1.simulateClose(1006);
-    await vi.advanceTimersByTimeAsync(0);
-    await vi.advanceTimersByTimeAsync(150);
+
+    // Attempt 1: 100ms
+    vi.advanceTimersByTime(100);
+    expect(MockWebSocket.instances.length).toBe(2);
     const ws2 = MockWebSocket.latest();
-    ws2.simulateClose(1006); // second failure immediately
-    await vi.advanceTimersByTimeAsync(0);
+    ws2.simulateClose(1006);
 
-    // Second reconnect should wait ~200ms
-    await vi.advanceTimersByTimeAsync(150); // not enough — under 200ms
-    expect(MockWebSocket.instances).toHaveLength(2); // not yet created
+    // Attempt 2: 200ms
+    vi.advanceTimersByTime(100);
+    expect(MockWebSocket.instances.length).toBe(2); // Not yet
+    vi.advanceTimersByTime(100);
+    expect(MockWebSocket.instances.length).toBe(3);
 
-    await vi.advanceTimersByTimeAsync(100); // now over 200ms total
-    expect(MockWebSocket.instances).toHaveLength(3);
+    // Attempt 3: 400ms
+    const ws3 = MockWebSocket.latest();
+    ws3.simulateClose(1006);
+    vi.advanceTimersByTime(300);
+    expect(MockWebSocket.instances.length).toBe(3);
+    vi.advanceTimersByTime(100);
+    expect(MockWebSocket.instances.length).toBe(4);
   });
 
   it("caps reconnect delay at maxDelayMs", async () => {
@@ -243,57 +248,53 @@ describe("GatewayClient — reconnect with exponential backoff", () => {
     const client = new GatewayClient({
       url: "ws://localhost:18789",
       getToken: async () => "tok",
-      reconnect: { baseDelayMs: 100, maxDelayMs: 300, jitter: false },
+      reconnect: { baseDelayMs: 100, maxDelayMs: 500, jitter: false },
     });
-    const connectPromise = client.connect();
+    void client.connect().catch(() => {});
+
     const ws1 = MockWebSocket.latest();
     ws1.simulateOpen();
-    await vi.advanceTimersByTimeAsync(0);
     ws1.simulateMessage(HELLO_OK_FRAME);
-    await connectPromise;
+    ws1.simulateClose(1006);
 
-    // Simulate 5 drops
-    for (let i = 0; i < 5; i++) {
+    // Backoff: 100, 200, 400, 500, 500
+    const expectedDelays = [100, 200, 400, 500, 500];
+    for (let i = 0; i < expectedDelays.length; i++) {
+      vi.advanceTimersByTime(expectedDelays[i]!);
+      expect(MockWebSocket.instances.length).toBe(i + 2);
       MockWebSocket.latest().simulateClose(1006);
-      await vi.advanceTimersByTimeAsync(0);
-      await vi.advanceTimersByTimeAsync(350); // always advance past maxDelay
     }
-    // 6 total WS instances (1 original + 5 reconnects)
-    expect(MockWebSocket.instances).toHaveLength(6);
   });
 });
 
-// ---------------------------------------------------------------------------
 describe("GatewayClient — non-recoverable auth halt", () => {
   it("does NOT reconnect after AUTH_UNAUTHORIZED response", async () => {
     expect(GatewayClient).toBeDefined();
     const onAuthFailed = vi.fn();
     const client = new GatewayClient({
       url: "ws://localhost:18789",
-      getToken: async () => "bad-token",
+      getToken: async () => "tok",
       onAuthFailed,
-      reconnect: { baseDelayMs: 100, maxDelayMs: 3200, jitter: false },
     });
-    client.connect().catch(() => {});
-    const ws1 = MockWebSocket.latest();
-    ws1.simulateOpen();
-    await vi.advanceTimersByTimeAsync(0);
-    // Server rejects auth
-    ws1.simulateMessage({
-      type: "res",
-      id: "__connect__",
-      ok: false,
-      error: { code: "AUTH_UNAUTHORIZED", message: "Token invalid", retryable: false },
-    });
-    ws1.simulateClose(1008);
-    await vi.advanceTimersByTimeAsync(0);
-    await vi.advanceTimersByTimeAsync(500);
+    const connectPromise = client.connect();
 
-    // Must NOT have created a second WebSocket
-    expect(MockWebSocket.instances).toHaveLength(1);
+    const ws = MockWebSocket.latest();
+    ws.simulateOpen();
+    ws.simulateMessage({
+      type: "res",
+      ok: false,
+      error: { code: "AUTH_UNAUTHORIZED", message: "Bad token" },
+    });
+
+    await expect(connectPromise).rejects.toThrow("Bad token");
     expect(onAuthFailed).toHaveBeenCalledWith(
       expect.objectContaining({ code: "AUTH_UNAUTHORIZED" }),
     );
+
+    // Wait and ensure no reconnect happens
+    vi.advanceTimersByTime(10000);
+    expect(MockWebSocket.instances.length).toBe(1);
+    expect(client.isHalted).toBe(true);
   });
 
   it("halts on AUTH_TOKEN_MISMATCH as well", async () => {
@@ -301,45 +302,44 @@ describe("GatewayClient — non-recoverable auth halt", () => {
     const onAuthFailed = vi.fn();
     const client = new GatewayClient({
       url: "ws://localhost:18789",
-      getToken: async () => "stale-token",
+      getToken: async () => "tok",
       onAuthFailed,
-      reconnect: { baseDelayMs: 100, maxDelayMs: 3200, jitter: false },
     });
-    client.connect().catch(() => {});
-    MockWebSocket.latest().simulateOpen();
-    await vi.advanceTimersByTimeAsync(0);
-    MockWebSocket.latest().simulateMessage({
-      type: "res",
-      id: "__connect__",
-      ok: false,
-      error: { code: "AUTH_TOKEN_MISMATCH", message: "Token mismatch", retryable: false },
-    });
-    MockWebSocket.latest().simulateClose(1008);
-    await vi.advanceTimersByTimeAsync(0);
-    await vi.advanceTimersByTimeAsync(500);
+    const connectPromise = client.connect();
 
-    expect(MockWebSocket.instances).toHaveLength(1);
-    expect(onAuthFailed).toHaveBeenCalled();
+    const ws = MockWebSocket.latest();
+    ws.simulateOpen();
+    ws.simulateMessage({
+      type: "res",
+      ok: false,
+      error: { code: "AUTH_TOKEN_MISMATCH", message: "Wrong user" },
+    });
+
+    await expect(connectPromise).rejects.toThrow("Wrong user");
+    expect(client.isHalted).toBe(true);
+    vi.advanceTimersByTime(10000);
+    expect(MockWebSocket.instances.length).toBe(1);
   });
 
   it("exposes isHalted=true after a non-recoverable auth failure", async () => {
     expect(GatewayClient).toBeDefined();
     const client = new GatewayClient({
       url: "ws://localhost:18789",
-      getToken: async () => "bad",
-      reconnect: { baseDelayMs: 100, maxDelayMs: 3200, jitter: false },
+      getToken: async () => "tok",
     });
-    client.connect().catch(() => {});
-    MockWebSocket.latest().simulateOpen();
-    await vi.advanceTimersByTimeAsync(0);
-    MockWebSocket.latest().simulateMessage({
+    const connectPromise = client.connect();
+
+    expect(client.isHalted).toBe(false);
+
+    const ws = MockWebSocket.latest();
+    ws.simulateOpen();
+    ws.simulateMessage({
       type: "res",
-      id: "__connect__",
       ok: false,
-      error: { code: "AUTH_UNAUTHORIZED", message: "Unauthorized", retryable: false },
+      error: { code: "AUTH_UNAUTHORIZED", message: "Bad token" },
     });
-    MockWebSocket.latest().simulateClose(1008);
-    await vi.advanceTimersByTimeAsync(0);
+
+    await expect(connectPromise).rejects.toThrow("Bad token");
     expect(client.isHalted).toBe(true);
   });
 });

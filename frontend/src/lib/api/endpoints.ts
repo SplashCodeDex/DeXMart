@@ -122,6 +122,10 @@ export const API_ENDPOINTS = {
       TOGGLE: (key: string) => `/api/omnichannel/skills/${key}/toggle` as const,
       SAVE_KEY: (key: string) => `/api/omnichannel/skills/${key}/key` as const,
       INSTALL: (key: string) => `/api/omnichannel/skills/${key}/install` as const,
+      APPROVALS: {
+        LIST: "/api/omnichannel/skills/approvals",
+        RESOLVE: (id: string) => `/api/omnichannel/skills/approvals/${id}/resolve` as const,
+      },
     },
     AGENTS: {
       LIST: "/api/omnichannel/agents",
@@ -178,7 +182,8 @@ export const API_ENDPOINTS = {
       STREAM: "/api/omnichannel/logs/stream",
     },
     COMMANDS: {
-      LIST: (agentId?: string) => `/api/internal/bots/commands${agentId ? `?agentId=${agentId}` : ""}` as const,
+      LIST: (agentId?: string) =>
+        `/api/internal/bots/commands${agentId ? `?agentId=${agentId}` : ""}` as const,
     },
   },
 } as const;

@@ -1,17 +1,16 @@
 "use client";
 
-import { AlertCircle, RefreshCw, Lock } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { toast } from "sonner";
 import { circuitBreaker } from "@/lib/api/apiCircuitBreaker";
 import { useGateway } from "@/lib/gateway/gateway-hooks";
-import { cn } from "@/lib/utils";
 
-export function ConnectionStatus(): React.ReactElement | null {
+export function ConnectionStatus(): null {
   const { status, isHalted } = useGateway();
   const [cbState, setCbState] = useState(circuitBreaker.getState("omnichannel"));
+  const toastIdRef = useRef<string | number | null>(null);
 
   useEffect(() => {
-    // Sync circuit breaker state
     const unsubscribe = circuitBreaker.subscribe((group, state) => {
       if (group === "omnichannel") {
         setCbState(state);
@@ -26,51 +25,34 @@ export function ConnectionStatus(): React.ReactElement | null {
   const isCbOpen = cbState === "OPEN";
   const isError = status === "error" || isCbOpen;
   const isReconnecting = status === "reconnecting" && !isHalted;
+  const isConnected = status === "connected" && !isCbOpen && !isHalted;
 
-  if (!isError && !isReconnecting && !isHalted) {
-    return null;
-  }
+  useEffect(() => {
+    // Dismiss any existing toast before showing a new one
+    if (toastIdRef.current) {
+      toast.dismiss(toastIdRef.current);
+      toastIdRef.current = null;
+    }
 
-  let content = null;
+    if (isHalted) {
+      toastIdRef.current = toast.error("Authentication failed", {
+        description: "Please check your credentials.",
+        duration: Infinity,
+      });
+    } else if (isReconnecting) {
+      toastIdRef.current = toast.loading("Reconnecting...", {
+        description: "Attempting to restore connection to Gateway.",
+      });
+    } else if (isError) {
+      toastIdRef.current = toast.error("Connection Lost", {
+        description: "Attempting to restore service.",
+        duration: Infinity,
+      });
+    } else if (isConnected) {
+      // Optional: Show a brief success toast when recovering
+      // toast.success("Connected", { description: "Service restored." });
+    }
+  }, [isHalted, isReconnecting, isError, isConnected]);
 
-  if (isHalted) {
-    content = (
-      <>
-        <Lock className="h-4 w-4" />
-        <span>Authentication failed</span>
-        <span className="text-sm opacity-80">. Please check your credentials.</span>
-      </>
-    );
-  } else if (isReconnecting) {
-    content = (
-      <>
-        <RefreshCw className="h-4 w-4 animate-spin" />
-        <span>Reconnecting...</span>
-      </>
-    );
-  } else if (isError) {
-    content = (
-      <>
-        <AlertCircle className="h-4 w-4" />
-        <span>Connection Lost</span>
-        <span className="text-sm opacity-80">. Attempting to restore service.</span>
-      </>
-    );
-  }
-
-  return (
-    <div
-      className={cn(
-        "fixed top-4 left-1/2 -translate-x-1/2 z-50",
-        "flex items-center gap-3 px-6 py-3 rounded-full shadow-2xl backdrop-blur-md border animate-in fade-in zoom-in duration-300",
-        isHalted
-          ? "bg-error/90 text-error-foreground border-error/20"
-          : isReconnecting
-            ? "bg-warning/90 text-warning-foreground border-warning/20"
-            : "bg-error/90 text-error-foreground border-error/20",
-      )}
-    >
-      {content}
-    </div>
-  );
+  return null;
 }

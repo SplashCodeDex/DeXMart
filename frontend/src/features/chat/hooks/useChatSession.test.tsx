@@ -1,6 +1,6 @@
 import { renderHook, act } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { useChatStore } from "../store";
+import { useChatStore, type ChatMessage } from "../store";
 import { useChatSession } from "./useChatSession";
 
 // Mock the gateway rpc

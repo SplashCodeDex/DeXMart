@@ -93,11 +93,10 @@ describe("useChannelStatus", () => {
       expect(result.current.channels.whatsapp).toBeDefined();
     });
 
-    expect(result.current.channelAccounts.whatsapp[0].accountId).toBe("acc-1");
+    const whatsappAccount = result.current.channelAccounts.whatsapp?.[0];
+    expect(whatsappAccount?.accountId).toBe("acc-1");
     // Verify QR decoding (implementation should prefix with data:image/png;base64,)
-    expect(result.current.channelAccounts.whatsapp[0].probe?.qrDataUrl).toBe(
-      "data:image/png;base64,abc123base64",
-    );
+    expect((whatsappAccount?.probe as any)?.qrDataUrl).toBe("data:image/png;base64,abc123base64");
   });
 
   it("should handle error in polling gracefully", async () => {

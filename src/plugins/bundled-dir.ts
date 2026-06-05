@@ -65,8 +65,9 @@ function runningSourceTypeScriptProcess(): boolean {
     if (arg === "tsx" || arg.includes("tsx/register")) {
       return true;
     }
-    if ((arg === "--import" || arg === "--loader") && process.execArgv[index + 1]) {
-      const next = process.execArgv[index + 1].toLowerCase();
+    const nextArg = process.execArgv[index + 1];
+    if ((arg === "--import" || arg === "--loader") && nextArg) {
+      const next = nextArg.toLowerCase();
       if (next === "tsx" || next.includes("tsx/")) {
         return true;
       }

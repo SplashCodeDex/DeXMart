@@ -74,7 +74,7 @@ describe("useSessionsList", () => {
     const { result } = renderHook(() => useSessionsList());
 
     expect(result.current.filteredSessions).toHaveLength(1);
-    expect(result.current.filteredSessions[0].label).toBe("Apple");
+    expect(result.current.filteredSessions[0]?.label).toBe("Apple");
   });
 
   it("should provide refresh functionality", async () => {
@@ -144,7 +144,7 @@ describe("useSessionsList", () => {
     });
 
     const sessions = useSessionsStore.getState().sessions;
-    expect(sessions[0].label).toBe("Updated");
+    expect(sessions[0]?.label).toBe("Updated");
     // Should NOT have called refresh (sessions.list) again beyond mount
     // Mount calls: 1 (sessions.list) + 1 (sessions.subscribe)
     expect(mockCall).toHaveBeenCalledTimes(2);

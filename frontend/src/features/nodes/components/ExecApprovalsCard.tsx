@@ -102,7 +102,7 @@ export function ExecApprovalsCard() {
                 <Input
                   value={formData?.defaults?.security || ""}
                   onChange={(e) =>
-                    setFormData((prev) =>
+                    setFormData((prev: ExecApprovalsFile | null) =>
                       prev
                         ? { ...prev, defaults: { ...prev.defaults, security: e.target.value } }
                         : null,
@@ -121,7 +121,7 @@ export function ExecApprovalsCard() {
               <Switch
                 checked={formData?.defaults?.autoAllowSkills ?? false}
                 onCheckedChange={(checked) =>
-                  setFormData((prev) =>
+                  setFormData((prev: ExecApprovalsFile | null) =>
                     prev
                       ? { ...prev, defaults: { ...prev.defaults, autoAllowSkills: checked } }
                       : null,
@@ -139,7 +139,7 @@ export function ExecApprovalsCard() {
                 <Input
                   value={formData?.defaults?.ask || ""}
                   onChange={(e) =>
-                    setFormData((prev) =>
+                    setFormData((prev: ExecApprovalsFile | null) =>
                       prev
                         ? { ...prev, defaults: { ...prev.defaults, ask: e.target.value } }
                         : null,
@@ -166,27 +166,30 @@ export function ExecApprovalsCard() {
               Agent Specific Overrides
             </h3>
             <div className="grid gap-4">
-              {Object.entries(formData.agents).map(([agentId, policy]) => (
-                <div
-                  key={agentId}
-                  className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-muted/30"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="h-8 w-8 rounded bg-accent/10 flex items-center justify-center text-accent">
-                      <Shield className="h-4 w-4" />
+              {Object.entries(formData.agents).map(([agentId, policy]) => {
+                const p = policy as any;
+                return (
+                  <div
+                    key={agentId}
+                    className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-muted/30"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded bg-accent/10 flex items-center justify-center text-accent">
+                        <Shield className="h-4 w-4" />
+                      </div>
+                      <span className="text-sm font-bold">{agentId}</span>
                     </div>
-                    <span className="text-sm font-bold">{agentId}</span>
+                    <div className="flex items-center gap-4">
+                      <Badge variant="secondary" className="text-[10px]">
+                        {p.security || "inherit"}
+                      </Badge>
+                      <span className="text-[10px] text-muted-foreground">
+                        {p.allowlist?.length || 0} Allowlist Rules
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <Badge variant="secondary" className="text-[10px]">
-                      {policy.security || "inherit"}
-                    </Badge>
-                    <span className="text-[10px] text-muted-foreground">
-                      {policy.allowlist?.length || 0} Allowlist Rules
-                    </span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}

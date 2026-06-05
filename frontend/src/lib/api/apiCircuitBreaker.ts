@@ -113,6 +113,18 @@ class ApiCircuitBreaker {
     }
     return state.state;
   }
+
+  /**
+   * Forcefully unblocks a group (resets the circuit).
+   * Useful when we know the connection is restored from a low-level event.
+   */
+  public unblockGroup(group: string): void {
+    const state = this.getGroup(group);
+    state.failures = 0;
+    state.state = "CLOSED";
+    state.nextAttemptAt = 0;
+    this.notifyListeners(group, "CLOSED");
+  }
 }
 
 export const circuitBreaker = new ApiCircuitBreaker();

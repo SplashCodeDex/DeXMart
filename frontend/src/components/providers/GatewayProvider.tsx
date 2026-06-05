@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useRef, ReactNode } from "react";
+import { circuitBreaker } from "../../lib/api/apiCircuitBreaker";
 import { createGatewayClient } from "../../lib/gateway/gateway-client";
 import { GatewayContext, GatewayContextState } from "../../lib/gateway/gateway-hooks";
 import { GatewayRpc } from "../../lib/gateway/gateway-rpc";
@@ -25,30 +26,38 @@ export const GatewayProvider: React.FC<GatewayProviderProps> = ({ url, getToken,
     const client = createGatewayClient({
       url,
       getToken: getToken || (async () => ""),
+      onStatusChange: (status) => {
+        if (status === "connected") {
+          circuitBreaker.unblockGroup("omnichannel");
+        }
+        setState((prev) => ({
+          ...prev,
+          status,
+          isHalted: client.isHalted,
+        }));
+      },
+      onAuthFailed: (err) => {
+        setState((prev) => ({
+          ...prev,
+          status: "error",
+          error: new Error(err.message),
+          isHalted: true,
+        }));
+      },
     });
     clientRef.current = client;
 
     const rpc = new GatewayRpc(client);
+    setState((prev) => ({ ...prev, rpc }));
 
-    client
-      .connect()
-      .then(() => {
-        setState((prev) => ({
-          ...prev,
-          rpc,
-          status: "connected",
-          error: null,
-          isHalted: client.isHalted,
-        }));
-      })
-      .catch((err: Error) => {
-        setState((prev) => ({
-          ...prev,
-          status: "error",
-          error: err,
-          isHalted: client.isHalted,
-        }));
-      });
+    client.connect().catch((err: Error) => {
+      setState((prev) => ({
+        ...prev,
+        status: "error",
+        error: err,
+        isHalted: client.isHalted,
+      }));
+    });
 
     return () => {
       client.disconnect();

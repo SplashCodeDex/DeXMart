@@ -1,3 +1,4 @@
+"use client";
 import { useCallback, useEffect } from "react";
 import { useGateway } from "@/lib/gateway/gateway-hooks";
 import { useSessionsStore, type Session } from "../store";

@@ -1152,7 +1152,11 @@ export function evaluateShellAllowlist(
   // Only allow the `cat SKILL.md && printf ...` display prelude when it sits on a
   // contiguous `&&` chain that actually reaches a later trusted skill-wrapper execution.
   for (let index = finalizedEvaluations.length - 1; index >= 0; index -= 1) {
-    const { analysis, evaluation, opToNext } = finalizedEvaluations[index];
+    const entry = finalizedEvaluations[index];
+    if (!entry) {
+      continue;
+    }
+    const { analysis, evaluation, opToNext } = entry;
     const trustedSkillIds = resolveTrustedSkillExecutionIds({
       analysis,
       evaluation,

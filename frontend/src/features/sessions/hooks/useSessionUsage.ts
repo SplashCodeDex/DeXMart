@@ -1,3 +1,4 @@
+"use client";
 import { useCallback, useEffect, useState } from "react";
 import { useGateway } from "@/lib/gateway/gateway-hooks";
 
@@ -32,10 +33,12 @@ export function useSessionUsage(sessionId: string | null) {
 
     setIsLoading(true);
     try {
+      if (!rpc) throw new Error("RPC not available");
       const result = await rpc.call("sessions.usage", { key: sessionId });
       // sessions.usage returns { sessions: [ { usage: ... } ] } when key is provided
-      if (result.sessions && result.sessions.length > 0) {
-        setUsage(result.sessions[0].usage);
+      const session = result.sessions[0];
+      if (session) {
+        setUsage(session.usage);
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to fetch usage data";

@@ -76,9 +76,7 @@ describe("CompactionPanel", () => {
       screen.getByText(/Create a new session starting from this checkpoint/i),
     ).toBeInTheDocument();
 
-    const input = screen.getByPlaceholderPath
-      ? screen.getByPlaceholderText("e.target.value")
-      : screen.getByRole("textbox");
+    const input = screen.getByPlaceholderText("New branch label");
     fireEvent.change(input, { target: { value: "New Branch" } });
 
     fireEvent.click(screen.getByText("Create Branch"));

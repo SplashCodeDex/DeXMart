@@ -29,20 +29,22 @@ export function useChannelStatus(options: UseChannelStatusOptions = {}) {
       const processedResult = { ...result };
       if (processedResult.channelAccounts) {
         for (const channelId in processedResult.channelAccounts) {
-          processedResult.channelAccounts[channelId] = processedResult.channelAccounts[
-            channelId
-          ].map((acc) => {
-            if (acc.probe?.rawQr) {
-              return {
-                ...acc,
-                probe: {
-                  ...acc.probe,
-                  qrDataUrl: `data:image/png;base64,${acc.probe.rawQr}`,
-                },
-              };
-            }
-            return acc;
-          });
+          const accounts = processedResult.channelAccounts[channelId];
+          if (accounts) {
+            processedResult.channelAccounts[channelId] = accounts.map((acc) => {
+              const probe = acc.probe as any;
+              if (probe?.rawQr) {
+                return {
+                  ...acc,
+                  probe: {
+                    ...probe,
+                    qrDataUrl: `data:image/png;base64,${probe.rawQr}`,
+                  },
+                };
+              }
+              return acc;
+            });
+          }
         }
       }
 

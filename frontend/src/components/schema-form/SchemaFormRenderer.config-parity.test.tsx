@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import schemaFixture from "../../../../test-fixtures/config-schema-small.json";
-import { SchemaFormRenderer } from "./SchemaFormRenderer";
+import { SchemaFormRenderer, type JsonSchema } from "./SchemaFormRenderer";
 
 describe("SchemaFormRenderer - Config Parity", () => {
   const onSubmit = vi.fn();
@@ -55,8 +55,8 @@ describe("SchemaFormRenderer - Config Parity", () => {
 
     const inputs = screen.getAllByRole("textbox");
     // [FOO, bar, "", ""]
-    fireEvent.change(inputs[2], { target: { value: "BAZ" } });
-    fireEvent.change(inputs[3], { target: { value: "qux" } });
+    fireEvent.change(inputs[2]!, { target: { value: "BAZ" } });
+    fireEvent.change(inputs[3]!, { target: { value: "qux" } });
 
     fireEvent.click(screen.getByRole("button", { name: /submit/i }));
 

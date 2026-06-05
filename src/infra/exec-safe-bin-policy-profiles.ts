@@ -314,7 +314,9 @@ export function renderSafeBinDeniedFlagsDocBullets(
   const deniedByBin = resolveSafeBinDeniedFlags(fixtures);
   const bins = Object.keys(deniedByBin).toSorted();
   return bins
-    .map((bin) => `- \`${bin}\`: ${deniedByBin[bin].map((flag) => `\`${flag}\``).join(", ")}`)
+    .map(
+      (bin) => `- \`${bin}\`: ${(deniedByBin[bin] ?? []).map((flag) => `\`${flag}\``).join(", ")}`,
+    )
     .join("\n");
 }
 

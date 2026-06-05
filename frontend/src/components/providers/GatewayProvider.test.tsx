@@ -49,15 +49,18 @@ describe("GatewayProvider", () => {
       </GatewayProvider>,
     );
     expect(screen.getByTestId("status").textContent).toBe("Status:connecting Error: Halted:false");
-    expect(GatewayClientModule.createGatewayClient).toHaveBeenCalledWith({
-      url: "ws://test",
-      getToken: expect.any(Function),
-    });
+    expect(GatewayClientModule.createGatewayClient).toHaveBeenCalledWith(
+      expect.objectContaining({
+        url: "ws://test",
+        getToken: expect.any(Function),
+        onStatusChange: expect.any(Function),
+        onAuthFailed: expect.any(Function),
+      }),
+    );
     expect(mockConnect).toHaveBeenCalled();
   });
 
   it("updates state when connected", async () => {
-    mockConnect.mockResolvedValueOnce(undefined);
     render(
       <GatewayProvider url="ws://test">
         <DummyChild />
@@ -67,7 +70,12 @@ describe("GatewayProvider", () => {
     // Initial state
     expect(screen.getByTestId("status").textContent).toBe("Status:connecting Error: Halted:false");
 
-    // Wait for the promise to resolve
+    // Manually trigger status change (simulating client behavior)
+    const onStatusChange = vi.mocked(GatewayClientModule.createGatewayClient).mock.calls[0][0]
+      .onStatusChange!;
+    onStatusChange("connected");
+
+    // Wait for the status to update
     await screen.findByText("Status:connected Error: Halted:false");
   });
 

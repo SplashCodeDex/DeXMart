@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { useRpcCall } from "@/lib/gateway/gateway-hooks";
-import { ModelSelector } from "@/components/shared/ModelSelector";
 import { Settings, MessageSquare, ChevronDown, Check } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { ModelSelector } from "@/components/shared/ModelSelector";
+import { useRpcCall } from "@/lib/gateway/gateway-hooks";
 import { cn } from "@/lib/utils";
 
 interface SessionHeaderProps {
@@ -10,10 +10,10 @@ interface SessionHeaderProps {
 }
 
 export function SessionHeader({ currentSessionKey, onSessionChange }: SessionHeaderProps) {
-  const [sessions, setSessions] = useState<any[]>([]);
+  const [sessions, setSessions] = useState<ReadonlyArray<any>>([]);
   const [isSessionPickerOpen, setIsSessionPickerOpen] = useState(false);
   const [isModelSelectorOpen, setIsModelSelectorOpen] = useState(false);
-  
+
   const callSessionsList = useRpcCall("sessions.list");
   const callSessionsPatch = useRpcCall("sessions.patch");
 
@@ -35,7 +35,9 @@ export function SessionHeader({ currentSessionKey, onSessionChange }: SessionHea
     }
   };
 
-  const activeSession = sessions.find(s => s.key === currentSessionKey) || { label: currentSessionKey };
+  const activeSession = sessions.find((s) => s.key === currentSessionKey) || {
+    label: currentSessionKey,
+  };
 
   return (
     <div className="flex items-center justify-between px-6 py-4 border-b border-border/50 bg-card/20 backdrop-blur-md">
@@ -46,10 +48,14 @@ export function SessionHeader({ currentSessionKey, onSessionChange }: SessionHea
             className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-accent transition-colors text-sm font-medium"
           >
             <MessageSquare className="h-4 w-4 text-primary" />
-            <span className="truncate max-w-[150px]">{activeSession.label || currentSessionKey}</span>
-            <ChevronDown className={cn("h-3 w-3 transition-transform", isSessionPickerOpen && "rotate-180")} />
+            <span className="truncate max-w-[150px]">
+              {activeSession.label || currentSessionKey}
+            </span>
+            <ChevronDown
+              className={cn("h-3 w-3 transition-transform", isSessionPickerOpen && "rotate-180")}
+            />
           </button>
-          
+
           {isSessionPickerOpen && (
             <>
               <div className="fixed inset-0 z-10" onClick={() => setIsSessionPickerOpen(false)} />
@@ -67,7 +73,8 @@ export function SessionHeader({ currentSessionKey, onSessionChange }: SessionHea
                       }}
                       className={cn(
                         "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors hover:bg-accent",
-                        s.key === currentSessionKey && "bg-accent text-accent-foreground font-medium"
+                        s.key === currentSessionKey &&
+                          "bg-accent text-accent-foreground font-medium",
                       )}
                     >
                       <span className="truncate">{s.label || s.key}</span>
@@ -98,10 +105,7 @@ export function SessionHeader({ currentSessionKey, onSessionChange }: SessionHea
                 <div className="mb-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">
                   Select Model Override
                 </div>
-                <ModelSelector 
-                  onSelect={handleModelSelect}
-                  value={activeSession.model}
-                />
+                <ModelSelector onSelect={handleModelSelect} value={activeSession.model} />
               </div>
             </>
           )}

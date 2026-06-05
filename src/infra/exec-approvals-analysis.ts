@@ -124,6 +124,9 @@ function splitShellPipeline(command: string): { ok: boolean; reason?: string; se
     let delimiter = "";
     while (i < source.length) {
       const ch = source[i];
+      if (ch === undefined) {
+        break;
+      }
       if (/\s/.test(ch) || ch === "|" || ch === "&" || ch === ";" || ch === "<" || ch === ">") {
         break;
       }
@@ -313,7 +316,7 @@ function splitShellPipeline(command: string): { ok: boolean; reason?: string; se
       }
       continue;
     }
-    if (DISALLOWED_PIPELINE_TOKENS.has(ch)) {
+    if (ch !== undefined && DISALLOWED_PIPELINE_TOKENS.has(ch)) {
       return { ok: false, reason: `unsupported shell token: ${ch}`, segments: [] };
     }
     if (ch === "$" && next === "(") {
@@ -325,11 +328,13 @@ function splitShellPipeline(command: string): { ok: boolean; reason?: string; se
 
   if (inHeredocBody && pendingHeredocs.length > 0) {
     const current = pendingHeredocs[0];
-    const line = current.stripTabs ? heredocLine.replace(/^\t+/, "") : heredocLine;
-    if (line === current.delimiter) {
-      pendingHeredocs.shift();
-      if (pendingHeredocs.length === 0) {
-        inHeredocBody = false;
+    if (current) {
+      const line = current.stripTabs ? heredocLine.replace(/^\t+/, "") : heredocLine;
+      if (line === current.delimiter) {
+        pendingHeredocs.shift();
+        if (pendingHeredocs.length === 0) {
+          inHeredocBody = false;
+        }
       }
     }
   }
@@ -372,6 +377,9 @@ function findWindowsUnsupportedToken(command: string): string | null {
   // during enforcement, which is a separate concern from the safety check here.
   for (let i = 0; i < command.length; i++) {
     const ch = command[i];
+    if (ch === undefined) {
+      continue;
+    }
     if (ch === '"') {
       inDouble = !inDouble;
       continue;
@@ -425,6 +433,9 @@ function tokenizeWindowsSegment(segment: string): string[] | null {
 
   for (let i = 0; i < segment.length; i += 1) {
     const ch = segment[i];
+    if (ch === undefined) {
+      continue;
+    }
     // Double-quote toggle (not inside single quotes).
     if (ch === '"' && !inSingle) {
       if (!inDouble) {
@@ -493,7 +504,7 @@ function stripWindowsShellWrapperOnce(command: string): string {
   // PowerShell call-operator: & exe args → exe args
   const psCallMatch = command.match(/^&\s+(.+)$/s);
   if (psCallMatch) {
-    return psCallMatch[1];
+    return psCallMatch[1] ?? "";
   }
 
   // PowerShell invocation: powershell[.exe] [-flags] -Command|-c|--command "inner"
@@ -526,7 +537,7 @@ function stripWindowsShellWrapperOnce(command: string): string {
     // literal ".  Unescape before passing the payload to the tokenizer so that
     // `powershell -Command "node a.js ""hello world"""` correctly yields the
     // single argv token "hello world" rather than splitting on the space.
-    return psInvokeMatch[1].replace(/""/g, '"');
+    return (psInvokeMatch[1] ?? "").replace(/""/g, '"');
   }
   // PowerShell -Command (or -c/--command) with single-quoted payload
   const psInvokeSingleQuote = command.match(
@@ -536,14 +547,14 @@ function stripWindowsShellWrapperOnce(command: string): string {
     // Inside a PowerShell single-quoted string '' encodes a literal apostrophe.
     // Unescape before tokenizing so that 'node a.js ''hello world''' correctly
     // yields the single argv token "hello world".
-    return psInvokeSingleQuote[1].replace(/''/g, "'");
+    return (psInvokeSingleQuote[1] ?? "").replace(/''/g, "'");
   }
   // PowerShell -Command (or -c/--command) without quotes (bare unquoted payload)
   const psInvokeNoQuote = command.match(
     new RegExp(`^(?:powershell|pwsh)(?:\\.exe)?\\s+${psFlags}${psCommandFlag}\\s+(.+)$`, "is"),
   );
   if (psInvokeNoQuote) {
-    return psInvokeNoQuote[1];
+    return psInvokeNoQuote[1] ?? "";
   }
 
   // Note: cmd /c is intentionally NOT stripped here.  If a command is wrapped

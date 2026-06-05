@@ -85,10 +85,13 @@ export const useChatStore = create<ChatState>((set, get) => ({
       }
 
       const actualIndex = state.messages.length - 1 - msgIndex;
+      if (actualIndex < 0 || !state.messages[actualIndex]) {
+        return state;
+      }
       const newMessages = [...state.messages];
-      const targetMsg = { ...newMessages[actualIndex] };
+      const targetMsg = { ...newMessages[actualIndex]! };
       const actions = [...(targetMsg.actions || [])];
-      
+
       const actionIndex = actions.findIndex((a) => a.id === action.id);
       if (actionIndex === -1) {
         actions.push(action);

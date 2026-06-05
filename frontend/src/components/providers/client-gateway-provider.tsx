@@ -9,7 +9,18 @@ export function ClientGatewayProvider({
 }: {
   children: React.ReactNode;
 }): React.JSX.Element {
-  const url = process.env.NEXT_PUBLIC_GATEWAY_URL || "ws://localhost:19001";
+  const getGatewayUrl = () => {
+    if (process.env.NEXT_PUBLIC_GATEWAY_URL) {
+      return process.env.NEXT_PUBLIC_GATEWAY_URL;
+    }
+    if (typeof window !== "undefined") {
+      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+      return `${protocol}//${window.location.host}/gateway/ws`;
+    }
+    return "ws://localhost:19001";
+  };
+
+  const url = getGatewayUrl();
 
   const getToken = async (): Promise<string> => {
     const auth = getClientAuth();

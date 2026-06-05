@@ -182,9 +182,12 @@ describe("SessionsTable", () => {
     render(<SessionsTable />);
 
     const deleteItem = screen.getAllByText("Delete Session")[0];
+    if (!deleteItem) throw new Error("Delete item not found");
     fireEvent.click(deleteItem);
 
-    expect(mockRpcCall).toHaveBeenCalledWith("sessions.delete", { key: mockSessions[1].sessionId });
+    expect(mockRpcCall).toHaveBeenCalledWith("sessions.delete", {
+      key: mockSessions[1]?.sessionId,
+    });
     await waitFor(() => expect(toast.success).toHaveBeenCalledWith("Session deleted"));
     expect(mockRefresh).toHaveBeenCalled();
   });
@@ -194,9 +197,10 @@ describe("SessionsTable", () => {
     render(<SessionsTable />);
 
     const resetItem = screen.getAllByText("Reset Session")[0];
+    if (!resetItem) throw new Error("Reset item not found");
     fireEvent.click(resetItem);
 
-    expect(mockRpcCall).toHaveBeenCalledWith("sessions.reset", { key: mockSessions[1].sessionId });
+    expect(mockRpcCall).toHaveBeenCalledWith("sessions.reset", { key: mockSessions[1]?.sessionId });
     await waitFor(() => expect(toast.success).toHaveBeenCalledWith("Session reset"));
   });
 
@@ -205,10 +209,11 @@ describe("SessionsTable", () => {
     render(<SessionsTable />);
 
     const compactItem = screen.getAllByText("Compact Session")[0];
+    if (!compactItem) throw new Error("Compact item not found");
     fireEvent.click(compactItem);
 
     expect(mockRpcCall).toHaveBeenCalledWith("sessions.compact", {
-      key: mockSessions[1].sessionId,
+      key: mockSessions[1]?.sessionId,
     });
     await waitFor(() =>
       expect(toast.success).toHaveBeenCalledWith("Session compacted (500 tokens remaining)"),

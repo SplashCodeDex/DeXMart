@@ -35,7 +35,14 @@ export default function NodesPage(): React.JSX.Element {
           </p>
         </div>
         <div className="flex space-x-2">
-          <Button variant="outline" size="icon" onClick={refresh} disabled={isLoading}>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={(e) => {
+              refresh();
+            }}
+            disabled={isLoading}
+          >
             <RefreshCw className={cn("h-4 w-4", isLoading && "animate-spin")} />
           </Button>
         </div>
@@ -110,7 +117,7 @@ export default function NodesPage(): React.JSX.Element {
                           </Badge>
                         </div>
                         <div className="mt-4 flex flex-wrap gap-1.5 h-4 overflow-hidden">
-                          {node.caps?.slice(0, 3).map((cap) => (
+                          {node.caps?.slice(0, 3).map((cap: string) => (
                             <Badge
                               key={cap}
                               variant="outline"

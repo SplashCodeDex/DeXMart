@@ -1,0 +1,215 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1780343875304,
+  "projectRoot": "/home/codedex/projects/DeXMart/frontend",
+  "techStack": {
+    "languages": [
+      {
+        "name": "JavaScript/TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": ["package.json"]
+      },
+      {
+        "name": "TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": ["tsconfig.json"]
+      }
+    ],
+    "frameworks": [
+      {
+        "name": "next",
+        "version": "16.1.4",
+        "category": "fullstack"
+      },
+      {
+        "name": "react",
+        "version": "19.2.3",
+        "category": "frontend"
+      },
+      {
+        "name": "react-dom",
+        "version": "19.2.3",
+        "category": "frontend"
+      },
+      {
+        "name": "@playwright/test",
+        "version": "1.59.1",
+        "category": "testing"
+      },
+      {
+        "name": "vitest",
+        "version": "4.1.4",
+        "category": "testing"
+      }
+    ],
+    "packageManager": "npm",
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": "npm run build",
+    "testCommand": "npm test",
+    "lintCommand": "npm run lint",
+    "devCommand": "npm run dev",
+    "scripts": {
+      "build": "next build",
+      "dev": "next dev --turbopack -p 3000",
+      "lint": "eslint . --max-warnings 0",
+      "predev": "npx -y kill-port 3000",
+      "start": "next start",
+      "test": "vitest",
+      "test:coverage": "vitest run --coverage",
+      "test:run": "vitest run",
+      "typecheck": "tsc --noEmit",
+      "visual-diff": "playwright test --config playwright.visual.config.ts",
+      "visual-diff:update": "playwright test --config playwright.visual.config.ts --update-snapshots"
+    }
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": "feature-based"
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": ["public", "src"],
+    "gitBranches": {
+      "defaultBranch": "master",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "__visuals__": {
+      "path": "__visuals__",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1780343875292,
+      "keyFiles": []
+    },
+    "coverage": {
+      "path": "coverage",
+      "purpose": null,
+      "fileCount": 10,
+      "lastAccessed": 1780343875293,
+      "keyFiles": [
+        "base.css",
+        "block-navigation.js",
+        "clover.xml",
+        "coverage-final.json",
+        "favicon.png"
+      ]
+    },
+    "frontend": {
+      "path": "frontend",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1780343875297,
+      "keyFiles": []
+    },
+    "public": {
+      "path": "public",
+      "purpose": "Public files",
+      "fileCount": 2,
+      "lastAccessed": 1780343875298,
+      "keyFiles": ["apple-icon.png", "favicon.ico"]
+    },
+    "src": {
+      "path": "src",
+      "purpose": "Source code",
+      "fileCount": 1,
+      "lastAccessed": 1780343875298,
+      "keyFiles": ["proxy.ts"]
+    },
+    "test-results": {
+      "path": "test-results",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1780343875299,
+      "keyFiles": []
+    },
+    "coverage/components": {
+      "path": "coverage/components",
+      "purpose": "UI components",
+      "fileCount": 0,
+      "lastAccessed": 1780343875300,
+      "keyFiles": []
+    },
+    "coverage/lib": {
+      "path": "coverage/lib",
+      "purpose": "Library code",
+      "fileCount": 2,
+      "lastAccessed": 1780343875300,
+      "keyFiles": ["index.html", "utils.ts.html"]
+    },
+    "frontend/src": {
+      "path": "frontend/src",
+      "purpose": "Source code",
+      "fileCount": 0,
+      "lastAccessed": 1780343875301,
+      "keyFiles": []
+    },
+    "public/assets": {
+      "path": "public/assets",
+      "purpose": "Static assets",
+      "fileCount": 5,
+      "lastAccessed": 1780343875301,
+      "keyFiles": [
+        "DexiFy-logo-01.png",
+        "dexstudios-logo-white-no-bg-01.png",
+        "dexstudios-logo-white-no-bg-02.png"
+      ]
+    },
+    "src/app": {
+      "path": "src/app",
+      "purpose": "Application code",
+      "fileCount": 8,
+      "lastAccessed": 1780343875301,
+      "keyFiles": ["error.tsx", "global-error.tsx", "globals.css"]
+    },
+    "src/components": {
+      "path": "src/components",
+      "purpose": "UI components",
+      "fileCount": 0,
+      "lastAccessed": 1780343875302,
+      "keyFiles": []
+    },
+    "src/lib": {
+      "path": "src/lib",
+      "purpose": "Library code",
+      "fileCount": 7,
+      "lastAccessed": 1780343875303,
+      "keyFiles": ["animations.ts", "confetti.ts", "icons.tsx"]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "src/lib/gateway/gateway-rpc.ts",
+      "accessCount": 3,
+      "lastAccessed": 1780348243526,
+      "type": "file"
+    },
+    {
+      "path": "src/app/(dashboard)/dashboard/nodes/page.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1780344008228,
+      "type": "file"
+    },
+    {
+      "path": "src/features/chat/hooks/useChatSession.ts",
+      "accessCount": 1,
+      "lastAccessed": 1780519259079,
+      "type": "file"
+    },
+    {
+      "path": "src/features/chat/store.ts",
+      "accessCount": 1,
+      "lastAccessed": 1780519274132,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}

@@ -1,13 +1,13 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
+import { VirtualLogList } from "@/components/shared/VirtualLogList";
 import { ChatActionRenderer } from "@/features/chat/components/ChatActionRenderer";
-import { StreamingText } from "@/features/chat/components/StreamingText";
 import { SessionHeader } from "@/features/chat/components/SessionHeader";
+import { StreamingText } from "@/features/chat/components/StreamingText";
 import { UsageFooter } from "@/features/chat/components/UsageFooter";
 import { useChatSession } from "@/features/chat/hooks/useChatSession";
 import { useChatStore, ChatMessage } from "@/features/chat/store";
-import { VirtualLogList } from "@/components/shared/VirtualLogList";
-import { useEffect, useRef, useState } from "react";
 
 export default function ChatPage() {
   const [currentSessionKey, setCurrentSessionKey] = useState("main");
@@ -70,10 +70,7 @@ export default function ChatPage() {
 
   return (
     <div className="flex flex-col h-full overflow-hidden bg-background">
-      <SessionHeader 
-        currentSessionKey={currentSessionKey} 
-        onSessionChange={handleSessionChange} 
-      />
+      <SessionHeader currentSessionKey={currentSessionKey} onSessionChange={handleSessionChange} />
 
       <div className="flex-1 flex flex-col p-6 overflow-hidden">
         <div ref={listContainerRef} className="flex-1 mb-4 overflow-hidden flex flex-col">

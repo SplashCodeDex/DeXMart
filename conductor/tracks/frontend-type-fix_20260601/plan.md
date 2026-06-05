@@ -3,7 +3,7 @@
 **Track ID:** frontend-type-fix_20260601
 **Spec:** spec.md
 **Created:** 2026-06-01
-**Status:** [~] In Progress
+**Status:** [x] Complete
 
 ## Overview
 
@@ -23,7 +23,7 @@ Resolve errors in shared directories and protocol definitions that affect multip
 
 ### Verification
 
-- [~] `tsc` errors in `../src` and `protocol` reduced.
+- [x] `tsc` errors in `../src` and `protocol` reduced.
 
 ## Phase 2: Core Frontend Logic (Nodes & Chat)
 
@@ -31,13 +31,13 @@ Fix errors in the most active parts of the dashboard.
 
 ### Tasks
 
-- [~] Task 2.1: Resolve errors in `src/features/nodes/` (ApprovalInbox, ExecApprovalsCard, NodeDetailSheet).
-- [~] Task 2.2: Fix `src/features/chat/` type mismatches (SessionHeader, UsageFooter, useChatSession).
+- [x] Task 2.1: Resolve errors in `src/features/nodes/` (ApprovalInbox, ExecApprovalsCard, NodeDetailSheet).
+- [x] Task 2.2: Fix `src/features/chat/` type mismatches (SessionHeader, UsageFooter, useChatSession).
 - [x] Task 2.3: Resolve `SchemaFormRenderer` indexing and parameter types.
 
 ### Verification
 
-- [ ] No errors remaining in `src/features/nodes`, `src/features/chat`, or `src/components/schema-form`.
+- [x] No errors remaining in `src/features/nodes`, `src/features/chat`, or `src/components/schema-form`.
 
 ## Phase 3: Omnichannel & Sessions
 
@@ -45,13 +45,13 @@ Address complex state management and store errors.
 
 ### Tasks
 
-- [ ] Task 3.1: Fix `useOmnichannelStore` missing `APPROVALS` property in `API_ENDPOINTS`.
-- [ ] Task 3.2: Resolve `useChannelStatus` undefined risks and missing properties.
-- [ ] Task 3.3: Fix `src/features/sessions/` (CompactionPanel, SessionsTable, useCompaction).
+- [x] Task 3.1: Fix `useOmnichannelStore` missing `APPROVALS` property in `API_ENDPOINTS`.
+- [x] Task 3.2: Resolve `useChannelStatus` undefined risks and missing properties.
+- [x] Task 3.3: Fix `src/features/sessions/` (CompactionPanel, SessionsTable, useCompaction).
 
 ### Verification
 
-- [ ] No errors remaining in omnichannel and sessions features.
+- [x] No errors remaining in omnichannel and sessions features.
 
 ## Phase 4: Feature Polish & Tests
 
@@ -59,20 +59,20 @@ Clean up errors in peripheral features and test suites.
 
 ### Tasks
 
-- [ ] Task 4.1: Fix `CreateCronJobDialog` payload and model selector mismatches.
-- [ ] Task 4.2: Resolve `SkillsDashboard` and `useSkillsStatus` errors.
-- [ ] Task 4.3: Fix `InvoiceHistory` and `PricingTable` test data types.
-- [ ] Task 4.4: Address remaining test file errors across all features.
+- [x] Task 4.1: Fix `CreateCronJobDialog` payload and model selector mismatches.
+- [x] Task 4.2: Resolve `SkillsDashboard` and `useSkillsStatus` errors.
+- [x] Task 4.3: Fix `InvoiceHistory` and `PricingTable` test data types.
+- [x] Task 4.4: Address remaining test file errors across all features.
 
 ### Verification
 
-- [ ] All feature and test files pass type check.
+- [x] All feature and test files pass type check.
 
 ## Final Verification
 
-- [ ] Run `pnpm typecheck` in `frontend` directory: Output must be 0 errors.
-- [ ] Run `pnpm lint` in `frontend` directory: Ensure no new lint warnings introduced.
-- [ ] Verify dashboard still loads and basic functions work (no runtime regressions).
+- [x] Run `pnpm typecheck` in `frontend` directory: Output must be 0 errors.
+- [x] Run `pnpm lint` in `frontend` directory: Ensure no new lint warnings introduced.
+- [x] Verify dashboard still loads and basic functions work (no runtime regressions).
 
 ---
 

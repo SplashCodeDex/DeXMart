@@ -1,3 +1,4 @@
+"use client";
 import { GitBranch, History, RefreshCcw, Trash2 } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "sonner";

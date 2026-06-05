@@ -203,6 +203,16 @@ export function buildOpenAIProvider(): ProviderPlugin {
         },
       }),
     ],
+    resolveSyntheticAuth: ({ provider }) => {
+      if (process.env.OPENAI_API_KEY) {
+        return {
+          provider,
+          type: "api_key",
+          key: process.env.OPENAI_API_KEY,
+        };
+      }
+      return undefined;
+    },
     resolveDynamicModel: (ctx) => resolveOpenAIGpt54ForwardCompatModel(ctx),
     normalizeResolvedModel: (ctx) => {
       if (normalizeProviderId(ctx.provider) !== PROVIDER_ID) {

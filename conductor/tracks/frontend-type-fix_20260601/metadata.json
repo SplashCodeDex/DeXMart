@@ -1,0 +1,16 @@
+{
+  "id": "frontend-type-fix_20260601",
+  "title": "Frontend Type Error Resolution",
+  "type": "bug",
+  "status": "complete",
+  "created": "2026-06-01T00:00:00Z",
+  "updated": "2026-06-01T12:00:00Z",
+  "phases": {
+    "total": 4,
+    "completed": 4
+  },
+  "tasks": {
+    "total": 15,
+    "completed": 15
+  }
+}

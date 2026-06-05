@@ -61,6 +61,10 @@ export function CreateCronJobDialog({
   const [model, setModel] = useState<string | null>(null);
   const [thinking, setThinking] = useState<string>("none");
 
+  const handleModelSelect = (m: any) => {
+    setModel(m.id);
+  };
+
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     setLoading(true);
@@ -274,7 +278,7 @@ export function CreateCronJobDialog({
                   <>
                     <div className="space-y-2">
                       <Label>Model Override</Label>
-                      <ModelSelector value={model} onSelect={setModel} />
+                      <ModelSelector value={model ?? undefined} onSelect={handleModelSelect} />
                     </div>
                     <div className="space-y-2">
                       <Label>Thinking Level</Label>

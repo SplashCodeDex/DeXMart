@@ -37,6 +37,7 @@ import type {
   NodeDescribeParams,
   NodeInvokeParams,
   NodeRenameParams,
+  NodeListNode,
   NodePairRequestParams,
   NodePairListParams,
   NodePairApproveParams,
@@ -79,6 +80,10 @@ export interface MethodMap {
       messages: ReadonlyArray<unknown>;
       hasMore?: boolean;
     };
+  };
+  "chat.inject": {
+    params: { sessionKey: string; message: any; label?: string };
+    result: void;
   };
   "chat.abort": {
     params: { sessionKey: string; runId?: string };
@@ -260,12 +265,12 @@ export interface MethodMap {
     params: NodeListParams;
     result: {
       ts: number;
-      nodes: any[];
+      nodes: NodeListNode[];
     };
   };
   "node.describe": {
     params: NodeDescribeParams;
-    result: any;
+    result: NodeListNode;
   };
   "node.invoke": {
     params: NodeInvokeParams;
@@ -275,6 +280,7 @@ export interface MethodMap {
       command: string;
       payload?: any;
       payloadJSON?: string | null;
+      error?: { code?: string; message: string };
     };
   };
   "node.rename": {
@@ -430,6 +436,13 @@ export interface EventMap {
   "node.pair.resolved": any;
   "exec.approval.requested": any;
   "exec.approval.resolved": any;
+  agent: {
+    runId: string;
+    stream: string;
+    data: any;
+    ts?: number;
+    [key: string]: any;
+  };
 }
 
 export class GatewayRpc {

@@ -78,7 +78,7 @@ export function parseEnvTemplateSecretRef(
   return {
     source: "env",
     provider: provider.trim() || DEFAULT_SECRET_PROVIDER_ALIAS,
-    id: match[1],
+    id: match[1]!,
   };
 }
 

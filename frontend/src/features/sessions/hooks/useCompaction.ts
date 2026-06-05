@@ -1,3 +1,4 @@
+"use client";
 import { useCallback, useEffect } from "react";
 import { useGateway } from "@/lib/gateway/gateway-hooks";
 import { useSessionsStore, type Checkpoint } from "../store";
@@ -18,6 +19,7 @@ export function useCompaction(sessionId: string | null): {
 
     setLoading(true);
     try {
+      if (!rpc) throw new Error("RPC not available");
       const result = await rpc.call("sessions.compaction.list", { key: sessionId });
       // upstream returns { checkpoints: Checkpoint[] }
       setCheckpoints(result.checkpoints);
@@ -37,6 +39,7 @@ export function useCompaction(sessionId: string | null): {
 
       setLoading(true);
       try {
+        if (!rpc) throw new Error("RPC not available");
         await rpc.call("sessions.compaction.restore", { key: sessionId, checkpointId });
         await fetchCheckpoints();
       } catch (err: unknown) {
@@ -49,10 +52,11 @@ export function useCompaction(sessionId: string | null): {
 
   const branch = useCallback(
     async (checkpointId: string, label?: string): Promise<string | undefined> => {
-      if (status !== "connected" || !sessionId) return;
+      if (status !== "connected" || !sessionId) return undefined;
 
       setLoading(true);
       try {
+        if (!rpc) throw new Error("RPC not available");
         const result = await rpc.call("sessions.compaction.branch", {
           key: sessionId,
           checkpointId,
@@ -62,6 +66,7 @@ export function useCompaction(sessionId: string | null): {
       } catch (err: unknown) {
         const message = err instanceof Error ? err.message : "Failed to branch from checkpoint";
         setError(message);
+        return undefined;
       } finally {
         setLoading(false);
       }

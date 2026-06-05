@@ -337,12 +337,14 @@ export function SchemaFormRenderer({ schema, defaultValues, onSubmit }: SchemaFo
         });
         // Handle nested paths if necessary
         const parts = originalName.split(".");
-        let target = result;
+        let target = result as any;
         for (let i = 0; i < parts.length - 1; i++) {
-          if (!target[parts[i]]) target[parts[i]] = {};
-          target = target[parts[i]] as any;
+          const part = parts[i]!;
+          if (!target[part]) target[part] = {};
+          target = target[part];
         }
-        target[parts[parts.length - 1]] = map;
+        const lastPart = parts[parts.length - 1]!;
+        target[lastPart] = map;
         delete result[key];
       }
     });

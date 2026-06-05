@@ -13,7 +13,17 @@ export class UserContextResolverImpl implements UserContextResolver {
   ) {}
 
   /**
-   * Resolve UserContext from a userId (the ISOLATION KEY).
+   * Resolve UserContext from a userId or tenantId (the ISOLATION KEY).
+   *
+   * Callers throughout the codebase pass either a Firebase Auth UID or a
+   * tenantId (prefixed with "tenant-"). The Firestore data model is:
+   *   - `users/{uid}`                          → global lookup doc (email, tenantId, role, plan)
+   *   - `tenants/{tenantId}`                    → tenant config (plan, ownerId, subscription, settings)
+   *   - `tenants/{tenantId}/users/{uid}`        → full user profile within a tenant
+   *
+   * This method handles both cases:
+   *   1. If the ID is a tenantId → look up `tenants/{tenantId}` directly.
+   *   2. If the ID is a UID → look up `users/{uid}` to get tenantId, then `tenants/{tenantId}`.
    */
   async fromUserId(userId: string): Promise<UserContext> {
     const cacheKey = `user:context:${userId}`;
@@ -28,30 +38,76 @@ export class UserContextResolverImpl implements UserContextResolver {
       logger.warn(`[UserContextResolver] Redis error for ${userId}:`, err);
     }
 
-    // 2. Cache Miss -> Fetch from Firestore
-    const userDoc = await this.firestore.collection("users").doc(userId).get();
-    if (!userDoc.exists) {
-      throw new Error(`User not found: ${userId}`);
+    // 2. Cache Miss -> Determine resolution strategy based on ID format
+    let tenantId: string;
+    let ownerUid: string;
+    let tenantData: FirebaseFirestore.DocumentData;
+    let ownerData: FirebaseFirestore.DocumentData;
+
+    if (userId.startsWith("tenant-")) {
+      // --- Path A: Caller passed a tenantId ---
+      tenantId = userId;
+      const tenantDoc = await this.firestore.collection("tenants").doc(tenantId).get();
+      if (!tenantDoc.exists) {
+        throw new Error(`Tenant not found: ${tenantId}`);
+      }
+      tenantData = tenantDoc.data()!;
+      ownerUid = tenantData.ownerId;
+
+      // Fetch the owner's profile from the tenant subcollection
+      const ownerDoc = await this.firestore
+        .collection("tenants")
+        .doc(tenantId)
+        .collection("users")
+        .doc(ownerUid)
+        .get();
+      ownerData = ownerDoc.exists ? ownerDoc.data()! : {};
+    } else {
+      // --- Path B: Caller passed a Firebase Auth UID ---
+      const lookupDoc = await this.firestore.collection("users").doc(userId).get();
+      if (!lookupDoc.exists) {
+        throw new Error(`User not found: ${userId}`);
+      }
+      const lookupData = lookupDoc.data()!;
+      tenantId = lookupData.tenantId;
+      ownerUid = userId;
+
+      if (!tenantId) {
+        throw new Error(`User ${userId} has no associated tenant`);
+      }
+
+      // Fetch the tenant document for plan/subscription data
+      const tenantDoc = await this.firestore.collection("tenants").doc(tenantId).get();
+      tenantData = tenantDoc.exists ? tenantDoc.data()! : {};
+
+      // Fetch the user's profile from the tenant subcollection
+      const userProfileDoc = await this.firestore
+        .collection("tenants")
+        .doc(tenantId)
+        .collection("users")
+        .doc(ownerUid)
+        .get();
+      ownerData = userProfileDoc.exists ? userProfileDoc.data()! : lookupData;
     }
 
-    const userData = userDoc.data()!;
-    const plan = (userData.plan || "free") as PlanTier;
+    // 3. Resolve plan from tenant (source of truth) or fall back to user data
+    const plan = (tenantData.plan || ownerData.plan || "free") as PlanTier;
 
-    // 3. Fetch Usage (Asynchronous but required for context)
+    // 4. Fetch Usage from the tenant-scoped usage subcollection
     const usageDoc = await this.firestore
-      .collection("users")
-      .doc(userId)
+      .collection("tenants")
+      .doc(tenantId)
       .collection("usage")
       .doc("current")
       .get();
 
     const usageData = usageDoc.exists ? usageDoc.data()! : {};
 
-    // 4. Construct Full UserContext
+    // 5. Construct Full UserContext
     const context: UserContext = {
-      userId: userId,
-      displayName: userData.displayName || "User",
-      email: userData.email || "",
+      userId: tenantId,
+      displayName: ownerData.displayName || tenantData.name || "User",
+      email: ownerData.email || "",
       plan: plan,
       capabilities: PLAN_CAPABILITIES[plan],
       usage: {
@@ -63,21 +119,21 @@ export class UserContextResolverImpl implements UserContextResolver {
         periodEnd: usageData.periodEnd?.toDate() || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
       },
       subscription: {
-        stripeCustomerId: userData.stripeCustomerId || null,
-        stripeSubscriptionId: userData.stripeSubscriptionId || null,
-        isActive: userData.subscriptionStatus === "active",
-        isTrial: userData.subscriptionStatus === "trialing",
-        trialEndsAt: userData.trialEndsAt?.toDate() || null,
+        stripeCustomerId: tenantData.stripeCustomerId || null,
+        stripeSubscriptionId: tenantData.stripeSubscriptionId || null,
+        isActive: tenantData.subscriptionStatus === "active",
+        isTrial: tenantData.subscriptionStatus === "trialing",
+        trialEndsAt: tenantData.trialEndsAt?.toDate() || null,
         isOverLimit: false, // Calculated by usage trackers
       },
       meta: {
-        createdAt: userData.createdAt?.toDate() || new Date(),
+        createdAt: tenantData.createdAt?.toDate() || ownerData.createdAt?.toDate() || new Date(),
         lastActiveAt: new Date(),
-        timezone: userData.settings?.timezone || "UTC",
+        timezone: tenantData.settings?.timezone || "UTC",
       },
     };
 
-    // 5. Cache result
+    // 6. Cache result
     try {
       await this.redis.setex(cacheKey, this.CACHE_TTL, JSON.stringify(context));
     } catch (err) {

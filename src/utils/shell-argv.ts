@@ -20,6 +20,9 @@ export function splitShellArgs(raw: string): string[] | null {
 
   for (let i = 0; i < raw.length; i += 1) {
     const ch = raw[i];
+    if (ch === undefined) {
+      continue;
+    }
     if (escaped) {
       buf += ch;
       escaped = false;

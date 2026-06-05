@@ -355,6 +355,7 @@ export const ProtocolSchemas = {
   ExecApprovalGetParams: ExecApprovalGetParamsSchema,
   ExecApprovalRequestParams: ExecApprovalRequestParamsSchema,
   ExecApprovalResolveParams: ExecApprovalResolveParamsSchema,
+  ExecApprovalsFile: ExecApprovalsFileSchema,
   PluginApprovalRequestParams: PluginApprovalRequestParamsSchema,
   PluginApprovalResolveParams: PluginApprovalResolveParamsSchema,
   DevicePairListParams: DevicePairListParamsSchema,

@@ -192,7 +192,7 @@ function parseEnvInvocationPrelude(argv: string[]): ParsedEnvInvocationPrelude |
       break;
     }
     const lower = normalizeLowercaseStringOrEmpty(token);
-    const [flag] = lower.split("=", 2);
+    const flag = lower.split("=", 2)[0] ?? "";
     if (ENV_FLAG_OPTIONS.has(flag)) {
       idx += 1;
       continue;
@@ -268,7 +268,7 @@ function envInvocationUsesModifiers(argv: string[]): boolean {
       break;
     }
     const lower = normalizeLowercaseStringOrEmpty(token);
-    const [flag] = lower.split("=", 2);
+    const flag = lower.split("=", 2)[0] ?? "";
     if (ENV_FLAG_OPTIONS.has(flag)) {
       return true;
     }
@@ -302,7 +302,7 @@ function unwrapDashOptionInvocation(
       if (!token.startsWith("-") || token === "-") {
         return "stop";
       }
-      const [flag] = lower.split("=", 2);
+      const flag = lower.split("=", 2)[0] ?? "";
       return params.onFlag(flag, lower);
     },
     adjustCommandIndex: params.adjustCommandIndex,
@@ -402,7 +402,7 @@ function unwrapScriptInvocation(argv: string[]): string[] | null {
       if (!lower.startsWith("-") || lower === "-") {
         return "stop";
       }
-      const [flag] = token.split("=", 2);
+      const flag = token.split("=", 2)[0] ?? "";
       if (BSD_SCRIPT_OPTIONS_WITH_VALUE.has(flag)) {
         return token.includes("=") ? "continue" : "consume-next";
       }

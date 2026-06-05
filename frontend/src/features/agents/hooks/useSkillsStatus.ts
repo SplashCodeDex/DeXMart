@@ -42,6 +42,7 @@ export function useSkillsStatus(options: UseSkillsStatusOptions = {}) {
         return () => clearInterval(timer);
       }
     }
+    return undefined;
   }, [enabled, interval, refresh]);
 
   return {

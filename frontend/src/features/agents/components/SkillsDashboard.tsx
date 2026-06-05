@@ -173,7 +173,7 @@ export function SkillsDashboard(): React.JSX.Element {
 
     const validation = apiKeySchema.safeParse(apiKey);
     if (!validation.success) {
-      toast.error(validation.error.errors[0]?.message || "Invalid API key");
+      toast.error(validation.error.issues[0]?.message || "Invalid API key");
       return;
     }
 

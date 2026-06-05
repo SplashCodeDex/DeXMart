@@ -1,4 +1,4 @@
-import { normalizeOptionalLowercaseString } from "../../shared/string-coerce.ts";
+import { normalizeOptionalLowercaseString } from "@dexmart/shared/string-coerce.js";
 
 export const GATEWAY_CLIENT_IDS = {
   WEBCHAT_UI: "webchat-ui",
