@@ -39,6 +39,7 @@ import {
 import { useSubscription } from '@/features/billing';
 import { TriggerNode, ActionNode, LogicNode, AINode, SkillNode, AIRouterNode } from '@/features/flows/components/CustomNodes';
 import { useTemplates } from '@/features/messages/hooks/useTemplates';
+import { validateFlow } from '../utils/validation';
 import { api } from '@/lib/api/client';
 import { getIcon } from '@/lib/icons';
 import { cn } from '@/lib/utils';
@@ -146,6 +147,12 @@ export function FlowsDashboard(): React.JSX.Element {
     }, [setNodes]);
 
     const onSave = useCallback(async () => {
+        const errors = validateFlow(nodes);
+        if (errors.length > 0) {
+            toast.error(errors[0].message);
+            return;
+        }
+
         setIsSaving(true);
         try {
             const response = await api.post('/api/flows', {

@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { SiWhatsapp, SiTelegram, SiDiscord, SiSignal, SiGooglechat } from 'react-icons/si';
 import { toast } from 'sonner';
 
+import { FormError } from '@/components/ui/form-error';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -44,6 +45,7 @@ interface ChannelConnectionFormProps {
 
 export function ChannelConnectionForm({ type, agentId: initialAgentId, onSuccess, onCancel }: ChannelConnectionFormProps): React.JSX.Element {
   const [loading, setLoading] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [credentials, setCredentials] = useState<Record<string, string>>({});
   const [connectionMethod, setConnectionMethod] = useState<'qr' | 'pairing'>('qr');
   const [selectedAgentId, setSelectedAgentId] = useState(initialAgentId || 'system_default');
@@ -130,6 +132,7 @@ export function ChannelConnectionForm({ type, agentId: initialAgentId, onSuccess
     }
 
     setLoading(true);
+    setSubmitError(null);
 
     try {
       const payload: {
@@ -165,9 +168,12 @@ export function ChannelConnectionForm({ type, agentId: initialAgentId, onSuccess
         await fetchAllChannels();
         onSuccess?.();
       } else {
-        toast.error(response.error.message || 'Failed to connect channel');
+        const errorMsg = response.error.message || 'Failed to connect channel';
+        setSubmitError(errorMsg);
+        toast.error(errorMsg);
       }
     } catch {
+      setSubmitError('An unexpected connection error occurred. Please check your network.');
       toast.error('An unexpected error occurred');
     } finally {
       setLoading(false);
@@ -189,6 +195,7 @@ export function ChannelConnectionForm({ type, agentId: initialAgentId, onSuccess
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-6 pt-6">
+          <FormError message={submitError || undefined} />
 
           {/* Agent Assignment */}
           <div className="space-y-4">
