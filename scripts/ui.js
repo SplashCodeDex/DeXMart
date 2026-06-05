@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(here, "..");
-const uiDir = path.join(repoRoot, "ui");
+const uiDir = path.join(repoRoot, "frontend");
 
 const WINDOWS_SHELL_EXTENSIONS = new Set([".cmd", ".bat", ".com"]);
 const WINDOWS_UNSAFE_SHELL_ARG_PATTERN = /[\r\n"&|<>^%!]/;
@@ -130,8 +130,8 @@ function runSync(cmd, args, envOverride) {
 function depsInstalled(kind) {
   try {
     const require = createRequire(path.join(uiDir, "package.json"));
-    require.resolve("vite");
-    require.resolve("dompurify");
+    require.resolve("next");
+    require.resolve("react");
     if (kind === "test") {
       require.resolve("vitest");
       require.resolve("@vitest/browser-playwright");
