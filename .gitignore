@@ -163,3 +163,4 @@ openclaw.podman.env
 temp_status*.txt
 test-channel.js
 UserPasted.logs
+logs/.*-audit.json
