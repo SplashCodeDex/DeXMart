@@ -25,7 +25,7 @@ interface NextFetchRequestConfig {
   tags?: string[];
 }
 
-export class ApiError extends Error {
+class ApiError extends Error {
   readonly code: string;
   readonly status: number;
   readonly details: Record<string, unknown> | undefined;

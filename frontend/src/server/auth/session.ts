@@ -7,7 +7,7 @@ const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || "static-placeholder-do-not-use-in-prod-7f9d8a2b",
 );
 
-export async function getSession(): Promise<string | undefined> {
+async function getSession(): Promise<string | undefined> {
   const cookieStore = await cookies();
   const token = cookieStore.get("token");
   return token?.value;

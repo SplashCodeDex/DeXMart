@@ -29,6 +29,6 @@ export function getSafeLocalStorage(): Storage | null {
   return getSafeStorage("localStorage");
 }
 
-export function getSafeSessionStorage(): Storage | null {
+function getSafeSessionStorage(): Storage | null {
   return getSafeStorage("sessionStorage");
 }

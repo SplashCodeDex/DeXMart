@@ -18,7 +18,7 @@ export type WebhookEvent = (typeof WEBHOOK_EVENTS)[number];
 /**
  * Webhook Schema
  */
-export const WebhookSchema = z.object({
+const WebhookSchema = z.object({
   id: z.string(),
   url: z.string().url({ message: "Invalid webhook URL format" }),
   events: z
@@ -36,7 +36,7 @@ export type Webhook = z.infer<typeof WebhookSchema>;
 /**
  * Webhook Form Schema (for creation)
  */
-export const WebhookFormSchema = WebhookSchema.omit({
+const WebhookFormSchema = WebhookSchema.omit({
   id: true,
   secret: true,
   createdAt: true,

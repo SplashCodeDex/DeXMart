@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const ContactSchema = z.object({
+const ContactSchema = z.object({
     id: z.string(),
     name: z.string(),
     phone: z.string().min(1, "Phone number is required"),
@@ -13,7 +13,7 @@ export const ContactSchema = z.object({
 
 export type Contact = z.infer<typeof ContactSchema>;
 
-export const AudienceSchema = z.object({
+const AudienceSchema = z.object({
     id: z.string(),
     name: z.string().min(1, "Name is required"),
     description: z.string().optional(),

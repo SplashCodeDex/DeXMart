@@ -3,13 +3,13 @@ import { z } from 'zod';
 /**
  * Valid plan tiers for the platform.
  */
-export const PlanSchema = z.enum(['starter', 'pro', 'enterprise']);
+const PlanSchema = z.enum(['starter', 'pro', 'enterprise']);
 export type PlanTier = z.infer<typeof PlanSchema>;
 
 /**
  * Supported AI models.
  */
-export const AIModelSchema = z.enum([
+const AIModelSchema = z.enum([
     'gemini-1.5-flash',
     'gemini-1.5-pro',
     'gemini-2.0-flash',

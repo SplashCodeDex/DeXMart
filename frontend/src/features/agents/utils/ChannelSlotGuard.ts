@@ -14,7 +14,7 @@ export function canAddChannelSlot(tier: PlanTier, currentCount: number): boolean
 /**
  * Gets the slot limit strictly from the centralized capability store.
  */
-export function getSlotLimit(tier: PlanTier): number {
+function getSlotLimit(tier: PlanTier): number {
     const store = useAuthorityStore.getState();
     
     // If checking against the current user's tier, use the authoritative backend response

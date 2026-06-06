@@ -9,16 +9,15 @@
  */
 
 // Server Actions
-export { signIn, signUp, googleAuthAction, signOut, requestPasswordReset, resetPassword, getSession } from './actions';
+export { requestPasswordReset, resetPassword } from './actions';
 
 // Components
-export { LoginForm, ForgotPasswordForm, ResetPasswordForm, InteractiveAuthProgressBar, RegisterForm, AnimatedAuthHero, AuthTransitionLayout } from './components';
+export { LoginForm, ForgotPasswordForm, ResetPasswordForm, InteractiveAuthProgressBar, RegisterForm, AuthTransitionLayout } from './components';
 
 // Hooks
 export { useAuth } from './hooks';
 
 // Store
-export { useAuthStore } from './store';
 
 // Schemas
 export {
@@ -39,5 +38,5 @@ export type {
     AuthState,
 } from './types';
 
-export { getAuthErrorMessage, firebaseUserToAuthUser } from './types';
+export { getAuthErrorMessage } from './types';
 export * from './utils';

@@ -6,7 +6,7 @@ import { MessageTemplate } from '../types';
 
 import { api } from '@/lib/api/client';
 
-export const templateKeys = {
+const templateKeys = {
     all: ['templates'] as const,
     list: () => [...templateKeys.all, 'list'] as const,
 };
@@ -24,7 +24,7 @@ export function useTemplates(): UseQueryResult<MessageTemplate[]> {
     });
 }
 
-export function useCreateTemplate(): UseMutationResult<MessageTemplate, Error, Partial<MessageTemplate>> {
+function useCreateTemplate(): UseMutationResult<MessageTemplate, Error, Partial<MessageTemplate>> {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (data: Partial<MessageTemplate>) => {

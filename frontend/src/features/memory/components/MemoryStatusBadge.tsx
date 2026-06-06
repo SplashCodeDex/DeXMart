@@ -31,7 +31,7 @@ const STAGE_LABELS: Record<MemoryInitProgress["stage"], string> = {
  * No emojis. Uses lucide-react Brain icon.
  * Follows the project's Tailwind spacing tokens and focus-visible rules.
  */
-export function MemoryStatusBadge({
+function MemoryStatusBadge({
   ready,
   loading,
   progress,

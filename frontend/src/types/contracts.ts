@@ -10,7 +10,7 @@ export type ContractResult<T, E = Error> =
 /**
  * Webhook Event Enum
  */
-export const WebhookEventSchema = z.enum([
+const WebhookEventSchema = z.enum([
   "message.received",
   "message.sent",
   "channel.connected",
@@ -25,7 +25,7 @@ export type WebhookEvent = z.infer<typeof WebhookEventSchema>;
 /**
  * Webhook Schema
  */
-export const WebhookSchema = z.object({
+const WebhookSchema = z.object({
   id: z.string(),
   url: z.string().url({ message: "Invalid webhook URL format" }),
   events: z.array(WebhookEventSchema).min(1, { message: "At least one event must be selected" }),
@@ -42,7 +42,7 @@ export type Webhook = z.infer<typeof WebhookSchema>;
 /**
  * Tenant Settings Schema (stored in tenants/{tenantId}/settings/general)
  */
-export const TenantSettingsSchema = z.object({
+const TenantSettingsSchema = z.object({
   // Owner Information
   ownerNumber: z.string().optional(),
   ownerName: z.string().optional(),

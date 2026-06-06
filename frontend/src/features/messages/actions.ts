@@ -46,7 +46,7 @@ export async function createCampaign(
 /**
  * Start a campaign
  */
-export async function startCampaignAction(id: string): Promise<ActionResult<{ message: string }>> {
+async function startCampaignAction(id: string): Promise<ActionResult<{ message: string }>> {
     const response = await api.post<{ message: string }>(`/api/campaigns/${id}/start`, {});
     if (!response.success) return { success: false, error: response.error };
     revalidatePath('/dashboard/campaigns');
@@ -56,7 +56,7 @@ export async function startCampaignAction(id: string): Promise<ActionResult<{ me
 /**
  * Pause a campaign
  */
-export async function pauseCampaignAction(id: string): Promise<ActionResult<{ message: string }>> {
+async function pauseCampaignAction(id: string): Promise<ActionResult<{ message: string }>> {
     const response = await api.post<{ message: string }>(`/api/campaigns/${id}/pause`, {});
     if (!response.success) return { success: false, error: response.error };
     revalidatePath('/dashboard/campaigns');

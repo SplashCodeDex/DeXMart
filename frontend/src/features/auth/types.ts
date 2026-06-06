@@ -48,7 +48,7 @@ export { ActionResult }; // Re-export for convenience if needed, or just remove 
 /**
  * Firebase auth error codes mapped to user-friendly messages
  */
-export const AUTH_ERROR_MESSAGES: Record<string, string> = {
+const AUTH_ERROR_MESSAGES: Record<string, string> = {
     'auth/email-already-in-use': 'An account with this email already exists',
     'auth/invalid-email': 'Please enter a valid email address',
     'auth/operation-not-allowed': 'This sign-in method is not enabled',
@@ -66,7 +66,7 @@ export const AUTH_ERROR_MESSAGES: Record<string, string> = {
 /**
  * Convert Firebase User to AuthUser
  */
-export function firebaseUserToAuthUser(user: FirebaseUser): AuthUser {
+function firebaseUserToAuthUser(user: FirebaseUser): AuthUser {
     return {
         id: user.uid,
         email: user.email ?? '',

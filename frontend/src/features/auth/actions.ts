@@ -274,7 +274,7 @@ export async function googleAuthAction(
 /**
  * Sign out and clear session
  */
-export async function signOut(): Promise<void> {
+async function signOut(): Promise<void> {
     // Best-effort: notify backend to blacklist the token before clearing the cookie.
     // Non-fatal — cookie is deleted regardless; token expires naturally if this fails.
     try {
@@ -338,7 +338,7 @@ export async function requestPasswordReset(
 /**
  * Get current session from cookie
  */
-export async function getSession(): Promise<AuthUser | null> {
+async function getSession(): Promise<AuthUser | null> {
     const cookieStore = await cookies();
     const sessionCookie = cookieStore.get(SESSION_COOKIE_NAME);
 

@@ -13,7 +13,7 @@ export interface SubscriptionData {
   cancelAtPeriodEnd: boolean;
 }
 
-export const billingKeys = {
+const billingKeys = {
   all: ['billing'] as const,
   subscription: () => [...billingKeys.all, 'subscription'] as const,
 };

@@ -44,6 +44,6 @@ export function GoogleIcon({ size = 24, className = '' }: Omit<IconProps, 'color
 }
 
 // Export all icons as a collection
-export const DeXMartIcons = {
+const DeXMartIcons = {
     Google: GoogleIcon,
 };

@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import React from "react";
 
-export const ICON_MAP: Record<string, React.ReactNode> = {
+const ICON_MAP: Record<string, React.ReactNode> = {
   // Agent Templates
   sales: <DollarSign className="h-5 w-5 text-emerald-500" />,
   support: <ShieldCheck className="h-5 w-5 text-blue-500" />,

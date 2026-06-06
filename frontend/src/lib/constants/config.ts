@@ -10,12 +10,12 @@ export const APP_CONFIG = {
   contactEmail: process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "support@DeXMart.com",
 } as const;
 
-export const PAGINATION = {
+const PAGINATION = {
   DEFAULT_PAGE_SIZE: 10,
   MAX_PAGE_SIZE: 100,
 } as const;
 
-export const LIMITS = {
+const LIMITS = {
   FREE: {
     maxBots: 1,
     maxMessagesPerDay: 100,

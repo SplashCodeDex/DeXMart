@@ -78,7 +78,7 @@ type PendingRequest = {
 
 import { z } from "zod";
 
-export const WorkerResponseSchema = z.object({
+const WorkerResponseSchema = z.object({
   type: z.enum(["result", "error", "progress", "firestore:response"]),
   id: z.string().optional(),
   payload: z.unknown(),

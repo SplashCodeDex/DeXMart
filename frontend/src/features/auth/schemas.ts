@@ -10,7 +10,7 @@ import { z } from 'zod';
 /**
  * Email validation - reusable across forms
  */
-export const emailSchema = z
+const emailSchema = z
     .string()
     .min(1, 'Email is required')
     .email('Please enter a valid email address');
@@ -18,7 +18,7 @@ export const emailSchema = z
 /**
  * Password validation - enforces security requirements
  */
-export const passwordSchema = z
+const passwordSchema = z
     .string()
     .min(8, 'Password must be at least 8 characters')
     .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')

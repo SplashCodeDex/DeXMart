@@ -7,10 +7,10 @@
 import { z } from 'zod';
 
 // Plan Types
-export const PlanSchema = z.enum(['starter', 'pro', 'enterprise']);
+const PlanSchema = z.enum(['starter', 'pro', 'enterprise']);
 export type PlanTier = z.infer<typeof PlanSchema>;
 
-export const SubscriptionStatusSchema = z.enum([
+const SubscriptionStatusSchema = z.enum([
   'trialing',
   'active',
   'past_due',
@@ -39,16 +39,16 @@ export const SubscriptionInfoSchema = z.object({
 export type SubscriptionInfo = z.infer<typeof SubscriptionInfoSchema>;
 
 // Checkout Session Response Schema
-export const CheckoutSessionResponseSchema = z.object({
+const CheckoutSessionResponseSchema = z.object({
   url: z.string().url(),
 });
 export type CheckoutSessionResponse = z.infer<typeof CheckoutSessionResponseSchema>;
 
 // Invoice Schema
-export const InvoiceStatusSchema = z.enum(['paid', 'pending', 'failed']);
+const InvoiceStatusSchema = z.enum(['paid', 'pending', 'failed']);
 export type InvoiceStatus = z.infer<typeof InvoiceStatusSchema>;
 
-export const InvoiceSchema = z.object({
+const InvoiceSchema = z.object({
   id: z.string(),
   date: z.string().datetime(),
   amount: z.number().int().nonnegative(),
@@ -61,7 +61,7 @@ export type Invoice = z.infer<typeof InvoiceSchema>;
 export const InvoiceListSchema = z.array(InvoiceSchema);
 
 // Payment Method Schema
-export const PaymentMethodSchema = z.object({
+const PaymentMethodSchema = z.object({
   id: z.string(),
   brand: z.string(),
   last4: z.string().length(4),
@@ -74,7 +74,7 @@ export type PaymentMethod = z.infer<typeof PaymentMethodSchema>;
 export const PaymentMethodListSchema = z.array(PaymentMethodSchema);
 
 // Request Schemas
-export const CreateCheckoutSessionRequestSchema = z.object({
+const CreateCheckoutSessionRequestSchema = z.object({
   planId: PlanSchema,
   interval: z.enum(['month', 'year']),
 });

@@ -50,7 +50,7 @@ let _db: Firestore | null = null;
 /**
  * Get Firebase App instance
  */
-export function getApp(): FirebaseApp {
+function getApp(): FirebaseApp {
   if (!_app) {
     _app = getFirebaseApp();
   }

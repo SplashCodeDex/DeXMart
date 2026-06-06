@@ -37,7 +37,7 @@
 
 import { z } from "zod";
 
-export const WorkerMessageSchema = z.discriminatedUnion("type", [
+const WorkerMessageSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("init"), id: z.string(), payload: z.object({ userId: z.string() }) }),
   z.object({
     type: z.literal("remember"),
@@ -71,7 +71,7 @@ export const WorkerMessageSchema = z.discriminatedUnion("type", [
 ]);
 export type WorkerMessage = z.infer<typeof WorkerMessageSchema>;
 
-export const WorkerResponseSchema = z.object({
+const WorkerResponseSchema = z.object({
   type: z.enum(["result", "error", "progress", "firestore:response"]),
   id: z.string(),
   payload: z.unknown(),

@@ -26,7 +26,7 @@ interface MemorySearchBarProps {
  *
  * Accessibility: role="search", aria-label, keyboard navigable results.
  */
-export function MemorySearchBar({
+function MemorySearchBar({
   onSearch,
   onClear,
   results,

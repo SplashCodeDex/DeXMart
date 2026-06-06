@@ -21,7 +21,7 @@ export function isSkillAllowed(tier: PlanTier, skillId: string): boolean {
 /**
  * Returns the list of skills allowed from the centralized capabilities store.
  */
-export function getAllowedSkills(tier: PlanTier): string[] {
+function getAllowedSkills(tier: PlanTier): string[] {
     const store = useAuthorityStore.getState();
 
     // Strict enforcement

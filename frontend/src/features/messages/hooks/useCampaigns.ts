@@ -7,7 +7,7 @@ import { useCampaignSocket } from './useCampaignSocket';
 
 import { api } from '@/lib/api/client';
 
-export const campaignKeys = {
+const campaignKeys = {
     all: ['campaigns'] as const,
     list: () => [...campaignKeys.all, 'list'] as const,
     detail: (id: string) => [...campaignKeys.all, 'detail', id] as const,
@@ -43,7 +43,7 @@ export function useCampaign(id: string): UseQueryResult<Campaign> {
     });
 }
 
-export function useCreateCampaign(): UseMutationResult<Campaign, Error, Partial<Campaign>> {
+function useCreateCampaign(): UseMutationResult<Campaign, Error, Partial<Campaign>> {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (data: Partial<Campaign>) => {

@@ -27,7 +27,7 @@ export type GatewayErrorShape = {
   retryAfterMs?: number;
 };
 
-export class GatewayError extends Error {
+class GatewayError extends Error {
   code: string;
   retryable: boolean;
   retryAfterMs?: number;
@@ -524,6 +524,6 @@ export function createGatewayClient(opts: GatewayClientOptions): GatewayClient {
   return client;
 }
 
-export function resetGatewayClientregistry(): void {
+function resetGatewayClientregistry(): void {
   _clients.clear();
 }

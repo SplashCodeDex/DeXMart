@@ -18,7 +18,7 @@ import type { MemoryItem } from "../types";
  *   - Exposes search, remember, and clear actions
  *   - Optimistically updates recentMemories on remember()
  */
-export function useMemoryPanel() {
+function useMemoryPanel() {
   const { user } = useAuth();
 
   // Firestore client: lazy-imported client-side only to avoid SSR issues

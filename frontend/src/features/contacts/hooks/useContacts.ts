@@ -6,7 +6,7 @@ import { Contact, ContactImportResult } from '../types';
 
 import { api } from '@/lib/api/client';
 
-export const contactKeys = {
+const contactKeys = {
     all: ['contacts'] as const,
     list: () => [...contactKeys.all, 'list'] as const,
     audiences: () => [...contactKeys.all, 'audiences'] as const,

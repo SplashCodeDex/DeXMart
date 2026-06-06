@@ -20,7 +20,7 @@ interface UpgradeModalProps {
   description?: string;
 }
 
-export function UpgradeModal({
+function UpgradeModal({
   isOpen,
   onClose,
   title = "Upgrade to Pro",

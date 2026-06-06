@@ -18,7 +18,7 @@ export interface UseSettingsReturn {
   isUpdating: boolean;
 }
 
-export function useSettings(): UseSettingsReturn {
+function useSettings(): UseSettingsReturn {
   const queryClient = useQueryClient();
 
   const query = useQuery({

@@ -8,7 +8,7 @@ import { Audience } from '../types';
 import { api, API_ENDPOINTS } from '@/lib/api';
 import { isApiSuccess } from '@/types';
 
-export const audienceKeys = {
+const audienceKeys = {
   all: ['audiences'] as const,
   list: () => [...audienceKeys.all, 'list'] as const,
   detail: (id: string) => [...audienceKeys.all, id] as const,
@@ -48,7 +48,7 @@ export function useCreateAudience(): UseMutationResult<Audience, Error, Omit<Aud
   });
 }
 
-export function useUpdateAudience(): UseMutationResult<Audience, Error, { id: string; data: Partial<Audience> }> {
+function useUpdateAudience(): UseMutationResult<Audience, Error, { id: string; data: Partial<Audience> }> {
   const queryClient = useQueryClient();
   
   return useMutation({

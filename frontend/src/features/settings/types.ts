@@ -1,1 +1,1 @@
-export { type TenantSettings, TenantSettingsSchema } from "@/types/contracts";
+export { type TenantSettings } from "@/types/contracts";

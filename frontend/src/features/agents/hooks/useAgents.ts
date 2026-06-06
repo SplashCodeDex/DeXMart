@@ -18,7 +18,7 @@ export interface AgentChannel {
     assignedAgentId?: string;
 }
 
-export const agentKeys = {
+const agentKeys = {
     all: ['agents'] as const,
     channels: (agentId?: string) => [...agentKeys.all, 'channels', agentId || 'all'] as const,
 };

@@ -10,7 +10,7 @@ export const BOUNCY_SPRING = {
   damping: 20,
 };
 
-export const BOUNCY_BEZIER = [0.34, 1.56, 0.64, 1];
+const BOUNCY_BEZIER = [0.34, 1.56, 0.64, 1];
 export const BOUNCY_BEZIER_STRING = "cubic-bezier(0.34, 1.56, 0.64, 1)";
 
 /**
@@ -52,7 +52,7 @@ export const createRollingVariants = (
 /**
  * Variants for the container itself (stretching/shrinking)
  */
-export const bouncyCollapseVariants: Variants = {
+const bouncyCollapseVariants: Variants = {
   collapsed: {
     transition: BOUNCY_SPRING,
   },
