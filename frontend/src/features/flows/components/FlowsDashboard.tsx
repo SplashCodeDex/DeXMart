@@ -148,7 +148,7 @@ export function FlowsDashboard(): React.JSX.Element {
 
     const onSave = useCallback(async () => {
         const errors = validateFlow(nodes);
-        if (errors.length > 0) {
+        if (errors.length > 0 && errors[0]) {
             toast.error(errors[0].message);
             return;
         }

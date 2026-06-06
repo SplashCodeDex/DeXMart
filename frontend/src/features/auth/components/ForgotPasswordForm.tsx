@@ -6,7 +6,8 @@ import Link from 'next/link';
 import React, { useActionState } from 'react';
 
 import { Button, Input } from '@/components/ui';
-import { requestPasswordReset, getAuthErrorMessage } from '@/features/auth';
+import { requestPasswordReset } from '../actions';
+import { getAuthErrorMessage } from '../types';
 
 /**
  * ForgotPasswordForm
