@@ -7,7 +7,8 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import React, { useActionState, useEffect } from 'react';
 
 import { Button, PasswordInput } from '@/components/ui';
-import { resetPassword, getAuthErrorMessage } from '@/features/auth';
+import { resetPassword } from '../actions';
+import { getAuthErrorMessage } from '../types';
 
 /**
  * ResetPasswordForm

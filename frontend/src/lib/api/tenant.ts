@@ -1,7 +1,7 @@
 import { TenantSettings } from "@/types/contracts";
 import { api } from "./client";
 
-const tenantApi = {
+export const tenantApi = {
   getSettings: async () => {
     const response = await api.get<TenantSettings>("/api/tenant/settings");
     if (!response.success) {
