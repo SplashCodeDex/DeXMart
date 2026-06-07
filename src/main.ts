@@ -83,6 +83,10 @@ async function main() {
       // Start Auto-Healing Watchdog (ChannelWatchdog dissolved into ChannelService)
       const { channelService } = await import("./services/ChannelService.js");
       channelService.startWatchdog(60_000); // Check every 60s
+      shutdownRegistry.push(() => {
+        logger.info(">>> [MASTERMIND] Stopping Channel Watchdog...");
+        channelService.stopWatchdog();
+      });
 
       // 4. Start Gateway Server
       logger.info(">>> [MASTERMIND] Starting Gateway Server...");
