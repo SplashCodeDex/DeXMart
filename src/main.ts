@@ -50,6 +50,10 @@ async function main() {
 
     const jobRegistry = new JobRegistry();
     await jobQueueService.initialize();
+    shutdownRegistry.push(async () => {
+      logger.info(">>> [MASTERMIND] Closing Job Queues...");
+      await jobQueueService.closeAllQueues();
+    });
     await jobRegistry.initialize(jobQueueService);
 
     logger.info(">>> [MASTERMIND] Initializing Campaign Worker...");
