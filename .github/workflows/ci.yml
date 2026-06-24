@@ -351,7 +351,7 @@ jobs:
             .github/workflows/ci.yml
 
       - name: Restore pre-commit cache
-        uses: actions/cache@v5
+        uses: actions/cache@v5.0.5
         with:
           path: ~/.cache/pre-commit
           key: pre-commit-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('.pre-commit-config.yaml') }}-${{ env.PRE_COMMIT_CACHE_KEY_SUFFIX }}
@@ -433,7 +433,7 @@ jobs:
         run: pnpm ui:build
 
       - name: Cache dist build
-        uses: actions/cache@v5
+        uses: actions/cache@v5.0.5
         with:
           path: dist/
           key: ${{ runner.os }}-dist-build-${{ github.sha }}
@@ -708,7 +708,7 @@ jobs:
       - name: Restore dist cache
         id: dist-cache
         if: matrix.requires_dist == true
-        uses: actions/cache@v5
+        uses: actions/cache@v5.0.5
         with:
           path: dist/
           key: ${{ runner.os }}-dist-build-${{ github.sha }}
@@ -1080,7 +1080,7 @@ jobs:
       - name: Restore dist cache
         id: build-smoke-dist-cache
         if: github.event_name == 'push'
-        uses: actions/cache@v5
+        uses: actions/cache@v5.0.5
         with:
           path: dist/
           key: ${{ runner.os }}-dist-build-${{ github.sha }}
@@ -1380,7 +1380,7 @@ jobs:
         run: brew install xcodegen swiftlint swiftformat
 
       - name: Cache SwiftPM
-        uses: actions/cache@v5
+        uses: actions/cache@v5.0.5
         with:
           path: ~/Library/Caches/org.swift.swiftpm
           key: ${{ runner.os }}-swiftpm-${{ hashFiles('apps/macos/Package.resolved') }}
